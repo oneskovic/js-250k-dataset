@@ -1,4 +1,3 @@
-/* model for addresses field in the person model */
 Ext.define('RaxaEmr.billing.model.billModel', {
     extend: 'Ext.data.Model',
 

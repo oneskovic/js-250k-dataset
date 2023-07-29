@@ -1,17 +1,6 @@
-
 var assert = require('assert');
 
-/**
- * This function wrap a function that taken a callback:
- * - to callback when we catch error and
- * - to wrap the callback:
- *   - to avoid throwing error in the callback and
- *   - to avoid being called twice.
- *
- * @param fn function that taken a callback.
- * @param addError (optional) If this is true callback is not taken an error. And unshift callback arguments to pass an error.
- * @param callbackIndex (optional) argument index of callback
- */
+
 exports.wrap = function wrap(fn, /* opt */addError, /* opt */callbackIndex) {
   if (fn.name === '__cbUtilWrapped__') {
     return fn;

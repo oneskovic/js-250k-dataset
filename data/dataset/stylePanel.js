@@ -1,5 +1,3 @@
-/* See license.txt for terms of usage */
-
 /**
  * This file defines Style side panel APIs for test drivers.
  */

@@ -1,10 +1,3 @@
-/*
- * ------------------------------------------
- * 字体选择控件实现文件
- * @version  1.0
- * @author   genify(caijf@corp.netease.com)
- * ------------------------------------------
- */
 /** @module ui/editor/command/fontname */
 NEJ.define([
     'base/global',

@@ -1,4 +1,3 @@
-// ignore the inner frames
 if (window.top === window) {
 
 (function(){

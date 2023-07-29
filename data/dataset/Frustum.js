@@ -1,13 +1,4 @@
 /**
- * Copyright (C) 2009-2012 Klaus Reimer <k@ailis.de>
- * See LICENSE.txt for licensing information
- * 
- * @require threedee.js
- * @use threedee/Vector.js
- * @use threedee/rendering/Plane.js
- */
-
-/**
  * Constructs a new view frustum for the specified screen size and scale
  * factor. Optionaly you can specify the near and far clipping distance.
  * 

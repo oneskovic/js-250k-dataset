@@ -1,5 +1,3 @@
-// FUnctional programming utilities
-
 /**
  * @param {function() : *} promise
  * @return {*}

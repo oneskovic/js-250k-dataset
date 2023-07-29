@@ -1,8 +1,3 @@
-/**
- * Contact Processor - part of the Physics singleton to
- * handle and process cantact events
- */
-
 function ContactProcessor() {
 	this.pairs = {};
 	this.defaultBegin = function() {};

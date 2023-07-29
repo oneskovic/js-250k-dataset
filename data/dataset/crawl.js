@@ -1,146 +1,98 @@
-steal('steal/html', function(){
+var nunjucks = require('nunjucks'),
+url     = require('url'),
+    fs      = require('fs'),
+    saveDir = __dirname,
+		p = require("path"),
+		mkdirp = require("mkdirp"),
+_ = require("underscore");
+var https = require('https');
 
-var queue = [],
-	found = {},
-	pageData,
-	s = steal,
-	getDocType  = function(url){
-		var content;
-		if(s.File(url).domain() === null){
-			content = readFile(s.File(url).clean());
-		} else {
-			content = readUrl(url);
-		}
-		var docTypes = content.match( /<!doctype[^>]+>/i );
-		return docTypes ? docTypes[0] : "";
-	};
-/**
- * @function steal.html.crawl
- * @parent steal.html
- * Loads an ajax driven page and generates the html for google to crawl. Check out the [ajaxy tutorial] 
- * for a more complete walkthrough.
- * 
- * This crawler indexes an entire Ajax site.  It
- * 
- *   1. Opens a page in a headless browser.
- *   2. Waits until its content is ready.
- *   3. Scrapes its contents.
- *   4. Writes the contents to a file.
- *   5. Adds any links in the page that start with #! to be indexed
- *   6. Changes <code>window.location.hash</code> to the next index-able page
- *   7. Goto #2 and repeats until all pages have been loaded
- * 
- * ## 2. Wait until content is ready.
- * 
- * By default, [steal.html] will just wait until all scripts have finished loading
- * before scraping the page's contents.  To delay this, use
- * [steal.html.delay] and [steal.html.ready].
- * 
- * ## 3. Write the contents to a file.
- *  
- * You can change where the contents of the file are writen to by changing
- * the second parameter passed to <code>crawl</code>.
- * 
- * By default uses EnvJS, but you can use PhantomJS for more advanced pages:
-
-@codestart
-steal('steal/html', function(){
-	steal.html.crawl("ajaxy/ajaxy.html", 
-	{
-		out: 'ajaxy/out',
-		browser: 'phantomjs'
-	})
-})
-@codeend
- * 
- * @param {Object} url the starting page to crawl
- * @param {String|Object} opts the location to put the crawled content.
- */
-steal.html.crawl = function(url, opts){
-	if(typeof opts == 'string'){
-		opts = {out: opts}
-	}
-	var browserType = opts.browser || 'envjs';
-	s.File(opts.out).mkdirs();
+var browserOpts = {
+  waitFor: 5000,
+  loadCSS: true,
+  runScripts: true
+};
+var saveSnapshot = function(uri, body) {
 	
-	s.html.load(url, browserType, function(hash){
-		var docType = getDocType(url),
-			data = s.html.crawl.getPageData(this),
-			total = docType+"\n<html lang='en'>\n"+data.html+"\n</html>";
-		// print(" HTML: "+total)
-		// add this url to cache so it doesn't generate twice
-		hash = hash.substr(2);
-		found[hash] = true;
-		print("  > "+ opts.out+"/"+hash+".html")
-		// write out the page
-		var outf = s.File(opts.out+"/"+hash+".html");
-		s.File(outf.dir()).mkdirs();
-		outf.save(total);
-		
-		var next = s.html.crawl.addLinks();
-		
+  var path = url.parse(uri).pathname;
 
-		if(next){
-			
-			// print("  "+next)
-			// get the next link
-			this.evaluate(function(nextHash){
-				window.location.hash = nextHash;
-			}, next);
-		}
-		else {
-			this.close()
-		}
-	})
-}
+  var filename = saveDir + path;
+	mkdirp.sync(p.dirname(filename));
+	console.log("mkdir",filename);
+	fs.writeFileSync(p.resolve(filename), body);
+	console.log("save",filename);
+};
 
-steal.extend(steal.html.crawl, {
-	getLinks: function(){
-		return pageData.urls;
-	},
-	getPageData : function(browser){
-		pageData = browser.evaluate(function(){
-			var getHash = function(href){
-				var index = href.indexOf("#!");
-				if(index > -1){
-					return href.substr(index+1);
-				}
-			};
-			var links = document.getElementsByTagName('a'),
-				urls = [],
-				hash;
-			for(var i=0; i < links.length; i++){
-				hash = getHash(links[i].href);
-				if( hash ){
-					urls.push( hash );
-				}
-			}
-			var html = document.documentElement.innerHTML;
-			return {
-				urls: urls, 
-				html: html
-			};
+var settings = fs.readFileSync("./config/settings.json");
+var crawlPage = function(idx, arr) {
+	var gist = arr[idx];
+	var postfix,title;
+	if (gist.description){
+		postfix = gist.description.replace(/ +/g,'-') + "/index.html";
+		title=gist.description;
+	}
+	else{
+		postfix= "index.html";
+		for (var f in gist.files){
+			title=f;
+			break;
+		}
+	}
+  var uri = "{{homepage}}/#/gist/" +  gist.id + "/" + gist.description;
+	console.log(uri);
+		https.get({host:"gist.github.com",path:"/{{github_name}}/"+gist.id+".json"}, function(res) {
+		res.setEncoding('utf8');
+		var data = "";
+		res.on('data', function (chunk) {
+			data +=chunk;
 		});
-		return pageData;
-	},
-	addLinks : function(){
-		var links = this.getLinks(),
-			link;
-		// add links that haven't already been added
-		for(var i=0; i < links.length; i++){
-			link = links[i];
-			if(! found[link] ) {
-				found[link] = true;
-				queue.push( link );
+
+		res.on('end',function(){
+
+			var url= "{{homepage}}/gist/" + gist.id + "/" + postfix; // link to the item
+			var gistjson = _(JSON.parse(data)).extend(JSON.parse(settings.toString()));
+			var html = nunjucks.render("src/templates/crawl.html", {data:gistjson});
+			saveSnapshot(url, html);
+			if(idx+1 === arr.length){
+				console.log("DONE");
+			}else{
+				console.log("crawl",idx);
+				crawlPage(idx+1, arr);							
 			}
-		}
-		return queue.shift();
-	}
-})
-// load a page, get its content, 
-// find all #! links
 
-// recurse
+		});
+	}).on('error', function(e) {
+		console.error(e);
+	});
 
+};
+
+console.log("start snapping");
+https.get({host:"gist.github.com",path:"/{{github_name}}.atom","headers": {'User-Agent':"Mozilla/5.0"}}, function(res) {
+	res.setEncoding('utf8');
+	var data = "";
+  res.on('data', function (chunk) {
+		data +=chunk;
+  });
+	res.on('end',function(){
+		fs.writeFileSync('atom.xml', data);
+	});
 	
-})
+});
+
+https.get({host:"api.github.com",path:"/users/{{github_name}}/gists","headers": {'User-Agent':"Mozilla/5.0","Content-Type":	"application/json"}}, function(res) {
+	res.setEncoding('utf8');
+	var data = "";
+  res.on('data', function (chunk) {
+		data +=chunk;
+  });
+
+	res.on('end',function(){
+		crawlPage(0, JSON.parse(data));
+
+	});
+}).on('error', function(e) {
+  console.error(e);
+});
+
+

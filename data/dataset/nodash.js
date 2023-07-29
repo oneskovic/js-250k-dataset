@@ -1,5 +1,3 @@
-// Cherry-picked bits of underscore.js, lodash.js
-
 /**
  * Lo-Dash 2.4.0 <http://lodash.com/>
  * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>

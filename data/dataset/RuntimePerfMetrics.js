@@ -1,4 +1,3 @@
-// Test based on rules from http://calendar.perfplanet.com/2013/the-runtime-performance-checklist/
 var StatData = require('./StatData');
 
 function RuntimePerfMetrics() {

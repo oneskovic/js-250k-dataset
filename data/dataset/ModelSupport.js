@@ -9,12 +9,7 @@ define([
     ],
     function (declare, domClass, domAttr, domConstruct, query, BaseDiscoveryMixin, ProgressBar) {
         return declare([ BaseDiscoveryMixin], {
-            /**
-             * adds message from checkout handler
-             * @param messageContainer
-             * @param message
-             * @param clear
-             */
+            
             addCheckoutElement: function (messageContainer, message, clear) {
                 if (clear) {
                     domConstruct.empty(messageContainer);

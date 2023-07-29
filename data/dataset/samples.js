@@ -2,14 +2,7 @@ $(function() {
 
     var structure = $(
         Mock.heredoc(function() {
-            /*!
-<div class="col-sm-6 tc">
-    <div class="panel panel-default">
-        <div class="panel-heading"></div>
-        <div class="panel-body result"></div>
-    </div>
-</div>
-     */
+            
         })
     );
 

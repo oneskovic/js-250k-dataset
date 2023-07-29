@@ -1,4 +1,3 @@
-
 // ##### Loop Command
 //
 // The [loop command](http://jquery-jkit.com/commands/loop.html) does the sam thing as the **showandhide** command,

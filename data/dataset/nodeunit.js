@@ -1,9 +1,3 @@
-/*!
- * Nodeunit
- * Copyright (c) 2010 Caolan McMahon
- * MIT Licensed
- */
-
 /**
  * Module dependencies
  */

@@ -1,74 +1,80 @@
-﻿/*
-Copyright (c) 2003-2014, CKSource - Frederico Knabben. All rights reserved.
-For licensing, see LICENSE.md or http://ckeditor.com/license
-*/
-CKEDITOR.plugins.setLang( 'table', 'pt', {
-	border: 'Tamanho da Margem',
-	caption: 'Título',
-	cell: {
-		menu: 'Célula',
-		insertBefore: 'Inserir Célula Antes',
-		insertAfter: 'Inserir Célula Depois',
-		deleteCell: 'Apagar Células',
-		merge: 'Unir Células',
-		mergeRight: 'Unir à Direita',
-		mergeDown: 'Unir Abaixo',
-		splitHorizontal: 'Dividir Célula Horizontalmente',
-		splitVertical: 'Dividir Célula Verticalmente',
-		title: 'Propriedades da Célula',
-		cellType: 'Tipo de Célula',
-		rowSpan: 'Filas na Célula',
-		colSpan: 'Colunas na Célula',
-		wordWrap: 'Continuar',
-		hAlign: 'Alinhamento Horizontal',
-		vAlign: 'Alinhamento Vertical',
-		alignBaseline: 'Base',
-		bgColor: 'Cor de Fundo',
-		borderColor: 'Cor da Margem',
-		data: 'Dados',
-		header: 'Cabeçalho',
-		yes: 'Sim',
-		no: 'Não',
-		invalidWidth: 'A largura da célula deve ser um número.',
-		invalidHeight: 'A altura da célula deve ser um número.',
-		invalidRowSpan: 'As filas da célula deve ter um número inteiro.',
-		invalidColSpan: 'As colunas da célula deve ter um número inteiro.',
-		chooseColor: 'Escolher'
-	},
-	cellPad: 'Criação de Espaço',
-	cellSpace: 'Espaçamento Célula',
-	column: {
-		menu: 'Coluna',
-		insertBefore: 'Inserir Coluna Antes',
-		insertAfter: 'Inserir Coluna Depois',
-		deleteColumn: 'Apagar Colunas'
-	},
-	columns: 'Colunas',
-	deleteTable: 'Apagar Tabela',
-	headers: 'Cabeçalhos',
-	headersBoth: 'Ambos',
-	headersColumn: 'Primeira coluna',
-	headersNone: 'Nenhum',
-	headersRow: 'Primeira Linha',
-	invalidBorder: 'O tamanho da margem tem de ser um número.',
-	invalidCellPadding: 'A criação do espaço na célula deve ser um número positivo.',
-	invalidCellSpacing: 'O espaçamento da célula deve ser um número positivo.',
-	invalidCols: 'O número de colunas tem de ser um número maior que 0.',
-	invalidHeight: 'A altura da tabela tem de ser um número.',
-	invalidRows: 'O número das linhas tem de ser um número maior que 0.',
-	invalidWidth: 'A largura da tabela tem de ser um número.',
-	menu: 'Propriedades da Tabela',
-	row: {
-		menu: 'Linha',
-		insertBefore: 'Inserir Linha Antes',
-		insertAfter: 'Inserir Linha Depois',
-		deleteRow: 'Apagar Linhas'
-	},
-	rows: 'Linhas',
-	summary: 'Sumário',
-	title: 'Propriedades da Tabela',
-	toolbar: 'Tabela',
-	widthPc: 'percentagem',
-	widthPx: 'pontos',
-	widthUnit: 'unidade da largura'
-} );
+(function () {
+  angular.module('ui.grid').config(['$provide', function($provide) {
+    $provide.decorator('i18nService', ['$delegate', function($delegate) {
+      $delegate.add('pt', {
+        aggregate: {
+          label: 'itens'
+        },
+        groupPanel: {
+          description: 'Arraste e solte uma coluna aqui para agrupar por essa coluna'
+        },
+        search: {
+          placeholder: 'Procurar...',
+          showingItems: 'Mostrando os Itens:',
+          selectedItems: 'Items Selecionados:',
+          totalItems: 'Total de Itens:',
+          size: 'Tamanho da Página:',
+          first: 'Primeira Página',
+          next: 'Próxima Página',
+          previous: 'Página Anterior',
+          last: 'Última Página'
+        },
+        menu: {
+          text: 'Selecione as colunas:'
+        },
+        sort: {
+          ascending: 'Ordenar Ascendente',
+          descending: 'Ordenar Descendente',
+          remove: 'Remover Ordenação'
+        },
+        column: {
+          hide: 'Esconder coluna'
+        },
+        aggregation: {
+          count: 'total de linhas: ',
+          sum: 'total: ',
+          avg: 'med: ',
+          min: 'min: ',
+          max: 'max: '
+        },
+        pinning: {
+          pinLeft: 'Fixar Esquerda',
+          pinRight: 'Fixar Direita',
+          unpin: 'Desprender'
+        },
+        gridMenu: {
+          columns: 'Colunas:',
+          importerTitle: 'Importar ficheiro',
+          exporterAllAsCsv: 'Exportar todos os dados como csv',
+          exporterVisibleAsCsv: 'Exportar dados visíveis como csv',
+          exporterSelectedAsCsv: 'Exportar dados selecionados como csv',
+          exporterAllAsPdf: 'Exportar todos os dados como pdf',
+          exporterVisibleAsPdf: 'Exportar dados visíveis como pdf',
+          exporterSelectedAsPdf: 'Exportar dados selecionados como pdf'
+        },
+        importer: {
+          noHeaders: 'Nomes de colunas não puderam ser derivados. O ficheiro tem um cabeçalho?',
+          noObjects: 'Objetos não puderam ser derivados. Havia dados no ficheiro, além dos cabeçalhos?',
+          invalidCsv: 'Ficheiro não pode ser processado. É um CSV válido?',
+          invalidJson: 'Ficheiro não pode ser processado. É um Json válido?',
+          jsonNotArray: 'Ficheiro json importado tem que conter um array. Interrompendo.'
+        },
+        pagination: {
+          sizes: 'itens por página',
+          totalItems: 'itens'
+        },
+        grouping: {
+          group: 'Agrupar',
+          ungroup: 'Desagrupar',
+          aggregate_count: 'Agr: Contar',
+          aggregate_sum: 'Agr: Soma',
+          aggregate_max: 'Agr: Max',
+          aggregate_min: 'Agr: Min',
+          aggregate_avg: 'Agr: Med',
+          aggregate_remove: 'Agr: Remover'
+        }        
+      });
+      return $delegate;
+    }]);
+}]);
+})();

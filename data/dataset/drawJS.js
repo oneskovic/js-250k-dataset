@@ -4,7 +4,7 @@
 		ERASER_IMAGE : 'url(./img/paintingboard/eraser.png), auto',
 		DEFAULT_ERASER_COLOR : 'rgba(0,0,0,1)'
 	}
-	/*@constructor(@param<Number> height, @param<Number> width, [options])*/
+	
 	var dw = function (height, width, options) {
 
 		options = options || {};

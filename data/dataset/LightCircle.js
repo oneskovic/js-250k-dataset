@@ -1,4 +1,3 @@
-
 var LightCircle = cc.Layer.extend({
 
   lightPoints: [],

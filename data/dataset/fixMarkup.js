@@ -1,13 +1,3 @@
-/*Takes a text presumed to contain a mixture of text properly marked up for use in the editor, and plain xml pasted in. Attempts to make the
- *plain xml adhere to the editor's expectations by:
- *Finding the plain xml by searching for the first < that is NOT part of a span tag
- *DONE-From that point forward, change all < and > to &lt; and &gt;
- *DONE-add a <span class=tag"> </span> to wrap around each &lt;xxx&gt;&lt;/xxx&gt; or &lt;xxx/&gt
- *
- *TODO-Change \n to <br>
- *
- *More to come as need arrises
- **/
 function fixMarkup(text)
 {
 

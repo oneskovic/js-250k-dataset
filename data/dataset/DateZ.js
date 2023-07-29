@@ -1,4 +1,3 @@
-//use nodeunit to run this test
 var DateZ  = require('../lib/DateZ').DateZ;
 var membersZ = ['getDate','getDay','getFullYear','getHours','getMilliseconds','getMinutes','getMonth','getSeconds','getYear','toDateString','toLocaleDateString','toLocaleTimeString'];
 var members = ['getUTCDate','getUTCDay','getUTCFullYear','getUTCHours','getUTCMilliseconds','getUTCMinutes','getUTCMonth','getUTCSeconds','toGMTString','toUTCString','valueOf','getTime'];

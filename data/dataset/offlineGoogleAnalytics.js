@@ -1,5 +1,3 @@
-// Put Google Analytics events in localStorage when offline, sync when back online
-
 var offlineAnalytics = {
   isOnline: function () {
     return (navigator.onLine || !('onLine' in navigator)) && (typeof window.ga === "function");

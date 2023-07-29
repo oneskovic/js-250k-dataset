@@ -7,17 +7,7 @@ var themeImagesCache,
 themeImagesCache = {};
 
 
-/**
- * Packer( builder, theme, options )
- * - builder [ instanceof Builder ]: jQuery UI builder object.
- * - theme [ instanceof ThemeRoller ]: theme object.
- * - options: details below.
- *
- * options:
- * - bundleSuffix [ String ]: Change bundle filename suffix. Default is ".custom".
- *
- * Other options may be available, see Packer 1.10 or 1.11-x.
- */
+
 function Packer( builder, theme, options ) {
 	this.options = options = options || {};
 	if ( typeof options.bundleSuffix === "undefined" ) {

@@ -3,9 +3,7 @@ var async = require('async');
 var Store = require('../../store');
 
 
-/*
- * DEFINITION
- */
+
 exports.definition = {
   mixinCallback: function(){
     var self = this;

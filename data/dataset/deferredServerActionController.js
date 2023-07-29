@@ -1,8 +1,5 @@
 ({
-	/**
-	 * Runs the 'meaningOfLife' server action (returns 42).
-	 * Should place 42 on the screen. 
-	 */ 
+	 
 	simpleDefer: function (cmp, evt, hlp) {
 		var meaningOfLifeAction = cmp.get('c.meaningOfLife');
 		$A.deferAction(meaningOfLifeAction).then(hlp.getSuccess(cmp), hlp.getError(cmp));	

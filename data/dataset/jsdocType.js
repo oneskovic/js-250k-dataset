@@ -1,5 +1,3 @@
-/*global describe: true, expect: true, it: true */
-
 var hasOwnProp = Object.prototype.hasOwnProperty;
 
 describe("jsdoc/tag/type/jsdocType", function() {

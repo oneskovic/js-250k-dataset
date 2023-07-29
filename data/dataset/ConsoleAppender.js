@@ -1,9 +1,3 @@
-/**
- * Source: ConsoleAppender.js
- * Copyright (c) 2013-2014 Oculus Info Inc.
- * @fileOverview Aperture Logging Console Appender Implementation
- */
-
 /*
  * console is a tricky thing to get working cross browser.  Potential
  * problems:

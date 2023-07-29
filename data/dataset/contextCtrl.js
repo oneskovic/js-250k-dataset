@@ -8,9 +8,7 @@ var newContextModalCtrl = function($scope, $modalInstance, context){
 	$scope.error = false;
 	$scope.info = true;
 
-	/**
-	* @desc ask context's service to send context 
-	*/
+	
 	$scope.newContext = function() {
 		if ($scope.contextName == "") {
 			$scope.error = true;				
@@ -32,9 +30,7 @@ var updateContextModalCtrl = function($scope, $modalInstance, context){
 	$scope.error = false;
 	$scope.info = true;
 
-	/**
-	* @desc ask context's service to send context 
-	*/
+	
 	$scope.updateContext = function() {
 		context.updateContext();
 		$scope.info = false;

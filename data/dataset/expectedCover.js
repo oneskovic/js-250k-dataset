@@ -1,5 +1,3 @@
-// Compiled to
-
 // 1. "use strict";
 // 2.
 // 3. ONE.foo = function (bar) {

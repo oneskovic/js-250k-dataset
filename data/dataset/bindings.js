@@ -1,5 +1,3 @@
-/* global after, before, describe, it */
-
 'use strict';
 
 var expect = require('expect');

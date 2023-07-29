@@ -1,90 +1,47 @@
-/* ==========================================================
- * bootstrap-alert.js v2.0.4
- * http://twitter.github.com/bootstrap/javascript.html#alerts
- * ==========================================================
- * Copyright 2012 Twitter, Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * ========================================================== */
+///import baidu.ui.dialog;
+///import baidu.ui.dialog.Dialog;
+///import baidu.ui.dialog.Dialog$button;
+///import baidu.lang.isString;
+///import baidu.ui.dialog.Dialog$keyboard;
 
-
-!function ($) {
-
-  "use strict"; // jshint ;_;
-
-
- /* ALERT CLASS DEFINITION
-  * ====================== */
-
-  var dismiss = '[data-dismiss="alert"]'
-    , Alert = function (el) {
-        $(el).on('click', dismiss, this.close)
-      }
-
-  Alert.prototype.close = function (e) {
-    var $this = $(this)
-      , selector = $this.attr('data-target')
-      , $parent
-
-    if (!selector) {
-      selector = $this.attr('href')
-      selector = selector && selector.replace(/.*(?=#[^\s]*$)/, '') //strip for ie7
+baidu.ui.dialog.alert = function(content, options){
+    var dialogInstance;
+    
+    options = baidu.extend({
+        type    : "alert",
+        buttons : {
+            "accept" : {
+                "content" : "确定",
+                "onclick" : function(){
+                    var me = this,
+                        parent = me.getParent();
+                    parent.dispatchEvent("onaccept") && parent.close();
+                }
+            }
+        }
+    },options || {});
+    if(baidu.isString(content)){
+        options.contentText = content;
+    } else {
+        options.content = content;
+    }
+    dialogInstance = new baidu.ui.dialog.Dialog(options);
+    
+    //默认自动dispose
+    if(typeof options.autoDispose == 'undefined' || options.autoDispose){
+        dialogInstance.addEventListener("onclose", function(){
+            this.dispose();
+        });
+    }
+    dialogInstance.render();
+    //默认打开dialog
+    if(typeof options.autoOpen == 'undefined' || options.autoOpen){
+        dialogInstance.open();
     }
 
-    $parent = $(selector)
-
-    e && e.preventDefault()
-
-    $parent.length || ($parent = $this.hasClass('alert') ? $this : $this.parent())
-
-    $parent.trigger(e = $.Event('close'))
-
-    if (e.isDefaultPrevented()) return
-
-    $parent.removeClass('in')
-
-    function removeElement() {
-      $parent
-        .trigger('closed')
-        .remove()
-    }
-
-    $.support.transition && $parent.hasClass('fade') ?
-      $parent.on($.support.transition.end, removeElement) :
-      removeElement()
-  }
-
-
- /* ALERT PLUGIN DEFINITION
-  * ======================= */
-
-  $.fn.alert = function (option) {
-    return this.each(function () {
-      var $this = $(this)
-        , data = $this.data('alert')
-      if (!data) $this.data('alert', (data = new Alert(this)))
-      if (typeof option == 'string') data[option].call($this)
-    })
-  }
-
-  $.fn.alert.Constructor = Alert
-
-
- /* ALERT DATA-API
-  * ============== */
-
-  $(function () {
-    $('body').on('click.alert.data-api', dismiss, Alert.prototype.close)
-  })
-
-}(window.jQuery);
+    //注册ontener事件
+    dialogInstance.addEventListener("onenter",function(e){
+        this.buttonInstances["accept"].fire("click",e); 
+    });
+    return dialogInstance;
+};

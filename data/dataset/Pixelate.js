@@ -1,9 +1,4 @@
 /**
-* Original author of PixelateFilter: Mat Groves http://matgroves.com/ @Doormat23
-* adapted for Phaser.js
-*/
-
-/**
 * This filter applies a pixelate effect making display objects appear 'blocky'
 * @class PixelateFilter
 * @contructor

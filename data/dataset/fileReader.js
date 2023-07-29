@@ -4,15 +4,7 @@
         aligned   = require("aligned-buffer"),
         alignment = aligned.alignment();
 
-    /**
-     * Create file reader for specified fd, offset and length.
-     * Reader will read Buffers using O_DIRECT and aligned buffers.
-     *
-     * @param {Number} file File descriptor to read from
-     * @param {Number} offset Read offset in bytes
-     * @param {Number} length Length in bytes
-     * @constructor
-     */
+    
     function FileReader(file, offset, length) {
         stream.Readable.call(this);
 

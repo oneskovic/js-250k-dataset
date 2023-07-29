@@ -1,7 +1,4 @@
 /**
- * Created by lcollins on 7/22/14.
- */
-/**
  * Created by lcollins on 6/28/14.
  */
 (function(module){

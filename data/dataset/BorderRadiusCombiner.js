@@ -79,16 +79,7 @@ var BorderRadiusCombiner = new Class(Combiner, function() {
             return
         }
 
-/*
 
-.foo4 {\
-    border-top-left-radius: 2em 0.5em;\
-    border-top-right-radius: 1em 3em;\
-    border-bottom-right-radius: 4em 0.5em;\
-    border-bottom-left-radius: 1em 3em;\
-}
-==> .foo4{border-radius:2em 1em 4em/.5em 3em}
-*/
         var top1, top2, right1, right2, bottom1, bottom2, left1, left2;
 
         var tmp = top.split(' ');

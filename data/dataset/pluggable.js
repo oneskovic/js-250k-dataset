@@ -1,10 +1,3 @@
-/*
- * pluggable.js: Pluging to write build output to local disk.
- *
- * (C) 2012 Charlie Robbins, Bradley Meck, and the Contributors
- *
- */
-
 var path = require('path');
 
 //

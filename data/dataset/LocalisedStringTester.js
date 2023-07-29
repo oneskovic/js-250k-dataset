@@ -1,5 +1,3 @@
-/*global O */
-
 "use strict";
 
 var view = new O.View({

@@ -1,10 +1,4 @@
 /**
- * @copyright  2011 geOps
- * @license    https://github.com/geops/ole/blob/master/license.txt
- * @link       https://github.com/geops/ole
- */
-
-/**
  * Class: OpenLayers.Editor.Control.DrawPoint
  *
  * Inherits from:

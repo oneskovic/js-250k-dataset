@@ -1,9 +1,3 @@
-/**
- * Connector for Belgian radio-streaming website Radioplus.be
- * Made by Jonas
- * Based loosely on the Google Music connector by Sharjeel Aziz
- */
-
 // State for event handlers
 var state = 'init';
 

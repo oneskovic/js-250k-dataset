@@ -1,4 +1,3 @@
-// Begin Source: src/manipulators/touchmoveAllHandles.js
 var cornerstoneTools = (function($, cornerstone, cornerstoneMath, cornerstoneTools) {
 
     "use strict";

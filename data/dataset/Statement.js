@@ -1,18 +1,56 @@
-Loader.require('Logger');
+Ext.define('Command.preprocessor.Statement', {
+    requires: 'Command.Preprocessor',
 
-Parser.Statement = Ext.extend(Object, {
     isInverted: false,
     properties: {},
     buffer: '',
     parent: null,
 
-    constructor: function(properties, isInverted) {
-        if (properties == undefined)
-            properties = {};
+    statics: {
+        factory: function(type, properties, isInverted) {
+            var className, classFile, classReference, statement;
 
-        if (isInverted == undefined)
+            if (Ext.isObject(type)) {
+                properties = type.properties;
+                isInverted = type.isInverted;
+                type = type.type;
+            }
+
+            type = type.toLowerCase();
+
+            className = 'Command.preprocessor.statement.' + Ext.String.capitalize(type);
+
+            classReference = Ext.ClassManager.get(className);
+
+            if (!classReference) {
+                classFile = Ext.Loader.getPath(className);
+
+                if (require('path').existsSync(classFile)) {
+                    classReference = Ext.require(className);
+                }
+                else {
+                    // Not supported
+                    Ext.Logger.info("Statement type '" + type + "' is currently not supported, ignored");
+                    return false;
+                }
+            }
+
+            statement = new classReference(properties, isInverted);
+            statement.type = type;
+
+            return statement;
+        }
+    },
+
+    constructor: function(properties, isInverted) {
+        if (properties === undefined) {
+            properties = {};
+        }
+
+        if (isInverted === undefined) {
             isInverted = false;
-        
+        }
+
         this.properties = properties;
         this.isInverted = isInverted;
     },
@@ -22,21 +60,24 @@ Parser.Statement = Ext.extend(Object, {
     },
 
     getProperty: function(name) {
-        return this.properties.hasOwnProperty(name) ? this.properties[name] : null;
+        var properties = this.properties;
+
+        return properties.hasOwnProperty(name) ? properties[name] : null;
     },
 
     removeProperty: function(name) {
         delete this.properties[name];
     },
 
-    isEnd: function(line, stream) {
-        return Parser.isCloseOf(line, this);
+    isEnd: function(line, lineStack) {
+        return this.preprocessor.isCloseOf(line, this);
     },
 
     pushBuffer: function(content, withNewLine) {
-        if (withNewLine == undefined)
+        if (withNewLine === undefined) {
             withNewLine = false;
-        
+        }
+
         this.buffer += content + ((withNewLine) ? "\n" : "");
     },
 
@@ -44,55 +85,33 @@ Parser.Statement = Ext.extend(Object, {
         this.buffer = '';
     },
 
-    parse: function(stream) {
-        var line, subStatementData, subStatement;
+    process: function(lineStack) {
+        var preprocessor = this.preprocessor,
+            line, subStatementData, subStatement;
 
-        while (!stream.eof) {
-            line = stream.readLine();
+        while (!lineStack.isEmpty()) {
+            line = lineStack.shift();
 
-            if (this.isEnd(line, stream))
+            if (this.isEnd(line, lineStack)) {
                 break;
+            }
 
-            if ((subStatementData = Parser.parseStatement(line)) && (subStatement = Parser.Statement.factory(subStatementData))) {
+            if ((subStatementData = preprocessor.parseStatement(line)) && (subStatement = this.statics().factory(subStatementData))) {
                 subStatement.parent = this;
-                this.onSubStatement(subStatement, stream);
-            } else {
-                this.pushBuffer(line, !stream.eof);
+                this.onSubStatement(subStatement, lineStack);
+            }
+            else {
+                this.pushBuffer(line, !lineStack.isEmpty());
             }
         }
 
         return this.buffer;
     },
 
-    onSubStatement: function(statement, stream) {
-        this.pushBuffer(statement.parse(stream));
+    onSubStatement: function(statement, lineStack) {
+        this.pushBuffer(statement.process(lineStack));
     }
+
+}, function() {
+    this.addMember('preprocessor', Command.Preprocessor.getInstance());
 });
-
-Ext.apply(Parser.Statement, {
-    factory: function(type, properties, isInverted) {
-        if (Ext.isObject(type)) {
-            properties = type.properties;
-            isInverted = type.isInverted;
-            type = type.type;
-        }
-
-        type = type.toLowerCase();
-        var capitalizedType = type.charAt(0).toUpperCase() + type.slice(1);
-
-        Loader.require('Parser.Statement.' + capitalizedType, false);
-        var statementClass = Parser.Statement[capitalizedType];
-
-        if (!statementClass) {
-            // Not supported
-            Logger.log("[NOTICE][Parser.Statement.factoy] Statement type '" + type + "' is currently not supported, ignored");
-            return false;
-        }
-
-        var statement = new statementClass(properties, isInverted);
-        statement.type = type;
-
-        return statement;
-    }
-});
-

@@ -1,115 +1,126 @@
-/*
-* This file is part of Wakanda software, licensed by 4D under
-*  (i) the GNU General Public License version 3 (GNU GPL v3), or
-*  (ii) the Affero General Public License version 3 (AGPL v3) or
-*  (iii) a commercial license.
-* This file remains the exclusive property of 4D and/or its licensors
-* and is protected by national and international legislations.
-* In any event, Licensee's compliance with the terms and conditions
-* of the applicable license constitutes a prerequisite to any use of this file.
-* Except as otherwise expressly stated in the applicable license,
-* such license does not include any other license or rights on this file,
-* 4D's and/or its licensors' trademarks and/or other proprietary rights.
-* Consequently, no title, copyright or other proprietary rights
-* other than those specified in the applicable license is granted.
-*/
-module.exports = (function(){
-    
-    var wafFilePath = getWalibFolder().path+"WAF/",
-        WAF_PACKAGES_DEFINITION_STORAGE_KEY  = 'wafPackagesDefinitionStorage',
-        builderLogger    = require(wafFilePath+"builder/builder-logger")(),
-        fileHelper;
-    
-    ModulePackage = {
-        
-        /**
-         * Returns THE build list to be processed by the builder-build module
-         * - finds the package.json corresponding to the request
-         * - checks for it in the ModulePackageStorage
-         *  -> updates it if necessary (resolving dependencies with WPM)
-         * - returns the build list (with the WPM)
-         * @param {String} packageJsonUrlPath issued from urlHelper.getInfos(request)
-         * @returns {Object} buildList
-         * @throws error if fails
-         */
-        buildList: function(packageJsonUrlPath, path, debugMode){
+var appc = require('node-appc'),
+	__ = appc.i18n(__dirname).__,
+	afs = appc.fs,
+	fs = require('fs'),
+	path = require('path'),
+	async = require('async'),
+	wrench = require('wrench'),
+	exec = require('child_process').exec;
 
-            var i,
-                packageListHelper, WPM, fileHelper,
-                packageListFromStorage,
-                packageListFromWpm,
-                packageHasChanged = false,
-                buildListResult,
-                debugMode = (typeof debugMode === "undefined" || debugMode === false) ? false : true;
-        
-            //default value for path
-            path = path || "WEBFOLDER";
-            
-            //load packageListHelper
-            packageListHelper = require(wafFilePath+'builder/builder-packageListHelper/packageListHelper');
-            
-            //retrieve the package list from storage
-            packageListFromStorage = packageListHelper.getPackageListFromStorage() || {};
-            //check if any package has changed on the hardrive (by checking timestamps between storage and hardrive)
-            packageHasChanged = packageListHelper.hasTopPackageChanged(packageListFromStorage, packageJsonUrlPath, path);
-            builderLogger('DEBUG : packageHasChanged ',packageJsonUrlPath, ' ',packageHasChanged);
-            if(packageHasChanged || debugMode === true){
-                //load WPM - ONLY if the package packageJsonUrlPath or any package inside this one has changed
-                WPM = require(wafFilePath+'builder/WPM/WPM');
-                //the package has changed so we reload the packageList from the WPM, unfortunatly, with the latest timestamps.
-                //we need the timestamps from the storage to keep track of the file changes (when the package has also changed)
-                //so we merge the timestamps from the storage to the new packageList issued by the WPM
-                packageListFromWpm = WPM.getPackageList(packageJsonUrlPath, path, undefined, undefined, "force", storage.getItem(WAF_PACKAGES_DEFINITION_STORAGE_KEY) );
-            }
+exports.cliVersion = '>=3.2';
 
-            //create de buildList
-            try{
-                buildListResult = packageListHelper.createBuildList(packageJsonUrlPath, path, packageListFromStorage, packageListFromWpm);
-            }
-            catch(e){
-                throw new Error("createBuildList failed"+"\n"+e.message);
-            }
-            
-            //once the build list has been created, if there was any changes to the package :
-            // - a package change spoted from packageHasChanged
-            // - or a file change spoted while creating the buildList
-            //then we save the new packageList to storage
-            if(packageHasChanged || buildListResult.buildList.changed === true){
-            
-                //tag the buildList as changed to force the Build.makeBuilds method to loop through the files
-                buildListResult.buildList.changed = true;
-                //update the package list in storage
-                packageListHelper.savePackageListToStorage(buildListResult.packageListToSaveToStorage);
-                
-            }
-            //if no changes in the packages nor in the files, we don't have to update the storage
-            
-            //return the buildList
-            return buildListResult.buildList;
-        },
-                
-        /**
-         * Transforms a buildList to a debugList (list of css and js urls to be injected in head via js)
-         * @param {Object} buildList
-         * @returns {Object} debugList
-         */
-        buildListToDebugList: function(buildList){
-            fileHelper = fileHelper || require(wafFilePath+'builder/builder-fileHelper/fileHelper');
-            var type,i,debugList = {};
-            for(type in buildList){
-                if(type !== "changed"){
-                    debugList[type] = [];
-                    for(i = 0; i < buildList[type].length; i++){
-                        debugList[type].push(fileHelper.getHttpPath(buildList[type][i].file,buildList[type][i].path));
-                    }
-                }
-            }
-            return debugList;
-        }
-        
-    };
-    
-    
-    return ModulePackage;
-    
-})();
+exports.init = function (logger, config, cli) {
+
+	cli.addHook('build.post.compile', {
+		priority: 8000,
+		post: function (build, finished) {
+			if (!/dist-(appstore|adhoc)/.test(cli.argv.target)) return finished();
+
+			switch (cli.argv.target) {
+				case 'dist-appstore':
+					logger.info('Packaging for App Store distribution');
+
+					var name = build.tiapp.name,
+						now = new Date(),
+						month = now.getMonth() + 1,
+						day = now.getDate(),
+						hours = now.getHours(),
+						minutes = now.getMinutes(),
+						seconds = now.getSeconds(),
+						archiveBundle = afs.resolvePath('~/Library/Developer/Xcode/Archives',
+							now.getFullYear() + '-' + (month >= 10 ? month : '0' + month) + '-' + (day >= 10 ? day : '0' + day) + path.sep +
+							name + '_' + (hours >= 10 ? hours : '0' + hours) + '-' + (minutes >= 10 ? minutes : '0' + minutes) + '-' +
+							(seconds >= 10 ? seconds : '0' + seconds) + '.xcarchive'),
+						archiveApp = path.join(archiveBundle, 'Products', 'Applications', name + '.app'),
+						archiveDsym = path.join(archiveBundle, 'dSYMs', name + '.app.dSYM');
+
+					wrench.mkdirSyncRecursive(archiveApp);
+					wrench.mkdirSyncRecursive(archiveDsym);
+
+					async.parallel([
+						function (next) {
+							logger.info(__('Archiving app bundle to %s', archiveApp.cyan));
+							exec('ditto "' + build.xcodeAppDir + '" "' + archiveApp + '"', next);
+						},
+						function (next) {
+							logger.info(__('Archiving debug symbols to %s', archiveDsym.cyan));
+							exec('ditto "' + build.xcodeAppDir + '.dSYM" "' + archiveDsym + '"', next);
+						},
+						function (next) {
+							var tempPlist = path.join(archiveBundle, 'Info.xml.plist');
+
+							exec('/usr/bin/plutil -convert xml1 -o "' + tempPlist + '" "' + path.join(build.xcodeAppDir, 'Info.plist') + '"', function (err, stdout, strderr) {
+								var origPlist = new appc.plist(tempPlist),
+									newPlist = new appc.plist(),
+									appBundle = 'Applications/' + name + '.app';
+
+								fs.unlinkSync(tempPlist);
+
+								appc.util.mix(newPlist, {
+									ApplicationProperties: {
+										ApplicationPath: appBundle,
+										CFBundleIdentifier: origPlist.CFBundleIdentifier,
+										CFBundleShortVersionString: appc.version.format(origPlist.CFBundleVersion, 3, 3),
+										IconPaths: [
+											appBundle + '/' + build.tiapp.icon
+										]
+									},
+									ArchiveVersion: newPlist.type('real', 1),
+									CreationDate: now,
+									Name: name,
+									SchemeName: name
+								}).save(path.join(archiveBundle, 'Info.plist'));
+
+								next();
+							});
+						}
+					], function () {
+						// workaround for dumb Xcode4 bug that doesn't update the organizer unless files are touched in a very specific manner
+						var temp = afs.resolvePath('~/Library/Developer/Xcode/Archives/temp');
+						fs.renameSync(archiveBundle, temp);
+						fs.renameSync(temp, archiveBundle);
+
+						// open xcode + organizer after packaging
+						logger.info(__('Launching Xcode: %s', build.xcodeEnv.xcodeapp.cyan));
+						exec('open -a "' + build.xcodeEnv.xcodeapp + '"', function (err, stdout, stderr) {
+							process.env.TI_ENV_NAME = process.env.STUDIO_NAME || 'Terminal.app';
+							exec('osascript "' + path.join(build.platformPath, 'xcode_organizer.scpt') + '"', { env: process.env }, function (err, stdout, stderr) {
+								logger.info(__('Packaging complete'));
+								finished();
+							});
+						});
+					});
+					break;
+
+				case 'dist-adhoc':
+					logger.info('Packaging for Ad Hoc distribution');
+					var pkgapp = path.join(build.xcodeEnv.path, 'Platforms', 'iPhoneOS.platform', 'Developer', 'usr', 'bin', 'PackageApplication');
+					exec('"' + pkgapp + '" "' + build.xcodeAppDir + '"', function (err, stdout, stderr) {
+						if (err) {
+							logger.error(__('Failed to package application'));
+							stderr.split('\n').forEach(logger.error);
+							return finished();
+						}
+
+						var ipa = path.join(path.dirname(build.xcodeAppDir), build.tiapp.name + '.ipa'),
+							dest = ipa,
+							outputDir = cli.argv['output-dir'] && afs.resolvePath(cli.argv['output-dir']);
+
+						if (outputDir && outputDir != path.dirname(dest)) {
+							fs.existsSync(outputDir) || wrench.mkdirSyncRecursive(outputDir);
+							dest = path.join(outputDir, build.tiapp.name + '.ipa');
+							fs.existsSync(dest) && fs.unlinkSync(dest);
+							afs.copyFileSync(ipa, dest, { logger: logger.debug });
+						}
+
+						logger.info(__('Packaging complete'));
+						logger.info(__('Package location: %s', dest.cyan));
+
+						finished();
+					});
+					break;
+			}
+		}
+	});
+
+};

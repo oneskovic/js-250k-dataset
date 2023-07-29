@@ -1,10 +1,3 @@
-/**
- * A red teapot node type with attributes for position and size.
- * <p>Demonstrates how to expose settable attributes on a custom node type.</p>
- *
- * @author xeolabs / http://xeolabs.com
- *
- */
 SceneJS.Types.addType("demos/redTeapot", {
 
     construct:function (params) {

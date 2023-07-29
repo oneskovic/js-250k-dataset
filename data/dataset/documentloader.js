@@ -1,5 +1,3 @@
-// # DocumentLoader
-
 ;(function(scope) {
   'use strict'
 

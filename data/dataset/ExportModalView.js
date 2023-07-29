@@ -27,11 +27,7 @@ define([
             return this;
         },
 
-        /**
-        * Validate information and send protocol to the repository
-        *
-        * @param {type} e primary button clicked event
-        */
+        
         validateProtocolSave : function (e){
             var exportProtocolComment = $('#exportProtocolFileName').val() === "";
 

@@ -1,8 +1,6 @@
 'use strict';
 
-/**
- * Module dependencies.
- */
+
 var utils = require('./utils');
 var exec = require('child_process').exec;
 var fs = require('fs');

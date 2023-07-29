@@ -1,4 +1,3 @@
-//TODO: try converting this widget into a mixin
 (function (factory) {
     if ( typeof define === 'function' && define.amd ) {
         define([

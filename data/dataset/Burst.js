@@ -4,13 +4,7 @@ goog.require('goog.asserts');
 goog.require('math.Vector');
 goog.require('model.Weapon.Type');
 
-/**
- * @constructor
- * @param {!Game} game
- * @param {!Object} burstSettings
- * @param {!model.player.Player} owner
- * @implements {model.Weapon}
- */
+
 model.Burst = function(game, burstSettings, owner) {
   /**
    * @type {!Game}

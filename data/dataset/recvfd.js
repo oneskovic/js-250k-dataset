@@ -1,6 +1,3 @@
-// Copyright & License details are available under JXCORE_LICENSE file
-
-
 // See test/simple/test-sendfd.js for a complete description of what this
 // script is doing and how it fits into the test as a whole.
 

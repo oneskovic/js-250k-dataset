@@ -5,12 +5,7 @@ goog.require('goog.array');
 goog.require('goog.asserts');
 
 
-/**
- * An array of three numbers representing the location of a tile in a tile
- * grid. The order is `z`, `x`, and `y`. `z` is the zoom level.
- * @typedef {Array.<number>} ol.TileCoord
- * @api
- */
+
 ol.TileCoord;
 
 

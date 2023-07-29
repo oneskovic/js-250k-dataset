@@ -7,12 +7,7 @@ describe.skip('forever', function () {
     process.chdir(process.env.HOME);
 
   before(function () {
-    /*
-    forever.load({
-      root: path.resolve('/home/tjwebb/.xtuple/'),
-      pidPath: path.resolve('/home/tjwebb/.xtuple/var/run')
-    });
-    */
+    
   });
 
   it('should start main.js', function () {

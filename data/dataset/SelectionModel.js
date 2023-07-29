@@ -1,11 +1,3 @@
-/**
- * The SelectionModel handles the selected items in a {@link module:jidejs/ui/control/ListView} or similar control.
- *
- * @module jidejs/ui/control/SelectionModel
- * @abstract
- * @see module:jidejs/ui/control/SingleSelectionModel
- * @see module:jidejs/ui/control/MultipleSelectionModel
- */
 define(['./../../base/Class', './../../base/ObservableProperty', './../../base/EventEmitter'], function(Class, Observable, EventEmitter) {
 	/**
 	 * Creates a new SelectionModel.

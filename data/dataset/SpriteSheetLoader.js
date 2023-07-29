@@ -1,8 +1,4 @@
 /**
- * @author Mat Groves http://matgroves.com/ @Doormat23
- */
-
-/**
  * The sprite sheet loader is used to load in JSON sprite sheet data
  * To generate the data you can use http://www.codeandweb.com/texturepacker and publish in the 'JSON' format
  * There is a free version so thats nice, although the paid version is great value for money.

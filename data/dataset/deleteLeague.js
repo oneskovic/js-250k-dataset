@@ -1,7 +1,3 @@
-/**
- * @name views.deleteLeague
- * @namespace Delete league form.
- */
 define(["dao", "db", "ui", "core/league", "lib/bluebird", "util/bbgmView", "util/viewHelpers"], function (dao, db, ui, league, Promise, bbgmView, viewHelpers) {
     "use strict";
 

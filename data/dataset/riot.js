@@ -1,4 +1,3 @@
-/* Riot 1.0.4, @license MIT, (c) 2014 Muut Inc + contributors */
 (function(riot) { "use strict";
 
 riot.observable = function(el) {

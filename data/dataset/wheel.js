@@ -16,7 +16,7 @@ po.wheel = function() {
     var delta = (e.wheelDelta / 120 || -e.detail) * .1,
         point;
 
-    /* Detect fast & large wheel events on WebKit. */
+    
     if (bug40441 < 0) {
       var now = Date.now(), since = now - last;
       if ((since > 9) && (Math.abs(e.wheelDelta) / since >= 50)) bug40441 = 1;

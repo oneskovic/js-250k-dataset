@@ -1,4 +1,3 @@
-// characters.js
 module.exports = function(app, db) {
     var Character = require('../../entity/character')(db);
 

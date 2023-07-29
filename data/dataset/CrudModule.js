@@ -1,4 +1,3 @@
-/*global define*/
 var inflection; // FIXME
 define(function (require) {
     'use strict';

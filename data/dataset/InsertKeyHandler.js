@@ -1,9 +1,3 @@
-/**
- * Copyright (c), 2013-2014 IMD - International Institute for Management Development, Switzerland.
- *
- * See the file license.txt for copying permission.
- */
-
 define([
     'util/Type',
     'keyhandler/KeyHandler',

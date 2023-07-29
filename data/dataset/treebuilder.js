@@ -4,7 +4,7 @@ function TreeBuilder(element_factory) {
   this._last = null;
   this._tail = null;
   if (!element_factory) {
-    /* evil circular dep */
+    
     element_factory = require('./elementtree').Element;
   }
   this._factory = element_factory;

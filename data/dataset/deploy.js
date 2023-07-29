@@ -1,64 +1,46 @@
-var spawn = require('child_process').spawn;
-var sys = require('sys');
-var Hash = require('traverse/hash');
-var Step = require('step');
+var _ = require('underscore');
 
-var Config = require('./config.js');
-var mkdirP = require('./mkdir_p');
+module.exports = function(app, config) {
 
-exports.deploy = function (opts) {
-    var self = this;
-    var dirs = [ 'users', 'data', 'logs' ];
-    var cb = opts.done;
-    
-    Step(
-        function () { self.hasQemu(this) },
-        function (hasQemu) { 
-            if (!hasQemu && opts.qemu != false) {
-                cb('Qemu not detected in $PATH with `which qemu`. '
-                    + ' If you still want to install, specify --no-qemu');
-            }
-            else {
-                dirs.forEach((function (dir) {
-                    mkdirP(opts.base + '/' + dir, 0700, this.parallel());
-                }).bind(this));
-            }
-        },
-        function (err) {
-            if (err) cb(err)
-            else Config(function (err, config) {
-                if (err) cb(err)
-                else config.local
-                    .update(function (data) {
-                        var p = opts.port || 9000;
-                        while (Hash(data).some(function (x) {
-                            return x.port == p
-                        })) p++;
-                        
-                        data[opts.name] = {
-                            directory : opts.base,
-                            port : p,
-                            pid : null,
-                        };
-                    })
-                    .on('update', cb.bind({}, null))
-            })
-        }
-    );
-};
+	var agentApiClient = require('./services/agent-api-client').create(config);
+	var featureToggle = require('./feature-toggle').create(config);
 
-function hasQemu (cb) {
-    var which = spawn('which', ['qemu']);
-    which.on('exit', function (code) {
-        cb(code == 0);
-    });
-};
+	// { unitName: "<unitName>", versionId: "<versionId>" }
+	app.post("/deploy/to-all-agents", app.ensureLoggedIn, function(req, res) {
 
-exports.undeploy = function (name, cb) {
-    Config(function (err, config) {
-        if (err) cb(err)
-        else config.local
-            .update(function (data) { delete data[name] })
-            .on('update', cb.bind({}, null))
-    })
+		agentApiClient.getUnitListForAllAgents(function(results) {
+
+			var filterUnitsByUnitName = function(unit) {
+				return unit.name === req.body.unitName;
+			};
+
+			results.forEach(function(item) {
+
+				if (_.find(item.units, filterUnitsByUnitName)) {
+					agentApiClient.sendCommand(item.agent.name, '/deploy/deploy', req.body, req.user);
+				}
+
+			});
+
+			res.json('ok');
+		});
+
+	});
+
+	// request json body
+	// { agentName: "<agentName>", unitName: "<unitName>" }
+	app.post("/deploy/deploy", app.ensureLoggedIn, function(req, res) {
+
+		var annotationsConfig = featureToggle.getActiveFeature('deployAnnotations');
+		if (annotationsConfig.enabled === true) {
+			var correlationId = req.cookies[annotationsConfig.deployIdCookie];
+			if (correlationId) {
+				req.body.correlationId = correlationId;
+			}
+		}
+
+		agentApiClient.sendCommand(req.body.agentName, '/deploy/deploy', req.body, req.user);
+		res.json('ok');
+	});
+
 };

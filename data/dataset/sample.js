@@ -1,50 +1,54 @@
-﻿/**
- * Copyright (c) 2003-2013, CKSource - Frederico Knabben. All rights reserved.
- * For licensing, see LICENSE.md or http://ckeditor.com/license
- */
+OAuth2.adapter('sample', {
+  
+  authorizationCodeURL: function(config) {
+    return '';
+  },
 
-// Tool scripts for the sample pages.
-// This file can be ignored and is not required to make use of CKEditor.
+  /**
+   * @return {URL} URL to the page that we use to inject the content
+   * script into
+   */
+  redirectURL: function(config) {
+    return '';
+  },
 
-(function() {
-	CKEDITOR.on( 'instanceReady', function( ev ) {
-		// Check for sample compliance.
-		var editor = ev.editor,
-			meta = CKEDITOR.document.$.getElementsByName( 'ckeditor-sample-required-plugins' ),
-			requires = meta.length ? CKEDITOR.dom.element.get( meta[ 0 ] ).getAttribute( 'content' ).split( ',' ) : [],
-			missing = [],
-			i;
+  /**
+   * @return {String} Authorization code for fetching the access token
+   */
+  parseAuthorizationCode: function(url) {
+    return '';
+  },
 
-		if ( requires.length ) {
-			for ( i = 0; i < requires.length; i++ ) {
-				if ( !editor.plugins[ requires[ i ] ] )
-					missing.push( '<code>' + requires[ i ] + '</code>' );
-			}
+  /**
+   * @return {URL} URL to the access token providing endpoint
+   */
+  accessTokenURL: function() {
+    return '';
+  },
 
-			if ( missing.length ) {
-				var warn = CKEDITOR.dom.element.createFromHtml(
-					'<div class="warning">' +
-						'<span>To fully experience this demo, the ' + missing.join( ', ' ) + ' plugin' + ( missing.length > 1 ? 's are' : ' is' ) + ' required.</span>' +
-					'</div>'
-				);
-				warn.insertBefore( editor.container );
-			}
-		}
+  /**
+   * @return {String} HTTP method to use to get access tokens
+   */
+  accessTokenMethod: function() {
+    return 'POST';
+  },
 
-		// Set icons.
-		var doc = new CKEDITOR.dom.document( document ),
-			icons = doc.find( '.button_icon' );
+  /**
+   * @return {Object} The payload to use when getting the access token
+   */
+  accessTokenParams: function(authorizationCode, config) {
+    return {};
+  },
 
-		for ( i = 0; i < icons.count(); i++ ) {
-			var icon = icons.getItem( i ),
-				name = icon.getAttribute( 'data-icon' ),
-				style = CKEDITOR.skin.getIconStyle( name, ( CKEDITOR.lang.dir == 'rtl' ) );
-
-			icon.addClass( 'cke_button_icon' );
-			icon.addClass( 'cke_button__' + name + '_icon' );
-			icon.setAttribute( 'style', style );
-			icon.setStyle( 'float', 'none' );
-
-		}
-	} );
-})();
+  /**
+   * @return {Object} Object containing accessToken {String},
+   * refreshToken {String} and expiresIn {Int}
+   */
+  parseAccessToken: function(response) {
+    return {
+      accessToken: '',
+      refreshToken: '',
+      expiresIn: Number.MAX_VALUE
+    };
+  }
+});

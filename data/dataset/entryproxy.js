@@ -13,9 +13,7 @@ Trex.EntryProxy =Trex.Class.create( {
 		this.sidebar = sidebar;
 		this.config = config;
 	},
-	/**
-	 * For loadEntriesAtRestore, loadEntriesAtModify
-	 */
+	
 	commands: {},
 	registerCommand: function(name, command){
 		this.commands[name] = command;

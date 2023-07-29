@@ -1,60 +1,37 @@
-/**
- * @class button - remove link
- *
- * @param  elRTE  rte   объект-редактор
- * @param  String name  название кнопки
- *
- * @author:    Dmitry Levashov (dio) dio@std42.ru
- * @copyright: Studio 42, http://www.std42.ru 
- **/
-(function($) {
+var SMB2Forge = require('../tools/smb2-forge')
+  , SMB2Request = SMB2Forge.request
+  , bigint = require('../tools/bigint')
+  ;
 
-	elRTE.prototype.ui.prototype.buttons.unlink = function(rte, name) {
-		this.constructor.prototype.constructor.call(this, rte, name);
 
-		this.command = function() {
+module.exports = function(path, cb){
+  var connection = this;
 
-			var n = this.rte.selection.getNode(), 
-				l = this.rte.dom.selfOrParentLink(n);
+  connection.exists(path, function(err, exists){
 
-			function isLink(n) { return n.nodeName == 'A' && n.href; }
+    if(err) cb && cb(err);
 
-			if (!l) {
+    else if(exists){
 
-				var sel = $.browser.msie ? this.rte.selection.selected() : this.rte.selection.selected({wrap : false});
-				if (sel.length) {
-					for (var i=0; i < sel.length; i++) {
-						if (isLink(sel[i])) {
-							l = sel[i];
-							break;
-						}
-					};
-					if (!l) {
-						l = this.rte.dom.parent(sel[0], isLink) || this.rte.dom.parent(sel[sel.length-1], isLink);
-					}
-				}
-			}
+      // SMB2 open file
+      SMB2Request('create', {path:path}, connection, function(err, file){
+        if(err) cb && cb(err);
+        // SMB2 query directory
+        else SMB2Request('set_info', {FileId:file.FileId, FileInfoClass:'FileDispositionInformation',Buffer:(new bigint(1,1)).toBuffer()}, connection, function(err, files){
+          if(err) cb && cb(err);
+          // SMB2 close directory
+          else SMB2Request('close', file, connection, function(err){
+            cb && cb(null, files);
+          });
+        });
+      });
 
-			if (l) {
-				this.rte.history.add();
-				this.rte.selection.select(l);
-				this.rte.doc.execCommand('unlink', false, null);
-				this.rte.ui.update(true);
-			}
-		
-		}
-	
-		this.update = function() {
-			var n = this.rte.selection.getNode();
-			if (this.rte.dom.selfOrParentLink(n)) {
-				this.domElem.removeClass('disabled').addClass('active');
-			} else if (this.rte.dom.selectionHas(function(n) { return n.nodeName == 'A' && n.href; })) {
-				this.domElem.removeClass('disabled').addClass('active');
-			} else {
-				this.domElem.addClass('disabled').removeClass('active');
-			}
-		}
-	}
+    } else {
 
-})(jQuery);
+      cb(new Error('File does not exists'));
 
+    }
+
+  });
+
+}

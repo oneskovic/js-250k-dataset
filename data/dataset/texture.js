@@ -1,13 +1,4 @@
-﻿/**
- * 创建一个纹理对象
- * @classdesc 纹理是用来储存展示图像的矩形。它不能直接被渲染，必须映射到一个显示对象上。比如Image。
- * 在纹理生成后，可以释放image对象。纹理则需要单独释放
- * @class 
- * @param {Image | HTMLCanvasElement} data 图形对象
- * @param {int} [w] 图像的宽度
- * @param {int} [h] 图像的高度
- * @author {@link http://weibo.com/soya2d MrSoya}
- */
+﻿
 soya2d.Texture = function(data,w,h){
 	/**
 	 * 纹理数据，可能是image或者canvas,根据引擎来决定

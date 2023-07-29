@@ -1,25 +1,5 @@
 (function() {
-    /**
-     * Wedge constructor
-     * @constructor
-     * @augments Konva.Shape
-     * @param {Object} config
-     * @param {Number} config.angle in degrees
-     * @param {Number} config.radius
-     * @param {Boolean} [config.clockwise]
-     * @@shapeParams
-     * @@nodeParams
-     * @example
-     * // draw a wedge that's pointing downwards
-     * var wedge = new Konva.Wedge({
-     *   radius: 40,
-     *   fill: 'red',
-     *   stroke: 'black'
-     *   strokeWidth: 5,
-     *   angleDeg: 60,
-     *   rotationDeg: -120
-     * });
-     */
+    
     Konva.Wedge = function(config) {
         this.___init(config);
     };

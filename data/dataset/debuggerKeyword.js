@@ -1,5 +1,3 @@
-/* See license.txt for terms of usage */
-
 define([
     "firebug/chrome/module",
     "firebug/lib/trace",

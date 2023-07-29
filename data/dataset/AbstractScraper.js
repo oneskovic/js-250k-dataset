@@ -1,4 +1,3 @@
-/* global describe, it */
 var AbstractScraper = require('../src/AbstractScraper'),
 	fs = require('fs'),
 	assert = require('assert'),

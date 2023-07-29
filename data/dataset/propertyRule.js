@@ -1,8 +1,3 @@
-/**
- * @fileoverview 基于html属性的规则抽象类
- * @author czy88840616 <czy88840616@gmail.com>
- *
- */
 KISSY.add('gallery/form/1.2/auth/rule/html/propertyRule', function(S, BaseRule, Utils, undefined) {
 
     /**

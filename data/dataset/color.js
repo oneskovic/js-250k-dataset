@@ -1,106 +1,60 @@
-// Module for color convertions
-SVG.Color = function(color) {
-  var match
-  
-  /* initialize defaults */
-  this.r = 0
-  this.g = 0
-  this.b = 0
-  
-  /* parse color */
-  if (typeof color === 'string') {
-    if (SVG.regex.isRgb.test(color)) {
-      /* get rgb values */
-      match = SVG.regex.rgb.exec(color.replace(/\s/g,''))
-      
-      /* parse numeric values */
-      this.r = parseInt(match[1])
-      this.g = parseInt(match[2])
-      this.b = parseInt(match[3])
-      
-    } else if (SVG.regex.isHex.test(color)) {
-      /* get hex values */
-      match = SVG.regex.hex.exec(fullHex(color))
+var buckets = require("../../util/buckets.coffee"),
+    fetchValue = require("../fetch/value.coffee"),
+    print      = require("../console/print.coffee")
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+// Sets color range of data, if applicable
+//-------------------------------------------------------------------
+module.exports = function(vars) {
 
-      /* parse numeric values */
-      this.r = parseInt(match[1], 16)
-      this.g = parseInt(match[2], 16)
-      this.b = parseInt(match[3], 16)
+  if ( vars.dev.value ) print.time("getting color data range")
 
+  var data_range = []
+  vars.data.pool.forEach(function(d){
+    var val = parseFloat(fetchValue(vars,d,vars.color.value))
+    if (typeof val == "number" && !isNaN(val) && data_range.indexOf(val) < 0) data_range.push(val)
+  })
+
+  if ( vars.dev.value ) print.timeEnd("getting color data range")
+
+  if (data_range.length > 1) {
+
+    var data_domain = null
+
+    if ( vars.dev.value ) print.time("calculating color scale")
+
+    data_range = d3.extent(data_range)
+
+    if (data_range[0] < 0 && data_range[1] > 0) {
+      var color_range = vars.color.range
+      if (color_range.length == 3) {
+        data_range.push(data_range[1])
+        data_range[1] = 0
+      }
     }
-    
-  } else if (typeof color === 'object') {
-    this.r = color.r
-    this.g = color.g
-    this.b = color.b
-    
+    else if (data_range[1] > 0 && data_range[0] >= 0) {
+      var color_range = vars.color.heatmap
+      data_range = buckets(data_range,color_range.length)
+    }
+    else {
+      var color_range = vars.color.range.slice(0)
+      if (data_range[0] < 0) {
+        color_range.pop()
+      }
+      else {
+        color_range.shift()
+      }
+    }
+
+    vars.color.valueScale = d3.scale.sqrt()
+      .domain(data_range)
+      .range(color_range)
+      .interpolate(d3.interpolateRgb)
+
+    if ( vars.dev.value ) print.timeEnd("calculating color scale")
+
   }
-    
-}
-
-SVG.extend(SVG.Color, {
-  // Default to hex conversion
-  toString: function() {
-    return this.toHex()
+  else {
+    vars.color.valueScale = null
   }
-  // Build hex value
-, toHex: function() {
-    return '#'
-      + compToHex(this.r)
-      + compToHex(this.g)
-      + compToHex(this.b)
-  }
-  // Build rgb value
-, toRgb: function() {
-    return 'rgb(' + [this.r, this.g, this.b].join() + ')'
-  }
-  // Calculate true brightness
-, brightness: function() {
-    return (this.r / 255 * 0.30)
-         + (this.g / 255 * 0.59)
-         + (this.b / 255 * 0.11)
-  }
-  // Make color morphable
-, morph: function(color) {
-    this.destination = new SVG.Color(color)
 
-    return this
-  }
-  // Get morphed color at given position
-, at: function(pos) {
-    /* make sure a destination is defined */
-    if (!this.destination) return this
-
-    /* normalise pos */
-    pos = pos < 0 ? 0 : pos > 1 ? 1 : pos
-
-    /* generate morphed color */
-    return new SVG.Color({
-      r: ~~(this.r + (this.destination.r - this.r) * pos)
-    , g: ~~(this.g + (this.destination.g - this.g) * pos)
-    , b: ~~(this.b + (this.destination.b - this.b) * pos)
-    })
-  }
-  
-})
-
-// Testers
-
-// Test if given value is a color string
-SVG.Color.test = function(color) {
-  color += ''
-  return SVG.regex.isHex.test(color)
-      || SVG.regex.isRgb.test(color)
-}
-
-// Test if given value is a rgb object
-SVG.Color.isRgb = function(color) {
-  return color && typeof color.r == 'number'
-               && typeof color.g == 'number'
-               && typeof color.b == 'number'
-}
-
-// Test if given value is a color
-SVG.Color.isColor = function(color) {
-  return SVG.Color.isRgb(color) || SVG.Color.test(color)
 }

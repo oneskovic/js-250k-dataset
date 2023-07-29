@@ -3,18 +3,7 @@ function(Tone){
 
 	"use strict";
 
-	/**
-	 *  @class Signal-rate modulo operator. Only works in audio range [-1, 1] and for modulus
-	 *         values less than 1. 
-	 *
-	 *  @constructor
-	 *  @extends {Tone.SignalBase}
-	 *  @param {number} modulus the modulus to apply
-	 *  @example
-	 *  var mod = new Tone.Modulo(0.2)
-	 *  var sig = new Tone.Signal(0.5).connect(mod);
-	 *  //mod outputs 0.1
-	 */
+	
 	Tone.Modulo = function(modulus){
 
 		Tone.call(this, 1, 1);

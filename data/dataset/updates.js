@@ -1,90 +1,46 @@
-/**
- * Update the app_setings of the ddoc with the body of the req. Recursively
- * merge object properties. Where the property value is an array the
- * property is overwritten completely.
- *
- * @exports
- * @param {Object} ddoc Design document to update
- * @param {Object} req The request. The request body must be valid JSON.
- * @return {Array} The updated ddoc and the response body.
- */
-exports.update_config = function (ddoc, req) {
+module.exports = function(config) {
+  var core = require("./core")(config),
+    path = require("path"),
+    log4js = require("log4js");
 
-    var replace = req.query && req.query.replace;
+  log4js.configure(config.log4js);
+  var logger = log4js.getLogger("node-foursquare.Updates");
 
-    return [
-        ddoc,
-        JSON.stringify(_process(ddoc, req.body, replace))
-    ];
+  /**
+   * Retrieve an Update.
+   * @memberof module:node-foursquare/Updates
+   * @param {String} updateId The id of a Update.
+   * @param {String} [accessToken] The access token provided by Foursquare for the current user.
+   * @param {Function} callback The function to call with results, function({Error} error, {Object} results).
+   * @see https://developer.foursquare.com/docs/updates/updates.html
+   */
+  function getUpdate(updateId, accessToken, callback) {
+    logger.debug("ENTERING: Updates.getUpdate");
 
-};
-
-/**
- * @private
- * @param {Object} ddoc Design document to update
- * @param {String} body The request body. Must be valid JSON.
- */
-var _process = function (ddoc, body, replace) {
-
-    if (!ddoc) {
-        return {
-            success: false,
-            error: 'Design document not found'
-        };
+    if(!updateId) {
+      logger.error("getUpdate: updateId is required.");
+      callback(new Error("Updates.getUpdate: updateId is required."));
+      return;
     }
 
-    try {
-        body = JSON.parse(body);
-        if (replace) {
-            _replace(ddoc.app_settings, body);
-        } else {
-            _extend(ddoc.app_settings, body);
-        }
-        return { success: true };
-    } catch(e) {
-        return {
-            success: false,
-            error: 'Request body must be valid JSON'
-        };
-    }
+    core.callApi(path.join("/updates", updateId), accessToken, null, callback);
+  }
+  /**
+   * Retrieve notifications for the current user.
+   * @memberof module:node-foursquare/Updates
+   * @param {Object} [params] An object containing additional parameters. Refer to Foursquare documentation for details
+   * on currently supported parameters.
+   * @param {String} [accessToken] The access token provided by Foursquare for the current user.
+   * @param {Function} callback The function to call with results, function({Error} error, {Object} results).
+   * @see https://developer.foursquare.com/docs/updates/notifications.html
+   */
+  function getNotifications(params, accessToken, callback) {
+    logger.debug("ENTERING: Updates.getNotifications");
+    core.callApi("/updates/notifications", accessToken, params || {}, callback);
+  }
 
-};
-
-/**
- * @private
- * @param {Object} target The settings to update into.
- * @param {Object} source The new settings to update from.
- */
-var _replace = function (target, source) {
-    for (var k in source) {
-        target[k] = source[k];
-    }
-}
-
-/**
- * @private
- * @param {Object} target The settings to update into.
- * @param {Object} source The new settings to update from.
- */
-var _extend = function (target, source) {
-    for (var k in source) {
-        if (_isObject(source[k])) {
-            // object, recurse
-            if (!target[k]) {
-                target[k] = {};
-            }
-            _extend(target[k], source[k]);
-        } else {
-            // simple property or array
-            target[k] = source[k];
-        }
-    }
-};
-
-/**
- * @private
- * @param {Object} obj
- */
-var _isObject = function (obj) {
-    return obj === Object(obj) && toString.call(obj) !== '[object Array]';
+  return {
+    "getUpdate" : getUpdate,
+    "getNotifications" : getNotifications
+  }
 };

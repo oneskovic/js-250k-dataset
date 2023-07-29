@@ -1,4 +1,3 @@
-/* global chai, define, describe, beforeEach, it */
 'use strict';
 define([
     'underscore',

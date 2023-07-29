@@ -1,8 +1,3 @@
-/*
-* nodester-cli
-* A CLI tool to allow interaction with the http://nodester.com/ platform.
-* @division coupon
-*/
 /*jshint node:true, noempty:true, laxcomma:true, laxbreak:false */
 
 "use strict";

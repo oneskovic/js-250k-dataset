@@ -1,4 +1,3 @@
-// credit: https://gist.github.com/jonathantneal/2415137
 !window.addEventListener && Element.prototype && (function (polyfill) {
     // window.addEventListener, document.addEventListener, <>.addEventListener
     // window.removeEventListener, document.removeEventListener, <>.removeEventListener

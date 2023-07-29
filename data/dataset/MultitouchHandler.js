@@ -1,6 +1,3 @@
-/* Written 2010 April 22 by Nathan Vander Wilt */
-
-
 // monkey-patch known browser events so we get the callbacks we need
 OpenLayers.Events.prototype.BROWSER_EVENTS.push("touchstart", "touchmove", "touchend",
 												"gesturestart", "gesturechange", "gestureend");

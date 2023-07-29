@@ -1,20 +1,3 @@
-/*
----
-
-name: Jx.Plugin.DataView.GroupFolder
-
-description: Enables closing and opening groups in a group dataview
-
-license: MIT-style license.
-
-requires:
- - Jx.Plugin.DataView
- - Jx.Slide
-
-provides: [Jx.Plugin.DataView.GroupFolder]
-
-...
- */
 /**
  * Class: Jx.Plugin.DataView.GroupFolder
  *

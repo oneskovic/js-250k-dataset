@@ -1,14 +1,7 @@
 goog.provide('ol.geom.flat.inflate');
 
 
-/**
- * @param {Array.<number>} flatCoordinates Flat coordinates.
- * @param {number} offset Offset.
- * @param {number} end End.
- * @param {number} stride Stride.
- * @param {Array.<ol.Coordinate>=} opt_coordinates Coordinates.
- * @return {Array.<ol.Coordinate>} Coordinates.
- */
+
 ol.geom.flat.inflate.coordinates =
     function(flatCoordinates, offset, end, stride, opt_coordinates) {
   var coordinates = goog.isDef(opt_coordinates) ? opt_coordinates : [];

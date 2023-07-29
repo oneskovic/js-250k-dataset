@@ -1,11 +1,3 @@
-/**
- * ESUI (Enterprise Simple UI)
- * Copyright 2013 Baidu Inc. All rights reserved.
- * 
- * @ignore
- * @file 控件包装类，用于模拟一个不存在的控件
- * @author otakustay
- */
 define(
     function (require) {
         var u = require('underscore');

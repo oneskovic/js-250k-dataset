@@ -1,4 +1,3 @@
-// this class expects id, store config options
 Ext.define('Meetcha.view.NextMeetup', {
     requires: ['Meetcha.view.Map'],
     extend: 'Ext.Container',

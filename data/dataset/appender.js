@@ -1,24 +1,3 @@
-/**
- * @fileoverview An Appender delivers log events to some destination. Log events
- * are formatted according to an underlying Layout.
- *
- * A given logger may reference zero, one or more appenders. When the user sends
- * a "log" event, appenders get called in order. This behavior makes it easy to
- * log events to the console, to a file and to some remote database at the same
- * time if needed.
- *
- * All appenders should derivate from this class and implement the "doAppend"
- * function, or implement the same interface (constructor, "getName" and
- * "append").
- *
- * The Appender class is an internal class. It should never have to be used
- * directly within an application in particular.
- *
- * Copyright (c) 2013 Joshfire
- * MIT license (see LICENSE file)
- */
-/*global module*/
-
 // Ensure "define" is defined in node.js in the absence of require.js
 // See: https://github.com/jrburke/amdefine
 if (typeof define !== 'function') {

@@ -1,13 +1,3 @@
-/**
- * TreeWalker.js
- *
- * Copyright, Moxiecode Systems AB
- * Released under LGPL License.
- *
- * License: http://www.tinymce.com/license
- * Contributing: http://www.tinymce.com/contributing
- */
-
 tinymce.dom.TreeWalker = function(start_node, root_node) {
 	var node = start_node;
 

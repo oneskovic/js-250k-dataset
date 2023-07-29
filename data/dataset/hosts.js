@@ -1,105 +1,60 @@
-/*!
- * hostsPlus
- *
- * @author Yanis.Wang<yanis.wang@gmail.com>
- *
- */
-(function($,_win,undefined){
+define([
+	'app',
+	'jquery',
+	'services/hostgroups',
+	'factories/hostgroup',
+	'factories/host'
+], function(app, $) {
+	app.registerController('PlaybookHostsCtrl', ['$scope', '$state', 'hostgroups', 'Host', function($scope, $state, hostgroups, Host) {
 
-	var hosts={};
-	var hostsPath = '';
+		$scope.hostgroups = hostgroups;
 
-	if(isWin)hostsPath = 'C:/Windows/System32/drivers/etc/hosts';
-	else if(isLinux)hostsPath = '/etc/hosts';
-	else if(isMac)hostsPath = '/etc/hosts';
-
-	var charset = isUTF8Bytes(readFile(hostsPath))?'utf-8':'ansi';
-
-	//更新hosts，只在需要转换域名时有效
-	hosts.update=function(){
-		var hostsList=settings.get('hostsList'),curHost=settings.get('curHost');
-		if(curHost===-1)return;
-		var textHosts=hostsList[curHost].content,arrTextHosts=textHosts.split(/\r?\n/g);
-		var arrPingList={},domainCount=0,pingCount=0,arrIpList={};
-		arrTextHosts.forEach(function(line){
-			var match;
-			match = line.match(/^\s*([^\s]+)\s+([^#]+)/);
-			if(match && isIp(match[1])){//IP
-				match[2].trim().split(/\s+/).forEach(function(domain){
-					arrIpList[domain.toLowerCase()]=match[1];
-				});
-			}
-			else if(/^\s*#/.test(line)===false){//cname转向
-				match=line.match(/^\s*([^\s]+)\s+.+/);
-				if(match!==null){
-					arrPingList[match[1].toLowerCase()] = true;
-				}
-			}
+		hostgroups.get($scope.playbook, function () {
 		});
-		domainCount=Object.keys(arrPingList).length;
-		if(domainCount>0){
-			for(domain in arrPingList){
-				if(!arrIpList[domain]){
-					ping(domain,function(ip){
-						arrIpList[domain]=ip;
-						pingCount++;
-						//所有待ping的IP全部工作结束
-						if(pingCount===domainCount){
-							replaceDomain2Ip();
-						}
-					});
-				}
-				else{
-					//已在IP列表中，直接使用列表数据
-					pingCount++;
-					if(pingCount===domainCount){
-						replaceDomain2Ip();
-					}
-				}
-			};
+
+		$scope.add = function () {
+			$('#addHostGroup').modal('show');
 		}
-		function replaceDomain2Ip(){
-			arrTextHosts.forEach(function(line,i){
-				if(/^\s*#/.test(line)===false&&/^\s*(\d+\.){3}\d+\s+.+/.test(line)===false){
-					line=line.replace(/^(\s*)([^\s]+)(\s+.+)/,function(all,left,domain,right){
-						var ip=arrIpList[domain.toLowerCase()];
-						if(ip)domain=ip;
-						return left+domain+right;
-					});
-					arrTextHosts[i]=line;
-				}
+
+		$scope.showAddHost = function (hostgroup) {
+			if (hostgroup.showingAdd) {
+				hostgroup.showingAdd = false;
+			} else {
+				hostgroup.showingAdd = true;
+				hostgroup.newHost = new Host();
+			}
+		}
+
+		$scope.deleteHostGroup = function (hostgroup) {
+			hostgroup.delete($scope.playbook);
+
+			hostgroups.get($scope.playbook, function () {
 			});
-			hosts.save(arrTextHosts.join('\r\n'));
 		}
-	}
 
-	//保存内容到hosts文件
-	hosts.save=function(content){
-		var sysHosts=hosts.load();
-		if(content!==sysHosts){//与系统hosts有差异才保存
-			try{
-				writeFile(hostsPath, content, charset);
-			}
-			catch(e){
-				var isShowHelp = confirm('hosts写入失败, 需要查看帮助信息吗？');
-				if(isShowHelp){
-					navigateToURL('https://github.com/yaniswang/hostsPlus/wiki/access');
-				}
-			}
-			clearSysDns();
+		$scope.deleteHost = function (hostgroup, host) {
+			host.delete($scope.playbook, hostgroup);
+			hostgroup.getHosts($scope.playbook);
 		}
-	}
 
-	//读取系统hosts文件
-	hosts.load=function(){
-		return readFile(hostsPath, true, charset);
-	}
+		$scope.addHost = function (hostgroup) {
+			hostgroup.newHost.add($scope.playbook, hostgroup);
+			hostgroup.getHosts($scope.playbook);
 
-	if(isWin){
-		// Win下开启机器名解析
-		setInterval(hosts.update,settings.get('updateInterval')*1000);
-		setTimeout(hosts.update,100);
-	}
+			$scope.showAddHost(hostgroup);
+		}
+	}]);
 
-	_win.hosts=hosts;
-})(jQuery,window);
+	app.registerController('AddHostGroupCtrl', ['$scope', 'HostGroup', 'hostgroups', function($scope, HostGroup, hostgroups) {
+		$scope.hostgroup = new HostGroup();
+
+		$scope.add = function () {
+			$('#addHostGroup').modal('hide');
+
+			$scope.hostgroup.add($scope.playbook);
+
+			hostgroups.get($scope.playbook, function () {
+			});
+		}
+	}]);
+});

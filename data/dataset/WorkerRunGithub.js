@@ -1,8 +1,3 @@
-/**
- * @fileOverview This file contains the functions used in the async.series for
- * the run github functionality in the worker. To allow for more parameters, the
- * async.apply was used which inserts arguments before the default callback.
- */
 'use strict';
 var inspect = require('util').inspect;
 var debug = require('debug')('sc:worker:run:github');

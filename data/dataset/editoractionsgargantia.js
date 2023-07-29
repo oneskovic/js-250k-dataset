@@ -1,8 +1,3 @@
-//
-//  Gargantia editor actions
-//
-//
-//
 /*global PlayFlags: false*/
 /*global Editor: false*/
 /*global EntityComponentBase: false*/

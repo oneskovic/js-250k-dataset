@@ -1,6 +1,3 @@
-//
-// Extend Layer to support GeoJSON geometry parsing
-//
 gvector.GeoJSONLayer = gvector.Layer.extend({
     //
     // Convert GeoJSON to Google Maps API vectors using portions of https://github.com/JasonSanford/GeoJSON-to-Google-Maps

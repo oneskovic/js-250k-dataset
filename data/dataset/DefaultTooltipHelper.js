@@ -1,8 +1,4 @@
 /**
- * @module br/presenter/control/tooltip/DefaultTooltipHelper
- */
-
-/**
  * @private
  * @class
  * @alias module:br/presenter/control/tooltip/DefaultTooltipHelper

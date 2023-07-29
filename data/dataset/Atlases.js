@@ -4,7 +4,7 @@ PLAYGROUND.Application.prototype.loadAtlases = function() {
 
     var arg = arguments[i];
 
-    /* polymorphism at its finest */
+    
 
     if (typeof arg === "object") {
 
@@ -12,7 +12,7 @@ PLAYGROUND.Application.prototype.loadAtlases = function() {
 
     } else {
 
-      /* if argument is not an object/array let's try to load it */
+      
 
       this._loadAtlas(arg)
 

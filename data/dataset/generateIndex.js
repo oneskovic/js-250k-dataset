@@ -1,5 +1,3 @@
-// This program indexes examples into a JSON file
-// that is used by the project home page and example viewer.
 var _ = require('underscore'),
     marked = require('marked'),
     fs = require('fs'),

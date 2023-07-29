@@ -1,11 +1,3 @@
-/**
- * Created with JetBrains WebStorm.
- * User: Zia
- * Date: 9/23/13
- * Time: 4:55 AM
- * To change this template use File | Settings | File Templates.
- */
-
 'use strict';
 
 /* jasmine specs for controllers go here */

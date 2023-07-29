@@ -1,5 +1,3 @@
-// Commonmark default options
-
 'use strict';
 
 

@@ -1,6 +1,3 @@
-//'Hackish' Pandora support
-//If you can do it better, feel free to send us a pull request
-
 if (window.top == window)
 {
 	window.addEventListener("load", function()

@@ -1,15 +1,3 @@
-/**
- * src/Tests/FileTester.js
- *
- * Client Thread
- * Manage the Client Thread to send data to it (let another Thread do the hard job : loading files, ...)
- *
- * This file is part of ROBrowser, Ragnarok Online in the Web Browser (http://www.robrowser.com/).
- *
- * @author Vincent Thibault
- */
-
-
 define(function( require )
 {
 	'use strict';

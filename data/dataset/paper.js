@@ -42,13 +42,7 @@ describe("Check for Paper Creation", function () {
 });
 
 describe("Paper methods", function () {
-    /*
-        Paper.el
-        Paper.filter
-        Paper.gradient
-        Paper.image
-        Paper.toString
-    */
+    
     var paper;
     beforeEach(function () {
         paper = Snap(100, 100);

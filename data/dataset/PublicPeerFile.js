@@ -1,4 +1,3 @@
-
 define([
   'opjs-primitives/assert',
   'q/q',
@@ -10,9 +9,7 @@ define([
 
   PKI = PKI();
 
-  /**
-   * Load and manage the peer files needed as part of the Open Peer model.
-   */
+  
   function PublicPeerFile(context, publicPeerFile) {
     var self = this;
 

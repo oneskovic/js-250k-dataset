@@ -1,31 +1,3 @@
-/**
- * @fileoverview Provides a function that creates a Bloodhound engine
- * expecting GeoJSON responses from the search web service, and creating
- * `ol.Feature` objects as suggestions.
- *
- * Example #1:
- *
- * var bloodhound = ngeoCreateGeoJSONBloodhound(
- *   'http://example.com/fulltextsearch?query=%QUERY',
- *   ol.proj.get('EPSG:3857'));
- * bloodhound.initialize();
- *
- * Example #2:
- *
- * var bloodhound = ngeoCreateGeoJSONBloodhound({
- *   remote: {
- *     limit: 10,
- *     url: mySearchEngineUrl,
- *     replace: function(url, query) {
- *       return url +
- *           '?qtext=' + encodeURIComponent(query) +
- *           '&lang=' + gettextCatalog.currentLanguage;
- *     }
- *   }
- * }, ol.proj.get('EPSG:3857'), ol.proj.get('EPSG:21781'));
- * bloodhound.initialize
- */
-
 goog.provide('ngeo.CreateGeoJSONBloodhound');
 
 goog.require('ngeo');

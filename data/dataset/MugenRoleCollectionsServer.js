@@ -6,7 +6,7 @@ Meteor.publishComposite('mugenRoleCollections', function(doc, sort) {
             return MugenRoleCollections.find(doc, sort);
         },
         children: [
-            /* return all related Users */
+            
             {
                 find: function(collection) {
                     return Meteor.users.find({

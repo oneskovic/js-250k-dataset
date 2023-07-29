@@ -1,122 +1,107 @@
+steal('funcunit/qunit')
+ .then("jquerypp/model/backup").then(function(){
+ 	
+	
+module("jquerypp/model/backup",{
+	setup : function(){
+		$.Model.extend("Recipe")
+	}
+})
 
-/**
- * Module dependencies.
- */
+test("backing up", function(){
+	var recipe = new Recipe({name: "cheese"});
+	ok(!recipe.isDirty(), "not backedup, but clean")
+	
+	recipe.backup();
+	ok(!recipe.isDirty(), "backedup, but clean");
+	
+	recipe.attr('name', 'blah')
+	
+	ok(recipe.isDirty(), "dirty");
+	
+	recipe.restore();
+	
+	ok(!recipe.isDirty(), "restored, clean");
+	
+	equals(recipe.name, "cheese" ,"name back");
+	
+});
 
-var Suite = require('../suite')
-  , Test = require('../test')
-  , utils = require('../utils');
+test("backup / restore with associations", function(){
+	$.Model("Instruction");
+	$.Model("Cookbook");
+	
+	$.Model("Recipe",{
+		attributes : {
+			instructions : "Instruction.models",
+			cookbook: "Cookbook.model"
+		}
+	},{});
+	
+	
 
-/**
- * QUnit-style interface:
- *
- *     suite('Array');
- *
- *     test('#length', function(){
- *       var arr = [1,2,3];
- *       ok(arr.length == 3);
- *     });
- *
- *     test('#indexOf()', function(){
- *       var arr = [1,2,3];
- *       ok(arr.indexOf(1) == 0);
- *       ok(arr.indexOf(2) == 1);
- *       ok(arr.indexOf(3) == 2);
- *     });
- *
- *     suite('String');
- *
- *     test('#length', function(){
- *       ok('foo'.length == 3);
- *     });
- *
- */
+	
+	var recipe = new Recipe({
+		name: "cheese burger",
+		instructions : [
+			{
+				description: "heat meat"
+			},
+			{
+				description: "add cheese"
+			}
+		],
+		cookbook: {
+			title : "Justin's Grillin Times"
+		}
+	});
+	
+	//test basic is dirty
+	
+	ok(!recipe.isDirty(), "not backedup, but clean")
+	
+	recipe.backup();
+	ok(!recipe.isDirty(), "backedup, but clean");
+	
+	recipe.attr('name','blah')
+	
+	ok(recipe.isDirty(), "dirty");
+	
+	recipe.restore();
+	
+	ok(!recipe.isDirty(), "restored, clean");
+	
+	equals(recipe.name, "cheese burger" ,"name back");
+	
+	// test belongs too
+	
+	ok(!recipe.cookbook.isDirty(), "cookbook not backedup, but clean");
+	
+	recipe.cookbook.backup();
+	
+	recipe.cookbook.attr("title","Brian's Burgers");
+	
+	ok(!recipe.isDirty(), "recipe itself is clean");
+	
+	ok(recipe.isDirty(true), "recipe is dirty if checking associations");
+	
+	recipe.cookbook.restore()
+	
+	ok(!recipe.isDirty(true), "recipe is now clean with checking associations");
+	
+	equals(recipe.cookbook.title, "Justin's Grillin Times" ,"cookbook title back");
+	
+	//try belongs to recursive restore
+	
+	recipe.cookbook.attr("title","Brian's Burgers");
+	recipe.restore();
+	ok(recipe.isDirty(true), "recipe is dirty if checking associations, after a restore");
+	
+	recipe.restore(true);
+	ok(!recipe.isDirty(true), "cleaned all of recipe and its associations");
+	
+	
+})
 
-module.exports = function(suite){
-  var suites = [suite];
-
-  suite.on('pre-require', function(context, file, mocha){
-
-    /**
-     * Execute before running tests.
-     */
-
-    context.before = function(name, fn){
-      suites[0].beforeAll(name, fn);
-    };
-
-    /**
-     * Execute after running tests.
-     */
-
-    context.after = function(name, fn){
-      suites[0].afterAll(name, fn);
-    };
-
-    /**
-     * Execute before each test case.
-     */
-
-    context.beforeEach = function(name, fn){
-      suites[0].beforeEach(name, fn);
-    };
-
-    /**
-     * Execute after each test case.
-     */
-
-    context.afterEach = function(name, fn){
-      suites[0].afterEach(name, fn);
-    };
-
-    /**
-     * Describe a "suite" with the given `title`.
-     */
-
-    context.suite = function(title){
-      if (suites.length > 1) suites.shift();
-      var suite = Suite.create(suites[0], title);
-      suites.unshift(suite);
-      return suite;
-    };
-
-    /**
-     * Exclusive test-case.
-     */
-
-    context.suite.only = function(title, fn){
-      var suite = context.suite(title, fn);
-      mocha.grep(suite.fullTitle());
-    };
-
-    /**
-     * Describe a specification or test-case
-     * with the given `title` and callback `fn`
-     * acting as a thunk.
-     */
-
-    context.test = function(title, fn){
-      var test = new Test(title, fn);
-      suites[0].addTest(test);
-      return test;
-    };
-
-    /**
-     * Exclusive test-case.
-     */
-
-    context.test.only = function(title, fn){
-      var test = context.test(title, fn);
-      var reString = '^' + utils.escapeRegexp(test.fullTitle()) + '$';
-      mocha.grep(new RegExp(reString));
-    };
-
-    /**
-     * Pending test case.
-     */
-
-    context.test.skip = function(title){
-      context.test(title);
-    };
-  });
-};
+})
+ 

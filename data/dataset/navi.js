@@ -1,4 +1,3 @@
-/*global Raphael, d3, $, define, _ */
 /*!
  * StreamLegend的兼容定义
  */

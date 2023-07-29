@@ -1,7 +1,3 @@
-// Copyright (c) 2009-2011 Turbulenz Limited
-//
-// PostEffects
-//
 var PostEffects = (function () {
     function PostEffects() {
     }

@@ -1,6 +1,3 @@
-// Monster_Prototype.StatePacket
-
-
 var MonsterStatePacket = restruct.
     //int8lu('Status').
     int32lu('UniqueID').

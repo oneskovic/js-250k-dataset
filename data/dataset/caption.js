@@ -1,12 +1,4 @@
-﻿/**
- *  @caption.js
- *  @version: 1.1.0
- *  @author: Jesse Freeman
- *  @date: May 2012
- *  @copyright (c) 2013 Jesse Freeman, under The MIT License (see LICENSE)
- *  
- *  Part of the Super Resident Raver Starter Kit: 
- */
+﻿
 ig.module(
     'game.plugins.caption'
 )

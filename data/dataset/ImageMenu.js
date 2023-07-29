@@ -1,13 +1,3 @@
-/**************************************************************
-
-	Script	: Image Menu
-	Version	: 2.3
-	Authors	: Samuel Birch
-	Desc	: 
-	Licence	: Open Source MIT Licence
-
-**************************************************************/
-
 var ImageMenu = new Class({
 	
 	getOptions: function(){

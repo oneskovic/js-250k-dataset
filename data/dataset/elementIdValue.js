@@ -1,16 +1,3 @@
-/**
- *
- * Send a sequence of key strokes to an element.
- *
- * @param {String} ID              ID of a WebElement JSON object to route the command to
- * @param {String|String[]} value  The sequence of keys to type. An array must be provided. The server should flatten the array items to a single string to be typed.
- * @callbackParameter error, response
- *
- * @see  https://code.google.com/p/selenium/wiki/JsonWireProtocol#/session/:sessionId/element/:id/value
- * @type protocol
- *
- */
-
 var unicodeChars = require('../utils/unicodeChars'),
     ErrorHandler = require('../utils/ErrorHandler.js');
 

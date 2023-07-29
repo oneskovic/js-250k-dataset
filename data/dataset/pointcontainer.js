@@ -1,7 +1,3 @@
-/**
- * 点集合容器
- */
-
 define(function(require, exports, module) {
 
 

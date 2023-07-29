@@ -1,10 +1,4 @@
 /**
-* @author       Richard Davey <rich@photonstorm.com>
-* @copyright    2015 Photon Storm Ltd.
-* @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
-*/
-
-/**
 * A TimerEvent is a single event that is processed by a Phaser.Timer.
 *
 * It consists of a delay, which is a value in milliseconds after which the event will fire.

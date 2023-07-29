@@ -1,4 +1,3 @@
-/*jshint unused:false*/
 function rxAppCtrl ($scope, $location, $rootScope, $window, encoreRoutes, rxVisibility) {
     $scope.subtitle = 'With a subtitle';
 

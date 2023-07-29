@@ -1,6 +1,3 @@
-// Mobile Router
-// =============
-
 // Includes file dependencies
 define([
 	"jquery",

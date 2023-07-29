@@ -1,12 +1,4 @@
 /**
- * Copyright (C) 2009-2012 Klaus Reimer <k@ailis.de>
- * See LICENSE.txt for licensing information
- * 
- * @require threedee.js
- * @use threedee/Vector.js
- */
-
-/**
  * Constructs a new transformed light
  * 
  * @param {!threedee.Light} light

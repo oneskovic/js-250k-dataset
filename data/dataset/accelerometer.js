@@ -1,112 +1,97 @@
-/*
- * This class provides access to device accelerometer data.
- * @constructor
- */
-function Accelerometer() {
-	/*
-	 * The last known acceleration.
-	 */
-	this.lastAcceleration = null;
-};
+describe("phonegap_accelerometer", function () {
+    var accel = require('ripple/platform/phonegap/1.0.0/accelerometer'),
+        event = require('ripple/event'),
+        platform = require('ripple/platform');
 
-/*
- * Tells WebOS to put higher priority on accelerometer resolution. Also relaxes the internal garbage collection events.
- * @param {Boolean} state
- * Dependencies: Mojo.windowProperties
- * Example:
- * 		navigator.accelerometer.setFastAccelerometer(true)
- */
-Accelerometer.prototype.setFastAccelerometer = function(state) {
-	navigator.windowProperties.fastAccelerometer = state;
-	navigator.window.setWindowProperties();
-};
+    beforeEach(function () {
+        spyOn(platform, "current").andReturn({name: "foo"});
+    });
 
-/*
- * Asynchronously aquires the current acceleration.
- * @param {Function} successCallback The function to call when the acceleration
- * data is available
- * @param {Function} errorCallback The function to call when there is an error 
- * getting the acceleration data.
- * @param {AccelerationOptions} options The options for getting the accelerometer data
- * such as timeout.
- */
+    it("getCurrentAcceleration calls the success callback", function () {
+        var success = jasmine.createSpy();
+        accel.getCurrentAcceleration(success, jasmine.createSpy());
+        waits(1);
+        runs(function () {
+            expect(success.callCount).toEqual(1);
+        });
+    });
 
-Accelerometer.prototype.getCurrentAcceleration = function(successCallback, errorCallback, options) {
+    // TODO: why does this fail when not run atomicly
+    xit("acceleration info is updated on AccelerometerInfoChangedEvent", function () {
+        event.trigger("AccelerometerInfoChangedEvent", [{
+            x: 9.8,
+            y: 9.8,
+            z: 9.8
+        }]);
 
-    var referenceTime = 0;
-    if (this.lastAcceleration)
-        referenceTime = this.lastAcceleration.timestamp;
-    else
-        this.start();
- 
-    var timeout = 20000;
-    var interval = 500;
-    if (typeof(options) == 'object' && options.interval)
-        interval = options.interval;
- 
-    if (typeof(successCallback) != 'function')
-        successCallback = function() {};
-    if (typeof(errorCallback) != 'function')
-        errorCallback = function() {};
- 
-    var dis = this;
-    var delay = 0;
-    var timer = setInterval(function() {
-        delay += interval;
- 
-		//if we have a new acceleration, call success and cancel the timer
-        if (typeof(dis.lastAcceleration) == 'object' && dis.lastAcceleration != null && dis.lastAcceleration.timestamp > referenceTime) {
-            successCallback(dis.lastAcceleration);
-            clearInterval(timer);
-        } else if (delay >= timeout) { //else if timeout has occured then call error and cancel the timer
-            errorCallback();
-            clearInterval(timer);
-        }
-		//else the interval gets called again
-    }, interval);
-};
+        waits(1);
 
+        runs(function () {
+            accel.getCurrentAcceleration(function (acc) {
+                expect(acc.x).toEqual(1);
+                expect(acc.y).toEqual(1);
+                expect(acc.z).toEqual(1);
+            });
+        });
+    });
 
-/*
- * Asynchronously aquires the acceleration repeatedly at a given interval.
- * @param {Function} successCallback The function to call each time the acceleration
- * data is available
- * @param {Function} errorCallback The function to call when there is an error 
- * getting the acceleration data.
- * @param {AccelerationOptions} options The options for getting the accelerometer data
- * such as timeout.
- */
+    it("watchAcceleration calls the error callback if options not provided", function () {
+        var success = jasmine.createSpy("success"),
+            failure = jasmine.createSpy("failure"),
+            watchId = accel.watchAcceleration(success, failure);
 
-Accelerometer.prototype.watchAcceleration = function(successCallback, errorCallback, options) {
-	this.getCurrentAcceleration(successCallback, errorCallback, options);
-	// TODO: add the interval id to a list so we can clear all watches
- 	var frequency = (options != undefined)? options.frequency : 10000;
-	var that = this;
-	return setInterval(function() {
-		that.getCurrentAcceleration(successCallback, errorCallback, options);
-	}, frequency);
-};
+        waits(1);
 
-/*
- * Clears the specified accelerometer watch.
- * @param {String} watchId The ID of the watch returned from #watchAcceleration.
- */
-Accelerometer.prototype.clearWatch = function(watchId) {
-	clearInterval(watchId);
-};
+        runs(function () {
+            clearInterval(watchId);
+            expect(success).not.toHaveBeenCalled();
+            expect(failure).toHaveBeenCalled();
+        });
+    });
 
-/*
- * Starts the native acceleration listener.
- */
+    it("watchAcceleration calls the error callback if options is missing frequency", function () {
+        var success = jasmine.createSpy("success"),
+            failure = jasmine.createSpy("failure"),
+            options = {},
+            watchId = accel.watchAcceleration(success, failure, options);
 
-Accelerometer.prototype.start = function() {
-	var that = this;
-	//Mojo.Event.listen(document, "acceleration", function(event) {
-	document.addEventListener("acceleration", function(event) {
-		var accel = new Acceleration(event.accelX, event.accelY, event.accelZ);
-		that.lastAcceleration = accel;
-	});
-};
+        waits(1);
 
-if (typeof navigator.accelerometer == "undefined") navigator.accelerometer = new Accelerometer();
+        runs(function () {
+            clearInterval(watchId);
+            expect(success).not.toHaveBeenCalled();
+            expect(failure).toHaveBeenCalled();
+        });
+    });
 
+    it("watchAcceleration calls the error callback if frequency isn't a number", function () {
+        var success = jasmine.createSpy("success"),
+            failure = jasmine.createSpy("failure"),
+            options = {frequency: "w00t"},
+            watchId = accel.watchAcceleration(success, failure, options);
+
+        waits(1);
+
+        runs(function () {
+            // TODO: test clearWatch (techdebt)
+            clearInterval(watchId);
+            expect(success).not.toHaveBeenCalled();
+            expect(failure).toHaveBeenCalled();
+        });
+    });
+
+    it("watchAcceleration calls the callback on the given interval", function () {
+        var success = jasmine.createSpy("success"),
+            failure = jasmine.createSpy("failure"),
+            options = {frequency: 10},
+            watchId = accel.watchAcceleration(success, failure, options);
+
+        waits(39);
+
+        runs(function () {
+            clearInterval(watchId);
+            expect(success.callCount).toEqual(3);
+            expect(failure).not.toHaveBeenCalled();
+        });
+    });
+});

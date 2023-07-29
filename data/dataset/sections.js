@@ -1,11 +1,3 @@
-/*
- *
- * Sections modules
- *
- * @author Alexey Ostrovsky
- *
- * */
-
 define([
     "jquery",
     "sourceModules/module"

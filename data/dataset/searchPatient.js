@@ -1,4 +1,3 @@
-/* model for search patient list */
 Ext.define('Registration.model.searchPatient', {
     extend: 'Ext.data.Model',
     fields: [{

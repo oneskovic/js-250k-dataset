@@ -1,16 +1,5 @@
 'use strict';
-/**
- * When typing a query, this query is sometimes syntactically invalid, causing
- * the current tokens to be incorrect This causes problem for autocompletion.
- * http://bla might result in two tokens: http:// and bla. We'll want to combine
- * these
- * 
- * @param yasqe {doc}
- * @param token {object}
- * @param cursor {object}
- * @return token {object}
- * @method YASQE.getCompleteToken
- */
+
 var getCompleteToken = function(yasqe, token, cur) {
 	if (!cur) {
 		cur = yasqe.getCursor();

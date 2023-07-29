@@ -1,4 +1,4 @@
-﻿/* Umbraco only formatters */
+﻿
 (function () {
     var formatter;
 

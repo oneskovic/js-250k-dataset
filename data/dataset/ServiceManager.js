@@ -1,10 +1,6 @@
 var ns = namespace('dr.acme.service');
 
-/**
- * Main Service Manager
- * 
- * will provide the instance of each resource service required
- */
+
 ns.ServiceManager = Class.extend({
     init: function(env, config) {
         var ns = namespace('dr.acme.service');

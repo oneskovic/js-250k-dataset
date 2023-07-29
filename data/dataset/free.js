@@ -1,4 +1,3 @@
-// ffs/wizard module
 if (typeof turbo === "undefined") turbo={};
 
 turbo.ffs.free = function() {

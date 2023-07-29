@@ -1,105 +1,122 @@
-/***********************************************************************
-** Title.........:  Simple Lite Slider for Image Editor
-** Version.......:  1.1
-** Author........:  Xiang Wei ZHUO <wei@zhuo.org>
-** Filename......:  slider.js
-** Last changed..:  31 Mar 2004 
-** Notes.........:  Works in IE and Mozilla
-**/ 
+/**
+ * @fileoverview A slider implementation that allows to select a value within a
+ * range by dragging a thumb. The selected value is exposed through getValue().
+ *
+ * To decorate, the slider should be bound to an element with the class name
+ * 'goog-slider' containing a child with the class name 'goog-slider-thumb',
+ * whose position is set to relative.
+ * Note that you won't be able to see these elements unless they are styled.
+ *
+ * Slider orientation is horizontal by default.
+ * Use setOrientation(goog.ui.Slider.Orientation.VERTICAL) for a vertical
+ * slider.
+ *
+ * Decorate Example:
+ * <div id="slider" class="goog-slider">
+ *   <div class="goog-slider-thumb"></div>
+ * </div>
+ *
+ * JavaScript code:
+ * <code>
+ *   var slider = new goog.ui.Slider;
+ *   slider.decorate(document.getElementById('slider'));
+ * </code>
+ *
+ * @author arv@google.com (Erik Arvidsson)
+ * @see ../demos/slider.html
+ */
 
-var ie=document.all
-var ns6=document.getElementById&&!document.all
+// Implementation note: We implement slider by inheriting from baseslider,
+// which allows to select sub-ranges within a range using two thumbs. All we do
+// is we co-locate the two thumbs into one.
 
-document.onmouseup = captureStop;
+goog.provide('goog.ui.Slider');
+goog.provide('goog.ui.Slider.Orientation');
 
-var currentSlider = null,sliderField = null;
-var rangeMin = null, rangeMax= null, sx = -1, sy = -1, initX=0;
+goog.require('goog.a11y.aria');
+goog.require('goog.a11y.aria.Role');
+goog.require('goog.dom');
+goog.require('goog.ui.SliderBase');
 
-function getMouseXY(e) {
 
-    //alert('hello');
-    x = ns6? e.clientX: event.clientX
-    y = ns6? e.clientY: event.clientY
-    
-    if (sx < 0) sx = x; if (sy < 0) sy = y;
 
-    var dx = initX +(x-sx);
-    
-    if (dx <= rangeMin)
-        dx = rangeMin;
-    else if (dx >= rangeMax)
-        dx = rangeMax;
+/**
+ * This creates a slider object.
+ * @param {goog.dom.DomHelper=} opt_domHelper Optional DOM helper.
+ * @param {(function(number):?string)=} opt_labelFn An optional function mapping
+ *     slider values to a description of the value.
+ * @constructor
+ * @extends {goog.ui.SliderBase}
+ */
+goog.ui.Slider = function(opt_domHelper, opt_labelFn) {
+  goog.ui.SliderBase.call(this, opt_domHelper, opt_labelFn);
+  this.rangeModel.setExtent(0);
+};
+goog.inherits(goog.ui.Slider, goog.ui.SliderBase);
+goog.tagUnsealableClass(goog.ui.Slider);
 
-    var range = (dx-rangeMin)/(rangeMax - rangeMin)*100;
 
-    if (currentSlider !=  null)
-        currentSlider.style.left = dx+"px";
-        
-    if (sliderField != null)
-    {
-        sliderField.value = parseInt(range);
-    }
-    return false;
+/**
+ * Expose Enum of superclass (representing the orientation of the slider) within
+ * Slider namespace.
+ *
+ * @enum {string}
+ */
+goog.ui.Slider.Orientation = goog.ui.SliderBase.Orientation;
 
-}
 
-function initSlider()
-{
-    if (currentSlider == null)
-        currentSlider = document.getElementById('sliderbar');
-   
-    if (sliderField == null)
-        sliderField = document.getElementById('quality');
+/**
+ * The prefix we use for the CSS class names for the slider and its elements.
+ * @type {string}
+ */
+goog.ui.Slider.CSS_CLASS_PREFIX = goog.getCssName('goog-slider');
 
-    if (rangeMin == null)
-        rangeMin = 3
-    if (rangeMax == null)
-    {
-        var track = document.getElementById('slidertrack');
-        rangeMax = parseInt(track.style.width);
-    }
 
-}
+/**
+ * CSS class name for the single thumb element.
+ * @type {string}
+ */
+goog.ui.Slider.THUMB_CSS_CLASS =
+    goog.getCssName(goog.ui.Slider.CSS_CLASS_PREFIX, 'thumb');
 
-function updateSlider(value)
-{
-    initSlider();
 
-    var newValue = parseInt(value)/100*(rangeMax-rangeMin);
+/**
+ * Returns CSS class applied to the slider element.
+ * @param {goog.ui.SliderBase.Orientation} orient Orientation of the slider.
+ * @return {string} The CSS class applied to the slider element.
+ * @protected
+ * @override
+ */
+goog.ui.Slider.prototype.getCssClass = function(orient) {
+  return orient == goog.ui.SliderBase.Orientation.VERTICAL ?
+      goog.getCssName(goog.ui.Slider.CSS_CLASS_PREFIX, 'vertical') :
+      goog.getCssName(goog.ui.Slider.CSS_CLASS_PREFIX, 'horizontal');
+};
 
-    if (newValue <= rangeMin)
-        newValue = rangeMin;
-    else if (newValue >= rangeMax)
-        newValue = rangeMax;
 
-    if (currentSlider !=  null)
-        currentSlider.style.left = newValue+"px";
-    
-    var range = newValue/(rangeMax - rangeMin)*100;
+/** @override */
+goog.ui.Slider.prototype.createThumbs = function() {
+  // find thumb
+  var element = this.getElement();
+  var thumb = goog.dom.getElementsByTagNameAndClass(
+      null, goog.ui.Slider.THUMB_CSS_CLASS, element)[0];
+  if (!thumb) {
+    thumb = this.createThumb_();
+    element.appendChild(thumb);
+  }
+  this.valueThumb = this.extentThumb = thumb;
+};
 
-    if (sliderField != null)
-        sliderField.value = parseInt(range);
-}
 
-function captureStart()
-{
-    
-    initSlider();
+/**
+ * Creates the thumb element.
+ * @return {!HTMLDivElement} The created thumb element.
+ * @private
+ */
+goog.ui.Slider.prototype.createThumb_ = function() {
+  var thumb =
+      this.getDomHelper().createDom('div', goog.ui.Slider.THUMB_CSS_CLASS);
+  goog.a11y.aria.setRole(thumb, goog.a11y.aria.Role.BUTTON);
+  return /** @type {!HTMLDivElement} */ (thumb);
+};
 
-    initX = parseInt(currentSlider.style.left);
-    if (initX > rangeMax)
-        initX = rangeMax;
-    else if (initX < rangeMin)
-        initX = rangeMin;
-
-    document.onmousemove = getMouseXY;
-
-    return false;
-}
-
-function captureStop()
-{
-    sx = -1; sy = -1;
-    document.onmousemove = null;
-    return false;
-}

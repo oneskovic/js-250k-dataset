@@ -1,4 +1,3 @@
-/*global jQuery */
 /*!
 * Baseline.js 1.0
 *

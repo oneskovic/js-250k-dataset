@@ -1,7 +1,3 @@
-///import core
-///commands 加粗,斜体,上标,下标
-///commandsName  Bold,Italic,Subscript,Superscript
-///commandsTitle  加粗,加斜,下标,上标
 /**
  * b u i等基础功能实现
  * @function

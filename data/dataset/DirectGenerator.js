@@ -1,28 +1,4 @@
-  /**
-    @class
-    <p>DirectGenerator is a candidate generator for <code>PhraseSuggester</code>.
-    It generates terms based on edit distance and operators much like the
-    <code>TermSuggester</code>.</p>
-
-    @name ejs.DirectGenerator
-    @ejs suggest
-    @borrows ejs.DirectSettingsMixin.accuracy as accuracy
-    @borrows ejs.DirectSettingsMixin.suggestMode as suggestMode
-    @borrows ejs.DirectSettingsMixin.sort as sort
-    @borrows ejs.DirectSettingsMixin.stringDistance as stringDistance
-    @borrows ejs.DirectSettingsMixin.maxEdits as maxEdits
-    @borrows ejs.DirectSettingsMixin.maxInspections as maxInspections
-    @borrows ejs.DirectSettingsMixin.maxTermFreq as maxTermFreq
-    @borrows ejs.DirectSettingsMixin.prefixLength as prefixLength
-    @borrows ejs.DirectSettingsMixin.minWordLen as minWordLen
-    @borrows ejs.DirectSettingsMixin.minDocFreq as minDocFreq
-
-    @since elasticsearch 0.90
   
-    @desc
-    <p>A candidate generator that generates terms based on edit distance.</p>
-  
-    */
   ejs.DirectGenerator = function () {
 
   

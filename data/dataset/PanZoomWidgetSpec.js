@@ -1,4 +1,3 @@
-/* global describe */
 /* global module */
 /* global beforeEach */
 /* global inject */

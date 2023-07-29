@@ -1,7 +1,4 @@
-﻿/**
-    This is the data source for your application. In the real world, you would either get this data from a data base or
-    from an API 
-**/
+﻿
 
 var recipeTypeName = {
     bbq: 'Barbeque Recipes',

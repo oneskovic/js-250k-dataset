@@ -9,14 +9,7 @@ sap.ui.core.routing.Router.extend("sap.ui.demo.tdg.MyRouter", {
 		this._oRouteMatchedHandler = new sap.m.routing.RouteMatchedHandler(this);
 	},
 
-	/**
-	 * Navigates back in the browser history, if the entry was created by this app.
-	 * If not, it navigates to a route passed to this function.
-	 * 
-	 * @public
-	 * @param {string} sRoute the name of the route if there is no history entry
-	 * @param {object} mData the parameters of the route, if the route does not need parameters, it may be ommited.
-	 */
+	
 	myNavBack : function(sRoute, mData) {
 		var oHistory = sap.ui.core.routing.History.getInstance();
 		var sPreviousHash = oHistory.getPreviousHash();

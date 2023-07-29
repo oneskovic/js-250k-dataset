@@ -1,13 +1,6 @@
 Ext.namespace('Ext.testia');
 
-/**
- * Ext.testia.ProjectForm extension class for Ext.testia.AppForm
- *
- * @class Ext.testia.ProjectForm
- * @extend Ext.testia.AppForm
- *
- * Extend basic AppForm by adding purge button for project administration.
- */
+
 Ext.testia.ProjectForm = function(form_div, toolbar_div, config) {
     config = config || {};
 

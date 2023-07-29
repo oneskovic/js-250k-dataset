@@ -1,5 +1,3 @@
-//node --prof --prof_auto profile.js
-//deps/v8/tools/mac-tick-processor v8.log
 var sys = require("sys");
 var fs = require("fs");
 

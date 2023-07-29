@@ -1,115 +1,96 @@
-// Copyright 2011 Tart. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
-// HELP
-// -----------------------------
-// var currency = new tart.CurrencyUSD(); //You can add other currencies as a new file to tart/money/CurrencyNAME.js.
-// var money = new tart.Money(12.500, currency); //Default value is tart.CurrencyTL (leave blank 2nd param).
-//
-// money.toCurrency(); //Gets Full Currency Like USD 12.50
-// money.getCapital(); //Gets Only Capital Of Money Like 12
-// money.getFraction(); //Gets Only Fraction Of Money Line 50
-// money.toArray(); //Gets As Array Like [12, 50]
-// money.getCurrency().getType(); //Gets Type Of Money Like USD
+'use strict';
 
-goog.provide('tart.Money');
+angular.module('ui.utils.masks.global.money', [
+	'ui.utils.masks.helpers'
+])
+.directive('uiMoneyMask',
+	['$locale', '$parse', 'PreFormatters', 'NumberValidators',
+	function ($locale, $parse, PreFormatters, NumberValidators) {
+		return {
+			restrict: 'A',
+			require: 'ngModel',
+			link: function (scope, element, attrs, ctrl) {
+				var decimalDelimiter = $locale.NUMBER_FORMATS.DECIMAL_SEP,
+					thousandsDelimiter = $locale.NUMBER_FORMATS.GROUP_SEP,
+					currencySym = $locale.NUMBER_FORMATS.CURRENCY_SYM,
+					decimals = $parse(attrs.uiMoneyMask)(scope);
 
-goog.require('tart.CurrencyTL');
-goog.require('tart.CurrencyUSD');
+				if (angular.isDefined(attrs.uiHideGroupSep)){
+					thousandsDelimiter = '';
+				}
 
+				if(isNaN(decimals)) {
+					decimals = 2;
+				}
 
+				var decimalsPattern = decimals > 0 ? decimalDelimiter + new Array(decimals + 1).join('0') : '';
+				var maskPattern = currencySym+' #'+thousandsDelimiter+'##0'+decimalsPattern;
+				var moneyMask = new StringMask(maskPattern, {reverse: true});
 
-/**
- * Tart Money Class for defining money type.
- * @constructor
- * @param {number} amount Retrieves Amount for convert to currency.
- * @param {tart.Currency=} currency Currency type.
- */
-tart.Money = function(amount, currency) {
-    /** @private */
-    this.amount_ = amount;
-    this.currency_ = currency || new tart.CurrencyTL();
-};
+				function formatter(value) {
+					if(ctrl.$isEmpty(value)) {
+						return value;
+					}
 
+					var valueToFormat = PreFormatters.prepareNumberToFormatter(value, decimals);
+					return moneyMask.apply(valueToFormat);
+				}
 
-/**
- * Converts Money and Currency to Array.
- * @return {Array} Returns capital and fraction as array.
- */
-tart.Money.prototype.toArray = function() {
-    return [this.getCapital(), this.getFraction()];
-};
+				function parser(value) {
+					if (ctrl.$isEmpty(value)) {
+						return value;
+					}
 
+					var actualNumber = value.replace(/[^\d]+/g,'');
+					actualNumber = actualNumber.replace(/^[0]+([1-9])/,'$1');
+					var formatedValue = moneyMask.apply(actualNumber);
 
-/**
- * Gets Capital of money.
- * @return {string} Returns capital of money.
- */
-tart.Money.prototype.getCapital = function() {
-    return parseInt(this.amount_, 10).toString();
-};
+					if (value !== formatedValue) {
+						ctrl.$setViewValue(formatedValue);
+						ctrl.$render();
+					}
 
+					return formatedValue ? parseInt(formatedValue.replace(/[^\d]+/g,''))/Math.pow(10,decimals) : null;
+				}
 
-/**
- * @return {string} Returns fraction of money.
- */
-tart.Money.prototype.getFraction = function() {
-    //JavaScript math calculation fix for floating point arithmetic
-    //http://stackoverflow.com/questions/588004/is-javascripts-math-broken/588053#588053
-    var mathFix = ((this.amount_).toFixed(2) - this.getCapital()).toFixed(2);
+				ctrl.$formatters.push(formatter);
+				ctrl.$parsers.push(parser);
 
-    var result = mathFix.substr(2,2);
+				if (attrs.uiMoneyMask) {
+					scope.$watch(attrs.uiMoneyMask, function(decimals) {
+						if(isNaN(decimals)) {
+							decimals = 2;
+						}
+						decimalsPattern = decimals > 0 ? decimalDelimiter + new Array(decimals + 1).join('0') : '';
+						maskPattern = currencySym+' #'+thousandsDelimiter+'##0'+decimalsPattern;
+						moneyMask = new StringMask(maskPattern, {reverse: true});
 
-    if (result.length == 1) {
-        result = '0' + result;
-    }
+						parser(ctrl.$viewValue);
+					});
+				}
 
-    return result;
-};
+				if(attrs.min){
+					ctrl.$parsers.push(function(value) {
+						var min = $parse(attrs.min)(scope);
+						return NumberValidators.minNumber(ctrl, value, min);
+					});
 
+					scope.$watch(attrs.min, function(value) {
+						NumberValidators.minNumber(ctrl, ctrl.$modelValue, value);
+					});
+				}
 
-/**
- * Gets amount of Money.
- * @return {number} Returns full amount of money.
- */
-tart.Money.prototype.getAmount = function() {
-    return this.amount_;
-};
+				if(attrs.max) {
+					ctrl.$parsers.push(function(value) {
+						var max = $parse(attrs.max)(scope);
+						return NumberValidators.maxNumber(ctrl, value, max);
+					});
 
-
-/**
- * Gets Value of Money.
- * @return {number} Returns full amount of money.
- */
-tart.Money.prototype.valueOf = function() {
-    return this.getAmount();
-};
-
-
-/**
- * Gets object of currency.
- * @return {Object} Returns object of tart.Currency.
- */
-tart.Money.prototype.getCurrency = function() {
-    return this.currency_;
-};
-
-
-/**
- * Gets tart.Currency.convert Method.
- * @return {string} Returns converted currency.
- */
-tart.Money.prototype.toCurrency = function() {
-    return this.currency_.convert(this);
-};
+					scope.$watch(attrs.max, function(value) {
+						NumberValidators.maxNumber(ctrl, ctrl.$modelValue, value);
+					});
+				}
+			}
+		};
+	}
+]);

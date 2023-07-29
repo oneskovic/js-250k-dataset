@@ -1,8 +1,3 @@
-/**
-	Class to help manage and draw a collection of sprites.
-	Code by Rob Kleffner, 2011
-*/
-
 $e.DrawableManager = function() {
 	this.unsorted = true;
 	this.objects = [];

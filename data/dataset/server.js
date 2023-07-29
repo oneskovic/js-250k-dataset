@@ -1,115 +1,51 @@
+var express        = require('express')
+    , app          = express()
+    , bodyParser   = require('body-parser')
+    , breezeRoutes = require('./breeze-routes')
+    , compress     = require('compression')
+    , cors         = require('cors')
+    , errorHandler = require('./errorHandler')
+    , favicon      = require('static-favicon')
+    , fileServer   = require('serve-static')
+    , http         = require('http')
+    , isDev        = app.get('env') === 'development'
+    , logger       = require('morgan')
+    , port         = process.env["PORT"] || 3000;
 
-/**
- * Module dependencies.
- */
-var http      = require('http')
-  , fs        = require('fs')
-  , path      = require('path')
-  , url       = require('url')
-  , qs        = require('querystring')
-  , watch     = require('node-watch');
+app.use( favicon());
+app.use( logger('dev'));
+app.use( compress());
+app.use( bodyParser()); // both json & urlencoded
 
-var check     = require('./check')
-  , parser    = require('./parser')
-  , template  = require('./template')
-  , countdown = require('./countdown')
-  , reswrap   = require('./reswrap')
-  , stamp     = require('./stamp');
-
-
-/**
- * Running server at a given port.
- *
- * @param {Number} port
- * @param {Function} fn
- * @api public
- */
-exports.startAt = (function() {
-  var server = http.createServer(handler);
-  return function(port, fn) {
-    http
-      .get('http://localhost:' + port, fn)
-      .on('error', function() {
-        //port free
-        server.listen(port, fn);
-      });
-  };
-}());
-         
-
-/**
- * Countdown to exit the program.
- */
-var exitCountdown = countdown(function() {
-  process.exit();
-}, 3e3);  
+// Support static file content
+// Consider 'st' module for caching: https://github.com/isaacs/st
+app.use( fileServer( __dirname+'/../client' )); // was fileServer( process.cwd() )
 
 
+app.use(cors());          // enable ALL CORS requests
+breezeRoutes.init( app ); // Configure breeze-specific routes for REST API
 
-/**
- * Http handler for the web server
- */
-function handler(req, res) {
+// a test POST endpoint ... for the demo
+if (isDev){
+    app.post( '/ping', function(req, res, next){
+        console.log(req.body);
+        res.send('pinged!!!');
+    });
+}
 
-  var parsedUrl = url.parse(req.url)
-    , callback = qs.parse(parsedUrl.query).callback
-    , filename = decodeURI(parsedUrl.path.substr(1))
-    , basename = path.basename(filename)
-    , response = reswrap(res);
 
-  if (req.method === 'GET' && parsedUrl.pathname === '/jsonp-request') {
-    exitCountdown.restart();
-    response
-      .writeHead(200, 'js')
-      .end(callback +'('+ stamp.get() +')');  
+// this middleware goes last to catches anything left
+// in the pipeline and reports to client as an error
+app.use(errorHandler);
 
-    return;
-  } 
+// create server (in case interested in socket.io)
+var server = http.createServer(app);
 
-  if (/^\.css$/.test(path.extname(basename))) {
-    check(path.resolve(__dirname, '../theme', basename))
-      .pass(function(name, type) {
-        response
-          .writeHead(200, 'css')
-          .pipeWith(fs.createReadStream(name));
-      })
-      .fail(function() {
-        response.writeHead(404, 'text').end('');
-      });
+// Start listening for HTTP requests
+server.listen(port); // app.listen( port ); // if we weren't using 'server'
 
-    return;
-  }
+console.log('env = '+ app.get('env') +
+    '\n__dirname = ' + __dirname  +
+    '\nprocess.cwd = ' + process.cwd() );
 
-  if (/^\.(md|markdown)$/.test(path.extname(basename))) {
-    check(filename)
-      .pass(function() {
-        fs.readFile(filename, 'utf-8', function(err, input) {
-          response
-            .writeHead(200, 'html')
-            .end(template.render({
-                title: basename
-                // TODO:the theme should be configurable.
-              , theme: 'github-flavored-markdown'
-              , body:  parser.parse(input)
-            }));        
-        });
-      })
-      .fail(function() {
-        response.writeHead(404, 'text').end('');
-      });         
-
-    return;
-  }
-
-  // Image or some other resources.
-  check(filename)
-    .pass(function(name) {
-      response
-        .writeHead(200, name)
-        .pipeWith(fs.createReadStream(name));
-    })
-    .fail(function() {
-      response.writeHead(404, 'text').end('');
-    });          
-};
-
+console.log('\nListening on port '+ port);

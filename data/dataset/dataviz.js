@@ -15,7 +15,7 @@ function Dataviz(){
     _prepared: false,
     _initialized: false,
     _rendered: false,
-    _artifacts: { /* state bin */ },
+    _artifacts: {  },
     adapter: {
       library: undefined,
       chartOptions: {},

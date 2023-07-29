@@ -1,4 +1,3 @@
-
 var MainContentTools = function() {
   return {
     htmlContent: function() {

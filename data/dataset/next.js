@@ -1,4 +1,3 @@
-//>>excludeStart("exclude", pragmas.exclude);
 define([ "shoestring" ], function(){
 //>>excludeEnd("exclude");
 

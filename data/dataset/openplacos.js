@@ -1,7 +1,5 @@
 OAuth2.adapter('openplacos', {
-  /**
-   * @return {URL} URL to the page that returns the authorization code
-   */
+  
   authorizationCodeURL: function(config) {
     return 'http://localhost:4567/oauth/authorize?\
 client_id={{CLIENT_ID}}&\

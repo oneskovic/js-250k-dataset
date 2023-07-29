@@ -1,8 +1,3 @@
-/**
- * @author jonobr1 / http://jonobr1.com/
- * For js/sections/LastPageSection.js
- */
-
 // Dependent on swell.js
 function Heart(gee, src, x, y) {
 

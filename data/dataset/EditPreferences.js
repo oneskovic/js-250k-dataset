@@ -1,10 +1,3 @@
-/**
- * Preferences for edit tool
- *
- * @constructor
- * @param {Object} sitePrefs object hash containing preferences
- *                 as key/value pair.
- */
 var EditPreferences = function(sitePrefs) {
     if (!sitePrefs) {
         sitePrefs = {};

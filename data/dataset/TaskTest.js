@@ -1,6 +1,3 @@
-/**
- * Task Class tests
- */
 /*global describe, beforeEach, it, assert */
 describe('Task Class.', function() {
     'use strict';

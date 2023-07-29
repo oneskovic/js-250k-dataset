@@ -1,6 +1,3 @@
-/**
- *
- */
 Ext.define('Ext.mixin.Templatable', {
     extend: 'Ext.mixin.Mixin',
 

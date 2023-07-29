@@ -9,9 +9,7 @@ define([
 
     var AutocompleteFieldView = BaseView.extend({
 
-        /**
-         * Get BaseView events and add sepecific TextFieldView event
-         */
+        
         events: function() {
             return _.extend(BaseView.prototype.events, {
                 

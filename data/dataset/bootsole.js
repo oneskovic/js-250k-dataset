@@ -1,4 +1,3 @@
-
 $(document).ready(function() {
     // define tablesorter pager options
     var pagerOptions = {

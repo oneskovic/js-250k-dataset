@@ -1,144 +1,112 @@
-/**
- * @author mrdoob / http://mrdoob.com/
- * @url https://github.com/mrdoob/stats.js
- */
+module.exports = function () {
+    var util = require('util'),
+        libs = [],
+        tests = [],
+        total_lines = 0,
+        total_loc = 0,
+        lib_loc = 0,
+        lib_lines = 0,
+        test_loc = 0,
+        test_lines = 0,
+        emptySpace,
+        testsOverLib;
 
-var Stats = function () {
-
-  var startTime = Date.now(), prevTime = startTime;
-  var ms = 0, msMin = Infinity, msMax = 0;
-  var fps = 0, fpsMin = Infinity, fpsMax = 0;
-  var frames = 0, mode = 0;
-
-  var container = document.createElement( 'div' );
-  container.id = 'stats';
-  container.addEventListener( 'mousedown', function ( event ) { event.preventDefault(); setMode( ++ mode % 2 ) }, false );
-  container.style.cssText = 'width:80px;opacity:0.9;cursor:pointer';
-
-  var fpsDiv = document.createElement( 'div' );
-  fpsDiv.id = 'fps';
-  fpsDiv.style.cssText = 'padding:0 0 3px 3px;text-align:left;background-color:#002';
-  container.appendChild( fpsDiv );
-
-  var fpsText = document.createElement( 'div' );
-  fpsText.id = 'fpsText';
-  fpsText.style.cssText = 'color:#0ff;font-family:Helvetica,Arial,sans-serif;font-size:9px;font-weight:bold;line-height:15px';
-  fpsText.innerHTML = 'FPS';
-  fpsDiv.appendChild( fpsText );
-
-  var fpsGraph = document.createElement( 'div' );
-  fpsGraph.id = 'fpsGraph';
-  fpsGraph.style.cssText = 'position:relative;width:74px;height:30px;background-color:#0ff';
-  fpsDiv.appendChild( fpsGraph );
-
-  while ( fpsGraph.children.length < 74 ) {
-
-    var bar = document.createElement( 'span' );
-    bar.style.cssText = 'width:1px;height:30px;float:left;background-color:#113';
-    fpsGraph.appendChild( bar );
-
-  }
-
-  var msDiv = document.createElement( 'div' );
-  msDiv.id = 'ms';
-  msDiv.style.cssText = 'padding:0 0 3px 3px;text-align:left;background-color:#020;display:none';
-  container.appendChild( msDiv );
-
-  var msText = document.createElement( 'div' );
-  msText.id = 'msText';
-  msText.style.cssText = 'color:#0f0;font-family:Helvetica,Arial,sans-serif;font-size:9px;font-weight:bold;line-height:15px';
-  msText.innerHTML = 'MS';
-  msDiv.appendChild( msText );
-
-  var msGraph = document.createElement( 'div' );
-  msGraph.id = 'msGraph';
-  msGraph.style.cssText = 'position:relative;width:74px;height:30px;background-color:#0f0';
-  msDiv.appendChild( msGraph );
-
-  while ( msGraph.children.length < 74 ) {
-
-    var bar = document.createElement( 'span' );
-    bar.style.cssText = 'width:1px;height:30px;float:left;background-color:#131';
-    msGraph.appendChild( bar );
-
-  }
-
-  var setMode = function ( value ) {
-
-    mode = value;
-
-    switch ( mode ) {
-
-      case 0:
-        fpsDiv.style.display = 'block';
-        msDiv.style.display = 'none';
-        break;
-      case 1:
-        fpsDiv.style.display = 'none';
-        msDiv.style.display = 'block';
-        break;
+    function spaces(number) {
+        var str = "", i;
+        for (i = 0; i < number; i++) {
+            str += " ";
+        }
+        return str;
     }
 
-  }
+    function parseFile(file, callback) {
+        var lines = 0,
+            loc = 0;
 
-  var updateGraph = function ( dom, value ) {
+        if (file.match(/\.js$/)) {
+            // hack!
+            require('fs').readFileSync(file, "utf-8").replace(/\n$/, '').split("\n").forEach(function (line) {
+                lines++;
+                if (line !== "" && !line.match(/^\s*(\/\/.*)?$/)) {
+                    loc++;
+                }
+            });
 
-    var child = dom.appendChild( dom.firstChild );
-    child.style.height = value + 'px';
+            file = file.replace(/\.js$/, '')
+                        .replace(/^.*lib\/ripple$/, 'ripple')
+                        .replace(/^.*lib\/ripple\/?/, '')
+                        .replace(/^.*test\//, '');
 
-  }
+            util.puts("| " + file + spaces(59 - file.length) + "| " +
+                    lines + spaces(7 - String(lines).length) + "| " +
+                    loc + spaces(7 - String(loc).length) + "|");
 
-  return {
-
-    REVISION: 11,
-
-    domElement: container,
-
-    setMode: setMode,
-
-    begin: function () {
-
-      startTime = Date.now();
-
-    },
-
-    end: function () {
-
-      var time = Date.now();
-
-      ms = time - startTime;
-      msMin = Math.min( msMin, ms );
-      msMax = Math.max( msMax, ms );
-
-      msText.textContent = ms + ' MS (' + msMin + '-' + msMax + ')';
-      updateGraph( msGraph, Math.min( 30, 30 - ( ms / 200 ) * 30 ) );
-
-      frames ++;
-
-      if ( time > prevTime + 1000 ) {
-
-        fps = Math.round( ( frames * 1000 ) / ( time - prevTime ) );
-        fpsMin = Math.min( fpsMin, fps );
-        fpsMax = Math.max( fpsMax, fps );
-
-        fpsText.textContent = fps + ' FPS (' + fpsMin + '-' + fpsMax + ')';
-        updateGraph( fpsGraph, Math.min( 30, 30 - ( fps / 100 ) * 30 ) );
-
-        prevTime = time;
-        frames = 0;
-
-      }
-
-      return time;
-
-    },
-
-    update: function () {
-
-      startTime = this.end();
-
+            callback(lines, loc);
+        }
     }
 
-  }
+    function collect(path, files) {
+        var fs = require('fs');
+        if (fs.statSync(path).isDirectory()) {
+            fs.readdirSync(path).forEach(function (item) {
+                collect(require('path').join(path, item), files);
+            });
+        } else if (path.match(/\.js$/)) {
+            files.push(path);
+        }
+    }
 
+    collect(__dirname + "/../lib/", libs);
+    collect(__dirname + "/../test/", tests);
+
+    libs.sort();
+    tests.sort();
+
+    util.puts("+------------------------------------------------------------+--------+--------+");
+    util.puts("| Lib                                                        | Lines  | LOC    |");
+    util.puts("+------------------------------------------------------------+--------+--------+");
+
+    libs.forEach(function (lib) {
+        parseFile(lib, function (lines, loc) {
+            lib_lines += lines;
+            lib_loc += loc;
+        });
+    });
+
+    util.puts("+------------------------------------------------------------+--------+--------+");
+    util.print("| Total                                                      |");
+    util.print(" " + lib_lines + spaces(7 - String(lib_lines).length) + "|");
+    util.puts(" " + lib_loc + spaces(7 - String(lib_loc).length) + "|");
+    util.puts("+------------------------------------------------------------+--------+--------+");
+
+    util.puts("+------------------------------------------------------------+--------+--------+");
+    util.puts("| Tests                                                      | Lines  | LOC    |");
+    util.puts("+------------------------------------------------------------+--------+--------+");
+
+    tests.forEach(function (test) {
+        parseFile(test, function (lines, loc) {
+            test_lines += lines;
+            test_loc += loc;
+        });
+    });
+
+    util.puts("+------------------------------------------------------------+--------+--------+");
+    util.print("| Total                                                      |");
+    util.print(" " + test_lines + spaces(7 - String(test_lines).length) + "|");
+    util.puts(" " + test_loc + spaces(7 - String(test_loc).length) + "|");
+    util.puts("+------------------------------------------------------------+--------+--------+");
+
+    total_lines = lib_lines + test_lines;
+    total_loc = lib_loc + test_loc;
+    testsOverLib = (lib_loc / test_loc).toFixed(2);
+    emptySpace = total_lines - total_loc;
+
+    util.puts("+------------------------------------------------------------+--------+--------+");
+    util.puts("| Stats                                                                        |");
+    util.puts("+------------------------------------------------------------+--------+--------+");
+    util.puts("| lines: " + total_lines + spaces(70 - String(total_lines).length) + "|");
+    util.puts("| loc: " + total_loc + spaces(72 - String(total_loc).length) + "|");
+    util.puts("| lib/test (loc): " + testsOverLib + spaces(61 - String(testsOverLib).length) + "|");
+    util.puts("| comments & empty space: " + emptySpace + spaces(53 - String(emptySpace).length) + "|");
+    util.puts("+------------------------------------------------------------+--------+--------+");
 };

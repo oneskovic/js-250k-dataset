@@ -4,7 +4,7 @@
 	var changing = false;
 	var nodes = {};
 
-	/* depending on where we are (fb or gmail) define a "replacement node" that we can just use later */
+	
 	if (/facebook/.test(window.location.href))
   {
 		nodes['div.conversation'] = '.fbChatConvItem .messages span'; // chat messages in the inbox

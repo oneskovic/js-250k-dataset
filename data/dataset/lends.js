@@ -1,4 +1,3 @@
-/*global describe, expect, it, jasmine */
 describe("lends", function() {
     describe("when a documented member is inside an object literal associated with a @lends tag", function() {
         function removeUndocumented($) {

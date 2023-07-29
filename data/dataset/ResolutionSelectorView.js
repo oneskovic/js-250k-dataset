@@ -1,9 +1,3 @@
-/**
- Resolution selector used to select new campaign width x height
- @class ResolutionSelectorView
- @constructor
- @return {Object} instantiated ResolutionSelectorView
- **/
 define(['jquery', 'backbone'], function ($, Backbone) {
 
     BB.SERVICES.RESOLUTION_SELECTOR_VIEW = 'ResolutionSelectorView';

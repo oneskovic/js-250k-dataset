@@ -1,125 +1,134 @@
-var Burner = require('burner'),
-    test = require('tape'),
-    Point, obj;
+'use strict';
 
-function beforeTest() {
-  Burner.System.setupFunc = function() {};
-  Burner.System._resetSystem();
-  document.body.innerHTML = '';
-  var world = document.createElement('div');
-  world.id = 'world';
-  world.style.position = 'absolute';
-  world.style.top = '0';
-  world.style.left = '0';
-  document.body.appendChild(world);
-}
+var BN = require('./bn');
+var BufferUtil = require('../util/buffer');
+var ec = require('elliptic').curves.secp256k1;
+var ecPoint = ec.curve.point.bind(ec.curve);
+var ecPointFromX = ec.curve.pointFromX.bind(ec.curve);
 
-test('load Point.', function(t) {
-  Point = require('../src/point');
-  t.ok(Point, 'object loaded');
-  t.end();
-});
 
-test('new Point() should have default properties.', function(t) {
+var Point = function Point(x, y, isRed) {
+  var point = ecPoint(x, y, isRed);
+  point.validate();
+  return point;
+};
 
-  beforeTest();
+Point.prototype = Object.getPrototypeOf(ec.curve.point());
 
-  Burner.System.Classes = {
-    Point: Point
-  };
+/**
+ *
+ * Instantiate a valid secp256k1 Point from only the X coordinate
+ *
+ * @param {boolean} odd - If the Y coordinate is odd
+ * @param {BN|String} x - The X coordinate
+ * @throws {Error} A validation error if exists
+ * @returns {Point} An instance of Point
+ */
+Point.fromX = function fromX(odd, x){
+  var point = ecPointFromX(odd, x);
+  point.validate();
+  return point;
+};
 
-  Burner.System.setup(function() {
-    var world = this.add('World', {
-      el: document.getElementById('world'),
-      width: 400,
-      height: 300
-    });
+/**
+ *
+ * Will return a secp256k1 ECDSA base point.
+ *
+ * @link https://en.bitcoin.it/wiki/Secp256k1
+ * @returns {Point} An instance of the base point.
+ */
+Point.getG = function getG() {
+  return ec.curve.g;
+};
 
-    obj = new Point();
-    obj.init(world);
-  });
+/**
+ *
+ * Will return the max of range of valid private keys as governed by the secp256k1 ECDSA standard.
+ *
+ * @link https://en.bitcoin.it/wiki/Private_key#Range_of_valid_ECDSA_private_keys
+ * @returns {BN} A BN instance of the number of points on the curve
+ */
+Point.getN = function getN() {
+  return new BN(ec.curve.n.toArray());
+};
 
-  t.notEqual(obj.name, 'Point', 'System.add() should pass name.');
-  t.assert(obj.color[0] === 200 && obj.color[1] === 200 && obj.color[2] === 200, 'default color.');
-  t.equal(obj.borderRadius, 100, 'default borderRadius.');
-  t.equal(obj.borderWidth, 2, 'default borderWidth.');
-  t.equal(obj.borderStyle, 'solid', 'default borderStyle.');
-  t.assert(obj.borderColor[0] === 60 && obj.borderColor[1] === 60 && obj.borderColor[2] === 60, 'default borderColor.');
-  t.equal(obj.isStatic, true, 'default isStatic.');
-  t.end();
-});
+Point.prototype._getX = Point.prototype.getX;
 
-test('new Point() should have custom properties.', function(t) {
+/**
+ *
+ * Will return the X coordinate of the Point
+ *
+ * @returns {BN} A BN instance of the X coordinate
+ */
+Point.prototype.getX = function getX() {
+  return new BN(this._getX().toArray());
+};
 
-  beforeTest();
+Point.prototype._getY = Point.prototype.getY;
 
-  Burner.System.Classes = {
-    Point: Point
-  };
+/**
+ *
+ * Will return the Y coordinate of the Point
+ *
+ * @returns {BN} A BN instance of the Y coordinate
+ */
+Point.prototype.getY = function getY() {
+  return new BN(this._getY().toArray());
+};
 
-  Burner.System.setup(function() {
-    var world = this.add('World', {
-      el: document.getElementById('world'),
-      width: 400,
-      height: 300
-    });
+/**
+ *
+ * Will determine if the point is valid
+ *
+ * @link https://www.iacr.org/archive/pkc2003/25670211/25670211.pdf
+ * @param {Point} An instance of Point
+ * @throws {Error} A validation error if exists
+ * @returns {Point} An instance of the same Point
+ */
+Point.prototype.validate = function validate() {
 
-    obj = this.add('Point', {
-      color: [10, 10, 10],
-      borderRadius: 10,
-      borderWidth: 1,
-      borderStyle: 'dotted',
-      borderColor: [30, 30, 30],
-      isStatic: false
-    });
-  });
+  if (this.isInfinity()){
+    throw new Error('Point cannot be equal to Infinity');
+  }
 
-  t.assert(obj.color[0] === 10 && obj.color[1] === 10 && obj.color[2] === 10, 'custom color.');
-  t.equal(obj.borderRadius, 10, 'custom borderRadius.');
-  t.equal(obj.borderWidth, 1, 'custom borderWidth.');
-  t.equal(obj.borderStyle, 'dotted', 'custom borderStyle.');
-  t.assert(obj.borderColor[0] === 30 && obj.borderColor[1] === 30 && obj.borderColor[2] === 30, 'custom borderColor.');
-  t.end();
-});
+  if (this.getX().cmp(BN.Zero) === 0 || this.getY().cmp(BN.Zero) === 0){
+    throw new Error('Invalid x,y value for curve, cannot equal 0.');
+  }
 
-test('draw() should assign a css test string to the style property.', function(t) {
+  var p2 = ecPointFromX(this.getY().isOdd(), this.getX());
 
-  beforeTest();
+  if (p2.y.cmp(this.y) !== 0) {
+    throw new Error('Invalid y value for curve.');
+  }
 
-  var obj;
+  var xValidRange = (this.getX().gt(BN.Minus1) && this.getX().lt(Point.getN()));
+  var yValidRange = (this.getY().gt(BN.Minus1) && this.getY().lt(Point.getN()));
 
-  Burner.System.Classes = {
-    Point: Point
-  };
+  if ( !xValidRange || !yValidRange ) {
+    throw new Error('Point does not lie on the curve');
+  }
 
-  Burner.System.setup(function() {
-    this.add('World', {
-      el: document.getElementById('world'),
-      width: 400,
-      height: 300
-    });
-    obj = this.add('Point'); // add your new object to the system
-    obj.draw();
-    t.equal(obj.el.style.width, '10px', 'el.style width.');
-    t.equal(obj.el.style.height, '10px', 'el.style height.');
-    t.equal(obj.el.style.backgroundColor, 'rgb(200, 200, 200)', 'el.style backgroundColor');
-    t.equal(obj.el.style.borderTopWidth, '2px', 'el.style border top width');
-    t.equal(obj.el.style.borderRightWidth, '2px', 'el.style border right width');
-    t.equal(obj.el.style.borderBottomWidth, '2px', 'el.style border bottom width');
-    t.equal(obj.el.style.borderLeftWidth, '2px', 'el.style border left width');
-    t.equal(obj.el.style.borderTopStyle, 'solid', 'el.style border top style');
-    t.equal(obj.el.style.borderRightStyle, 'solid', 'el.style border right style');
-    t.equal(obj.el.style.borderBottomStyle, 'solid', 'el.style border bottom style');
-    t.equal(obj.el.style.borderLeftStyle, 'solid', 'el.style border left style');
-    t.equal(obj.el.style.borderTopColor, 'rgb(60, 60, 60)', 'el.style border top color');
-    t.equal(obj.el.style.borderRightColor, 'rgb(60, 60, 60)', 'el.style border right color');
-    t.equal(obj.el.style.borderBottomColor, 'rgb(60, 60, 60)', 'el.style border bottom color');
-    t.equal(obj.el.style.borderLeftColor, 'rgb(60, 60, 60)', 'el.style border left color');
-    t.notEqual(obj.el.style.borderTopLeftRadius.search('100%'), -1, 'el.style border top left radius');
-    t.notEqual(obj.el.style.borderTopRightRadius.search('100%'), -1, 'el.style border top right radius');
-    t.notEqual(obj.el.style.borderBottomRightRadius.search('100%'), -1, 'el.style border bottom right radius');
-    t.notEqual(obj.el.style.borderBottomLeftRadius.search('100%'), -1, 'el.style border bottom left radius');
-  });
+  //todo: needs test case
+  if (!(this.mul(Point.getN()).isInfinity())) {
+    throw new Error('Point times N must be infinity');
+  }
 
-  t.end();
-});
+  return this;
+
+};
+
+Point.pointToCompressed = function pointToCompressed(point) {
+  var xbuf = point.getX().toBuffer({size: 32});
+  var ybuf = point.getY().toBuffer({size: 32});
+
+  var prefix;
+  var odd = ybuf[ybuf.length - 1] % 2;
+  if (odd) {
+    prefix = new Buffer([0x03]);
+  } else {
+    prefix = new Buffer([0x02]);
+  }
+  return BufferUtil.concat([prefix, xbuf]);
+};
+
+module.exports = Point;

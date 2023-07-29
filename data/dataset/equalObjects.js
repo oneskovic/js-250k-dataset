@@ -1,6 +1,6 @@
 var keys = require('../object/keys');
 
-/** Used for native method references. */
+
 var objectProto = Object.prototype;
 
 /** Used to check objects for own properties. */

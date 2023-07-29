@@ -1,7 +1,3 @@
-/**
-   * All the methods that are defined in Johnny-Five. These extend
-   * our BrowserControl objects (not their associated elements)
-   */
    var deviceMethods = {
     
     on: function() {

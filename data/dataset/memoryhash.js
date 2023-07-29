@@ -1,16 +1,3 @@
-/*
- * Prototype: MemoryHash
- * Functions:
- *  - add(key,value)
- *  - get(key)
- *  - remove(key)
- *  - removeIf(callBack)
- *  - clear()
- *  - save()
- *  - escapeValue(val)
- *
- *  All keys and values must be strings.
- */
 function MemoryHash(filename)
 {
     this.hash = {};

@@ -1,5 +1,3 @@
-// Last time updated at Nov 18, 2014, 08:32:23
-
 // Latest file can be found here: https://cdn.webrtc-experiment.com/ConcatenateBlobs.js
 
 // Muaz Khan    - www.MuazKhan.com

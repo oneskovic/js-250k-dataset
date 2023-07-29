@@ -1,13 +1,3 @@
-/*
-*MongdbConnect.js 是通用连接池 mongodb 数据库连接文件
-*
-*输出2个函数
-*
-*1、exports = fn，封装好的连接池函数（建议使用）
-*
-*2、exports.mpool 未封装的连接池函数（不建议使用）
-*
-*/
 var poolModule = require('generic-pool'),
 	mongodb = require('mongodb'),
 	outerror = require('./Outerror'),

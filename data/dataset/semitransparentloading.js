@@ -1,14 +1,3 @@
-/**
- * 半透明的loading
- * @class $kit.ui.SemitransparentLoading
- * @requires kit.js
- * @requires ieFix.js
- * @requires dom.js
- * @see <a href="https://github.com/xueduany/KitJs/blob/master/KitJs/src/js/widget/SemitransparentLoading/semitransparentloading.js">Source code</a>
- * @example
- * <a href="http://xueduany.github.com/KitJs/KitJs/demo/Loading/demo.html">Demo</a><br/>
- * <img src="http://xueduany.github.com/KitJs/KitJs/demo/Loading/demo.png">
- */
 $kit.ui.SemitransparentLoading = function(config) {
 	var me = this;
 	me.config = $kit.join(me.constructor.defaultConfig, config);

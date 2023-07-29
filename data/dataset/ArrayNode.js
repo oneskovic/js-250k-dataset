@@ -6,12 +6,7 @@ var Node = require('./Node'),
     isArray = Array.isArray,
     isNode = Node.isNode;
 
-/**
- * @constructor ArrayNode
- * @extends {Node}
- * Holds an 1-dimensional array with nodes
- * @param {Node[]} [nodes]   1 dimensional array with nodes
- */
+
 function ArrayNode(nodes) {
   if (!(this instanceof ArrayNode)) {
     throw new SyntaxError('Constructor must be called with the new operator');

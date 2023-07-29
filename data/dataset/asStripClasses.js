@@ -1,8 +1,7 @@
-// DATA_TEMPLATE: js_data
 oTest.fnStart( "asStripClasses" );
 
 $(document).ready( function () {
-	/* Check the default */
+	
 	$('#example').dataTable( {
 		"aaData": gaaData
 	} );

@@ -1,7 +1,3 @@
-/**
- * @module br/formatting/TruncateDecimalFormatter
- */
-
 var topiarist = require('topiarist');
 var Formatter = require('br/formatting/Formatter');
 var NumberUtil = require('br/util/Number');

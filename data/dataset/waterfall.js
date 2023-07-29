@@ -1,11 +1,5 @@
 ;(function(){
-    /**
-     * @param target {String|Dom} 瀑布流容器的CSS表达式或DOM
-     * @param width {Number} 可选，瀑布流容器的宽
-     * @param colWidth {Number} 瀑布流每列的宽
-     * @param col {Number} 瀑布流里面一共分多少列
-     * @param imgExpr {String} 可选，砖头里大图的CSS表达式，仅在后端没有给出高，使用递归添加砖头时使用
-     */
+    
     var Waterfall = function(hash){
         for(var i in hash){
             this[i] = hash[i];// container, width, colWidth

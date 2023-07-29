@@ -5,11 +5,7 @@ var path  = require('path')
   , Timer = require(path.join(__dirname, 'timer'))
   ;
 
-/*
- *
- * CONSTANTS
- *
- */
+
 var TO_MILLIS = 1000;
 
 

@@ -1,4 +1,3 @@
-//From http://www.sencha.com/forum/showthread.php?281383-Glyph-support-on-treepanels
 Ext.define('Packt.overrides.tree.ColumnOverride', {
     override: 'Ext.tree.Column',
     cellTpl: [

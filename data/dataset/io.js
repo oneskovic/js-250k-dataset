@@ -1,131 +1,100 @@
-(function(){
-  
-  //
-  // the popup menu/button at the top of the editor textarea
-  //
-  IO = function(elt){
-    var dom = $(elt)
-    var _dialog = dom.find('.dialog')
-    var _animating = false
-    
-    var that = {
-      init:function(){
-        
-        dom.find('.ctrl > a').live('click', that.menuClick)
-        _dialog.find('li>a').live('click', that.exampleClick)
-        
-        $.getJSON("library/toc.json", function(resp){
-          _dialog.append($("<h1>Choose Your Own Adventure</h1>"))
-          $.each(resp.rows, function(i, row){
-            if (row.key[0]!='cyoa') return
-            var title = row.value
-            var stub = row.id
-            var book = $("<li><a href='#'></a></li>")
-            book.attr('class', stub.replace(/[^a-z0-9\-\_\+]/g,''))
-            book.find('a').text(title)
-            _dialog.append(book)
-          })
+// -- tlrobinson Tom Robinson
 
-          _dialog.append($("<h1>Doodles</h1>"))
-          $.each(resp.rows, function(i, row){
-            if (row.key[0]!='doodle') return
-            var title = row.value
-            var stub = row.id
-            var doodle = $("<li><a href='#'></a></li>")
-            doodle.attr('class', stub.replace(/[^a-z0-9\-\_\+]/g,''))
-            doodle.find('a').text(title)
-            _dialog.append(doodle)
-          })
+// IO: engine independent
 
+var engine = require("io-engine");
 
-          if ($.address.value()=="/"){
-            var n = resp.total_rows
-            var books = _dialog.find('a')
-            var randBook = resp.rows[Math.floor(Math.random()*n)].id
-            $.address.value(randBook)
-          }
-          
-        })
-        
-        $.address.change(that.navigate)
+var ByteString = require("binary").ByteString,
+    ByteArray = require("binary").ByteArray,
+    B_COPY = require("binary-engine").B_COPY;
 
-        return that
-      },
-            
-      navigate:function(e){
-        // trace(e.path)
-        var docId = e.path.replace(/^\//,'')
-        
-        if (!docId.match(/^[ \t]*$/)){
-          $(that).trigger({type:"get", id:docId})
-        }
-      },
-      
-      exampleClick:function(e){
-        var elt = $(e.target)
-        var targetDoc = elt.closest('li').attr('class')
-        
-        elt.closest('ul').find('a').removeClass('active')
-        elt.addClass('active')
-        
-        
-        $.address.value(targetDoc)
-        that.hideExamples()
-        return false
-      },
-
-      showExamples:function(){
-        if (_animating) return
-        _animating = true
-        dom.find('.examples').addClass('selected')
-        
-        _dialog.find('a').removeClass('active')
-        var viewingId = location.hash.replace(/#\//,'')
-        if (viewingId.length) _dialog.find('li.'+viewingId).find('a').addClass('active')
-        
-        
-        _dialog.stop(true).slideDown(function(){
-          _animating = false
-        })
-      },
-      hideExamples:function(){
-        if (_animating) return
-        _animating = true
-        dom.find('.examples').removeClass('selected')
-        _dialog.stop(true).slideUp(function(){
-          _animating = false
-        })
-      },
-      
-      menuClick:function(e){
-        var button = (e.target.tagName=='A') ? $(e.target) : $(e.target).closest('a')
-        var type = button.attr('class').replace(/\s?(selected|active)\s?/,'')
-        
-        switch(type){
-        case "examples":
-          var toggled = button.hasClass('selected')
-          if (toggled) that.hideExamples()
-          else that.showExamples()
-          break
-          
-        case "new":
-          that.hideExamples()
-          $(that).trigger({type:"clear"})
-          break
-
-        case "save":
-          if ($(e.target).attr('href')!='#'){
-            return true
-          }
-          $(that).trigger({type:"save"})
-          break
-        }
-        
-        return false
-      }
+for (var name in engine) {
+    if (Object.prototype.hasOwnProperty.call(engine, name)) {
+        exports[name] = engine[name];
     }
+};
+
+var IO = exports.IO;
+
+IO.prototype.readChunk = IO.prototype.readChunk || function(length) {
+    if (typeof length !== "number") length = 1024;
+
+    var buffer = new ByteArray(length);
     
-    return that.init()    
-  }
-  
-})()
+    var readLength = this.readInto(buffer, length, 0);
+
+    if (readLength <= 0)
+        return new ByteString();
+
+    return new ByteString(buffer._bytes, 0, readLength);
+};
+
+IO.prototype.read = IO.prototype.read || function(length) {
+    if (length !== undefined)
+        return this.readChunk(length);
+
+    var buffers = [],
+        total = 0;
+
+    while (true) {
+        var buffer = this.readChunk();
+        if (buffer.length > 0) {
+            buffers.push(buffer);
+            total += buffer.length;
+        }
+        else
+            break;
+    }
+
+    var buffer = new ByteArray(total),
+        dest = buffer._bytes,
+        copied = 0;
+
+    for (var i = 0; i < buffers.length; i++) {
+        var b = buffers[i],
+            len = b.length;
+        B_COPY(b._bytes, b._offset, dest, copied, len);
+        copied += len;
+    }
+
+    return new ByteString(dest, 0, copied);
+};
+
+IO.prototype.write = IO.prototype.write || function(object, charset) {
+    if (object === null || object === undefined || typeof object.toByteString !== "function")
+        throw new Error("Argument to IO.write must have toByteString() method");
+
+    var binary = object.toByteString(charset);
+    this.writeInto(binary, 0, binary.length);
+    
+    return this;
+};
+
+IO.prototype.puts = function() {
+    this.write(arguments.length === 0 ? "\n" : Array.prototype.join.apply(arguments, ["\n"]) + "\n");
+}
+
+exports.Peekable = function (input) {
+    this._input = input;
+    this._buffer = new exports.StringIO();
+};
+
+exports.Peekable.prototype.read = function (length) {
+    if (arguments.length == 0)
+        return this._buffer.read() + this._input.read();
+    else if (this._buffer.length)
+        return this._buffer.read(length);
+    else 
+        return this._input.read(length);
+};
+
+exports.Peekable.prototype.peek = function (length) {
+    while (this._buffer.length < length) {
+        var read = this._input.read(length - this._buffer.length);
+        if (!read.length)
+            break;
+        this._buffer.write(read);
+    }
+    return this._buffer.substring(0, length);
+};
+

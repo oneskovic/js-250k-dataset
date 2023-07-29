@@ -1,7 +1,3 @@
-/**
- * @author bhouston / http://exocortex.com
- */
-
 module( "Euler" );
 
 var eulerZero = new THREE.Euler( 0, 0, 0, "XYZ" );

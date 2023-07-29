@@ -1,9 +1,5 @@
 (function($) {
-    /**
-     * boxSpiral, boxSpiralReverse effects
-     *
-     * @since 1.0.2
-     */
+    
     Coo.Effect.register(['boxSpiral', 'boxSpiralReverse'], 'Coo.Effect.BoxSpiral');
 
     Coo.Effect.BoxSpiral = Coo.Effect._Grid.extend({

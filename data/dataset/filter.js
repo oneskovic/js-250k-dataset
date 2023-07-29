@@ -1,76 +1,66 @@
 /**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize underscore exports="node" -o ./underscore/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
+    @module jsdoc/src/filter
+
+    @author Michael Mathews <micmath@gmail.com>
+    @license Apache License 2.0 - See file 'LICENSE.md' in this project.
  */
-var createCallback = require('../functions/createCallback'),
-    forOwn = require('../objects/forOwn');
+'use strict';
 
-/**
- * Iterates over elements of a collection, returning an array of all elements
- * the callback returns truey for. The callback is bound to `thisArg` and
- * invoked with three arguments; (value, index|key, collection).
- *
- * If a property name is provided for `callback` the created "_.pluck" style
- * callback will return the property value of the given element.
- *
- * If an object is provided for `callback` the created "_.where" style callback
- * will return `true` for elements that have the properties of the given object,
- * else `false`.
- *
- * @static
- * @memberOf _
- * @alias select
- * @category Collections
- * @param {Array|Object|string} collection The collection to iterate over.
- * @param {Function|Object|string} [callback=identity] The function called
- *  per iteration. If a property name or object is provided it will be used
- *  to create a "_.pluck" or "_.where" style callback, respectively.
- * @param {*} [thisArg] The `this` binding of `callback`.
- * @returns {Array} Returns a new array of elements that passed the callback check.
- * @example
- *
- * var evens = _.filter([1, 2, 3, 4, 5, 6], function(num) { return num % 2 == 0; });
- * // => [2, 4, 6]
- *
- * var characters = [
- *   { 'name': 'barney', 'age': 36, 'blocked': false },
- *   { 'name': 'fred',   'age': 40, 'blocked': true }
- * ];
- *
- * // using "_.pluck" callback shorthand
- * _.filter(characters, 'blocked');
- * // => [{ 'name': 'fred', 'age': 40, 'blocked': true }]
- *
- * // using "_.where" callback shorthand
- * _.filter(characters, { 'age': 36 });
- * // => [{ 'name': 'barney', 'age': 36, 'blocked': false }]
- */
-function filter(collection, callback, thisArg) {
-  var result = [];
-  callback = createCallback(callback, thisArg, 3);
+var path = require('jsdoc/path');
 
-  var index = -1,
-      length = collection ? collection.length : 0;
+var pwd = env.pwd;
 
-  if (typeof length == 'number') {
-    while (++index < length) {
-      var value = collection[index];
-      if (callback(value, index, collection)) {
-        result.push(value);
-      }
+function makeRegExp(config) {
+    var regExp = null;
+
+    if (config) {
+        regExp = (typeof config === 'string') ? new RegExp(config) : config;
     }
-  } else {
-    forOwn(collection, function(value, index, collection) {
-      if (callback(value, index, collection)) {
-        result.push(value);
-      }
-    });
-  }
-  return result;
+
+    return regExp;
 }
 
-module.exports = filter;
+/**
+    @constructor
+    @param {object} opts
+    @param {string[]} opts.exclude - Specific files to exclude.
+    @param {string|RegExp} opts.includePattern
+    @param {string|RegExp} opts.excludePattern
+ */
+exports.Filter = function(opts) {
+    this.exclude = opts.exclude && Array.isArray(opts.exclude) ?
+        opts.exclude.map(function($) {
+            return path.resolve(pwd, $);
+        }) :
+        null;
+    this.includePattern = makeRegExp(opts.includePattern);
+    this.excludePattern = makeRegExp(opts.excludePattern);
+};
+
+/**
+    @param {string} filepath - The filepath to check.
+    @returns {boolean} Should the given file be included?
+ */
+exports.Filter.prototype.isIncluded = function(filepath) {
+    var included = true;
+
+    filepath = path.resolve(pwd, filepath);
+
+    if ( this.includePattern && !this.includePattern.test(filepath) ) {
+        included = false;
+    }
+
+    if ( this.excludePattern && this.excludePattern.test(filepath) ) {
+        included = false;
+    }
+
+    if (this.exclude) {
+        this.exclude.forEach(function(exclude) {
+            if ( filepath.indexOf(exclude) === 0 ) {
+                included = false;
+            }
+        });
+    }
+
+    return included;
+};

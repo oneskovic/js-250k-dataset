@@ -1,4 +1,3 @@
-
 function findHexWithSideLengthZAndRatio()
 {
 	var z = parseFloat(document.getElementById("sideLength").value);

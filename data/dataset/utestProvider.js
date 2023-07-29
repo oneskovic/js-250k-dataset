@@ -1,6 +1,3 @@
-/**
- * Companion test for providerFactory.
- */
 define(['angularAMD', 'angular-mocks'], function (angularAMD) {
     var inject = angularAMD.inject;
 

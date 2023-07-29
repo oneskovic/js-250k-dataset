@@ -1,11 +1,3 @@
-/*
- * Ext JS Library 2.2.1
- * Copyright(c) 2006-2009, Ext JS, LLC.
- * licensing@extjs.com
- * 
- * http://extjs.com/license
- */
-
 // private
 // This is a support class used internally by the Grid components
 Ext.grid.SplitDragZone = function(grid, hd, hd2){

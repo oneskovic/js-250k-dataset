@@ -1,22 +1,3 @@
-/**
- * The following code block allows current Sencha ExtJS 4.2 and Sencha 2.2 to be compatible with regard to
- * Controllers, Stores, and Models. Currently, Touch supports a new config property where many important fields
- * are defined, whereas ExtJS does not...this utility allows developers to collapse that difference and
- * use the newer Touch syntax with configs. This can be achieved by doing the following in a model (but the same
- * can be done in controllers and stores):
- *
- * Ext.define("CafeTownsend.model.EmployeeModel", Sencha.modelCompatibility({
- *      config: {
- *      },
- * }));
- *
- * This little code nugget was pulled from the following blog post that used CoffeeScript -- we simply used IntelliJ
- * to output the JavaScript.
- *
- * NOTE: Include this script before your app.js script.
- *
- * http://tunein.yap.tv/javascript/2012/08/06/sencha-events/
- */
 // TODO: Get rid of console and use something else
 console.log("Using SenchaCompatibility");
 

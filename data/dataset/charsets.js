@@ -1,4 +1,3 @@
-// not sure where I got this from, will need to add a generation script for it
 exports.BIG5_CHINESE_CI      = 1;
 exports.LATIN2_CZECH_CS      = 2;
 exports.DEC8_SWEDISH_CI      = 3;

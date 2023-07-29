@@ -1,5 +1,3 @@
-/*** SocialButtonView ***/
-
 define(function(require, exports, module) {
     var View              = require('famous/core/View');
     var Surface           = require('famous/core/Surface');

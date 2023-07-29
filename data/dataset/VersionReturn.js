@@ -2,10 +2,7 @@
 
 tutao.provide('tutao.entity.sys.VersionReturn');
 
-/**
- * @constructor
- * @param {Object=} data The json data to store in this entity.
- */
+
 tutao.entity.sys.VersionReturn = function(data) {
   if (data) {
     this.updateData(data);

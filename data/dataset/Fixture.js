@@ -1,73 +1,93 @@
-function repeat(pattern, count) {
-	if (count < 1)
-		return '';
-	var result = '';
-	while (count > 0) {
-		if (count & 1)
-			result += pattern;
-		count >>= 1, pattern += pattern;
-	}
-	return result;
+'use strict';
+
+
+
+var Errors = require('br/Errors');
+
+/**
+ * @class
+ * @interface
+ * @alias module:br/test/Fixture
+ * 
+ * @classdesc
+ * <code>Fixture</code> is the interface for individual fixtures added to the GWTTestRunner. The purpose of a Fixture 
+ * is to enable tests to manipulate and access a specific area of the system under tests using the GWT 
+ * (given-when-then) BDD format.
+ */
+function Fixture() {
 }
 
-function arrayToUl(data, depth, proper) {
-	depth = (isNaN(depth) || depth == 0) ? 1 : depth;
-	var html = '',
-		il = repeat('\t', depth),
-		iu = repeat('\t', depth + 1);
-
-	for (var key in data) {
-		html += il + '<li>';
-		var isInt = (parseInt(key) == key);
-		var label = isInt ? data[key] : key;
-		var href = proper ? hrefs[Math.floor(Math.random() * hrefs.length)] : '#';
-		label = href === '#' ? label : 'Google'
-		html += '<a href="' + href + '">' + label + '</a>';
-		if (!isInt) {
-			html += '\n' + iu + '<ul>\n';
-			html += arrayToUl(data[key], depth + 2, proper);
-			html += iu + '</ul>\n' + il;
-		}
-		html += '</li>\n';
-	}
-	return html;
-}
-
-var links = {
-	"0": "Home",
-	"News and Events": [
-		"Hot News",
-		"RSS Feeds",
-		"Peach Events",
-		"User Groups"
-	],
-	"About": {
-		"Contact Us": [
-			"Support and Service",
-			"Product Feedback",
-			"Website Feedback"],
-		"0": "Public Relations",
-		"1": "Investors",
-		"2": "Working at Peach",
-		"3": "Environment",
-		"Working with Peach": [
-			"Procurement",
-			"Supplier Responsibility"
-		]
-	},
-	"Where to Buy": [
-		"Where can I buy Peach products?",
-		"Peach Online Store",
-		"Peach Store for Business",
-		"Peach Store for Education",
-		"Peach Online Store Country Selector",
-		"Peach Retail",
-		"Find a Reseller",
-		"Peach Financial Services", "Peach Rebates"
-	]
+/**
+ * This method is called just before a GWT test. This optional interface method can be implemented if the fixture  is 
+ *  required to correctly set up the system-under-test before each test.
+ */
+Fixture.prototype.setUp = function() {
+	// optional interface method
 };
 
-var hrefs = [
-	'http://www.google.com',
-	'#'
-];
+/**
+ * This method is called just after a GWT test. This optional interface method can be implemented if the fixture  is 
+ *  required to correctly tear down the system-under-test after each test or to reset any state held in the fixture's
+ *  implementation.
+ */
+Fixture.prototype.tearDown = function() {
+	// optional interface method
+};
+
+/**
+ * This optional interface method can be implemented by a Fixture for a complex system which can be conceptually 
+ * decomposed into separate sub-systems, enabling the fixture to delegate the handling of some fixture properties to 
+ *  the sub-fixtures. This method is called by the GWTTestRunner.
+ *
+ * @param {module:br/test/FixtureRegistry} fixtureRegistry The registry to which the fixtures should be registered.
+ */
+Fixture.prototype.addSubFixtures = function(fixtureRegistry) {
+	// optional interface method
+};
+
+Fixture.prototype.canHandleExactMatch = function() {
+	throw new Errors.UnimplementedInterfaceError('Fixture.canHandleExactMatch() has not been implemented.');
+};
+
+/**
+ * This method is called by the GWTTestRunner to check whether a property used in a GWT test is supported by the 
+ *  fixture.
+ *
+ * @param {String} propertyName the property name to check.
+ * @returns {Boolean} true if the fixture handles the property; false otherwise.
+ */
+Fixture.prototype.canHandleProperty = function(propertyName) {
+	throw new Errors.UnimplementedInterfaceError('Fixture.canHandleProperty() has not been implemented.');
+};
+
+/**
+ * This method is called in order to manipulate a property on the system under test in a given clause.
+ *
+ * @param {String} propertyName The property to be changed.
+ * @param {String} value The new value of the property.
+ */
+Fixture.prototype.doGiven = function(propertyName, value) {
+	throw new Errors.UnimplementedInterfaceError('Fixture.doGiven() has not been implemented.');
+};
+
+/**
+ * This method is called in order to manipulate a property on the system under test in a when clause.
+ *
+ * @param {String} propertyName The property to be changed.
+ * @param {String} value The new value of the property.
+ */
+Fixture.prototype.doWhen = function(propertyName, value) {
+	throw new Errors.UnimplementedInterfaceError('Fixture.doWhen() has not been implemented.');
+};
+
+/**
+ * This method is called in order to assert a property's value on the system under test.
+ *
+ * @param {String} propertyName The property name to assert.
+ * @param {String} value The value to assert.
+ */
+Fixture.prototype.doThen = function(propertyName, value) {
+	throw new Errors.UnimplementedInterfaceError('Fixture.doThen() has not been implemented.');
+};
+
+module.exports = Fixture;

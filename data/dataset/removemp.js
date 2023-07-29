@@ -1,5 +1,3 @@
-//@line 38 "/builds/slave/rel-m-rel-xr-osx64-bld/build/toolkit/mozapps/preferences/removemp.js"
-
 var gRemovePasswordDialog = {
   _token    : null,
   _bundle   : null,

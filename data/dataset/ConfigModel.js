@@ -1,10 +1,3 @@
-
-/**
- * Filename: js/app/models/ConfigModel
- *
- * config model
- *
- */
 //
 
 

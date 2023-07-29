@@ -1,13 +1,3 @@
-/**
- * @fileoverview Defines the objects that contains the list of trace levels
- * available in a LoggerContext and their order.
- *
- * Levels are mere strings kept in an ordered array that defines which level
- * is below another.
- *
- * Copyright (c) 2013 Joshfire
- * MIT license (see LICENSE file)
- */
 /*global module*/
 
 // Ensure "define" is defined in node.js in the absence of require.js

@@ -1,5 +1,3 @@
-//scrapes all options from bootstrap download page
-
 var jsdom = require('jsdom');
 var config = require('./config');
 var path = require('path');

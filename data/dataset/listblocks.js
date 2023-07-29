@@ -1,10 +1,3 @@
-/**
- * Created with PyCharm.
- * User: parallels
- * Date: 11/13/12
- * Time: 5:56 PM
- * To change this template use File | Settings | File Templates.
- */
 define(
     ['jquery', 'underscore', 'backbone', 'text!templates/modals/admin/listblocks.html'],
     function ($, _, Backbone, myTemplate) {

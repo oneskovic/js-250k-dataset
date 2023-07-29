@@ -1,7 +1,3 @@
-//
-// Hydra - HTML5 mobile game engine
-// https://github.com/aduros/hydra/blob/master/LICENSE.txt
-
 goog.provide("hydra.api.yoc");
 
 goog.require("hydra.director");

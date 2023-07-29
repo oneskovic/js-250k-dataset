@@ -1,4 +1,3 @@
-
 var _ = require('underscore'),
     fs = require('fs'),
     path = require('path'),
@@ -16,24 +15,7 @@ var debug = require('./debug'),
 var css = require('./output/css'),
     js = require('./output/js');
 
-/**
- * Options:
- *  jsFormat    Name of JS format. Accepts {'commonjs', 'requirejs', 'flat'}.
- *              Default: 'commonjs'. You can also define your own format; see
- *              'jsTemplate'.
- *  cssFormat   Accepts {'stylus', 'sass', 'scss', 'less'}. Default: 'stylus'.
- *              You can also define your own format; see 'cssTemplate'.
- *  jsTemplate  An underscore-formatted template string to be used when
- *              generating the compiled JS. Must contain slots for variables
- *              named 'preamble' and 'blob'. See lib/output/jstemplates for
- *              an example.
- *  cssTemplate An underscore-formatted template string that defines how a
- *              single variable should be defined. For example, the stylus
- *              template is '$<%= k %> = <%= v %>'. Must contain slots for
- *              variables named 'k' (name of the variable) and 'v' (value of the
- *              variable).
- *  debug       If true, print tons of stuff to the console.
- */
+
 exports.compile = function(sources, options, cb) {
   if (cb) {
     console.error('The JS API has changed and no longer uses callbacks. ' +

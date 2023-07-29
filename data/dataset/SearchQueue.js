@@ -1,4 +1,3 @@
-
 var fbutil = require('./fbutil');
 
 function SearchQueue(esc, reqRef, resRef, cleanupInterval) {

@@ -1,7 +1,3 @@
-/**
- * Testing Viva.Graph.Layout.constant behavior.
- */
-
 var test = require('tap').test;
 var Viva = require('../dist/vivagraph.js');
 

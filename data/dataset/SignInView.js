@@ -1,4 +1,3 @@
-// Local
 exports.init = function (req, res) {
 
 	var passport = req._passport.instance;

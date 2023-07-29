@@ -4,18 +4,7 @@ var _parseUrl = require("url").parse;
 
 
 
-/*
-	Customize the URL object that Node generates
-	because:
-	
-	* necessary data for later
-	* urlObj.host is useless
-	* urlObj.hostname is too long
-	* urlObj.path is useless
-	* urlObj.pathname is too long
-	* urlObj.protocol is inaccurate; should be called "scheme"
-	* urlObj.search is mostly useless
-*/
+
 function clean(urlObj)
 {
 	var scheme = urlObj.protocol;

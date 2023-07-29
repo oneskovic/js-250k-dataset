@@ -1,8 +1,3 @@
-/**
- * Allows a character to move into the tile
- *
- */
-
 if (!RPG) var RPG = {};
 if (!RPG.TileTypes) RPG.TileTypes = {};
 if (!RPG.TileTypes.Traverse) RPG.TileTypes.traverse = {};

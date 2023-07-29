@@ -1,70 +1,135 @@
-/*global Handlebars, shouldThrow */
+var create       = require('../utils').create;
+var hbsCompiler  = require('handlebars/dist/cjs/handlebars/compiler/compiler');
+var BaseCompiler = hbsCompiler.Compiler.prototype;
 
-describe('compiler', function() {
-  if (!Handlebars.compile) {
-    return;
+
+exports.compile    = hbsCompiler.compile;
+exports.precompile = hbsCompiler.precompile;
+
+/**
+ * Base compiler in charge of generating a consumable environment for the
+ * JavaScript compiler.
+ */
+var Compiler = exports.Compiler = function () {};
+Compiler.prototype = create(BaseCompiler);
+Compiler.prototype.compiler = Compiler;
+
+/**
+ * Append a DOM element node to the environment.
+ *
+ * @param {Object} node
+ */
+Compiler.prototype.DOM_ELEMENT = function (node) {
+  this.opcode('pushProgram', this.compileAttribute(node.name));
+  this.opcode('invokeElement');
+
+  for (var i = 0, len = node.attributes.length; i < len; i++) {
+    var name  = this.compileAttribute(node.attributes[i].name);
+    var value = this.compileAttribute(node.attributes[i].value);
+    this.appendAttribute(name, value);
   }
 
-  describe('#equals', function() {
-    function compile(string) {
-      var ast = Handlebars.parse(string);
-      return new Handlebars.Compiler().compile(ast, {});
-    }
+  this.opcode('pushProgram', this.compileContents(node.content));
+  this.opcode('invokeContent');
+  this.opcode('appendElement');
+};
 
-    it('should treat as equal', function() {
-      equal(compile('foo').equals(compile('foo')), true);
-      equal(compile('{{foo}}').equals(compile('{{foo}}')), true);
-      equal(compile('{{foo.bar}}').equals(compile('{{foo.bar}}')), true);
-      equal(compile('{{foo.bar baz "foo" true false bat=1}}').equals(compile('{{foo.bar baz "foo" true false bat=1}}')), true);
-      equal(compile('{{foo.bar (baz bat=1)}}').equals(compile('{{foo.bar (baz bat=1)}}')), true);
-      equal(compile('{{#foo}} {{/foo}}').equals(compile('{{#foo}} {{/foo}}')), true);
-    });
-    it('should treat as not equal', function() {
-      equal(compile('foo').equals(compile('bar')), false);
-      equal(compile('{{foo}}').equals(compile('{{bar}}')), false);
-      equal(compile('{{foo.bar}}').equals(compile('{{bar.bar}}')), false);
-      equal(compile('{{foo.bar baz bat=1}}').equals(compile('{{foo.bar bar bat=1}}')), false);
-      equal(compile('{{foo.bar (baz bat=1)}}').equals(compile('{{foo.bar (bar bat=1)}}')), false);
-      equal(compile('{{#foo}} {{/foo}}').equals(compile('{{#bar}} {{/bar}}')), false);
-      equal(compile('{{#foo}} {{/foo}}').equals(compile('{{#foo}} {{foo}}{{/foo}}')), false);
-    });
-  });
+/**
+ * Append a DOM comment node to the environment.
+ *
+ * @param {Object} node
+ */
+Compiler.prototype.DOM_COMMENT = function (node) {
+  this.opcode('pushProgram', this.compileAttribute(node.text));
+  this.opcode('invokeComment');
+  this.opcode('appendElement');
+};
 
-  describe('#compile', function() {
-    it('should fail with invalid input', function() {
-      shouldThrow(function() {
-        Handlebars.compile(null);
-      }, Error, 'You must pass a string or Handlebars AST to Handlebars.compile. You passed null');
-      shouldThrow(function() {
-        Handlebars.compile({});
-      }, Error, 'You must pass a string or Handlebars AST to Handlebars.compile. You passed [object Object]');
-    });
+/**
+ * Append an attribute to the environment.
+ *
+ * @param  {Object} name
+ * @param  {Object} value
+ */
+Compiler.prototype.appendAttribute = function (name, value) {
+  this.opcode('pushProgram', name);
+  this.opcode('pushProgram', value);
+  this.opcode('invokeAttribute');
+};
 
-    it('can utilize AST instance', function() {
-      equal(Handlebars.compile(new Handlebars.AST.Program([ new Handlebars.AST.ContentStatement("Hello")], null, {}))(), 'Hello');
-    });
+/**
+ * Compile an attribute program.
+ *
+ * @param  {Object} program
+ * @return {Number}
+ */
+Compiler.prototype.compileAttribute = function (program) {
+  var guid = this.compileContents(program);
+  this.children[guid].isAttribute = true;
+  return guid;
+};
 
-    it("can pass through an empty string", function() {
-      equal(Handlebars.compile('')(), '');
-    });
-  });
+/**
+ * Compile an elements contents.
+ *
+ * @param  {Object} program
+ * @return {Number}
+ */
+Compiler.prototype.compileContents = function (program) {
+  var guid   = this.compileProgram(program);
+  var result = this.children[guid];
+  result.isProxied = true;
 
-  describe('#precompile', function() {
-    it('should fail with invalid input', function() {
-      shouldThrow(function() {
-        Handlebars.precompile(null);
-      }, Error, 'You must pass a string or Handlebars AST to Handlebars.precompile. You passed null');
-      shouldThrow(function() {
-        Handlebars.precompile({});
-      }, Error, 'You must pass a string or Handlebars AST to Handlebars.precompile. You passed [object Object]');
-    });
+  // Proxy all the depth nodes between compiled programs.
+  for (var i = 0; i < result.depths.list.length; i++) {
+    this.addDepth(result.depths.list[i]);
+  }
 
-    it('can utilize AST instance', function() {
-      equal(/return "Hello"/.test(Handlebars.precompile(new Handlebars.AST.Program([ new Handlebars.AST.ContentStatement("Hello")]), null, {})), true);
-    });
+  return guid;
+};
 
-    it("can pass through an empty string", function() {
-      equal(/return ""/.test(Handlebars.precompile('')), true);
-    });
-  });
-});
+/**
+ * Update the compiler equality check to also take into account attribute
+ * programs.
+ *
+ * @param  {Object}  other
+ * @return {Boolean}
+ */
+Compiler.prototype.equals = function (other) {
+  // Check if we have two attribute programs (or non-attribute programs).
+  if (this.isAttribute !== other.isAttribute) {
+    return false;
+  }
+
+  return BaseCompiler.equals.call(this, other);
+};
+
+/**
+ * Trigger a `beforeAppend` opcode to enable wrapping the result of a block.
+ *
+ * @param {Object} block
+ */
+Compiler.prototype.block = function (block) {
+  this.opcode('beforeAppend');
+  BaseCompiler.block.call(this, block);
+};
+
+/**
+ * Trigger a `beforeAppend` opcode to enable wrapping the result of a partial.
+ *
+ * @param {Object} block
+ */
+Compiler.prototype.partial = function (partial) {
+  this.opcode('beforeAppend');
+  BaseCompiler.partial.call(this, partial);
+};
+
+/**
+ * Trigger a `beforeAppend` opcode to enable wrapping the result of a mustache.
+ *
+ * @param {Object} mustache
+ */
+Compiler.prototype.mustache = function (mustache) {
+  this.opcode('beforeAppend');
+  BaseCompiler.mustache.call(this, mustache);
+};

@@ -5,17 +5,7 @@ var crypto = require('crypto')
   , Step = require('step')
 ;
 
-/*
- * generate_keypair(comment, path, callback) or generate_keypair(comment, callback)
- *
- * Fork a child process to run ssh-keygen and generate a DSA SSH Key Pair
- * with no passphrase. Does not return the contents of the keys, leaves them
- * on the filesystem.
- *
- * <comment> The comment to put in the public key
- * <path> Base output file path. Pubkey will be path + ".pub". If not specified, a tmp file will be used, and callback will be called with (err, privkey, pubkey)j
- * <callback> function(exitcode) or function(err, privkey, pubkey) if no path is given
- */
+
 var generate_keypair = exports.generate_keypair = function(comment, path, callback) {
   var readfiles = false
     , random_str

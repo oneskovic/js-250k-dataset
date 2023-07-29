@@ -1,7 +1,3 @@
-/**
- * Demonstrates how use Ext.chart.LineChart
- */
-//<feature charts>
 Ext.define('Kitchensink.view.AreaChart', {
     extend: 'Ext.Panel',
     requires: ['Ext.chart.Chart', 'Ext.chart.interactions.PanZoom', 'Ext.chart.series.Area',

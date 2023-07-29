@@ -1,82 +1,68 @@
-/**
- * Internal representation of a Jasmine suite.
- *
- * @constructor
- * @param {jasmine.Env} env
- * @param {String} description
- * @param {Function} specDefinitions
- * @param {jasmine.Suite} parentSuite
- */
-jasmine.Suite = function(env, description, specDefinitions, parentSuite) {
-  var self = this;
-  self.id = env.nextSuiteId ? env.nextSuiteId() : null;
-  self.description = description;
-  self.queue = new jasmine.Queue(env);
-  self.parentSuite = parentSuite;
-  self.env = env;
-  self.before_ = [];
-  self.after_ = [];
-  self.children_ = [];
-  self.suites_ = [];
-  self.specs_ = [];
-};
+(function( $, Benchmark ) {
 
-jasmine.Suite.prototype.getFullName = function() {
-  var fullName = this.description;
-  for (var parentSuite = this.parentSuite; parentSuite; parentSuite = parentSuite.parentSuite) {
-    fullName = parentSuite.description + ' ' + fullName;
-  }
-  return fullName;
-};
 
-jasmine.Suite.prototype.finish = function(onComplete) {
-  this.env.reporter.reportSuiteResults(this);
-  this.finished = true;
-  if (typeof(onComplete) == 'function') {
-    onComplete();
-  }
-};
+  var $results = $("#results"),
 
-jasmine.Suite.prototype.beforeEach = function(beforeEachFunction) {
-  beforeEachFunction.typeName = 'beforeEach';
-  this.before_.unshift(beforeEachFunction);
-};
 
-jasmine.Suite.prototype.afterEach = function(afterEachFunction) {
-  afterEachFunction.typeName = 'afterEach';
-  this.after_.unshift(afterEachFunction);
-};
+  // say = function( text ) {
+  //   var row = $('<div>');
+  //   row.html( text );
+  //   $results.append( row );
+  // },
 
-jasmine.Suite.prototype.results = function() {
-  return this.queue.results();
-};
 
-jasmine.Suite.prototype.add = function(suiteOrSpec) {
-  this.children_.push(suiteOrSpec);
-  if (suiteOrSpec instanceof jasmine.Suite) {
-    this.suites_.push(suiteOrSpec);
-    this.env.currentRunner().addSuite(suiteOrSpec);
-  } else {
-    this.specs_.push(suiteOrSpec);
-  }
-  this.queue.add(suiteOrSpec);
-};
+  watch = function( benchmark) {
+    var box = $('<div id=' + benchmark.id + '>'), cycles;
 
-jasmine.Suite.prototype.specs = function() {
-  return this.specs_;
-};
+    box.html( '<h2>' + benchmark.name + '</h2>' );
+    box.append('<div class=\"cycles\"></div>');
+    cycles = box.find('.cycles');
+    $results.append( box );
 
-jasmine.Suite.prototype.suites = function() {
-  return this.suites_;
-};
+    benchmark.on( 'start', function( ) {
+      box.append( '<div>Starting...</div>' );
+    });
 
-jasmine.Suite.prototype.children = function() {
-  return this.children_;
-};
+    benchmark.on( 'complete', function( event ) {
+      box.append( String(event.target) );
+      box.append( '<div>Complete!</div>' );
+    });
+    
+    benchmark.on( 'cycle', function() {
+      // cycles.html( 'Cycles ran: ' +  this.cycle );
+    });
 
-jasmine.Suite.prototype.execute = function(onComplete) {
-  var self = this;
-  this.queue.start(function () {
-    self.finish(onComplete);
-  });
-};
+    benchmark.setFastest = function() {
+      box.find('h2').append('<span class=fastest>Fastest</span>');
+    };
+  };
+
+
+  var Suite = Benchmark.Suite;
+  Benchmark.Suite = function() {
+    var args = Array.prototype.slice.call( arguments ),
+    suite = Suite.apply( Benchmark, args );
+    
+    suite.on('complete', function() {
+      this.filter('fastest').forEach( function( testCase ) {
+        testCase.setFastest();
+      });
+    });
+
+    return suite;
+  };
+
+
+  var _run = Suite.prototype.run;
+  Suite.prototype.run = function() {
+    var args = Array.prototype.slice.call(arguments);
+    this.forEach( function( testCase ) {
+      watch( testCase );
+    });
+
+    return _run.apply( this, args );
+  };
+
+
+
+})( jQuery, Benchmark  );

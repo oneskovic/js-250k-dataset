@@ -1,23 +1,3 @@
-/**
- * @ngdoc directive
- * @name jqm.directive:jqmHeader
- * @restrict A
- *
- * @description
- * Defines the header of a `jqm-page`. For a persistent header, put the header directly below `jqmView` / `jqmCachingView`.
- *
- * @example
- <example module="jqm">
- <file name="index.html">
- <div jqm-page class="jqm-standalone-page" style="height: 100px;">
-   <div jqm-header>
-   <h1>Header of Page1</h1>
-   </div>
-   Hello world!
- </div>
- </file>
- </example>
- */
 jqmModule.directive('jqmHeader', ['jqmConfig', function (jqmConfig) {
   return {
     restrict: 'A',

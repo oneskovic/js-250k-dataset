@@ -1,23 +1,3 @@
-/** 
- * class CircleGeometry < Geometry
- *
- * Physics.geometry('circle')
- *
- * The circle geometry has a circular shape.
- *
- * Additional options include:
- * - radius: the radius
- *
- * Example:
- *
- * ```javascript
- * var round = Physics.body('circle', {
- *     x: 30,
- *     y: 20,
- *     radius: 5
- * });
- * ```
- **/
 Physics.geometry('circle', function( parent ){
 
     var defaults = {

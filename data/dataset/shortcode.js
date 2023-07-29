@@ -10,10 +10,7 @@ Shortcode = Backbone.Model.extend({
 		attrs: new ShortcodeAttributes,
 	},
 
-	/**
-	 * Custom set method.
-	 * Handles setting the attribute collection.
-	 */
+	
 	set: function( attributes, options ) {
 
 		if ( attributes.attrs !== undefined && ! ( attributes.attrs instanceof ShortcodeAttributes ) ) {

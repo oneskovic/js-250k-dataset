@@ -1,14 +1,3 @@
-/*!
- * http://seuratjs.com/
- *
- * Tested with Raphael JavaScript Library v2.1
- * http://raphaeljs.com/
- *
- * Copyright 2012, 2013 Greg Smith
- * http://gregoryryansmith.com/
- * Dual licensed under the MIT or GPL Version 2 licenses.
- */
-
 Raphael.fn.seurat = function(settings) {
   settings = settings || {};
   var imageSource = settings.imageSource,

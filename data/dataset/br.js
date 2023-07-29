@@ -1,7 +1,3 @@
-// moment.js language configuration
-// language : breton (br)
-// author : Jean-Baptiste Le Duigou : https://github.com/jbleduigou
-
 function relativeTimeWithMutation(number, withoutSuffix, key) {
     var format = {
         'mm': "munutenn",

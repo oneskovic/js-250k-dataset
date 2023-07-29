@@ -1,8 +1,3 @@
-/**
- * User: KGoulding
- * Date: 9/18/12
- * Time: 11:02 AM
- */
 (function () { // self-invoking function
     /**
      * @class SAS.MechanismDef

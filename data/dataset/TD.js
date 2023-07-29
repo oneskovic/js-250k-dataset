@@ -1,6 +1,3 @@
-/**
- * Td class
- */
 global.TD = CLASS({
 
 	preset : function() {

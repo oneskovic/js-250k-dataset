@@ -1,4 +1,3 @@
-/*jshint -W098 */
 var keyDelimiter = "|";
 var bindingsResolver = {
 	cache: {},

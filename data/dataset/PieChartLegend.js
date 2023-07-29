@@ -1,10 +1,5 @@
 PieChartLegend = Y.Base.create("pieChartLegend", Y.PieChart, [], {
-    /**
-     * Redraws the chart instance.
-     *
-     * @method _redraw
-     * @private
-     */
+    
     _redraw: function()
     {
         if(this._drawing)

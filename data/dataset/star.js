@@ -1,110 +1,88 @@
-(function() {
-    /**
-     * Star constructor
-     * @constructor
-     * @memberof Kinetic
-     * @augments Kinetic.Shape
-     * @param {Object} config
-     * @param {Integer} config.numPoints
-     * @param {Number} config.innerRadius
-     * @param {Number} config.outerRadius
-     * @@shapeParams
-     * @@nodeParams
-     * @example
-     * var star = new Kinetic.Star({
-     *   x: 100,
-     *   y: 200,
-     *   numPoints: 5,
-     *   innerRadius: 70,
-     *   outerRadius: 70,
-     *   fill: 'red',
-     *   stroke: 'black',
-     *   strokeWidth: 4
-     * });
-     */
-    Kinetic.Star = function(config) {
-        this.___init(config);
-    };
+var voicejs = require('../voice.js');
 
-    Kinetic.Star.prototype = {
-        ___init: function(config) {
-            // call super constructor
-            Kinetic.Shape.call(this, config);
-            this.className = 'Star';
-            this.sceneFunc(this._sceneFunc);
-        },
-        _sceneFunc: function(context) {
-            var innerRadius = this.innerRadius(),
-                outerRadius = this.outerRadius(),
-                numPoints = this.numPoints();
+var client = new voicejs.Client({
+	email: process.argv[2] || 'email@gmail.com',
+	password: process.argv[3] || 'password',
+	tokens: require('./tokens.json')
+});
 
-            context.beginPath();
-            context.moveTo(0, 0 - outerRadius);
+// Helper function to indicate whether an Array contains an entry
+// Used to check if a conversation has a certain label, such as convo.label.is('starred')
+Array.prototype.is = function(entry){
+	return !!~this.indexOf(entry);
+}
 
-            for(var n = 1; n < numPoints * 2; n++) {
-                var radius = n % 2 === 0 ? outerRadius : innerRadius;
-                var x = radius * Math.sin(n * Math.PI / numPoints);
-                var y = -1 * radius * Math.cos(n * Math.PI / numPoints);
-                context.lineTo(x, y);
-            }
-            context.closePath();
 
-            context.fillStrokeShape(this);
-        }
-    };
-    Kinetic.Util.extend(Kinetic.Star, Kinetic.Shape);
 
-    // add getters setters
-    Kinetic.Factory.addGetterSetter(Kinetic.Star, 'numPoints', 5);
+// Star then unstar the 5 latest conversations in your history that are currently UNSTARRED, showing the starred messages in the process
 
-    /**
-     * set number of points
-     * @name setNumPoints
-     * @method
-     * @memberof Kinetic.Star.prototype
-     * @param {Integer} points
-     */
 
-     /**
-     * get number of points
-     * @name getNumPoints
-     * @method
-     * @memberof Kinetic.Star.prototype
-     */
+client.get('starred', {limit: 10}, function(error, response, data){
+	if(error){ return console.log(error); }
 
-    Kinetic.Factory.addGetterSetter(Kinetic.Star, 'innerRadius', 0);
+	if(!data || !data.conversations_response || !data.conversations_response.conversationgroup){ return console.log('No starred conversations')}
 
-    /**
-     * set inner radius
-     * @name setInnerRadius
-     * @method
-     * @memberof Kinetic.Star.prototype
-     * @param {Number} radius
-     */
+	console.log('\nLatest starred conversations:')
+	data.conversations_response.conversationgroup.forEach(function(convo){
+		console.log(convo.conversation.id);
+	});
+	
+	
+	// Get 5 messages from the history
+	client.get('all', {limit:5}, function(error, response, data){
+		if(error){
+			return console.log(error);
+		}
+		if(!data.conversations_response || !data.conversations_response.conversationgroup){ return console.log('No conversations')}
 
-     /**
-     * get inner radius
-     * @name getInnerRadius
-     * @method
-     * @memberof Kinetic.Star.prototype
-     */
+		console.log('\nConversations to star:')
+		var ids = [];
+		data.conversations_response.conversationgroup.forEach(function(convo){	
+			console.log(convo.conversation.id);
+			if(!convo.conversation.label.is('starred')){ // if not currently starred, push to array of ids that wil be starred
+				ids.push(convo.conversation.id)
+			}
+		});
 
-    Kinetic.Factory.addGetterSetter(Kinetic.Star, 'outerRadius', 0);
 
-    /**
-     * set outer radius
-     * @name setOuterRadius
-     * @method
-     * @memberof Kinetic.Star.prototype
-     * @param {Number} radius
-     */
+		// Star the conversations all at once
+		client.set('mark', {star: true, id: ids}, function(error, response, data){
+			if(error){ return console.log(error); }
+			console.log('\nStarred 5 conversations successfully.');
 
-     /**
-     * get outer radius
-     * @name getOuterRadius
-     * @method
-     * @memberof Kinetic.Star.prototype
-     */
 
-    Kinetic.Collection.mapMethods(Kinetic.Star);
-})();
+			// get the latest 10 starred messages
+			client.get('starred', {limit: 10}, function(error, response, data){
+				if(error){ return console.log(error); }
+
+				if(!data || !data.conversations_response || !data.conversations_response.conversationgroup){ return console.log('No starred conversations')}
+
+				console.log('\nLatest starred conversations:')
+				data.conversations_response.conversationgroup.forEach(function(convo){
+					console.log(convo.conversation.id);
+				});
+
+
+				// Unstar multiple conversations at once by passing in an array of conversation ids
+				client.set('mark',{star: false, id: ids}, function(error, response, data){
+					if(error){ return console.log(error); }
+
+					console.log('\nUnstarred 5 conversations successfully.');
+
+
+					// List starred messages
+					client.get('starred', function(error, response, data){
+						if(error) return console.log(error);
+
+						if(!data || !data.conversations_response || !data.conversations_response.conversationgroup){ return console.log('No starred conversations')}
+
+						console.log('\nLatest starred conversations:')
+						data.conversations_response.conversationgroup.forEach(function(convo){
+							console.log(convo.conversation.id);
+						})
+					});
+				})
+			});
+		});
+	});
+});

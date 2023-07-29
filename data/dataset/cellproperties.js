@@ -1,4 +1,3 @@
-/* bender-tags: editor,unit */
 /* bender-ckeditor-plugins: entities,dialog,tabletools,toolbar */
 
 ( function() {

@@ -1,62 +1,134 @@
-/**
- * This class provides access to the device contacts.
- * @constructor
- */
+function contacts(_args) {
+	var self = Ti.UI.createWindow({
+		title:_args.title,
+		backgroundColor:'#fff'
+	});
+	// create table view data object
+	Ti.include("/etc/version.js");
+	
+	var needsAuth = false;
+	
+	var supportsAuthAPI = (Ti.version >= '2.1.3');
+	
+	if (Titanium.Platform.name == 'iPhone OS')
+	{
+		needsAuth = isiOS6Plus();
+	}
+	
+	var infoLabel = Ti.UI.createLabel({top:10});
+	var b1 = Ti.UI.createButton({
+			bottom:10,
+			title:'Request Authorization'
+	})
+	
+	b1.addEventListener('click',function(e){
+		Ti.Contacts.requestAuthorization(requestPermission);
+	})
+	
+	self.add(infoLabel);
+	self.add(b1);
+	
+	var requestPermission = function(e) {
+		var privs = Ti.Contacts.contactsAuthorization;
+		if (privs===Ti.Contacts.AUTHORIZATION_AUTHORIZED){
+			performAddressBookFunction();
+		}
+		else {
+			if (privs===Ti.Contacts.AUTHORIZATION_RESTRICTED){
+				b1.visible = false;
+				b1.enabled = false;
+				infoLabel.visible = true;
+				infoLabel.text ='Contact authorization restricted. User can not grant permission. '
+			}
+			else if (privs===Ti.Contacts.AUTHORIZATION_DENIED){
+				b1.visible = false;
+				b1.enabled = false;
+				infoLabel.visible = true;
+				infoLabel.text ='Contact authorization denied. User has disallowed contacts use.'
+			}
+			else if (privs===Ti.Contacts.AUTHORIZATION_UNKNOWN){
+				infoLabel.text ='Contact authorization unknown. Request permission from user.'
+				infoLabel.visible = true;
+				b1.visible = true;
+				b1.enabled = true;
+			}
+			else {
+				infoLabel.text = 'Got unknown value for Ti.Contacts.contactsAuthorization';
+				infoLabel.visible = true;
+				b1.visible = false;
+				b1.enabled = false;
+			}
+		}
+		
+	}
+	var performUnsupported = function() {
+		infoLabel.text = 'The Contacts API requires user permission to run successfully. This version of the Titanium SDK does not support contact authorization. Please update to SDK 2.1.3 or later.'
+		infoLabel.visible = true;
+		b1.visible = false;
+		b1.enabled = false;
+	}
+	var performAddressBookFunction = function() {
+		infoLabel.visible = false;
+		b1.visible = false;
+		b1.enabled = false;
 
-function Contact(jsonObject) {
-    this.name = {
-		formatted:''
+		// create table view data object
+		var data = [
+			{title:'Contacts picker', hasChild:true, test:'ui/common/phone/contacts_picker'},
+			{title:'Search By ID', hasChild:true, test:'ui/common/phone/contacts_searchById'}
+		];
+
+		if (Ti.Platform.osname !== 'tizen') {
+			data.push({title:'Display people', hasChild:true, test:'ui/common/phone/contacts_db'});
+			data.push({title:'Contact images',hasChild:true, test:'ui/common/phone/contacts_image'});
+		}
+
+		if (Ti.Platform.osname !== 'android') {
+			data.push({title:'Add contact',hasChild:true, test:'ui/common/phone/contacts_add'});
+			data.push({title:'Remove contact',hasChild:true, test:'ui/common/phone/contacts_remove'});
+		}
+
+		if (Ti.Platform.osname !== 'android' && Ti.Platform.osname !== 'tizen') {
+			data.push({title:'Groups',hasChild:true, test:'ui/common/phone/contacts_groups'});
+		}
+		
+		// create table view
+		for (var i = 0; i < data.length; i++ ) { data[i].color = '#000'; data[i].font = {fontWeight:'bold'} };
+		var tableview = Titanium.UI.createTableView({
+			data:data
+		});
+		
+		// create table view event listener
+		tableview.addEventListener('click', function(e)
+		{
+			if (e.rowData.test)
+			{
+				var ExampleWindow = require(e.rowData.test);
+				win = new ExampleWindow({title: e.rowData.title, containingTab: _args.containingTab, tabGroup: _args.tabGroup});
+				_args.containingTab.open(win,{animated:true});
+			}
+		});
+		
+		// add table view to the window
+		self.add(tableview);
 	};
-    this.phones = [];
-    this.emails = [];
-  	this.id = "";
-}
-
-Contact.prototype.displayName = function() {
-	return this.name.formatted;
-}
-
-function Contacts() {
-	// Dummy object to hold array of contacts
-	this.contacts = [];
-	this.timestamp = new Date().getTime();
-}
-
-if (typeof navigator.contacts == "undefined") navigator.contacts = new Contacts();
-
-Contacts.prototype.formParams = function(options, startArray) {
-	var params = [];
-	if (startArray) params = startArray;
-	if (options.limit && options.limit > 0) params.push("pageSize:" + options.limit);
-	if (options.page) params.push("pageNumber:" + options.page);
-	return params;	
-};
-Contacts.prototype.chooseContact = function(successCallback, options) {
-	this.choose_onSuccess = successCallback;
-	var params = ["choose"];
-	params = this.formParams(options,params);
-	PhoneGap.exec("contacts", params);
-};
-Contacts.prototype.find = function(filter, successCallback, errorCallback, options) {
-	if (typeof(filter) != 'object') {
-		alert('[PhoneGap Error] filter parameter passed into navigator.contacts.find must be of type object.');
-		return;
+	
+	if (needsAuth)
+	{
+		self.add(infoLabel);
+		if (supportsAuthAPI) {
+			requestPermission();
+		}
+		else {
+			performUnsupported();
+		}
 	}
-	if (filter.name && filter.name.length > 0) {
-		var params = ["search"];
-		params.push('nameFilter:' + filter.name);
-		params = this.formParams(options,params);
-		this.search_onSuccess = successCallback;
-		this.search_onError = errorCallback;
-		PhoneGap.exec("contacts", params);
-	} else {
-		this.getAllContacts(successCallback,errorCallback,options);
+	else {
+		performAddressBookFunction();
 	}
+
+	
+	return self;
 };
-Contacts.prototype.getAllContacts = function(successCallback, errorCallback, options) {
-	this.global_onSuccess = successCallback;
-	this.global_onError = errorCallback;
-	var params = ["getall"];
-	params = this.formParams(options,params);
-	PhoneGap.exec("contacts", params);
-};
+
+module.exports = contacts;

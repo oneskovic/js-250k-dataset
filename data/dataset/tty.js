@@ -1,7 +1,3 @@
-/**
- * TTY mixin helpers
- */
-
 var _ = require("lodash");
 var readline = require("readline");
 var cliWidth = require("cli-width");

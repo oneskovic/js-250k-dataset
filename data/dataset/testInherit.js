@@ -1,15 +1,3 @@
-/*
- * instanceof is a more complete check then .constructor ===
- * 
- * It works when using node's built-in util.inherits function
- * and it also honors a class's entire ancestry
- *
- * Here I am only testing the change to vows in suite.js at line 147 to change
- * the check from .constructor === to instanceof.  These tests should demonstrate
- * that this change should work both cases.  For completness I also check
- * the case when EventEmitter is an ancestor, not the parent Class.
- * 
- */
 var EventEmitter = process.EventEmitter,
     util = require('util'),
     vows = require('vows'),

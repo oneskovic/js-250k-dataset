@@ -1,136 +1,86 @@
-function initializeServers () {
-  var user = Meteor.users.findOne({username: SUPER_USER});
-  if (! user) {
-    Accounts.createUser({
-      username: SUPER_USER,
-      email: SUPER_USER_EMAIL,
-      password: SUPER_USER_PASSWORD,
-      profile: {connections: {}}
-    });
-    var user = Meteor.users.findOne({username: SUPER_USER});
-  }
-  for (server_name in GlobalServers) {
-    var server = Servers.findOne({name: server_name});
-    if (! server) {
-      var now = new Date();
-      var server_data = GlobalServers[server_name];
-      var server_id = Servers.insert({
-        name: server_name,
-        connections: server_data.connections,
-        created: now,
-        creator: user.username,
-        creator_id: user._id,
-        last_updated: now,
-        last_updater: user.username,
-        last_updater_id: user._id,
-      });
-    }
-  }
+if(!dojo._hasResource["tests._base._loader.bootstrap"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
+dojo._hasResource["tests._base._loader.bootstrap"] = true;
+dojo.provide("tests._base._loader.bootstrap");
+
+tests.register("tests._base._loader.bootstrap", 
+	[
+
+		function hasConsole(t){
+			t.assertTrue("console" in dojo.global);
+			t.assertTrue("assert" in console);
+			t.assertEqual("function", typeof console.assert);
+		},
+
+		{
+			name: "getObject",
+			setUp: function(){
+				//Set an object in global scope.
+				dojo.global.globalValue = {
+					color: "blue",
+					size: 20
+				};
+				
+				//Set up an object in a specific scope.
+				this.foo = {
+					bar: {
+						color: "red",
+						size: 100
+					}
+				};
+			},
+			runTest: function(t){
+				//Test for existing object using global as root path.
+				var globalVar = dojo.getObject("globalValue");
+				t.is("object", (typeof globalVar));
+				t.assertEqual("blue", globalVar.color);
+				t.assertEqual(20, globalVar.size);
+				t.assertEqual("blue", dojo.getObject("globalValue.color"));
+				
+				//Test for non-existent object using global as root path.
+				//Then create it.
+				t.assertFalse(dojo.getObject("something.thatisNew"));
+				t.assertTrue(typeof(dojo.getObject("something.thatisNew", true)) == "object");
+				
+				//Test for existing object using another object as root path.
+				var scopedVar = dojo.getObject("foo.bar", false, this);
+				t.assertTrue(typeof(scopedVar) == "object");
+				t.assertEqual("red", scopedVar.color);
+				t.assertEqual(100, scopedVar.size);
+				t.assertEqual("red", dojo.getObject("foo.bar.color", true, this));
+				
+				//Test for existing object using another object as root path.
+				//Then create it.
+				t.assertFalse(dojo.getObject("something.thatisNew", false, this));
+				t.assertTrue(typeof(dojo.getObject("something.thatisNew", true, this)) == "object");
+			},
+			tearDown: function(){
+				//Clean up global object that should not exist if
+				//the test is re-run.
+				try{
+					delete dojo.global.something;
+					delete this.something;
+				}catch(e){}
+			}
+		},
+		
+		{
+			name: "exists",
+			setUp: function(){
+				this.foo = {
+					bar: {}
+				};
+			},
+			runTest: function(t){
+				t.assertTrue(dojo.exists("foo.bar", this));
+				t.assertFalse(dojo.exists("foo.bar"));
+			}
+		},
+
+		function evalWorks(t){
+			t.assertTrue(dojo.eval("(true)"));
+			t.assertFalse(dojo.eval("(false)"));
+		}
+	]
+);
+
 }
-
-function observeChatrooms () {
-  var userServersCursor = UserServers.find(
-    {active: true, status: 'connected'},
-    {created: 0, last_updated: 0}
-  );
-  var userChannelsCursor = UserChannels.find(
-    {active: true, server_active: true, status: 'connected'},
-    {last_updated: 0, created: 0}
-  );
-  var userPmsCursor = UserPms.find({});
-  userServersCursor.observeChanges({
-    added: function (id, fields) {
-      var userServer = UserServers.findOne({_id: id});
-      var roomSignature = userServer.user + '||' + userServer.name;
-      UnreadLogsCount.upsert({
-        room_signature: roomSignature,
-        user: userServer.user
-      }, {
-        $set: {
-          last_updated_at: new Date(),
-          offset: chatRoomLogCount.getCurrentLogCountForInterval(
-            roomSignature)
-        }
-      });
-    },
-    removed: function (id) {
-      var userServer = UserServers.findOne({_id: id});
-      if (userServer)
-        UnreadLogsCount.remove({
-          room_signature: userServer.user + '||' + userServer.name,
-          user: userServer.user
-        });
-    }
-  });
-
-  userChannelsCursor.observeChanges({
-    added: function (id, fields) {
-      var userChannel = UserChannels.findOne({_id: id});
-      var roomSignature = userChannel.user_server_name + '::' +
-        userChannel.name;
-      UnreadLogsCount.upsert({
-        room_signature: roomSignature,
-        user: userChannel.user
-      }, {
-        $set: {
-          last_updated_at: new Date(),
-          offset: chatRoomLogCount.getCurrentLogCountForInterval(
-            roomSignature)
-        }
-      });
-    },
-    removed: function (id) {
-      var userChannel = UserChannels.findOne({_id: id});
-      if (userChannel) {
-        UnreadLogsCount.remove({
-          room_signature: userChannel.user_server_name + '::' +
-            userChannel.name,
-          user: userChannel.user
-        });
-    }
-    }
-  });
-  userPmsCursor.observeChanges({
-    added: function (id, fields) {
-      console.log('User PM ADDED', id, fields);
-      var roomSignature = fields.user + '||' + fields.user_server_name + '::' +
-        fields.name;
-      UnreadLogsCount.upsert({
-        room_signature: roomSignature,
-        user: fields.user
-      }, {
-        $set: {
-          last_updated_at: new Date(),
-          offset: chatRoomLogCount.getCurrentLogCountForInterval(
-            roomSignature)
-        }
-      });
-    },
-    removed: function (id) {}
-  })
-}
-
-function observeChatLogs () {
-  var currentTime = new Date();
-  UserServerLogs.find({
-      from_user: null, created: {$gte: currentTime}}).observeChanges({
-    added: function (id, fields) {
-      chatRoomLogCount.increment(
-        fields.user + '||' + fields.server_name);
-    }
-  });
-  PMLogs.find({created: {$gte: currentTime}}).observeChanges({
-    added: function (id, fields) {
-      console.log('PM', fields);
-      if (fields.from_user != fields.user)
-        chatRoomLogCount.increment(
-          fields.user + '||' + fields.server_name + '::' + fields.from);
-    }
-  });
-}
-
-Meteor.startup(function () {
-  initializeServers();
-  observeChatrooms();
-  observeChatLogs();
-});

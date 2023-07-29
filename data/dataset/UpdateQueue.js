@@ -1,4 +1,3 @@
-// Serialize load (avoid too many parallel connections)
 Ext.define('PVE.data.UpdateQueue', {
     singleton: true,
 

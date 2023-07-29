@@ -4,12 +4,7 @@ goog.provide('lime.animation.ColorTo');
 goog.require('lime.Sprite');
 goog.require('lime.animation.Animation');
 
-/**
- * Animation for changing element's fillcolor value
- * @param {mixed...} args Color definition.
- * @constructor
- * @extends lime.animation.Animation
- */
+
 lime.animation.ColorTo = function(args) {
     lime.animation.Animation.call(this);
 

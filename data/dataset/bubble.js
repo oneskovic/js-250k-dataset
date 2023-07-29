@@ -1,77 +1,115 @@
-'use strict';
+var bubbleCounter = 0;
 
-module.exports = defineRules;
+var Bubble = function(parent) {
+	this.x = 0;
+	this.y = 0;
+	this.w = 150;
+	this.h = 75;
+	this.text = "";
+	this.type = 0;
+	this.id = bubbleCounter;
 
-var bubbleJobTitles = [
-    /gurus?/,
-    /hero(:?es)/,
-    /ninjas?/,
-    /rock\s*stars?/,
-    /super\s*stars?/
-];
+	parent.append('<div id="cont' + bubbleCounter + '" style="position: absolute">' +
+			'<canvas id="bubble' + bubbleCounter + '" width="'+this.w+'" height="'+this.h+'"></canvas></div>');
 
-var temptations = [
-    /ales?/,
-    /beers?/,
-    /brewskis?/,
-    'coffee',
-    'foosball',
-    /happy\s*hours?/,
-    /keg(?:erator)?s?/,
-    /lagers?/,
-    /nerf\s*guns?/,
-    /ping\s*pong?/,
-    /pints?/,
-    /pizzas?/,
-    /play\s*stations?/,
-    /pool\s*table|pool/,
-    /rock\s*walls?/,
-    'table football',
-    /table\s*tennis/,
-    /wiis?/,
-    /xbox(?:es|s)?/,
-    /massages?/
-];
+	var that = this;
+	var resizing = false;
 
-function defineRules (linter) {
+	$('#cont' + bubbleCounter).css('width', this.w);
+	$('#cont' + bubbleCounter).css('height', this.h);
+	$('#cont' + bubbleCounter).draggable({
+		start: function() {
+			$(this).fadeTo('fast', 0.5);
+			if (typeof that.startDragHandler == "function") that.startDragHandler();
+		},
+		drag: function(event, ui) {
+			that.x = ui.position.left - $('#canv').position().left;
+			that.y = ui.position.top - $('#canv').position().top;
+		},
+		stop: function() {
+			$(this).fadeTo('fast', 1);
+		}
+	});
 
-    // Job title fails
-    linter.addRule({
-        name: 'Job "Titles"',
-        desc: 'Referring to tech people as Ninjas or similar devalues the work that they do and ' +
-              'shows a lack of respect and professionalism. It\'s also rather cliched and can be ' +
-              'an immediate turn-off to many people.',
-        test: function (spec, result) {
-            var bubbleJobMentions = spec.containsAnyOf(bubbleJobTitles);
-            if (bubbleJobMentions.length > 0) {
-                result.addWarning(
-                    'Tech people are not ninjas, rock stars, gurus or superstars',
-                    bubbleJobMentions
-                );
-                result.addCultureFailPoints(bubbleJobMentions.length / 2);
-                result.addRealismFailPoints(1);
-            }
-        }
-    });
+	$('#cont' + bubbleCounter).click(function(ev) {
+		if (!resizing) {
+			that.clickHandler(ev, that);
+		}
+		resizing = false;
+	});
 
-    // Temptations
-    linter.addRule({
-        name: 'Hollow Benefits',
-        desc: 'Benefits such as "beer fridge" and "pool table" are not bad in themselves, but ' +
-              'their appearance in a job spec often disguises the fact that there are few real ' +
-              'benefits to working for a company. Be wary of these.',
-        test: function (spec, result) {
-            var temptationMentions = spec.containsAnyOf(temptations);
-            if (temptationMentions.length > 0) {
-                result.addWarning(
-                    'Attempt to attract candidates with hollow benefits: ' +
-                    temptationMentions.join(', '),
-                    temptationMentions
-                );
-                result.addCultureFailPoints(1);
-                result.addRecruiterFailPoints(temptationMentions.length / 2);
-            }
-        }
-    });
+	$('#cont' + bubbleCounter).resizable({
+		start: function() {
+			if (typeof that.startResizeHandler == "function") that.startResizeHandler();
+		},
+		resize: function(event, ui) {
+			that.w = ui.size.width;
+			that.h = ui.size.height;
+			that.resize();
+			that.draw();
+			resizing = true;
+		}
+	});
+	this.resize();
+	this.draw();
+	bubbleCounter++;
+}
 
+
+Bubble.prototype.remove = function() {
+	$('#cont'+this.id).remove();
+}
+
+Bubble.prototype.position = function() {
+	return $('#cont'+this.id).position();
+}
+
+Bubble.prototype.move = function(toX, toY) {
+	this.x = toX - $('#canv').position().left;
+	this.y = toY - $('#canv').position().top
+	$('#cont'+this.id).css('left', toX);
+	$('#cont'+this.id).css('top', toY);
+}
+
+Bubble.prototype.resize = function() {
+	var b_canvas = document.getElementById("bubble" + this.id);
+	console.log('resizing',this.id,this.w,this.h);
+	b_canvas.width = this.w;
+	b_canvas.height = this.h;
+	$('#cont'+this.id).css('width', this.w);
+	$('#cont'+this.id).css('height', this.h);
+}
+
+Bubble.prototype.textWidth = function() {
+	var b_canvas = document.getElementById("bubble" + this.id);
+	var ctx2 = b_canvas.getContext("2d");
+	var te = ctx2.measureText(this.text);
+	return te.width;
+
+}
+
+Bubble.prototype.draw = function() {
+	console.log('drawing',this.id, this.x,this.y,this.w,this.h);
+	var b_canvas = document.getElementById("bubble" + this.id);
+	var b_context = b_canvas.getContext("2d");
+	drawBubble(b_context, 0, 0, this.w, this.h, this.text, this.type);
+}
+
+Bubble.prototype.changeText = function(val) {
+	var b_canvas = document.getElementById("bubble" + this.id);
+	console.log('changing text',this.id,this.w,this.h);
+	b_canvas.width = this.w;
+	b_canvas.height = this.h;
+	this.text = val.replace(/[\n\r]/g,"");
+	this.draw();
+}
+
+Bubble.prototype.fitToText = function() {
+	var b_canvas = document.getElementById("bubble" + this.id);
+	var ctx2 = b_canvas.getContext("2d");
+	var te = ctx2.measureText(this.text);
+	this.w = te.width + 50;
+	this.h = 50;
+	this.resize();
+	this.draw();
 }

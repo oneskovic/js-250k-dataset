@@ -1,90 +1,58 @@
-define([
-  'jquery',
-  'underscore',
-  'backbone',
-], function($, _, Backbone) {
 
-  var Environment = function(){};
+var modules;
+var allResults = [];
+var current;
 
-  _.extend(Environment.prototype, {
+registerEnvironment = function(name, mod) {
+  environment = name;
+  modules = mod;
+}
 
-    console: undefined,
+startTests = function() {
+  trigger('suite.started', [environment, modules]);
+  nextModule();
+}
 
-    setup: function() {
-      var env = this;
+testsFinishedCallback = function(r, time) {
+  if(!current) console.info(r, time);
+  var data = { module: current.name, results: r, time: time };
+  trigger('suite.module_finished', data);
+  allResults.push(data);
+  nextModule();
+}
 
-      /**
-       *
-       */
-      env.ajaxCount = 0;
-      env.ajaxResponse = {};
-      env.ajaxResponseStatus = 'success';
-      env.ajaxAsync = false;
-      env.sync = Backbone.sync;
-      env.ajax = Backbone.ajax;
-      env.countEvents = function(eventEmitter) {
-        var eventCount = {};
-        eventEmitter.on('all', function(e) {
-          eventCount[e] = eventCount[e] ? eventCount[e]+1 : 1;
-        });
-        return eventCount;
-      };
+var nextModule = function() {
+  current = modules.shift();
+  if(current) {
+    loadScripts(current);
+  } else {
+    modulesFinished();
+  }
+}
 
-      env.emulateHTTP = Backbone.emulateHTTP;
-      env.emulateJSON = Backbone.emulateJSON;
+var modulesFinished = function() {
+  trigger('suite.finished', [environment, allResults]);
+}
 
-      // Capture ajax settings for comparison.
-      Backbone.ajax = function(settings) {
-        var deferred = $.Deferred();
-        env.ajaxCount += 1;
-        env.ajaxSettings = settings;
-        if (env.console) {
-          env.console.log('Ajax ' + settings.type + ': ' + settings.url);
-        }
-        if (env.ajaxAsync) {
+var loadScripts = function(module) {
+  var loaded = 0, i;
+  for(i = 0; i < module.tests.length; i++){
+    jQuery.getScript((module.path || '') + module.tests[i], function() {
+      loaded++;
+      if(loaded == module.tests.length){
+        syncTestsFinished();
+      }
+    }).fail(function(jqxhr, state, err) {
+      throw err;
+    });
+  }
+}
 
-          setTimeout(function(){
-            settings.success(env.ajaxResponse);
-            deferred.resolve();
-          });
-        } else {
-          if (env.ajaxResponseStatus === 'error') {
-            if (settings.error) {
-              settings.error(env.ajaxResponse);
-            }
-          } else {
-            if (settings.success) {
-              settings.success(env.ajaxResponse);
-            }
-          }
-          deferred.resolve();
-        }
-        return deferred;
-      };
+var trigger = function(name, data) {
+  var win = getWindow();
+  win.jQuery(win.document).trigger(name, data);
+}
 
-      // Capture the arguments to Backbone.sync for comparison.
-      Backbone.sync = function(method, model, options) {
-        env.syncArgs = {
-          method: method,
-          model: model,
-          options: options
-        };
-        return env.sync.apply(this, arguments);
-      };
-    },
-
-    teardown: function() {
-      this.syncArgs = null;
-      this.ajaxSettings = null;
-      Backbone.sync = this.sync;
-      Backbone.ajax = this.ajax;
-      Backbone.emulateHTTP = this.emulateHTTP;
-      Backbone.emulateJSON = this.emulateJSON;
-    }
-
-
-
-  });
-  return Environment;
-
-});
+var getWindow = function() {
+  return window.parent !== window && window.parent.jQuery ? window.parent : window;
+}

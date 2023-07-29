@@ -1,12 +1,3 @@
-/*
- * Name: LiveRadio SewisePlayerSkin framework V1.0.0
- * Author: Jack Zhang
- * Website: http://www.sewise.com/
- * Date: 24th March 2014
- * Copyright: 2014, Sewise
- * 
- */
-
 (function(win, $){
 	$(document).ready(function(){
 		var mainPlayer = SewisePlayer.ILivePlayer;

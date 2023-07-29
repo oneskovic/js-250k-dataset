@@ -1,10 +1,3 @@
-/**
- * MIT Licensed fork from https://github.com/vkiryukhin/vkBeautify
- * see https://github.com/it-ony/vkBeautify
- *
- * removed unused methods
- */
-
 (function (exports) {
     "use strict";
 

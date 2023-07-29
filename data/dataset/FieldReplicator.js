@@ -1,18 +1,3 @@
-/**
- * @class Ext.ux.FieldReplicator
- * <p>A plugin for Field Components which creates clones of the Field for as
- * long as the user keeps filling them. Leaving the final one blank ends the repeating series.</p>
- * <p>Usage:</p>
- * <pre><code>
-    {
-        xtype: 'combo',
-        plugins: [ Ext.ux.FieldReplicator ],
-        triggerAction: 'all',
-        fieldLabel: 'Select recipient',
-        store: recipientStore
-    }
- * </code></pre>
- */
 Ext.define('Ext.ux.FieldReplicator', {
     singleton: true,
 

@@ -1,10 +1,3 @@
-/**
- * This example shows how to create a grid from XML data. The grid is stateful so you can
- * move or hide columns, reload the page, and come back to the grid in the same state you
- * left it in.
- *
- * The cells are selectable due to use of the `enableTextSelection` option.
- */
 Ext.define('KitchenSink.view.grid.XmlGrid', {
     extend: 'Ext.grid.Panel',
     requires: [

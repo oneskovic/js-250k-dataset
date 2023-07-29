@@ -112,5 +112,5 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/Control', 'google.maps', './mar
         return MarkerCluster;
 
     },
-    /* bExport= */
+    
     true);

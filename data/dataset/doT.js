@@ -1,8 +1,3 @@
-
-/**
- * Module dependencies.
- */
-
 var Base = require('./base')
   , color = Base.color;
 

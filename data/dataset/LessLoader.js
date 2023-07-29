@@ -10,7 +10,7 @@ angular
     var _lessBasePath = "/javascripts/less/less-{version}.js";
 
     function _eval(str) {
-      /* jshint evil: true */
+      
       $window['eval'].call($window, str);
     }
 

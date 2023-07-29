@@ -1,13 +1,7 @@
 angular.module('flokTimeModule').factory('durationUtil', [function() {
     'use strict';
 
-    /**
-     * durationUtil functions
-     * @copyright  Nothing Interactive 2014
-     * @author     Patrick Fiaux <nodz@nothing.ch>
-     * @constructor
-     * @exports flokTimeModule/durationUtil
-     */
+    
     var DurationUtil = function() {
     };
 

@@ -1,7 +1,3 @@
-/**
- * @private
- * Private Container class used by the {@link Ext.grid.RowEditor} to hold its buttons.
- */
 Ext.define('Ext.grid.RowEditorButtons', {
     extend: 'Ext.container.Container',
     alias: 'widget.roweditorbuttons',

@@ -1,7 +1,3 @@
-/**
- * @module Application
- * @submodule Components
- */
 define([
     'require.text!templates/components/study-toolbar.html',
     'core/modules/GelatoComponent'

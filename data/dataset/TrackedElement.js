@@ -1,11 +1,3 @@
-// ----------------------------------------------------------------------------
-// File: TrackedElement.js
-//
-// Copyright (c) 2014 VoodooJs Authors
-// ----------------------------------------------------------------------------
-
-
-
 /**
  * Tracks the position and size of an HTML element and issues callbacks
  * when these change.

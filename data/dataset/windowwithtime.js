@@ -1,10 +1,4 @@
-  /**
-   *  Projects each element of an observable sequence into zero or more windows which are produced based on timing information.
-   * @param {Number} timeSpan Length of each window (specified as an integer denoting milliseconds).
-   * @param {Mixed} [timeShiftOrScheduler]  Interval between creation of consecutive windows (specified as an integer denoting milliseconds), or an optional scheduler parameter. If not specified, the time shift corresponds to the timeSpan parameter, resulting in non-overlapping adjacent windows.
-   * @param {Scheduler} [scheduler]  Scheduler to run windowing timers on. If not specified, the timeout scheduler is used.
-   * @returns {Observable} An observable sequence of windows.
-   */
+  
   observableProto.windowWithTime = function (timeSpan, timeShiftOrScheduler, scheduler) {
     var source = this, timeShift;
     timeShiftOrScheduler == null && (timeShift = timeSpan);

@@ -1,10 +1,3 @@
-/*
- * containers.js: Instance methods for working with containers from Azure
- *
- * (C) Microsoft Open Technologies, Inc.
- *
- */
-
 var base = require('../../../core/storage'),
     pkgcloud = require('../../../../../lib/pkgcloud'),
     storage = pkgcloud.providers.azure.storage;

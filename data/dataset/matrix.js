@@ -1,8 +1,3 @@
-
-/**
- * @class Scene graph node which defines a modelling transform matrix to apply to the objects in its subgraph
- * @extends SceneJS.Node
- */
 SceneJS.Matrix = SceneJS_NodeFactory.createNodeType("matrix");
 
 SceneJS.Matrix.prototype._init = function(params) {

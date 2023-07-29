@@ -1,7 +1,3 @@
-/*
- * This is a very simple AMD module loader so that xstyle can be used standalone
- */
-
 (function(){
 	var doc = document;
 	// find a script to go off of

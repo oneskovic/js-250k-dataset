@@ -1,6 +1,3 @@
-//@line 38 "/builds/slave/rel-m-rel-xr-osx64-bld/build/toolkit/mozapps/preferences/ocsp.js"
-
-
 var gOCSPDialog = {
   _certDB         : null,
   _OCSPResponders : null,

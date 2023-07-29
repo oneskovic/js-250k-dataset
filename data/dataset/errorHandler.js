@@ -1,58 +1,84 @@
-/*
-  #!/usr/local/bin/node
-  -*- coding:utf-8 -*-
- 
-  Copyright 2013 yanghua Inc. All Rights Reserved.
- 
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
- 
-     http://www.apache.org/licenses/LICENSE-2.0
- 
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
-  ---
-  Created with Sublime Text 2.
-  User: yanghua
-  Date: 22/10/13
-  Time: 9:50 PM
-  Desc: error handler of application
+/**
+ * Module dependencies.
  */
 
-var mailServie = require("../services/mail");
+var utils = require('./../utils'),
+    sys = require('sys'),
+    fs = require('fs');
 
 /**
- * process app errors
- * @param  {object} app the instance of application
- * @return {null}     
+ * Setup error handler with the given `options`.
+ *
+ * Options:
+ *
+ *   - `showStack`       respond with both the error message and stack trace. Defaults to `false`
+ *   - `showMessage`     respond with the exception message only. Defaults to `false`
+ *   - `dumpExceptions`  dump exceptions to stderr (without terminating the process). Defaults to `false`
+ *
+ * @param {Object} options
+ * @return {Function}
+ * @api public
  */
-exports.appErrorProcess = function (app) {
-    //config for production env
-    app.configure("production", function () {
-        //error hanlder
-        app.error(function(err, req, res, next) {
-            console.log("error:" + err.stack || err.message);
-            mailServie.sendMail({
-              subject : "FixedAssetManager_Server[App Error]",
-              text    : err.message + "\n" + err.stack + "\n" + err.toString()
-            });
-            if (err instanceof PageNotFoundError) {
-                res.render("errors/404");
-            } else if (err instanceof ServerError) {
-                res.render("errors/500");
-            }
-        });
 
-        //catch all errors on process and send mail
-        process.on("uncaughtException", function (err) {
-            mailServie.sendMail({
-                subject : "FixedAssetManager_Server[App Error]",
-                text    : err.message + "\n" + err.stack + "\n" + err.toString()
-            });
-        });
-    });
+module.exports = function errorHandler(options){
+    options = options || {};
+
+    // Defaults
+    var showStack = options.showStack,
+        showMessage = options.showMessage,
+        dumpExceptions = options.dumpExceptions;
+
+    // --showErrorStack
+    if (process.connectEnv.showErrorStack !== undefined) {
+        showStack = utils.toBoolean(process.connectEnv.showErrorStack);
+    }
+
+    // --showErrorMessage
+    if (process.connectEnv.showErrorMessage !== undefined) {
+        showMessage = utils.toBoolean(process.connectEnv.showErrorMessage);
+    }
+
+    // --dumpExceptions
+    if (process.connectEnv.dumpExceptions !== undefined) {
+        dumpExceptions = utils.toBoolean(process.connectEnv.dumpExceptions);
+    }
+
+    return function errorHandler(err, req, res, next){
+        if (dumpExceptions) {
+            sys.error(err.stack);
+        }
+        if (showStack) {
+            var accept = req.headers.accept || '';
+            if (accept.indexOf('html') !== -1) {
+                fs.readFile(__dirname + '/../public/style.css', function(e, style){
+                    style = style.toString('ascii');
+                    fs.readFile(__dirname + '/../public/error.html', function(e, html){
+                        var stack = err.stack
+                            .split('\n').slice(1)
+                            .map(function(v){ return '<li>' + v + '</li>'; }).join('');
+                        html = html
+                            .toString('utf8')
+                            .replace('{style}', style)
+                            .replace('{stack}', stack)
+                            .replace(/\{error\}/g, err.toString());
+                        res.writeHead(500, { 'Content-Type': 'text/html' });
+                        res.end(html);
+                    });
+                });
+            } else if (accept.indexOf('json') !== -1) {
+                var json = JSON.stringify({ error: err });
+                res.writeHead(500, { 'Content-Type': 'application/json' });
+                res.end(json);
+            } else {
+                res.writeHead(500, { 'Content-Type': 'text/plain' });
+                res.end(err.stack);
+            }
+        } else {
+            var body = showMessage
+                ? err.toString()
+                : 'Internal Server Error';
+            res.writeHead(500, { 'Content-Type': 'text/plain' });
+            res.end(body);
+        }
+    };
 };

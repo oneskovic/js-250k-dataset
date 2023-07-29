@@ -1,11 +1,3 @@
-/* =========================================================================
- *
- * canLog
- *
- *      Function which takes in a gropu and groupsEnabled and returns a {Boolean}
- *      indicating if message can be logged
- *
- * ========================================================================= */
 function canLog(group, groupsEnabled, groupsDisabled){ 
     // Check if a passed in group {string} can be logged based on the passed in
     // groupsEnabled ({Array} or {Boolean}). 

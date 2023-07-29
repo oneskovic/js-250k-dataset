@@ -14,29 +14,7 @@ module.exports = function (math) {
 
       bigArcTan = util.bignumber.arctan_arccot;
 
-  /**
-   * Calculate the inverse tangent of a value.
-   *
-   * For matrices, the function is evaluated element wise.
-   *
-   * Syntax:
-   *
-   *    math.atan(x)
-   *
-   * Examples:
-   *
-   *    math.atan(0.5);           // returns Number 0.4636476090008061
-   *    math.atan(math.tan(1.5)); // returns Number 1.5
-   *
-   *    math.atan(2);             // returns Complex 1.5707963267948966 -1.3169578969248166 i
-   *
-   * See also:
-   *
-   *    tan, asin, acos
-   *
-   * @param {Number | BigNumber | Boolean | Complex | Array | Matrix | null} x   Function input
-   * @return {Number | BigNumber | Complex | Array | Matrix} The arc tangent of x
-   */
+  
   math.atan = function atan(x) {
     if (arguments.length != 1) {
       throw new math.error.ArgumentsError('atan', arguments.length, 1);

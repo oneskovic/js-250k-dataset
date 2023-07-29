@@ -1,5 +1,3 @@
-/*global Profile: false*/
-
 //
 //  Utility helpers.
 //

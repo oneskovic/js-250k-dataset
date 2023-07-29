@@ -1,7 +1,3 @@
-/*!
- * Module dependencies.
- */
-
 var util = require('util'),
 	utils = require('keystone-utils'),
 	super_ = require('../Type');

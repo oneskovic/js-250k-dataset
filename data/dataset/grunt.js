@@ -1,53 +1,77 @@
-/*global module:false*/
+"use strict";
 module.exports = function(grunt) {
-    //Load in the coffee and css grunt machines!
-    grunt.loadNpmTasks('grunt-coffee'); // http://github.com/avalade/grunt-coffee
-    grunt.loadNpmTasks('grunt-css'); // http://github.com/jzaefferer/grunt-css
-    // Project configuration.
-    grunt.initConfig({
-                         pkg: '<json:package.json>',
-                         meta: {
-                             banner: '/*! <%= pkg.title || pkg.name %> - v<%= pkg.version %> - ' +
-                                 '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
-                                 '<%= pkg.homepage ? "* " + pkg.homepage + "\n" : "" %>' +
-                                 '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;' +
-                                 ' Licensed <%= pkg.license %> */'
-                         },
-                         coffee:{
-                             coffee:{
-                                 src: ["src/js/plugins.coffee"],
-                                 dest: 'build/js/',
-                                 options:{
-                                     bare: true
-                                 }
-                             }
-                         },                      
-                         concat: {
-                             dist: {
-                                 src: ['src/js/begin.js','build/js/plugins.js','src/js/end.js'],
-                                 dest: 'dist/js/<%= pkg.name %>.js'
-                             }
-                         },                         
-                         min: {
-                             dist: {
-                                 src: ['<banner:meta.banner>', '<config:concat.dist.dest>'],
-                                 dest: 'dist/js/<%= pkg.name %>.min.js'
-                             }
-                         },
-                         cssmin:{
-                            dist:{
-                                src:["src/css/*.css"],
-                                dest:"dist/css/<%= pkg.name %>.min.css"
-                            }
-                         },
-                         watch: {
-                             files: ["src/*/*"],
-                             tasks: 'coffee concat min cssmin'
-                         }
-                     }
-                    );
+  // Project configuration.
+  grunt.initConfig({
+    files: [
+      'backbrace.js'
+    ],
+    meta: {
+      version: '0.3.0',
+      banner: '// Backbrace.js <%= meta.version %>\n\n' +
+              '// (c) 2012 Patrick Williams, BitTorrent Inc.\n' +
+              '// Backbrace may be freely distributed under the MIT license.\n'
+    },
+    lint: {
+      files: ['<config:files>','spec/**/*.js']
+    },
+    watch: {
+      files: ['<config:jasmine.specs>','*.js'],
+      tasks: 'jasmine'
+    },
+    jasmine : {
+      src : [
+        'components/underscore/underscore.js', 
+        'components/backbone/backbone.js', 
+        'backbrace.min.js'
+      ],
+      specs : ['spec/**/*.js']
+    },
+    concat: {
+      dist: {
+        src: ['<config:files>'],
+        dest: 'backbrace.concat.js'
+      }
+    },
+    min: {
+      dist: {
+        src: ['<banner:meta.banner>', '<config:concat.dist.dest>'],
+        dest: 'backbrace.min.js'
+      }
+    },
+    jshint: {
+      options: {
+        curly: true,
+        eqeqeq: true,
+        immed: true,
+        latedef: true,
+        newcap: true,
+        noarg: true,
+        sub: true,
+        undef: true,
+        boss: true,
+        eqnull: true,
+        node: true,
+        es5: true,
+        validthis:true
+      },
+      globals: {
+        jasmine : false,
+        describe : false,
+        beforeEach : false,
+        afterEach: false,
+        waitsFor: false,
+        runs: false,
+        expect : false,
+        it : false,
+        spyOn : false,
+        _: true,
+        Backbone: false,
+        Backbrace: false
+      }
+    }
+  });
 
-    // Default task.
-    grunt.registerTask('default', 'watch');
-    grunt.registerTask('build','coffee concat min cssmin');
+  grunt.loadNpmTasks('grunt-jasmine-runner');
+  grunt.registerTask('default', 'lint concat min jasmine');
+
 };

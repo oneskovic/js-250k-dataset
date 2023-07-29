@@ -1,113 +1,51 @@
+this.uploadFromUrl = function(url, req, mainRes) {
+	var matches = /^.*?:\/\/(.*?)(\/.*)$/.exec(url);
+	if (!matches || matches.length < 3) {
+		mainRes.writeHead(200, {'content-type': 'text/json' });
+		mainRes.write(JSON.stringify({success: false, error: 'Error uploading image.'}));
+		mainRes.end('\n');
+	}
+	var options = {
+		host: matches[1],
+		port: 80,
+		path: matches[2]
+	}
+	var str = Hash.md5(new Date().toString() + req.sessionID);
+	var request = http.get(options, function(res) {
+		res.setEncoding('binary')
+		var buffers = [];
+		var sumLength = 0;
+		res.on("data", function(chunk) {
+			buffers.push(new Buffer(chunk, 'binary'));
+			sumLength += chunk.length;
+		});
+		res.on('end', function(chunk) {
+			console.log("Total Length: ", sumLength);
+			var pos = 0;
+			var bigBuffer = new Buffer(sumLength + 1)
+			for (var i = 0; i < buffers.length; i++) {
+				buffers[i].copy(bigBuffer, pos, 0);
+				pos += buffers[i].length;
+			}
+			req.session.iUrl = str;
 
-/**
- * Unique id counter;
- *
- * @type Number
- */
-var id = 0;
-
-/**
- * Local slice alias
- *
- * @type Functions
- */
-var slice = Array.prototype.slice;
-
-/**
- * Map of fullnames by index => name
- *
- * @type Array
- */
-var fullnameMap = [];
-
-/**
- * Iterator used to flatten arrays with reduce.
- *
- * @param Array a
- * @param Array b
- * @return Array
- */
-var concatIterator = function concatIterator(a, b) {
-    return a.concat(b);
-};
-
-/**
- * Get a group (middleware, decorator, etc.) for this bottle instance and service name.
- *
- * @param Array collection
- * @param Number id
- * @param String name
- * @return Array
- */
-var get = function get(collection, id, name) {
-    var group = collection[id];
-    if (!group) {
-        group = collection[id] = {};
-    }
-    if (name && !group[name]) {
-        group[name] = [];
-    }
-    return name ? group[name] : group;
-};
-
-/**
- * Will try to get all things from a collection by name, by __global__, and by mapped names.
- *
- * @param Array collection
- * @param Number id
- * @param String name
- * @return Array
- */
-var getAllWithMapped = function(collection, id, name) {
-    return get(fullnameMap, id, name)
-        .map(getMapped.bind(null, collection))
-        .reduce(concatIterator, get(collection, id, name))
-        .concat(get(collection, id, '__global__'));
-};
-
-/**
- * Iterator used to get decorators from a map
- *
- * @param Array collection
- * @param Object data
- * @return Function
- */
-var getMapped = function getMapped(collection, data) {
-    return get(collection, data.id, data.fullname);
-};
-
-/**
- * Iterator used to walk down a nested object.
- *
- * @param Object obj
- * @param String prop
- * @return mixed
- */
-var getNested = function getNested(obj, prop) {
-    return obj[prop];
-};
-
-/**
- * Get a service stored under a nested key
- *
- * @param String fullname
- * @return Service
- */
-var getNestedService = function getNestedService(fullname) {
-    return fullname.split('.').reduce(getNested, this);
-};
-
-/**
- * A helper function for pushing middleware and decorators onto their stacks.
- *
- * @param Array collection
- * @param String name
- * @param Function func
- */
-var set = function set(collection, id, name, func) {
-    if (typeof name === 'function') {
-        func = name;
-        name = '__global__';
-    }
-    get(collection, id, name).push(func);
-};
+			resize.writeToAndResizeIfNeeded(bigBuffer, 800, 600, mainDirname + '/public/upload/' + str,
+					function() {
+						mainRes.writeHead(200, {'content-type': 'text/json' });
+						mainRes.write(JSON.stringify({success: true, id: str}));
+						mainRes.end('\n');
+					},
+					function() {
+						mainRes.writeHead(200, {'content-type': 'text/json' });
+						mainRes.write(JSON.stringify({success: false, error: 'Error uploading image.'}));
+						mainRes.end('\n');
+					}
+			);
+		})
+	});
+	request.addListener('error', function(error){
+		mainRes.writeHead(200, {'content-type': 'text/json' });
+		mainRes.write(JSON.stringify({success: false, error: error.toString()}));
+		mainRes.end('\n');
+	});
+}

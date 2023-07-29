@@ -10,16 +10,7 @@ define([
     ) {
         'use strict';
 
-        /**
-        *   UIRect component class.
-        *
-        *   Any entity with a UIRect component will have its MeshFilter
-        *   automatically updated with a matching quad Mesh.
-        *
-        *   @class 
-        *   @param {sprite}
-        *   @constructor
-        */
+        
         var UIRect = function(uiElementStyle) {
             UIElement.call(this, uiElementStyle);
 

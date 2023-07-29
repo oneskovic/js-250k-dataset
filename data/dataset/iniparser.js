@@ -1,7 +1,3 @@
-
-/*
- * get the file handler
- */
 var fs = require('fs');
 
 /*

@@ -6,13 +6,7 @@ var _scrapEnum = require("./../ScrapEnum.js"),
 
 module.exports = function () {
 
-    /**
-     * Extract scrap name out of single scrap line @\\[scrap@(.*)
-     *
-     * @param line
-     * @returns {*}
-     * @private
-     */
+    
     var escapedScrapOpen = _regutils.preparePattern(_scrapEnum.scrapEnum.open),
         _extractScrapName = function (line) {
 

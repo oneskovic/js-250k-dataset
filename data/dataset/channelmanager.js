@@ -1,4 +1,3 @@
-/* Object that manages channels */
 function POChannelManager(fname)
 {
     /* Permanent channels */

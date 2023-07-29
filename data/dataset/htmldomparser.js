@@ -1,11 +1,3 @@
-/*
- * HTMLParser - This implementation of parser assumes we are parsing HTML in browser
- * and user DOM methods available in browser for parsing HTML.
- * 
- * @author Himanshu Gilani
- * 
- */
-
 var HTMLParser = function(node, handler, opts) {
 	opts = opts || {};
 	var nodesToIgnore = opts['nodesToIgnore'] || [];

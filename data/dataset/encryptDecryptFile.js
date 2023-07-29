@@ -1,4 +1,3 @@
-// Test for file encryption.
 QUnit.asyncTest('encryptDecryptFile', function(assert) {
 	'use strict';
 

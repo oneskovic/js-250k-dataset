@@ -1,128 +1,147 @@
+define([
+        'exports',
+        '../browser/getStyle'
+    ],
+    function(imageLoader, getStyle){
 
-(function(){
+        imageLoader.VERSION = '0.0.1';
 
-/**
- * 构造函数.
- * @name ImageLoader
- * @augments EventDispatcher
- * @class ImageLoader类是一个图片加载器，用于动态加载图片资源。
- * @param source 要加载的图片资源，可以是一个单独资源或多个资源的数组。图片资源格式为：{src:$url, id:$id, size:$size}。
- */
-var ImageLoader = Quark.ImageLoader = function(source)
-{
-	ImageLoader.superClass.constructor.call(this);	
-	
-	this.loading = false; //ready-only
-	
-	this._index = -1;
-	this._loaded = 0;
-	this._images = {};
-	this._totalSize = 0;
-	this._loadHandler = Quark.delegate(this._loadHandler, this);
-	
-	this._addSource(source);
-};
-Quark.inherit(ImageLoader, Quark.EventDispatcher);
+        imageLoader.isLoading = false;
 
-/**
- * 开始顺序加载图片资源。
- * @param source 要加载的图片资源，可以是一个单独资源或多个资源的数组。
- */
-ImageLoader.prototype.load = function(source)
-{
-	this._addSource(source);
-	if(!this.loading) this._loadNext();
-};
+        // added images.
+        imageLoader._added = {};
 
-/**
- * 添加图片资源。
- * @private 
- */
-ImageLoader.prototype._addSource = function(source)
-{
-	if(!source) return;
-	source = (source instanceof Array) ? source : [source];
-	for(var i = 0; i < source.length; i++)
-	{
-		this._totalSize+= source[i].size || 0;
-	}
-	if(!this._source) this._source = source;
-	else this._source = this._source.concat(source);
-};
+        // added images.
+        imageLoader._loaded = {};
 
-/**
- * 加载下一个图片资源。
- * @private
- */
-ImageLoader.prototype._loadNext = function()
-{
-	this._index++;
-	if(this._index >= this._source.length)
-	{
-		this.dispatchEvent({type:"complete", target:this, images:this._images});
-		this._source = [];
-		this.loading = false;
-		this._index = -1;
-		return;
-	}
-	
-	var img = new Image();
-	img.onload = this._loadHandler;
-	img.src = this._source[this._index].src;
-	this.loading = true;
-};
+        imageLoader._imageWidths = {};
+        imageLoader._imageHeights = {};
 
-/**
- * 图片加载处理器。
- * @private
- */
-ImageLoader.prototype._loadHandler = function(e)
-{	
-	this._loaded++;
-	var image = this._source[this._index];
-	image.image = e.target;
-	var id = image.id || image.src;
-	this._images[id] = image;
-	this.dispatchEvent({type:"loaded", target:this, image:image});	
-	this._loadNext();
-};
+        imageLoader._sum = 0;
+        imageLoader._weight = 0;
+        imageLoader._onLoading = null;
 
-/**
- * 返回已加载图片资源的数目。
- */
-ImageLoader.prototype.getLoaded = function()
-{
-	return this._loaded;
-};
+        var _added = imageLoader._added;
+        var _loaded = imageLoader._loaded;
+        var _imageWidths = imageLoader._imageWidths;
+        var _imageHeights = imageLoader._imageHeights;
+        var _loadList = [];
 
-/**
- * 返回所有图片资源的总数。
- */
-ImageLoader.prototype.getTotal = function()
-{
-	return this._source.length;
-};
+        var _bufferList;
 
-/**
- * 返回已加载的图片资源的大小之和（在图片资源的大小size已指定的情况下）。
- */
-ImageLoader.prototype.getLoadedSize = function()
-{
-	var size = 0;
-	for(var id in this._images)
-	{
-		var item = this._images[id];
-		size += item.size || 0;
-	}
-	return size;
-};
+        /**
+         * [preload description]
+         * @param  {[String, DomElement, Array of Strings or Array of DomElements]} target [description]
+         */
+        function add(target) {
+            var len = target.length;
+            if(len && typeof target !== "string") {
+                var i = -1;
+                while(++i < len) _addSingle(target[i]);
+            } else {
+                _addSingle(target);
+            }
+        }
 
-/**
- * 返回所有图片资源的大小之和（在图片资源的大小size已指定的情况下）。
- */
-ImageLoader.prototype.getTotalSize = function()
-{
-	return this._totalSize;
-};
+        function _addSingle(item) {
+            if(item.nodeType && item.style) {
+                _addDom(item);
+            } else {
+                _addURL(item);
+            }
+        }
 
-})();
+        function _addDom(dom) {
+            _bufferList = [];
+            if(dom.nodeName.toLowerCase() == 'img' && _isImageURL(dom.src)) {
+                _bufferList.push(dom.src);
+            }
+            getStyle(dom).getPropertyValue('background-image').replace(/s?url\(\s*?[\'\"]?(.*?)[\'\"]?\s*?\)/g, addBackgroundUrl);
+            var i = -1;
+            var len = _bufferList.length;
+            while(++i < len){
+                _addURL(_bufferList[i]);
+            }
+        }
+
+        function addBackgroundUrl(str, url) {
+            if(_isImageURL(url)) {
+                _bufferList.push(url);
+            }
+        }
+
+
+        function _isImageURL(url) {
+            return url.indexOf('data:') !== 0;
+        }
+
+        function _addURL(url) {
+            if(!_added[url]) {
+                _added[url] = true;
+                _loadList.push(url);
+                imageLoader._weight++;
+            }
+        }
+
+        function start(onLoading){
+            if(!imageLoader.isLoading) {
+                var url, img;
+                imageLoader._onLoading = onLoading;
+                imageLoader.isLoading = true;
+                while (_loadList[0]) {
+                    url = _loadList.shift();
+                    loadSingleImage(url, _onImageLoaded);
+                }
+            }
+        }
+
+        function loadSingleImage(url, callback) {
+            if(!_added[url]) {
+                _added[url] = true;
+            }
+            if(_loaded[url]) {
+                callback.call(_loaded[url]);
+                return;
+            }
+            var img = new Image();
+            // inject the __url__ in case some browser will convert the src url into absolute url 
+            img.src = img.__url__ = url;
+            if(img.width) {
+                _onSingleImageLoaded.call(img, callback);
+            }else {
+                img.onload = function(){
+                    _onSingleImageLoaded.call(img, callback);
+                };
+            }
+        }
+
+        function _onSingleImageLoaded(callback){
+            var url = this.__url__;
+            if(!_loaded[url]) {
+                _loaded[url] = this;
+                _imageWidths[url] = this.width;
+                _imageHeights[url] = this.height;
+            }
+            callback.call(this);
+        }
+
+        function _onImageLoaded(){
+            var url = this.__url__;
+            imageLoader._sum ++;
+            var percent = imageLoader._sum / imageLoader._weight;
+
+            if(percent == 1) {
+                imageLoader.isLoading = false;
+                imageLoader._sum = 0;
+                imageLoader._weight = 0;
+            }
+            if(imageLoader._onLoading) imageLoader._onLoading( percent, url );
+        }
+
+        imageLoader.add = add;
+        imageLoader.start = start;
+        imageLoader.loadSingleImage = loadSingleImage;
+
+    }
+
+);

@@ -1,8 +1,3 @@
-
-/**
- * Module dependencies.
- */
-
 var visit = require('../visit');
 
 /**

@@ -1,6 +1,3 @@
-// this is for easier combining of objects
-// but it might interfere with other (foreign) code
-// TODO replace with something less obstrusive
 Object.prototype.apply = function(values) {
 	for (var key in values) {
 		this[key] = values[key];

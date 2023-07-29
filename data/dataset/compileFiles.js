@@ -1,11 +1,7 @@
   var fs, path, Kal, sourceMap, existsSync;
   var k$indexof = [].indexOf || function (item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
   var k$comprl = function (iterable,func) {var o = []; if (iterable instanceof Array || typeof iterable.length == "number") {for (var i=0;i<iterable.length;i++) {o.push(func(iterable[i]));}} else if (typeof iterable.next == "function") {var i; while ((i = iterable.next()) != null) {o.push(func(i));}} else {throw "Object is not iterable";}return o;};
-  /* Command Line Utility
-     --------------------
-
-     This module defines the command line `kal` utility.
-      */
+  
   fs = require('fs');
   path = require('path');
   compiler = require('./compiler.js');

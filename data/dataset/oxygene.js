@@ -1,9 +1,3 @@
-/*
-Language: Oxygene
-Author: Carlo Kok <ck@remobjects.com>
-Description: Language definition for RemObjects Oxygene (http://www.remobjects.com)
-*/
-
 function(hljs) {
   var OXYGENE_KEYWORDS = 'abstract add and array as asc aspect assembly async begin break block by case class concat const copy constructor continue '+
     'create default delegate desc distinct div do downto dynamic each else empty end ensure enum equals event except exit extension external false '+

@@ -1,101 +1,67 @@
+'use strict';
+
 module.exports = function(grunt) {
 
-	grunt.initConfig({
+  // Project configuration.
+  grunt.initConfig({
+    jshint: {
+      all: [
+        'Gruntfile.js',
+        'tasks/*.js',
+        '<%= nodeunit.tests %>',
+      ],
+      options: {
+        jshintrc: '.jshintrc',
+      },
+    },
 
-		pkg: grunt.file.readJSON('bower.json'),
+    setup: {
+      test: {
+        files: {
+          'tmp/default.scss': 'test/fixtures/test.scss',
+          'tmp/alphabetize.scss': 'test/fixtures/test.scss'
+        }
+      }
+    },
 
-		meta: {
-			banner: '/*\n' +
-				' *  <%= pkg.title || pkg.name %> - v<%= pkg.version %>\n' +
-				' *  <%= pkg.description %>\n' +
-				' *  <%= pkg.homepage %>\n' +
-				' *\n' +
-				' *  Copyright (c) <%= grunt.template.today("yyyy") %>\n' +
-				' *  MIT License\n' +
-				' */\n'
-		},
+    // Before generating any new files, remove any previously-created files.
+    clean: {
+      tests: ['tmp'],
+    },
 
-		bump: {
-			options: {
-				files: ['bower.json', 'github.jquery.json'],
-				commit: true,
-				commitMessage: 'Release v%VERSION%',
-				commitFiles: ['bower.json', 'github.jquery.json', 'dist'],
-				createTag: true,
-				tagName: '%VERSION%',
-				tagMessage: '',
-				push: true,
-				pushTo: 'origin'
-			}
-		},
+    // Configuration to be run (and then tested).
+    prettysass: {
+      default_options: {
+        src: ['tmp/default.scss']
+      },
+      alphabetize: {
+        options: {
+          alphabetize: true
+        },
+        src: ['tmp/alphabetize.scss']
+      },
+    },
 
-		concat: {
-			options: {
-				banner: '<%= meta.banner %>'
-			},
-			dist: {
-				src: ['src/jquery.github.js'],
-				dest: 'dist/jquery.github.js'
-			}
-		},
+    // Unit tests.
+    nodeunit: {
+      tests: ['test/*_test.js'],
+    },
 
-		lintspaces: {
-			all: {
-				src: [
-					'*', 'src/*', 'spec/*', 'demo/*', 'assets/base.css', '!package.json'
-				],
-				options: {
-					newline: true,
-					trailingspaces: true,
-					indentation: 'tabs',
-					spaces: 2
-				}
-			}
-		},
+  });
 
-		jasmine: {
-			src: 'src/jquery.github.js',
-			options: {
-				specs: 'spec/*spec.js',
-				helpers: 'spec/helpers/*.js',
-				vendor: 'lib/jquery.min.js'
-			}
-		},
+  // Actually load this plugin's task(s).
+  grunt.loadTasks('tasks');
 
-		jshint: {
-			files: ['src/jquery.github.js'],
-			options: {
-				jshintrc: ".jshintrc"
-			}
-		},
+  // These plugins provide necessary tasks.
+  grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.loadNpmTasks('grunt-contrib-clean');
+  grunt.loadNpmTasks('grunt-contrib-nodeunit');
 
-		uglify: {
-			options: {
-				banner: '<%= meta.banner %>'
-			},
-			my_target: {
-				src: ['dist/jquery.github.js'],
-				dest: 'dist/jquery.github.min.js'
-			}
-		},
+  // Whenever the "test" task is run, first clean the "tmp" dir, then run this
+  // plugin's task(s), then test the result.
+  grunt.registerTask('test', ['clean', 'setup', 'prettysass', 'nodeunit']);
 
-		watch: {
-			files: ['**/*'],
-			tasks: ['jshint', 'concat', 'uglify'],
-		}
-
-	});
-
-	grunt.loadNpmTasks('grunt-bump');
-	grunt.loadNpmTasks('grunt-contrib-concat');
-	grunt.loadNpmTasks('grunt-contrib-jasmine');
-	grunt.loadNpmTasks('grunt-contrib-jshint');
-	grunt.loadNpmTasks('grunt-contrib-uglify');
-	grunt.loadNpmTasks('grunt-contrib-watch');
-	grunt.loadNpmTasks('grunt-lintspaces');
-
-	grunt.registerTask('default', ['lintspaces', 'jshint', 'concat', 'uglify']);
-	grunt.registerTask('release', ['bump-only:patch', 'default', 'bump-commit']);
-	grunt.registerTask('test', ['lintspaces', 'jshint', 'jasmine']);
+  // By default, lint and run all tests.
+  grunt.registerTask('default', ['jshint', 'test']);
 
 };

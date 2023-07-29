@@ -1,59 +1,96 @@
-var createWrapper = require('../internal/createWrapper'),
-    isIterateeCall = require('../internal/isIterateeCall');
+if(!dojo._hasResource["dojox.lang.functional.curry"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
+dojo._hasResource["dojox.lang.functional.curry"] = true;
+dojo.provide("dojox.lang.functional.curry");
 
-/** Used to compose bitmasks for wrapper metadata. */
-var CURRY_FLAG = 8;
+dojo.require("dojox.lang.functional.lambda");
 
-/**
- * Creates a function that accepts one or more arguments of `func` that when
- * called either invokes `func` returning its result, if all `func` arguments
- * have been provided, or returns a function that accepts one or more of the
- * remaining `func` arguments, and so on. The arity of `func` may be specified
- * if `func.length` is not sufficient.
- *
- * The `_.curry.placeholder` value, which defaults to `_` in monolithic builds,
- * may be used as a placeholder for provided arguments.
- *
- * **Note:** This method does not set the `length` property of curried functions.
- *
- * @static
- * @memberOf _
- * @category Function
- * @param {Function} func The function to curry.
- * @param {number} [arity=func.length] The arity of `func`.
- * @param- {Object} [guard] Enables use as a callback for functions like `_.map`.
- * @returns {Function} Returns the new curried function.
- * @example
- *
- * var abc = function(a, b, c) {
- *   return [a, b, c];
- * };
- *
- * var curried = _.curry(abc);
- *
- * curried(1)(2)(3);
- * // => [1, 2, 3]
- *
- * curried(1, 2)(3);
- * // => [1, 2, 3]
- *
- * curried(1, 2, 3);
- * // => [1, 2, 3]
- *
- * // using placeholders
- * curried(1)(_, 3)(2);
- * // => [1, 2, 3]
- */
-function curry(func, arity, guard) {
-  if (guard && isIterateeCall(func, arity, guard)) {
-    arity = null;
-  }
-  var result = createWrapper(func, CURRY_FLAG, null, null, null, null, null, arity);
-  result.placeholder = curry.placeholder;
-  return result;
+// This module adds high-level functions and related constructs:
+//	- currying and partial functions
+//	- argument pre-processing: mixer and flip
+
+// Acknoledgements:
+//	- partial() is based on work by Oliver Steele 
+//		(http://osteele.com/sources/javascript/functional/functional.js)
+//		which was published under MIT License
+
+// Defined methods:
+//	- take any valid lambda argument as the functional argument
+
+(function(){
+	var df = dojox.lang.functional;
+
+	var currying = function(/*Object*/ info){
+		return function(){	// Function
+			if(arguments.length + info.args.length < info.arity){
+				return currying({func: info.func, arity: info.arity, 
+					args: Array.prototype.concat.apply(info.args, arguments)});
+			}
+			return info.func.apply(this, Array.prototype.concat.apply(info.args, arguments));
+		};
+	};
+
+	dojo.mixin(df, {
+		// currying and partial functions
+		curry: function(/*Function|String|Array*/ f, /*Number?*/ arity){
+			// summary: curries a function until the arity is satisfied, at 
+			//	which point it returns the calculated value.
+			f = df.lambda(f);
+			arity = typeof arity == "number" ? arity : f.length;
+			return currying({func: f, arity: arity, args: []});	// Function
+		},
+		arg: {},	// marker for missing arguments
+		partial: function(/*Function|String|Array*/ f){
+			// summary: creates a function where some arguments are bound, and
+			//	some arguments (marked as dojox.lang.functional.arg) are will be 
+			//	accepted by the final function in the order they are encountered.
+			// description: This method is used to produce partially bound 
+			//	functions. If you want to change the order of arguments, use
+			//	dojox.lang.functional.mixer() or dojox.lang.functional.flip().
+			var a = arguments, args = new Array(a.length - 1), p = [];
+			f = df.lambda(f);
+			for(var i = 1; i < a.length; ++i){
+				var t = a[i];
+				args[i - 1] = t;
+				if(t == df.arg){
+					p.push(i - 1);
+				}
+			}
+			return function(){	// Function
+				var t = Array.prototype.slice.call(args, 0); // clone the array
+				for(var i = 0; i < p.length; ++i){
+					t[p[i]] = arguments[i];
+				}
+				return f.apply(this, t);
+			};
+		},
+		// argument pre-processing
+		mixer: function(/*Function|String|Array*/ f, /*Array*/ mix){
+			// summary: changes the order of arguments using an array of
+			//	numbers mix --- i-th argument comes from mix[i]-th place
+			//	of supplied arguments.
+			f = df.lambda(f);
+			return function(){	// Function
+				var t = new Array(mix.length);
+				for(var i = 0; i < mix.length; ++i){
+					t[i] = arguments[mix[i]];
+				}
+				return f.apply(this, t);
+			};
+		},
+		flip: function(/*Function|String|Array*/ f){
+			// summary: changes the order of arguments by reversing their
+			//	order.
+			f = df.lambda(f);
+			return function(){	// Function
+				// reverse arguments
+				var a = arguments, l = a.length - 1, t = new Array(l + 1), i;
+				for(i = 0; i <= l; ++i){
+					t[l - i] = a[i];
+				}
+				return f.apply(this, t);
+			};
+		}
+	});
+})();
+
 }
-
-// Assign default placeholders.
-curry.placeholder = {};
-
-module.exports = curry;

@@ -1,11 +1,3 @@
-/*
-  Process a single doc file
-
-    argv[2] = template file
-    argv[3] = input file
-    argv[4] = output file
-
-*/
 var fs = require("fs"),
     path = require("path"),
     markdown = require("./markdown"),

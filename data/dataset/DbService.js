@@ -1,24 +1,3 @@
-/**
-A <a href="#enyo.PalmService">PalmService</a> with some handy features:
-
-<li>dbKind is a DbService published property, so 'putKind' can omit 'id' and 'find' can omit 'from'.</li>
-<li>Setting the inherited subscribe property also sets watch: true on 'find' and 'search' requests.</li>
-
-Use DbService like most PalmServices:
-
-	{name: "findDoodads", kind: "DbService", dbKind: "com.palm.doodad:1", method: "find", onSuccess: "gotDoodads"}
-
-To call the service:
-
-	this.$.findDoodads.call({
-		query: {
-			// notice that 'from' is not needed since 'dbKind' is in the component
-			where: [...],
-			orderBy: "name",
-			limit: 10
-		}
-	});
-*/
 enyo.kind({
 	name: "enyo.DbService",
 	kind: enyo.PalmService,

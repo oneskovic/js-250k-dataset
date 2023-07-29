@@ -1,53 +1,54 @@
-import Ember from 'ember-metal/core';
-import { loc } from 'ember-runtime/system/string';
-import { isStream } from "ember-metal/streams/utils";
+var fs = require('fs');
 
-/**
-@module ember
-@submodule ember-htmlbars
-*/
+function countLinesInPath (path) {
 
-/**
-  Calls [Ember.String.loc](/api/classes/Ember.String.html#method_loc) with the
-  provided string.
+  var count = 0;
 
-  This is a convenient way to localize text within a template:
+  if (!fs.existsSync(path)) {
+    return count;
+  }
+  else if (fs.statSync(path).isDirectory()) {
+    var files = fs.readdirSync(path);
+    files.forEach(function (filePath) {
+      count += countLinesInPath(path + '/' + filePath);
+    });
+  }
+  else if (path.match(/\.js$/)) {
+    count += countLinesInFile(path);
+  }
 
-  ```javascript
-  Ember.STRINGS = {
-    '_welcome_': 'Bonjour'
-  };
-  ```
-
-  ```handlebars
-  <div class='message'>
-    {{loc '_welcome_'}}
-  </div>
-  ```
-
-  ```html
-  <div class='message'>
-    Bonjour
-  </div>
-  ```
-
-  See [Ember.String.loc](/api/classes/Ember.String.html#method_loc) for how to
-  set up localized string references.
-
-  @method loc
-  @for Ember.Handlebars.helpers
-  @param {String} str The string to format
-  @see {Ember.String#loc}
-*/
-export function locHelper(params, hash, options, env) {
-  Ember.assert('You cannot pass bindings to `loc` helper', (function ifParamsContainBindings() {
-    for (var i = 0, l = params.length; i < l; i++) {
-      if (isStream(params[i])) {
-        return false;
-      }
-    }
-    return true;
-  })());
-
-  return loc.apply(env.data.view, params);
+  return count;
 }
+
+function countLinesInFile (path) {
+  var file = fs.readFileSync(path).toString();
+  return file.split('\n').length;
+}
+
+// module.exports = function () {
+//   console.log(getLinesInPath(process.cwd() + '/lib'));
+// };
+
+
+var asimov = require('../../index');
+
+// function countLinesInPath (path) {
+//   // A function that recursively counts
+//   // the lines in all the javascript files
+//   // You'll need to figure that part out on your own
+// }
+
+module.exports = function () {
+
+  // Some basic setup
+  var path = process.cwd() + '/lib';
+  var namespace = 'loc';
+  var started = new Date();
+
+  // And get the count
+  var count = countLinesInPath(path);
+
+  // Log the result, and how long it took to count
+  var message = 'Counted ' + count + ' lines in ' + path;
+  asimov.logger.since(namespace, message, started);
+};

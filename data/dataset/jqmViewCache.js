@@ -85,7 +85,7 @@ jqmModule.provider('jqmViewCache', function () {
   }
 
   function scopeClearAndDisconnect() {
-    /*jshint -W040:true*/
+    
     var prop;
     // clear all watchers, listeners and all non angular properties,
     // so we have a fresh scope!

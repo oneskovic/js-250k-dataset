@@ -1,5 +1,3 @@
-// multifield - connects several input fields to each-other
-// By Yair Even Or / 2011 / dropthebit.com
 ;(function(){
 	var fixedEvent = 0;
 	

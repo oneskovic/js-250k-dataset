@@ -1,10 +1,3 @@
-/**
- * LokiJS JquerySyncAdapter
- * @author Joe Minichino <joe.minichino@gmail.com>
- *
- * A remote sync adapter example for LokiJS
- */
-
 /*jslint browser: true, node: true, plusplus: true, indent: 2 */
 
 (function (root, factory) {

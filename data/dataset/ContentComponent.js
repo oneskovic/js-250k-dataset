@@ -1,6 +1,3 @@
-/**
- * Component which shows user content.
- */
 Ext.define('Kort.view.highscore.user.ContentComponent', {
 	extend: 'Ext.Component',
 	alias: 'widget.highscoreusercontentcomponent',

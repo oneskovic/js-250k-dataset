@@ -2,10 +2,7 @@
 
 tutao.provide('tutao.entity.sys.SaltData');
 
-/**
- * @constructor
- * @param {Object=} data The json data to store in this entity.
- */
+
 tutao.entity.sys.SaltData = function(data) {
   if (data) {
     this.updateData(data);

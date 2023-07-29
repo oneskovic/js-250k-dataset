@@ -1,11 +1,3 @@
-/*
- * Easy Put.io
- *
- * Created by Baptiste Vincent on 2013-09-11.
- * Copyright (c) 2013 Baptiste Vincent. All rights reserved.
- *
- */
-
 //http://thepiratebay.sx/search/bad/0/7/200,300
 Piratebay = {
     query:null,

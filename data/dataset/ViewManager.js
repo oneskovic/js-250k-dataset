@@ -6,9 +6,7 @@ function ViewManager(app)
   this.fontSizeIndex = Const.FONT_DEFAULT_INDEX;
 }
 
-/*------------------------------------------------------------
-  Events
-------------------------------------------------------------*/
+
 
 ViewManager.prototype.addEvents = function()
 {

@@ -1,9 +1,3 @@
-/**
- * @fileoverview ScaleBehavior - simple scale up/down over time
- * 
- * @author Tony Parisi
- */
-
 goog.provide('Vizi.ScaleBehavior');
 goog.require('Vizi.Behavior');
 

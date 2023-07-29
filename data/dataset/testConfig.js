@@ -1,74 +1,84 @@
-var _utils = catrequire("cat.utils");
+var  assert = require('assert'),
+     dbConn = require('../lib/dbConn.js'),
+     path = require('path'),
+     soar = require('../lib/soar.js');
 
-function TestConfig(config) {
+var  dbUser = 'my_acc',
+     rightPasswd = 'my_passwd',
+     wrongPasswd = 'xxxx';
 
-    var me = this;
-    
-    this.tests = config.tests;
-    this.request = config.request;
-    this.testsmap = {};
+//soar.setDebug( true );
 
-    this.tests.forEach(function(test) {
-        var pathmatch = true;
-        if (test) {
-            if (test.path) {
-                pathmatch = _utils.pathMatch(me.request, test.path);
-            }
-            if (!pathmatch) {
-                test.skip = true;
-            } else {
-                test.skip = false;
-            }
-            
-            me.testsmap[test.index] = test;                
-        }
+describe('Test configuration and settings', function()  {
+
+    it('Reading default configurations', function(done) {
+        soar.config();
+        soar.list('Person/general.dvml', function(err, list) {
+            assert.ifError( err );
+            assert.equal(list.length, 3, 'We have three samples.');
+            done();
+        });
     });
 
-    this.scrapReadyIndex = 0;
-    this.resQueue = {}
-}
+    it('Setting wrong DB configurations', function(done) {
+        var  options = {
+            dbConfig: {
+                "host"     : "127.0.0.1",
+                "database" : "soar",
+                "user"     : dbUser,
+                "password" : wrongPasswd,
+                "supportBigNumbers" : true,
+                "connectionLimit"   : 32
+            }
+        };
+        soar.config( options );
+        soar.list('Person/general.dvml', function(err, list) {
+            assert(err, 'Should throw exception here.');
+            done();
+        });
+    });
 
-TestConfig.prototype.skip = function() {
-    var index = this.getIndex(),
-        test = this.testsmap[index];
-    
-    return (test ? test.skip : false);
-};
+    it('Setting correct DB configurations', function(done) {
+        var  options = {
+            dbConfig: {
+                "host"     : "127.0.0.1",
+                "database" : "soar",
+                "user"     : dbUser,
+                "password" : rightPasswd,
+                "supportBigNumbers" : true,
+                "connectionLimit"   : 32
+            }
+        };
+        soar.config( options );
+        soar.list('Person/general.dvml', function(err, list) {
+            assert.ifError( err );
+            assert.equal(list.length, 3, 'We have three samples.');
+            done();
+        });
+    });
 
-TestConfig.prototype.getTests = function() {
-    return this.tests;
-};
+    /*
+    it('Setting the wrong definition file path', function(done) {
+        var  options = {
+            defPath: '/usr/john'
+        };
+        soar.config( options );
+        soar.list('Person/general.dvml', function(err, list) {
+            assert(err, 'Should throw exception here.');
+            done();
+        });
+    });
 
-TestConfig.prototype.getTest = function(idx) {
-    return this.testsmap[idx];
-};
-
-TestConfig.prototype.remove = function(idx) {
-    this.resQueue[idx] = undefined;
-};
-
-TestConfig.prototype.getTests = function() {
-    return this.tests;
-};
-
-TestConfig.prototype.next = function() {
-    this.scrapReadyIndex++;
-};
-
-TestConfig.prototype.getIndex = function() {
-    return this.scrapReadyIndex;
-};
-
-TestConfig.prototype.setIndex = function(idx) {
-    this.scrapReadyIndex = idx;
-};
-
-TestConfig.prototype.isInQueue = function(idx) {
-    if (this.resQueue[idx]) {
-        return true;
-    }
-    return false;
-};
-
-
-module.exports = TestConfig;
+    it('Setting the correct definition file path', function(done) {
+        var  options = {
+            defPath: path.join(__dirname, '../def/')
+        };
+        soar.config( options );
+        soar.list('Person/general.dvml', function(err, list) {
+            assert.ifError( err );
+            assert.equal(list.length, 3, 'We have three samples.');
+            done();
+        });
+    });
+    */
+});

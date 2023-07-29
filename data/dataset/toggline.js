@@ -1,30 +1,3 @@
-/*
- * ==VimperatorPlugin==
- * @name            toggline.js
- * @description     toggle online/offline.
- * @description-ja  オンライン / オフラインを切り替える。
- * @author          janus_wel <janus_wel@fb3.so-net.ne.jp>
- * @version         0.10
- * @minversion      2.0pre
- * @maxversion      2.0pre
- * ==/VimperatorPlugin==
- *
- * LICENSE
- *  New BSD License
- *
- * USAGE
- *  this plugin provide you visualization of online/offline status
- *  and command that toggle online/offline.
- *
- *      :toggline   toggle online/offline
- *
- *  refer: https://developer.mozilla.org/ja/Online_and_offline_events
- *         http://builder.japan.zdnet.com/sp/firefox-3-for-developer-2008/story/0,3800087566,20384534,00.htm
- *
- * TODO
- *  need stylish icon.
- * */
-
 ( function () {
 // define data
 const onLineText  = 'status: online';

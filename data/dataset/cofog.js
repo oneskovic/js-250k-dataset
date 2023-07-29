@@ -1,8 +1,3 @@
-/*
- * BubbleTree Style for COFOG taxonomy
- *
- */
-
 var BubbleTreeStyles = BubbleTreeStyles || {};
 
 BubbleTreeStyles.Cofog1 = {

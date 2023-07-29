@@ -1,9 +1,3 @@
-/*!
-* MinPubSub
-* Copyright(c) 2011 Daniel Lamb <daniellmb.com>
-* MIT Licensed
-*/
-
 (function(d){
 
 	// the topic/subscription hash

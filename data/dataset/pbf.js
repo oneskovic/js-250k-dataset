@@ -1,5 +1,3 @@
-//'use strict';
-
 var ieee754 = new ieee754();
 
 function Protobuf(buf) {

@@ -1,4 +1,3 @@
-// This object is a mixin for L.Marker and L.CircleMarker. We declare it here as both need to include the contents.
 L.BaseMarkerMethods = {
 	showLabel: function () {
 		if (this.label && this._map) {

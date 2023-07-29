@@ -1,8 +1,3 @@
-// Product Model
-// -----------
-// Requires define
-// Return {ProductModel} object as constructor  
-
 define(['models/base'], function (BaseModel) {
 
     var ProductModel;

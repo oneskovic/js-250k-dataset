@@ -1,10 +1,3 @@
-/*
-Aristocrat version 1.0.1
-Copyright (c) 2012, Peter Michaux
-All rights reserved.
-Licensed under the Simplified BSD License.
-https://github.com/petermichaux/aristocrat/blob/master/LICENSE
-*/
 var aristocrat = {};
 
 (function() {
@@ -17,23 +10,7 @@ var aristocrat = {};
                    (regExpCache[className] = new RegExp('(?:^|\\s+)' + className + '(?:\\s+|$)'));
     }
 
-/**
 
-@property aristocrat.hasClass
-
-@parameter element {Element} The DOM element to test.
-
-@parameter className {string} The class name to test for on element.
-
-@returns {boolean}
-
-@description
-
-Tests if element has className in the element.className property.
-
-aristocrat.hasClass(document.body, 'king');
-
-*/
     var hasClass = aristocrat.hasClass = function(el, className) {
         return getRegExp(className).test(el.className);
     };

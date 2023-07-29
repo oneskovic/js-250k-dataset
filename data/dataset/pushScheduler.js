@@ -1,7 +1,3 @@
-/**
- * Scheduler component to schedule message sending.
- */
-
 var DefaultScheduler = require('../pushSchedulers/direct');
 var logger = require('pomelo-logger').getLogger('pomelo', __filename);
 

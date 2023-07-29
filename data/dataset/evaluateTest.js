@@ -1,4 +1,3 @@
-/* Test evaluate and serializing special number values, like NaN, Infinity, -Infinity */
 function runTest() {
     FBTest.sysout("evaluateTest.started");
 

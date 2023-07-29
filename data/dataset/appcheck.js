@@ -26,7 +26,8 @@ document.addEventListener("DOMContentLoaded",function(){
 							if (+new Date - clickedAt < 2000){
 								window.location = getData(eDefine,"fail");
 							}
-						}, 500);
+						}, 500);
+
 						var eCheckFrame = document.createElement('iframe'); 
 						eCheckFrame.setAttribute('style','border:none;width:1px;height:1px');
 						eCheckFrame.setAttribute('src',getData(eDefine,"ios"));

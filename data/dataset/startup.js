@@ -1,6 +1,3 @@
-/*global Modernizr, FileReaderJS, MFAApp MFAAppView, TimelineView */
-
-
 // test to see if we can do cool download or fallback style.
 Modernizr
     .addTest("blobbuilder", !!(window.BlobBuilder || window.MozBlobBuilder || window.WebKitBlobBuilder))

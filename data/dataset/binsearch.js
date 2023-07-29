@@ -1,6 +1,3 @@
-/**
- * Binary search utilities taken /w permission from :asuth
- */
 define(function(require, exports) {
 'use strict';
 

@@ -1,8 +1,3 @@
-/**
- * Since we make rendr files AMD friendly on app setup stage
- * we need to pretend that this code is pure commonjs
- * means no AMD-style require calls.
- */
 var BaseModel = require("./base/model"),
     BaseCollection = require("./base/collection");
 

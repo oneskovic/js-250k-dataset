@@ -5,18 +5,7 @@ define(["exports", "module", "react"], function (exports, module, _react) {
 
   var React = _interopRequire(_react);
 
-  /**
-   * Maps children that are typically specified as `props.children`,
-   * but only iterates over children that are "valid components".
-   *
-   * The mapFunction provided index will be normalised to the components mapped,
-   * so an invalid component would not increase the index.
-   *
-   * @param {?*} children Children tree container.
-   * @param {function(*, int)} mapFunction.
-   * @param {*} mapContext Context for mapFunction.
-   * @return {object} Object containing the ordered map of results.
-   */
+  
   function mapValidComponents(children, func, context) {
     var index = 0;
 

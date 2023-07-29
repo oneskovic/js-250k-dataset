@@ -1,7 +1,3 @@
-/*
- * routes/api/jobs.js
- */
-
 var BASE_PATH = '../../';
 
 var common = require(BASE_PATH + 'common');

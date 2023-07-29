@@ -1,63 +1,58 @@
-/*
- * Ext JS Library 2.2.1
- * Copyright(c) 2006-2009, Ext JS, LLC.
- * licensing@extjs.com
- * 
- * http://extjs.com/license
- */
+(function(GUIElement) {
+  'use strict';
 
-/**
- * @class Ext.form.Label
- * @extends Ext.BoxComponent
- * Basic Label field.
- * @constructor
- * Creates a new Label
- * @param {Ext.Element/String/Object} config The configuration options.  If an element is passed, it is set as the internal
- * element and its id used as the component id.  If a string is passed, it is assumed to be the id of an existing element
- * and is used as the component id.  Otherwise, it is assumed to be a standard config object and is applied to the component.
- */
-Ext.form.Label = Ext.extend(Ext.BoxComponent, {
-    /**
-     * @cfg {String} text The plain text to display within the label (defaults to ''). If you need to include HTML 
-     * tags within the label's innerHTML, use the {@link #html} config instead.
-     */
-    /**
-     * @cfg {String} forId The id of the input element to which this label will be bound via the standard HTML 'for'
-     * attribute. If not specified, the attribute will not be added to the label.
-     */
-    /**
-     * @cfg {String} html An HTML fragment that will be used as the label's innerHTML (defaults to ''). 
-     * Note that if {@link #text} is specified it will take precedence and this value will be ignored.
-     */
+  /**
+   * Label
+   *
+   * @param String    name    Name of GUIElement (unique)
+   * @param Object    opts    A list of options
+   *
+   * @option  opts  String    label       The Label of Element
+   * @option  opts  String    forInput    ID/Name of input element (optional HTML feature)
+   *
+   * @api OSjs.GUI.Label
+   *
+   * @extends GUIElement
+   * @class
+   */
+  var Label = function(name, opts) {
+    opts            = opts || {};
+    opts.focusable  = false;
+    opts.label      = opts.label || opts.value || '';
 
-    // private
-    onRender : function(ct, position){
-        if(!this.el){
-            this.el = document.createElement('label');
-            this.el.id = this.getId();
-            this.el.innerHTML = this.text ? Ext.util.Format.htmlEncode(this.text) : (this.html || '');
-            if(this.forId){
-                this.el.setAttribute('for', this.forId);
-            }
-        }
-        Ext.form.Label.superclass.onRender.call(this, ct, position);
-    },
-    
-    /**
-     * Updates the label's innerHTML with the specified string.
-     * @param {String} text The new label text
-     * @param {Boolean} encode (optional) False to skip HTML-encoding the text when rendering it
-     * to the label (defaults to true which encodes the value). This might be useful if you want to include 
-     * tags in the label's innerHTML rather than rendering them as string literals per the default logic.
-     * @return {Label} this
-     */
-    setText: function(t, encode){
-        this.text = t;
-        if(this.rendered){
-            this.el.dom.innerHTML = encode !== false ? Ext.util.Format.htmlEncode(t) : t;
-        }
-        return this;
+    GUIElement.apply(this, [name, opts]);
+  };
+
+  Label.prototype = Object.create(GUIElement.prototype);
+
+  Label.prototype.init = function() {
+    var el = GUIElement.prototype.init.apply(this, ['GUILabel', 'label']);
+    el.appendChild(document.createTextNode(this.opts.label));
+    if ( this.opts.forInput ) {
+      el.setAttribute('for', this.opts.forInput);
     }
-});
+    return el;
+  };
 
-Ext.reg('label', Ext.form.Label);
+  /**
+   * Set the label value
+   *
+   * @param   String    l       The value
+   *
+   * @return  void
+   *
+   * @method  Label::setLabel()
+   */
+  Label.prototype.setLabel = function(l) {
+    this.opts.label = l;
+    this.$element.innerHTML = '';
+    this.$element.appendChild(document.createTextNode(this.opts.label));
+  };
+
+  /////////////////////////////////////////////////////////////////////////////
+  // EXPORTS
+  /////////////////////////////////////////////////////////////////////////////
+
+  OSjs.GUI.Label        = Label;
+
+})(OSjs.Core.GUIElement);

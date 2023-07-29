@@ -1,6 +1,3 @@
-/**
- * Parses cache headers so that we can respect them.
- */
 RAL.CacheParser = (function() {
 
   /**

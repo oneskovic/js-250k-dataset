@@ -1,9 +1,3 @@
-/*
- * angular-mousewheel v1.0.4
- * (c) 2013 Monospaced http://monospaced.com
- * License: MIT
- */
-
 angular.module('monospaced.mousewheel', [])
   .directive('msdWheel', ['$parse', function($parse){
     return {

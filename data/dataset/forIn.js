@@ -21,11 +21,7 @@ define(function () {
         }
     }
 
-    /**
-     * Similar to Array/forEach but works over object properties and fixes Don't
-     * Enum bug on IE.
-     * based on: http://whattheheadsaid.com/2010/10/a-safer-object-keys-compatibility-implementation
-     */
+    
     function forIn(obj, fn, thisObj){
         var key, i = 0;
         // no need to check if argument is a real object that way we can use

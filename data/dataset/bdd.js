@@ -1,8 +1,3 @@
-
-/**
- * Module dependencies.
- */
-
 var Suite = require('../suite')
   , Test = require('../test')
   , utils = require('../utils');
@@ -96,6 +91,7 @@ module.exports = function(suite){
     context.describe.only = function(title, fn){
       var suite = context.describe(title, fn);
       mocha.grep(suite.fullTitle());
+      return suite;
     };
 
     /**
@@ -120,6 +116,7 @@ module.exports = function(suite){
       var test = context.it(title, fn);
       var reString = '^' + utils.escapeRegexp(test.fullTitle()) + '$';
       mocha.grep(new RegExp(reString));
+      return test;
     };
 
     /**

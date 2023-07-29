@@ -1,10 +1,3 @@
-/**
- * @author Sean Griffin / http://twitter.com/sgrif
- * @author Michael Guerrero / http://realitymeltdown.com
- * @author mrdoob / http://mrdoob.com/
- * @author ikerr / http://verold.com
- */
-
 THREE.SkeletonHelper = function ( object ) {
 
 	this.bones = this.getBoneList( object );

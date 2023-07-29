@@ -1,96 +1,92 @@
+"use strict";
 
-/*!
- * Stylus - Root
- * Copyright(c) 2010 LearnBoost <dev@learnboost.com>
- * MIT Licensed
- */
-
-/**
- * Module dependencies.
- */
-
-var Node = require('./node');
-
-/**
- * Initialize a new `Root` node.
- *
- * @api public
- */
-
-var Root = module.exports = function Root(){
-  this.nodes = [];
+var _classProps = function (child, staticProps, instanceProps) {
+  if (staticProps) Object.defineProperties(child, staticProps);
+  if (instanceProps) Object.defineProperties(child.prototype, instanceProps);
 };
 
-/**
- * Inherit from `Node.prototype`.
- */
-
-Root.prototype.__proto__ = Node.prototype;
-
-/**
- * Push a `node` to this block.
- *
- * @param {Node} node
- * @api public
- */
-
-Root.prototype.push = function(node){
-  this.nodes.push(node);
-};
-
-/**
- * Unshift a `node` to this block.
- *
- * @param {Node} node
- * @api public
- */
-
-Root.prototype.unshift = function(node){
-  this.nodes.unshift(node);
-};
-
-/**
- * Return a clone of this node.
- *
- * @return {Node}
- * @api public
- */
-
-Root.prototype.clone = function(){
-  var clone = new Root();
-  clone.lineno = this.lineno;
-  clone.column = this.column;
-  clone.filename = this.filename;
-  this.nodes.forEach(function(node){
-    clone.push(node.clone(clone, clone));
+var _extends = function (child, parent) {
+  child.prototype = Object.create(parent.prototype, {
+    constructor: {
+      value: child,
+      enumerable: false,
+      writable: true,
+      configurable: true
+    }
   });
-  return clone;
+  child.__proto__ = parent;
 };
 
-/**
- * Return "root".
- *
- * @return {String}
- * @api public
- */
+var Declaration = require("./declaration");
+var Container = require("./container");
+var Comment = require("./comment");
+var AtRule = require("./at-rule");
+var Result = require("./result");
+var Rule = require("./rule");
 
-Root.prototype.toString = function(){
-  return '[Root]';
-};
-
-/**
- * Return a JSON representation of this node.
- *
- * @return {Object}
- * @api public
- */
-
-Root.prototype.toJSON = function(){
-  return {
-    __type: 'Root',
-    nodes: this.nodes,
-    lineno: this.lineno,
-    column: this.column,
-    filename: this.filename
+var Root = (function (Container) {
+  var Root = function Root(defaults) {
+    this.type = "root";
+    this.childs = [];
+    Container.call(this, defaults);
   };
-};
+
+  _extends(Root, Container);
+
+  _classProps(Root, null, {
+    remove: {
+      writable: true,
+      value: function (child) {
+        child = this.index(child);
+
+        if (child === 0 && this.childs.length > 1) {
+          this.childs[1].before = this.childs[child].before;
+        }
+
+        return Container.prototype.remove.call(this, child);
+      }
+    },
+    normalize: {
+      writable: true,
+      value: function (child, sample, type) {
+        var childs = Container.prototype.normalize.call(this, child, sample, type);
+
+        for (var i = 0; i < childs.length; i++) {
+          if (type == "prepend") {
+            if (this.childs.length > 1) {
+              sample.before = this.childs[1].before;
+            } else if (this.childs.length == 1) {
+              sample.before = this.after;
+            }
+          } else {
+            if (this.childs.length > 1) {
+              if (sample) childs[i].before = sample.before;
+            } else {
+              childs[i].before = this.after;
+            }
+          }
+        }
+
+        return childs;
+      }
+    },
+    stringify: {
+      writable: true,
+      value: function (builder) {
+        this.stringifyContent(builder);
+        if (this.after) builder(this.after);
+      }
+    },
+    toResult: {
+      writable: true,
+      value: function (opts) {
+        if (opts === undefined) opts = {};
+        return new Result(this, opts);
+      }
+    }
+  });
+
+  return Root;
+})(Container);
+
+module.exports = Root;

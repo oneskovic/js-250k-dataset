@@ -1,5 +1,3 @@
-/** @license MIT License (c) copyright B Cavalier & J Hann */
-
 /**
  * wire/sizzle plugin
  * Adds querySelectorAll functionality to wire using John Resig's Sizzle library.

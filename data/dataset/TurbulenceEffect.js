@@ -1,10 +1,3 @@
-/*
- * Creates Turbelence Motion on particles
- * (see http://www.lab4games.net/zz85/blog/2011/09/21/music-colour-particles/)
- *
- * Uses SimplexNoise.js
- */
-
 var perlin = new SimplexNoise();
 
 var Turbulence = function() {

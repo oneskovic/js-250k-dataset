@@ -1,10 +1,3 @@
-/**
- * @name browsercache.js<spec>
- * @author Kei Funagayama <funagayama_kei@cyberagent.co.jp>
- * copyright (c) Cyberagent Inc.
- * @overview TestCase
- */
-
 define(['boombox'], function(boombox) {
 
     if (!window.boombox) {

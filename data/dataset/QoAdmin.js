@@ -1,11 +1,3 @@
-/*
- * qWikiOffice Desktop 1.0
- * Copyright(c) 2007-2010, Murdock Technologies, Inc.
- * licensing@qwikioffice.com
- * 
- * http://www.qwikioffice.com/license
- */
-
 QoDesk.QoAdmin = Ext.extend(Ext.app.Module, {
    id: 'qo-admin'
    , type: 'system/admin'

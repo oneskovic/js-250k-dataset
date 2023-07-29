@@ -9,7 +9,7 @@ function Tenant() {
 }
 utils.inherits(Tenant, InstanceResource);
 
-Tenant.prototype.getAccounts = function getTenantAccounts(/* [options,] callback */) {
+Tenant.prototype.getAccounts = function getTenantAccounts() {
   var self = this;
   var args = Array.prototype.slice.call(arguments);
   var callback = args.pop();
@@ -18,7 +18,7 @@ Tenant.prototype.getAccounts = function getTenantAccounts(/* [options,] callback
   return self.dataStore.getResource(self.accounts.href, options, require('./Account'), callback);
 };
 
-Tenant.prototype.getGroups = function getTenantGroups(/* [options,] callback */) {
+Tenant.prototype.getGroups = function getTenantGroups() {
   var self = this;
   var args = Array.prototype.slice.call(arguments);
   var callback = args.pop();
@@ -27,7 +27,7 @@ Tenant.prototype.getGroups = function getTenantGroups(/* [options,] callback */)
   return self.dataStore.getResource(self.groups.href, options, require('./Group'), callback);
 };
 
-Tenant.prototype.getApplications = function getTenantApplications(/* [options,] callback */) {
+Tenant.prototype.getApplications = function getTenantApplications() {
   var self = this;
   var args = Array.prototype.slice.call(arguments);
   var callback = args.pop();
@@ -36,7 +36,7 @@ Tenant.prototype.getApplications = function getTenantApplications(/* [options,] 
   return self.dataStore.getResource(self.applications.href, options, require('./Application'), callback);
 };
 
-Tenant.prototype.createApplication = function createTenantApplication(/* app, [options,] callback */) {
+Tenant.prototype.createApplication = function createTenantApplication(/* app,*/) {
   var self = this;
   var args = Array.prototype.slice.call(arguments);
   var app = args.shift();
@@ -46,7 +46,7 @@ Tenant.prototype.createApplication = function createTenantApplication(/* app, [o
   self.dataStore.createResource('/applications', options, app, require('./Application'), callback);
 };
 
-Tenant.prototype.getDirectories = function getTenantDirectories(/* [options,] callback */) {
+Tenant.prototype.getDirectories = function getTenantDirectories() {
   var self = this;
   var args = Array.prototype.slice.call(arguments);
   var callback = args.pop();
@@ -55,7 +55,7 @@ Tenant.prototype.getDirectories = function getTenantDirectories(/* [options,] ca
   return self.dataStore.getResource(self.directories.href, options, require('./Directory'), callback);
 };
 
-Tenant.prototype.createDirectory = function createTenantDirectory(/* dir, [options,] callback */) {
+Tenant.prototype.createDirectory = function createTenantDirectory(/* dir,*/) {
   var self = this;
   var args = Array.prototype.slice.call(arguments);
   var dir = args.shift();
@@ -83,7 +83,7 @@ Tenant.prototype.verifyAccountEmail = function verifyAccountEmail(token, callbac
 };
 
 
-Tenant.prototype.getCustomData = function getCustomData(/* [options,] callback */) {
+Tenant.prototype.getCustomData = function getCustomData() {
   var self = this;
   var args = Array.prototype.slice.call(arguments);
   var callback = args.pop();

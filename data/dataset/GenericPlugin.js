@@ -1,10 +1,3 @@
-/*------------------------------------------*\
- GenericPlugin for Xinha
- _______________________
-     
- Democase for plugin event handlers
-\*------------------------------------------*/
-
 GenericPlugin._pluginInfo = {
   name          : "GenericPlugin",
   version       : "1.0",

@@ -1,56 +1,72 @@
-'use strict';
+/**
+ * Module dependencies.
+ */
 
-var express = require('express'),
-    favicon = require('static-favicon'),
-    morgan = require('morgan'),
-    compression = require('compression'),
-    bodyParser = require('body-parser'),
-    multipart = require('connect-multiparty'),
-    methodOverride = require('method-override'),
-    errorHandler = require('errorhandler'),
-    path = require('path'),
-    config = require('./config');
+var connect = require('connect')
+  , HTTPSServer = require('./https')
+  , HTTPServer = require('./http')
+  , Route = require('./router/route')
 
 /**
- * Express configuration
+ * Re-export connect auto-loaders.
+ * 
+ * This prevents the need to `require('connect')` in order
+ * to access core middleware, so for example `express.logger()` instead
+ * of `require('connect').logger()`.
  */
-module.exports = function(app) {
-    var env = app.get('env');
 
-    if ('development' === env) {
-        app.use(require('connect-livereload')());
+var exports = module.exports = connect.middleware;
 
-        // Disable caching of scripts for easier testing
-        app.use(function noCache(req, res, next) {
-            if (req.url.indexOf('/scripts/') === 0) {
-                res.header('Cache-Control', 'no-cache, no-store, must-revalidate');
-                res.header('Pragma', 'no-cache');
-                res.header('Expires', 0);
-            }
-            next();
-        });
+/**
+ * Framework version.
+ */
 
-        app.use(express.static(path.join(config.root, '.tmp')));
-        app.use(express.static(path.join(config.root, 'app')));
-        app.set('views', config.root + '/app/views');
-    }
+exports.version = '2.5.10';
 
-    if ('production' === env) {
-        app.use(compression());
-        app.use(favicon(path.join(config.root, 'public', 'favicon.ico')));
-        app.use(express.static(path.join(config.root, 'public')));
-        app.set('views', config.root + '/views');
-    }
+/**
+ * Shortcut for `new Server(...)`.
+ *
+ * @param {Function} ...
+ * @return {Server}
+ * @api public
+ */
 
-    app.engine('html', require('ejs').renderFile);
-    app.set('view engine', 'html');
-    app.use(morgan('dev'));
-    app.use(bodyParser());
-    app.use(multipart());
-    app.use(methodOverride());
-
-    // Error handler - has to be last
-    if ('development' === app.get('env')) {
-        app.use(errorHandler());
-    }
+exports.createServer = function(options){
+  if ('object' == typeof options) {
+    return new HTTPSServer(options, Array.prototype.slice.call(arguments, 1));
+  } else {
+    return new HTTPServer(Array.prototype.slice.call(arguments));
+  }
 };
+
+/**
+ * Expose constructors.
+ */
+
+exports.HTTPServer = HTTPServer;
+exports.HTTPSServer = HTTPSServer;
+exports.Route = Route;
+
+/**
+ * View extensions.
+ */
+
+exports.View =
+exports.view = require('./view');
+
+/**
+ * Response extensions.
+ */
+
+require('./response');
+
+/**
+ * Request extensions.
+ */
+
+require('./request');
+
+// Error handler title
+
+exports.errorHandler.title = 'Express';
+

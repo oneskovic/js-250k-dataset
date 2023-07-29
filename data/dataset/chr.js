@@ -1,4 +1,3 @@
-// function(cmd, chunk);
 /**
 * handlers for command characters
 * @enum {Function|string}

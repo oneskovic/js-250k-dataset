@@ -1,14 +1,11 @@
-/**
- * @private
- *
- * Scroll position implementation
- */
 Ext.define('Ext.util.translatable.ScrollPosition', {
-    extend: 'Ext.util.translatable.Dom',
+    extend: 'Ext.util.translatable.Abstract',
 
     wrapperWidth: 0,
 
     wrapperHeight: 0,
+
+    baseCls: 'x-translatable',
 
     config: {
         useWrapper: true
@@ -16,8 +13,9 @@ Ext.define('Ext.util.translatable.ScrollPosition', {
 
     getWrapper: function() {
         var wrapper = this.wrapper,
+            baseCls = this.baseCls,
             element = this.getElement(),
-            container;
+            nestedStretcher, container;
 
         if (!wrapper) {
             container = element.getParent();
@@ -27,19 +25,29 @@ Ext.define('Ext.util.translatable.ScrollPosition', {
             }
 
             if (this.getUseWrapper()) {
-                wrapper = element.wrap();
+                wrapper = element.wrap({
+                    className: baseCls + '-wrapper'
+                }, true);
             }
             else {
-                wrapper = container;
+                wrapper = container.dom;
             }
 
-            element.addCls('x-translatable');
-            wrapper.addCls('x-translatable-container');
+            wrapper.appendChild(Ext.Element.create({
+                className: baseCls + '-stretcher'
+            }, true));
 
+            this.nestedStretcher = nestedStretcher = Ext.Element.create({
+                className: baseCls + '-nested-stretcher'
+            }, true);
+
+            element.appendChild(nestedStretcher);
+
+            element.addCls(baseCls);
+            container.addCls(baseCls + '-container');
+
+            this.container = container;
             this.wrapper = wrapper;
-
-            wrapper.on('resize', 'onWrapperResize', this);
-            wrapper.on('painted', 'refresh', this);
 
             this.refresh();
         }
@@ -48,50 +56,47 @@ Ext.define('Ext.util.translatable.ScrollPosition', {
     },
 
     doTranslate: function(x, y) {
-        var wrapper = this.getWrapper(),
-            dom;
+        var wrapper = this.getWrapper();
 
         if (wrapper) {
-            dom = wrapper.dom;
-
             if (typeof x == 'number') {
-                dom.scrollLeft = this.wrapperWidth - x;
+                wrapper.scrollLeft = this.wrapperWidth - x;
             }
 
             if (typeof y == 'number') {
-                dom.scrollTop = this.wrapperHeight - y;
+                wrapper.scrollTop = this.wrapperHeight - y;
             }
         }
+
+        return this.callParent(arguments);
     },
 
-    onWrapperResize: function(wrapper, info) {
-        this.wrapperWidth = info.width;
-        this.wrapperHeight = info.height;
+    refresh: function() {
+        var wrapper = this.getWrapper();
 
-        this.refresh();
+        if (wrapper) {
+            this.wrapperWidth = wrapper.offsetWidth;
+            this.wrapperHeight = wrapper.offsetHeight;
+
+            this.callParent(arguments);
+        }
     },
 
     destroy: function() {
         var element = this.getElement(),
-            wrapper = this.wrapper;
+            baseCls = this.baseCls;
 
-        if (wrapper) {
-            if (!element.isDestroyed) {
-                if (this.getUseWrapper()) {
-                    wrapper.doReplaceWith(element);
-                }
-                element.removeCls('x-translatable');
+        if (this.wrapper) {
+            if (this.getUseWrapper()) {
+                element.unwrap();
             }
 
-            wrapper.removeCls('x-translatable-container');
-            wrapper.un('resize', 'onWrapperResize', this);
-            wrapper.un('painted', 'refresh', this);
-
-            delete this.wrapper;
-            delete this._element;
+            this.container.removeCls(baseCls + '-container');
+            element.removeCls(baseCls);
+            element.removeChild(this.nestedStretcher);
         }
 
-        this.callSuper();
+        this.callParent(arguments);
     }
 
 });

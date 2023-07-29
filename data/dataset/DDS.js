@@ -1,8 +1,3 @@
-//=========================
-//	DDS.js
-//	import from dds format files
-//==========================
-
 define(function(require, exports, module){
 
 	var TextureAsset = require('../Texture');

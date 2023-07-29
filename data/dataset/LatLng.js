@@ -1,7 +1,3 @@
-/*
-	CM.LatLng represents a geographical point with latitude and longtitude coordinates.
-*/
-
 L.LatLng = function (rawLat, rawLng, noWrap) { // (Number, Number[, Boolean])
 	var lat = parseFloat(rawLat),
 		lng = parseFloat(rawLng);

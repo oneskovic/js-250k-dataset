@@ -1,9 +1,3 @@
-// The dnsimple class is a thin wrapper around
-// the DNSimple.com REST API.  Only the call to
-// update a domain's IP address has been implemented.
-// There are several libraries that exist where
-// more of the API has been implemented.
-
 var https = require("https");
 var events = require("events");
 

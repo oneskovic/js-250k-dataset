@@ -7,9 +7,7 @@ goog.require('ol.source.OSM');
 goog.require('ol.source.XYZ');
 
 
-/**
- * @type {Object.<string, {extension: string, opaque: boolean}>}
- */
+
 ol.source.StamenLayerConfig = {
   'terrain': {
     extension: 'jpg',

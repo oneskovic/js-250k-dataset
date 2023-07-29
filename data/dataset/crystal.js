@@ -1,6 +1,3 @@
-// attributes: substack/node-hat
-// https://github.com/substack/node-hat
-
 var exports = module.exports = {};
 
 exports.Crystal = function (opts) {

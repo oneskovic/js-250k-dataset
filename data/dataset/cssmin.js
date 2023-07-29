@@ -1,11 +1,3 @@
-/*
- * grunt-contrib-cssmin
- * http://gruntjs.com/
- *
- * Copyright (c) 2012 Tim Branyen, contributors
- * Licensed under the MIT license.
- */
-
 'use strict';
 
 module.exports = function(grunt) {

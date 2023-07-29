@@ -2,13 +2,7 @@ define(["kick/core/Constants", "kick/core/Observable", "kick/texture/Texture", "
     function (Constants, Observable, Texture, RenderTexture, Graphics) {
         "use strict";
 
-        /**
-         * @class CameraRenderToTexture
-         * @namespace kick.postfx
-         * @extends kick.scene.Component
-         * @constructor
-         * @param {Config}
-         */
+        
         return function CameraRenderToTexture(){
             var camera,
                 engine,

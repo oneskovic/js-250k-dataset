@@ -1,10 +1,4 @@
 /**
- * gamecore.js - Copyright 2012 Playcraft Labs, Inc. (see licence.txt)
- * perf.js
- * Simple performance monitoring tools.
- */
-
-/**
  * @class gamecore.PerformanceMeasure
  * Example:
  * <code>

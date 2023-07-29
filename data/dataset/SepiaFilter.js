@@ -1,8 +1,4 @@
 /**
- * @author Mat Groves http://matgroves.com/ @Doormat23
- */
-
-/**
  *
  * This applies a sepia effect to your displayObjects.
  * @class SepiaFilter

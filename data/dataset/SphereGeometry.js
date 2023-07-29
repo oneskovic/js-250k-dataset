@@ -1,6 +1,3 @@
-/**
- * @author mrdoob / http://mrdoob.com/
- */
 /*
 ///SphereGeometry用来在三维空间内创建一个球体对象.
 ///

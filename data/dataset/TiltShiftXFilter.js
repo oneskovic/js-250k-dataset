@@ -1,9 +1,4 @@
 /**
- * @author Vico @vicocotea
- * original filter https://github.com/evanw/glfx.js/blob/master/src/filters/blur/tiltshift.js by Evan Wallace : http://madebyevan.com/
- */
-
-/**
  * A TiltShiftXFilter.
  * 
  * @class TiltShiftXFilter

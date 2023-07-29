@@ -1,8 +1,6 @@
 "use strict";
 
-/**
- * @module br-locale-utility
- */
+
 
 
 /*

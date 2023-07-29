@@ -1,60 +1,54 @@
-﻿var fs = require('fs');
-var Promise = require('bluebird');
-var async = require('..').async;
-var await = require('..').await;
+var basic = exports;
 
+// Change in numbers
+//
+// basic.changein(Initial X, Final X)
+/*
+@param {Number} Number1 (p1)
+@param {Number} Number2 (p2)
+@return {Number} Difference between Number1 & Number2
+*/
 
-// A function that returns a promise.
-function delay(milliseconds) {
-    return Promise.delay(milliseconds);
-}
+basic.changein = function (p1, p2) {
+  var ans = (p2 - p1);
+  return (ans);
+};
 
-// A thunked version of fs.readFile.
-function readFile(filename) {
-    return function (callback) {
-        return fs.readFile(filename, callback);
-    };
-}
+// Two Decimal Figures
+//
+// basic.twosig(number)
+/*
+@param {Number} Number (number)
+@return {Number} Converts the number to have 2 decimal places
+*/
 
-// A slow asynchronous function, written in async/await style.
-var longCalculation = async (function (seconds, result) {
-    await (delay(seconds * 1000));
-    return result;
-});
+basic.twosig = function (number) {
+  var ans = (number.toFixed(2));
+  return (ans);
+};
 
-// Another synchronous-looking function written in async/await style.
-var program = async (function () {
-    try  {
-        console.log('zero...');
+// Radians To Degrees
+//
+// basic.toDegrees(radians)
+/*
+@param {Number} Number (number)
+@return {Number} Converts Radians to Degrees
+*/
 
-        var msg = await(longCalculation(1, 'one...'));
-        console.log(msg);
+basic.toDegrees = function(radians) {
+  var ans = radians * (180 / Math.PI);
+  return ans;
+};
 
-        msg = await(longCalculation(1, 'two...'));
-        console.log(msg);
+// Degrees to Radians
+//
+// basic.toRadians(degrees)
+/*
+@param {Number} Number (number)
+@return {Number} Converts degrees to Radians
+*/
 
-        msg = await(longCalculation(1, 'three...'));
-        console.log(msg);
-
-        var file = await(readFile('NonExistingFilename'));
-
-        msg = await(longCalculation(1, 'four...'));
-        console.log(msg);
-    } catch (ex) {
-        console.log('Caught an error');
-    }
-    return 'Finished!';
-});
-
-// Execute program() and print the result.
-program().then(function (result) {
-    console.log(result);
-});
-
-// Outputs (with one second delays between the numbers):
-// zero...
-// one...
-// two...
-// three...
-// Caught an error
-// Finished!
+basic.toRadians = function(degrees) {
+  var ans = degrees * (Math.PI / 180);
+  return ans;
+};

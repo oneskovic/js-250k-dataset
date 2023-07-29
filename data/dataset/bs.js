@@ -1,74 +1,88 @@
-﻿/*
-Copyright (c) 2003-2014, CKSource - Frederico Knabben. All rights reserved.
-For licensing, see LICENSE.md or http://ckeditor.com/license
-*/
-CKEDITOR.plugins.setLang( 'table', 'bs', {
-	border: 'Okvir',
-	caption: 'Naslov',
-	cell: {
-		menu: 'Cell',
-		insertBefore: 'Insert Cell Before',
-		insertAfter: 'Insert Cell After',
-		deleteCell: 'Briši æelije',
-		merge: 'Spoji æelije',
-		mergeRight: 'Merge Right',
-		mergeDown: 'Merge Down',
-		splitHorizontal: 'Split Cell Horizontally',
-		splitVertical: 'Split Cell Vertically',
-		title: 'Cell Properties',
-		cellType: 'Cell Type',
-		rowSpan: 'Rows Span',
-		colSpan: 'Columns Span',
-		wordWrap: 'Word Wrap',
-		hAlign: 'Horizontal Alignment',
-		vAlign: 'Vertical Alignment',
-		alignBaseline: 'Baseline',
-		bgColor: 'Background Color',
-		borderColor: 'Border Color',
-		data: 'Data',
-		header: 'Header',
-		yes: 'Yes',
-		no: 'No',
-		invalidWidth: 'Cell width must be a number.',
-		invalidHeight: 'Cell height must be a number.',
-		invalidRowSpan: 'Rows span must be a whole number.',
-		invalidColSpan: 'Columns span must be a whole number.',
-		chooseColor: 'Choose'
-	},
-	cellPad: 'Uvod æelija',
-	cellSpace: 'Razmak æelija',
-	column: {
-		menu: 'Column',
-		insertBefore: 'Insert Column Before',
-		insertAfter: 'Insert Column After',
-		deleteColumn: 'Briši kolone'
-	},
-	columns: 'Kolona',
-	deleteTable: 'Delete Table', // MISSING
-	headers: 'Headers', // MISSING
-	headersBoth: 'Both', // MISSING
-	headersColumn: 'First column', // MISSING
-	headersNone: 'None',
-	headersRow: 'First Row', // MISSING
-	invalidBorder: 'Border size must be a number.', // MISSING
-	invalidCellPadding: 'Cell padding must be a positive number.', // MISSING
-	invalidCellSpacing: 'Cell spacing must be a positive number.', // MISSING
-	invalidCols: 'Number of columns must be a number greater than 0.', // MISSING
-	invalidHeight: 'Table height must be a number.', // MISSING
-	invalidRows: 'Number of rows must be a number greater than 0.', // MISSING
-	invalidWidth: 'Table width must be a number.', // MISSING
-	menu: 'Svojstva tabele',
-	row: {
-		menu: 'Row',
-		insertBefore: 'Insert Row Before',
-		insertAfter: 'Insert Row After',
-		deleteRow: 'Briši redove'
-	},
-	rows: 'Redova',
-	summary: 'Summary', // MISSING
-	title: 'Svojstva tabele',
-	toolbar: 'Tabela',
-	widthPc: 'posto',
-	widthPx: 'piksela',
-	widthUnit: 'width unit' // MISSING
-} );
+/**
+ * Bosnian.
+ */
+
+$.Editable.LANGS['bs'] = {
+  translation: {
+    "Bold": "Bold",
+    "Italic": "Italic",
+    "Underline": "Podvu\u010deno",
+    "Strikethrough": "Precrtano",
+    "Font Size": "Veli\u010dina fonta",
+    "Color": "Boja",
+    "Background": "Pozadine",
+    "Text": "Teksta",
+    "Format Block": "Formatiranje bloka",
+    "Normal": "Normalno",
+    "Paragraph": "Paragraf",
+    "Code": "Izvorni kod",
+    "Quote": "Citat",
+    "Heading 1": "Naslov 1",
+    "Heading 2": "Naslov 2",
+    "Heading 3": "Naslov 3",
+    "Heading 4": "Naslov 4",
+    "Heading 5": "Naslov 5",
+    "Heading 6": "Naslov 6",
+    "Block Style": "Blok style",
+    "Alignment": "Poravnanje",
+    "Align Left": "Poravnaj lijevo",
+    "Align Center": "Poravnaj po sredini",
+    "Align Right": "Poravnaj desno",
+    "Justify": "Obostrano poravnanje",
+    "Numbered List": "Numerisana lista",
+    "Bulleted List": "Bullet lista",
+    "Indent Less": "Uvuci paragraf",
+    "Indent More": "Izvuci paragraf",
+    "Select All": "Ozna\u010di sve",
+    "Insert Link": "Umetni link",
+    "Insert Image": "Umetni sliku",
+    "Insert Video": "Umetni video",
+    "Undo": "Korak nazad",
+    "Redo": "Korak naprijed",
+    "Show HTML": "Prika\u017ei HTML kod",
+    "Float Left": "Prebaci lijevo",
+    "Float None": "Bez prebacivanja",
+    "Float Right": "Prebaci desno",
+    "Replace Image": "Zamijenite slike",
+    "Remove Image": "Ukloni sliku",
+    "Title": "Naslov",
+    "Drop image": "Izbaci sliku",
+    "or click": "ili odaberi",
+    "or": "ili",
+    "Enter URL": "Enter URL",
+    "Please wait!": "Molim sa\u010dekaj.",
+    "Are you sure? Image will be deleted.": "Da li ste sigurni da \u017eelite da obri\u0161ete ovu ilustraciju?",
+    "UNLINK": "Ukloni link",
+    "Open in new tab": "Otvori u novom prozoru",
+    "Type something": "Ukucajte ne\u0161tp",
+    "Cancel": "Otka\u017ei",
+    "OK": "U redu",
+    "Manage images": "Upravljanje ilustracijama",
+    "Delete": "Obri\u0161i",
+    "Font Family": "Odaberi font",
+    "Insert Horizontal Line": "Umetni vodoravna liniju",
+    "Table": "Tabela",
+    "Insert table": "Umetni tabelu",
+    "Cell": "\u0106elija",
+    "Row": "Red",
+    "Column": "Kolona",
+    "Delete table": "Obri\u0161i tabelu",
+    "Insert cell before": "Umetni \u0107elije prije",
+    "Insert cell after": "Umetni \u0107elije posle",
+    "Delete cell": "Obri\u0161i \u0107elije",
+    "Merge cells": "Spoji \u0107elija",
+    "Horizontal split": "Horizontalno razdvajanje polja",
+    "Vertical split": "Vertikalno razdvajanje polja",
+    "Insert row above": "Umetni red iznad",
+    "Insert row below": "Umetni red ispod",
+    "Delete row": "Obri\u0161i red",
+    "Insert column before": "Umetni kolonu prije",
+    "Insert column after": "Umetni kolonu poslije",
+    "Delete column": "Obri\u0161i kolonu",
+    "Uploading image": "Upload slika",
+    "Upload File": "Upload datoteke",
+    "Drop File": "Drop datoteke",
+    "Clear formatting": "Izbrisati formatiranje"
+  },
+  direction: "ltr"
+};

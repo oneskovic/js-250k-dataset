@@ -1,5 +1,5 @@
 "use strict";
-/*global alert: true, ODSA, console */
+
 $(document).ready(function () {
   // Process About button: Pop up a message with an Alert
   function about() {

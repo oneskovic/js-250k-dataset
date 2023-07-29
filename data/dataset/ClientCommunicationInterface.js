@@ -1,5 +1,3 @@
-// Copyright (c) 2013 David Gallardo Moreno. All rights reserved.
-
 /**
  * @fileoverview Client side communication interface that uses HTML5 WebSocket API to connect a server.
  * Defines a basic protocol to send commands that set a user name, and the user input. 

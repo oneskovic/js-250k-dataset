@@ -1,6 +1,3 @@
-// Handles related-objects functionality: lookup link for raw_id_fields
-// and Add Another links.
-
 function html_unescape(text) {
     // Unescape a string that was escaped using django.utils.html.escape.
     text = text.replace(/&lt;/g, '<');

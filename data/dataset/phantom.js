@@ -1,4 +1,3 @@
-/*jshint globalstrict:true */
 /*global require:false, phantom:false, console:false */
 
 "use strict";

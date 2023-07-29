@@ -1,11 +1,7 @@
 KISSY.add('brix/gallery/charts/js/pub/views/svggraphics',function(S,Node,SVGElement,SVGRenderer){
 	
 	var SVGGraphics = {
-		/**
-		 * 创建文字
-		 * @param  {[Object]} $o [配置参数]
-		 * @return {[SVGElement]}    [文本SVGElement对象]
-		 */
+		
 		text:function($o){
 			var $o = $o ? $o : {}
 			var family = $o.family ? $o.family : 'Arial'

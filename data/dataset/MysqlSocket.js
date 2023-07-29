@@ -1,8 +1,3 @@
-/**
- * mysql socket
- * @return {[type]} [description]
- */
-
 //暂时使用mysql库
 var mysql = require('mysql');
 module.exports = Class(function(){

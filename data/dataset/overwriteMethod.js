@@ -1,9 +1,3 @@
-/*!
- * Chai - overwriteMethod utility
- * Copyright(c) 2012-2013 Jake Luer <jake@alogicalparadox.com>
- * MIT Licensed
- */
-
 /**
  * ### overwriteMethod (ctx, name, fn)
  *

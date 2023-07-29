@@ -1,6 +1,6 @@
 "use strict";
 
-/*global define, templates*/
+
 
 define('rpg/battle/turn', ['translator', 'rpg/battle/ui'], function(translator, ui) {
 	var turn = {},

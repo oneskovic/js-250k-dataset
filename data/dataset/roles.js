@@ -1,5 +1,3 @@
-// # Roles API
-// RESTful API for the Role resource
 var Promise         = require('bluebird'),
     _               = require('lodash'),
     canThis         = require('../permissions').canThis,

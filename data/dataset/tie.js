@@ -1,19 +1,6 @@
 steal('jquery/controller').then(function($){
 
-/**
- * @class jQuery.Tie
- * @core
- * 
- * The $.fn.tie plugin binds form elements and controllers with 
- * models and vice versa.  The result is that a change in 
- * a model will automatically update the form element or controller
- * AND a change event on the element will update the model.
- * 
- * 
- * 
- * 
- * 
- */
+
 $.Controller("jQuery.Tie",{
 	setup : function(el){
 		this._super(el,{})

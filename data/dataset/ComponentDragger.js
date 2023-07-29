@@ -1,16 +1,3 @@
-/**
- * A subclass of Ext.dd.DragTracker which handles dragging any Component.
- *
- * This is configured with a Component to be made draggable, and a config object for the {@link Ext.dd.DragTracker}
- * class.
- *
- * A {@link #delegate} may be provided which may be either the element to use as the mousedown target or a
- * CSS selector to activate multiple mousedown targets.
- *
- * When the Component begins to be dragged, its `beginDrag` method will be called if implemented.
- *
- * When the drag ends, its `endDrag` method will be called if implemented.
- */
 Ext.define('Ext.util.ComponentDragger', {
     extend: 'Ext.dd.DragTracker',
 

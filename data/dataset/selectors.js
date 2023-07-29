@@ -1,8 +1,3 @@
-/**
-   all selector values managed by layout engine.
-
-   @namespace Nehan.Selectors
- */
 var Selectors = (function(){
   var __selectors = []; // selector list ordered by specificity desc.
   var __selectors_pe = []; // selector (with pseudo-element) list, ordered by specificity desc.

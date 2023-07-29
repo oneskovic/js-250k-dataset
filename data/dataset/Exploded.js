@@ -1,6 +1,3 @@
-/**
- * The Exploded Pie Chart displays a set of random data in a column series.
- */
 Ext.define('KitchenSink.view.charts.pie.Exploded', {
     extend: 'Ext.Panel',
     xtype: 'exploded-pie',

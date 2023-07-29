@@ -1,5 +1,3 @@
-// JavaScript Calculator Demo
-
 // Default state of the calculator
 var initialState = {
     currentExpression: "0",

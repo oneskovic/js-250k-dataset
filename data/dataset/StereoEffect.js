@@ -1,9 +1,3 @@
-/**
- * @author alteredq / http://alteredqualia.com/
- * @authod mrdoob / http://mrdoob.com/
- * @authod arodic / http://aleksandarrodic.com/
- */
-
 THREE.StereoEffect = function ( renderer ) {
 
 	// API

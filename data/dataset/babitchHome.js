@@ -1,4 +1,3 @@
-/* global Fixtures */
 'use strict';
 
 describe('Controller: BabitchHomeCtrl', function() {

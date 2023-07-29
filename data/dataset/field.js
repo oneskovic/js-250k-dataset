@@ -1,51 +1,73 @@
-var assert = require('assert');
-var browserify = require('browserify');
-var vm = require('vm');
+define(['backbone'], function (Backbone) {
+    "use strict";
+    var neighbourCoordinates = [-1, 0, 1];
 
-exports.fieldString = function () {
-    var dir = __dirname + '/field/';
-    var src = browserify(dir + '/string.js').bundle();
-    
-    var c = {};
-    vm.runInNewContext(src, c);
-    assert.equal(
-        c.require('./string.js'),
-        'browser'
-    );
-};
+    return Backbone.Model.extend({
+        defaults: {
+            x: 0,
+            y: 0,
+            isBomb: false,
+            isDisplayed: false,
+            isFlagged: false,
+            bombsNear: 0
+        },
 
-exports.fieldObject = function () {
-    var dir = __dirname + '/field/';
-    var src = browserify(dir + '/object.js').bundle();
-    
-    var c = {};
-    vm.runInNewContext(src, c);
-    assert.equal(
-        c.require('./object.js'),
-        'browser'
-    );
-};
+        getPossibleNeighbours: function()
+        {
+            var neighbours = [],
+                x = this.attributes.x,
+                y = this.attributes.y;
 
-exports.missObject = function () {
-    var dir = __dirname + '/field/';
-    var src = browserify(dir + '/miss.js').bundle();
-    
-    var c = {};
-    vm.runInNewContext(src, c);
-    assert.equal(
-        c.require('./miss.js'),
-        '!browser'
-    );
-};
+            neighbourCoordinates.forEach(function(offsetX) {
+                neighbourCoordinates.forEach(function(offsetY) {
+                    if (offsetY === 0 && offsetX === 0) {
+                        return;
+                    }
 
-exports.fieldSub = function () {
-    var dir = __dirname + '/field/';
-    var src = browserify(dir + '/sub.js').bundle();
-    
-    var c = {};
-    vm.runInNewContext(src, c);
-    assert.equal(
-        c.require('./sub.js'),
-        'browser'
-    );
-};
+                    neighbours.push({x: x + offsetX, y: y + offsetY});
+                });
+            });
+
+            return neighbours;
+        },
+
+        getDisplayStatus: function()
+        {
+            if (!this.get('isDisplayed')) {
+                return '';
+            }
+
+            if (this.get('isFlagged')) {
+                return 'F';
+            }
+
+            if (this.get('isBomb')) {
+                return 'B';
+            }
+
+            return this.get('bombsNear') > 0 ? this.get('bombsNear').toString() : '';
+        },
+
+        display: function()
+        {
+            this.set({isDisplayed: true});
+        },
+
+        flag: function()
+        {
+            if (this.get('isDisplayed')) {
+                if (this.get('isFlagged')) {
+                    this.removeFlag();
+                }
+                return;
+            }
+
+            this.set({isDisplayed: true, isFlagged: true});
+        },
+
+        removeFlag: function()
+        {
+            this.set({isDisplayed: false, isFlagged: false});
+        }
+    });
+});

@@ -1,8 +1,3 @@
-/**
- * @fileOverview Subpixel rendering fix for browsers that do not support subpixel rendering
- * @author lakenen
- */
-
 /*global window, document*/
 Crocodoc.addUtility('subpx', function (framework) {
 

@@ -1,21 +1,3 @@
-/*
----
-
-name: Touchhold
-
-description: Provides a custom touchhold event for touch devices
-
-authors: Christoph Pojer (@cpojer)
-
-license: MIT-style license.
-
-requires: [Core/Element.Event, Custom-Event/Element.defineCustomEvent, Browser.Features.Touch]
-
-provides: Touchhold
-
-...
-*/
-
 (function(){
 
 var name = 'touchhold',

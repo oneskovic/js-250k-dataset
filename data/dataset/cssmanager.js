@@ -1,10 +1,3 @@
-/**
- * @name cssmanager.js<spec>
- * @author Kei Funagayama <funagayama_kei@cyberagent.co.jp>
- * copyright (c) Cyberagent Inc.
- * @overview TestCase: s/beez-mvcr/cssmanager.js
- */
-
 define(['cssmanager', 'beez.core'], function(cssmanager, beez){
     var CSSManager = cssmanager.CSSManager;
 

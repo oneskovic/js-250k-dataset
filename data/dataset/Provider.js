@@ -1,55 +1,81 @@
-/* global Scope */
+Ext.define('Ext.direct.Provider', {
+    alias: 'direct.provider',
 
-var Provider = Provider || (function () {
-  'use strict';
+    mixins: {
+        observable: 'Ext.mixin.Observable'
+    },
 
-  return {
-    get: function (name, locals) {
-      if (this._cache[name]) {
-        return this._cache[name];
-      }
-      var provider = this._providers[name];
-      if (!provider || typeof provider !== 'function') {
-        return null;
-      }
-      return (this._cache[name] = this.invoke(provider, locals));
+    config: {
+        /**
+         * @cfg {String} id
+         * The unique id of the provider (defaults to an auto-assigned id).
+         * You should assign an id if you need to be able to access the provider later and you do
+         * not have an object reference available, for example:
+         *
+         *     Ext.direct.Manager.addProvider({
+         *         type: 'polling',
+         *         url:  'php/poll.php',
+         *         id:   'poll-provider'
+         *     });
+         *     var p = {@link Ext.direct.Manager}.{@link Ext.direct.Manager#getProvider getProvider}('poll-provider');
+         *     p.disconnect();
+         *
+         */
+        id: undefined
     },
-    directive: function (name, fn) {
-      this._register(name + Provider.DIRECTIVES_SUFFIX, fn);
-    },
-    controller: function (name, fn) {
-      this._register(name + Provider.CONTROLLERS_SUFFIX, function () {
-        return fn;
-      });
-    },
-    service: function (name, fn) {
-      this._register(name, fn);
-    },
-    annotate: function (fn) {
-      var res = fn.toString()
-          .replace(/((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg, '')
-          .match(/\((.*?)\)/);
-      if (res && res[1]) {
-        return res[1].split(',').map(function (d) {
-          return d.trim();
-        });
-      }
-      return [];
-    },
-    invoke: function (fn, locals) {
-      locals = locals || {};
-      var deps = this.annotate(fn).map(function (s) {
-        return locals[s] || this.get(s, locals);
-      }, this);
-      return fn.apply(null, deps);
-    },
-    _cache: { $rootScope: new Scope() },
-    _providers: {},
-    _register: function (name, service) {
-      this._providers[name] = service;
-    }
-  };
-}());
 
-Provider.DIRECTIVES_SUFFIX = 'Directive';
-Provider.CONTROLLERS_SUFFIX = 'Controller';
+    /**
+     * @event connect
+     * Fires when the Provider connects to the server-side
+     * @param {Ext.direct.Provider} provider The {@link Ext.direct.Provider Provider}.
+     */
+
+    /**
+     * @event disconnect
+     * Fires when the Provider disconnects from the server-side
+     * @param {Ext.direct.Provider} provider The {@link Ext.direct.Provider Provider}.
+     */
+
+    /**
+     * @event data
+     * Fires when the Provider receives data from the server-side
+     * @param {Ext.direct.Provider} provider The {@link Ext.direct.Provider Provider}.
+     * @param {Ext.direct.Event} e The Ext.direct.Event type that occurred.
+     */
+
+    /**
+     * @event exception
+     * Fires when the Provider receives an exception from the server-side
+     */
+
+    constructor : function(config){
+        this.initConfig(config);
+    },
+
+    applyId: function(id) {
+        if (id === undefined) {
+            id = this.getUniqueId();
+        }
+        return id;
+    },
+
+    /**
+     * Returns whether or not the server-side is currently connected.
+     * Abstract method for subclasses to implement.
+     */
+    isConnected: function() {
+        return false;
+    },
+
+    /**
+     * Abstract methods for subclasses to implement.
+     * @method
+     */
+    connect: Ext.emptyFn,
+
+    /**
+     * Abstract methods for subclasses to implement.
+     * @method
+     */
+    disconnect: Ext.emptyFn
+});

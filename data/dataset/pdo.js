@@ -1,4 +1,3 @@
-
 var annotateInjectable = require('../lib/annotate-injectable');
 var deepApply = require('../lib/deep-apply');
 

@@ -25,11 +25,7 @@ function matchFilePath(filePath, pathArr) {
 
 module.exports = {
   tags: {
-    /**
-     * @param {string} testFilePath - file path of a test
-     * @param {Array} tags - tags to match
-     * @returns {boolean} true if specified test matches given tag
-     */
+    
     match : function (testFilePath, tags) {
       var test;
 

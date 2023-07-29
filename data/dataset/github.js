@@ -1,50 +1,69 @@
-var oauthModule = require('./oauth2');
+OAuth2.adapter('github', {
+  
+  authorizationCodeURL: function(config) {
+    return ('https://github.com/login/oauth/authorize?' +
+      'client_id={{CLIENT_ID}}&' +
+      'scope={{API_SCOPE}}&' +
+      'redirect_uri={{REDIRECT_URI}}')
+        .replace('{{CLIENT_ID}}', config.clientId)
+        .replace('{{API_SCOPE}}', config.apiScope)
+        .replace('{{REDIRECT_URI}}', this.redirectURL(config));
+  },
 
-var github = module.exports =
-oauthModule.submodule('github')
-  .configurable({
-      scope: 'specify types of access: (no scope), user, public_repo, repo, gist'
-  })
+  /**
+   * @return {URL} URL to the page that we use to inject the content
+   * script into
+   */
+  redirectURL: function(config) {
+    return 'https://github.com/robots.txt';
+  },
 
-  .oauthHost('https://github.com')
-  .apiHost('https://api.github.com')
-
-  .authPath('/login/oauth/authorize')
-  .accessTokenPath('/login/oauth/access_token')
-
-  .entryPath('/auth/github')
-  .callbackPath('/auth/github/callback')
-
-  .authQueryParam('scope', function () {
-    return this._scope && this.scope();
-  })
-
-  .fetchOAuthUser( function (accessToken) {
-    var p = this.Promise();
-    this.oauth.get(this.apiHost() + '/user', accessToken, function (err, data) {
-      if (err) return p.fail(err);
-      var oauthUser = JSON.parse(data);
-      p.fulfill(oauthUser);
-    })
-    return p;
-  })
-  .moduleErrback( function (err, seqValues) {
-    if (err instanceof Error) {
-      var next = seqValues.next;
-      return next(err);
-    } else if (err.extra) {
-      var ghResponse = err.extra.res
-        , serverResponse = seqValues.res;
-      serverResponse.writeHead(
-          ghResponse.statusCode
-        , ghResponse.headers);
-      serverResponse.end(err.extra.data);
-    } else if (err.statusCode) {
-      var serverResponse = seqValues.res;
-      serverResponse.writeHead(err.statusCode);
-      serverResponse.end(err.data);
-    } else {
-      console.error(err);
-      throw new Error('Unsupported error type');
+  /**
+   * @return {String} Authorization code for fetching the access token
+   */
+  parseAuthorizationCode: function(url) {
+    var error = url.match(/[&\?]error=([^&]+)/);
+    if (error) {
+      throw 'Error getting authorization code: ' + error[1];
     }
-  });
+    return url.match(/[&\?]code=([\w\/\-]+)/)[1];
+  },
+
+  /**
+   * @return {URL} URL to the access token providing endpoint
+   */
+  accessTokenURL: function() {
+    return 'https://github.com/login/oauth/access_token';
+  },
+
+  /**
+   * @return {String} HTTP method to use to get access tokens
+   */
+  accessTokenMethod: function() {
+    return 'POST';
+  },
+
+  /**
+   * @return {Object} The payload to use when getting the access token
+   */
+  accessTokenParams: function(authorizationCode, config) {
+    return {
+      code: authorizationCode,
+      client_id: config.clientId,
+      client_secret: config.clientSecret,
+      redirect_uri: this.redirectURL(config),
+      grant_type: 'authorization_code'
+    };
+  },
+
+  /**
+   * @return {Object} Object containing accessToken {String},
+   * refreshToken {String} and expiresIn {Int}
+   */
+  parseAccessToken: function(response) {
+    return {
+      accessToken: response.match(/access_token=([^&]*)/)[1],
+      expiresIn: Number.MAX_VALUE
+    };
+  }
+});

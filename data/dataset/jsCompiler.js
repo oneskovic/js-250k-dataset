@@ -1,4 +1,3 @@
-// js compiler
 'use strict';
 
 var fs = require('fs'),

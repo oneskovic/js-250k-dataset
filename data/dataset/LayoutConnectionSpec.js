@@ -3,7 +3,7 @@
 var Matchers = require('../../../Matchers'),
     TestHelper = require('../../../TestHelper');
 
-/* global bootstrapModeler, inject */
+
 
 
 var modelingModule = require('../../../../lib/features/modeling'),

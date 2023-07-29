@@ -1,6 +1,3 @@
-/**
- * Projectile for laser gun ability.
- **/
 ig.module(
     'game.entities.laser'
 )

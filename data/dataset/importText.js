@@ -1,5 +1,3 @@
-// Imports the content from old text/json files 
-// to a MongoDB database.
 var fs = require('fs');
 var MongoClient = require('mongodb').MongoClient;
 

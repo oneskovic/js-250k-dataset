@@ -1,4 +1,3 @@
-
 var assert = require('assert');
 var struct = require('struct');
 var util = require('narwhal/util');
@@ -34,9 +33,7 @@ exports.testCrc32 = function () {
     assert.equal(crc32.hash(raw), -(parseInt("EC4AC3D0", 16) + 1) ^ -1, 'crc32');
 };
 
-/*
-    http://pajhome.org.uk/crypt/md5/
-*/
+
 
 /*
 

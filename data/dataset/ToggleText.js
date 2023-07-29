@@ -1,18 +1,5 @@
 (function (enyo, scope) {
-	/**
-	* {@link moon.ToggleText}, which extends {@link moon.Checkbox}, is a control that
-	* looks like a switch with labels for an 'on' state and an 'off' state. When tapped,
-	* it switches its state and fires an [onChange]{@link enyo.Checkbox#onChange}
-	* event.
-	*
-	* **Note:** {@link moon.Checkbox#icon} and {@link moon.Checkbox#src} are not supported.
-	*
-	* @class moon.ToggleText
-	* @extends moon.Checkbox
-	* @deprecated Replaced by {@link moon.ToggleButton} and {@link moon.ToggleItem}
-	* @ui
-	* @public
-	*/
+	
 	enyo.kind(
 		/** @lends moon.ToggleText.prototype */ {
 

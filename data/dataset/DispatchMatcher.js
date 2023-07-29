@@ -1,13 +1,3 @@
-/**
- * @class ExtMVC.lib.DispatchMatcher
- * @extends Object
- * Abstract base class for dispatch matchers. A Dispatch Matcher just takes the arguments that
- * are passed to an ExtMVC.lib.Dispatcher's dispatch method, and returns normalised arguments.
- * This allows the Dispatcher to accept numerous forms, such as:
- *   dispatch('controllerName', 'actionName', ['list', 'of', 'arguments'])
- *   dispatch({controller: 'controllerName', action: 'actionName', arguments: ['list', 'of', 'arguments']})
- *   dispatch("controller/action/123")
- */
 ExtMVC.lib.DispatchMatcher = Ext.extend(Object, {
 
   constructor: function(config) {

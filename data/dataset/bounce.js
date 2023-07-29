@@ -1,16 +1,5 @@
 define(['jquery','./effects/core'], function (jQuery) {
-/*!
- * jQuery UI Effects Bounce @VERSION
- *
- * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT or GPL Version 2 licenses.
- * http://jquery.org/license
- *
- * http://docs.jquery.com/UI/Effects/Bounce
- *
- * Depends:
- *	jquery.effects.core.js
- */
+
 (function( $, undefined ) {
 
 $.effects.bounce = function(o) {

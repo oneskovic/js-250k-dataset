@@ -1,4 +1,3 @@
-///<reference path='../imports.d.ts'/>
 var TokenReader = (function () {
     function TokenReader(tokenizer) {
         this.tokenizer = tokenizer;

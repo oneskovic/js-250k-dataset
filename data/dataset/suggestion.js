@@ -1,18 +1,3 @@
-/**
- * suggestion
- * @constructor
- * @update 2013-5-12 21:58:09
- * @param {String} ele 
- * @param {String} contentId 
- * @param {String} contentClass 
- * @example 
-vui.suggestion({
-	ele:'suggestion',
-	contentId :'suggestionContent',
-	contentClass :'dropdown-menu'
-});
- */
-
 vui.suggestion = function(options){
 	suggestion.init(options);
 }

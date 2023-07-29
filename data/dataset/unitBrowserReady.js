@@ -34,9 +34,7 @@ test("primitive.Point.contains [Depends on Point.constructor]", function () {
     });
 
 
-    /**
-     * Check if we do have measureText
-    **/
+    
     test("2d Context's measureText(...)", function () {
         var r = typeof testContext.measureText === 'function';
 

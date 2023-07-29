@@ -1,15 +1,7 @@
 var inherit = require('./inherit'),
     Sprite = require('../display/Sprite');
 
-/**
- * Holds a pool of different Sprites that can be created, makes it very
- * easy to quickly create different registered entities
- *
- * @class SpritePool
- * @extends Object
- * @constructor
- * @param game {Game} The game instance this sprite pool belongs to
- */
+
 var SpritePool = function(game) {
     this.types = {};
 

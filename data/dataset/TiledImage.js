@@ -1,7 +1,4 @@
 /**
- * Created by long on 14-2-21.
- */
-/**
  * Layer.bake maybe a choice for good performance
  * */
 flax.TiledImage = cc.SpriteBatchNode.extend({

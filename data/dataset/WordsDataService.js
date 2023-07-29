@@ -1,8 +1,6 @@
 'use strict';
 
-/**
- * Data service for the words objects.
- */
+
 vocabularyAngularApp.service('wordsDataService', ['dataStorage', function(dataStorage) {
 
 	var isInit = false,

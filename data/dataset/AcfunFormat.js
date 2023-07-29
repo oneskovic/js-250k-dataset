@@ -1,8 +1,3 @@
-/** 
- * AcFun Format Parser
- * @license MIT License
- * An alternative format comment parser
- */
 function AcfunParser(jsond){
 	var list = [];
 	try{

@@ -1,15 +1,4 @@
 /**
- * GAS - Google Analytics on Steroids
- *
- * Outbound Link Tracking Plugin
- *
- * Copyright 2011, Cardinal Path and Direct Performance
- * Licensed under the GPLv3 license.
- *
- * @author Eduardo Cereto <eduardocereto@gmail.com>
- */
-
-/**
  * Triggers the Outbound Link Tracking on the page
  *
  * @this {object} GA Helper object.

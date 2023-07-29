@@ -1,8 +1,3 @@
-/*  Emit png (and soon jpeg) tiles from an RFB stream.
-    Emits these events:
-        error, screenUpdate, copyRect, desktopSize
-*/
-
 var sys = require('sys');
 var RemoteEmitter = require('dnode/events');
 var PngLib = require('png');

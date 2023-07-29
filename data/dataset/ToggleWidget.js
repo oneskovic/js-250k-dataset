@@ -1,15 +1,3 @@
-/**
- * ToggleWidget is mixed into other classes to create widgets with an on/off state.
- * Please see OO.ui.ToggleButtonWidget and OO.ui.ToggleSwitchWidget for examples.
- *
- * @abstract
- * @class
- *
- * @constructor
- * @param {Object} [config] Configuration options
- * @cfg {boolean} [value=false] The toggle’s initial on/off state.
- *  By default, the toggle is in the 'off' state.
- */
 OO.ui.ToggleWidget = function OoUiToggleWidget( config ) {
 	// Configuration initialization
 	config = config || {};

@@ -2,10 +2,7 @@
 
 tutao.provide('tutao.native.FileFacadeAndroidApp');
 
-/**
- * @implements {tutao.native.FileFacade}
- * @constructor
- */
+
 tutao.native.FileFacadeAndroidApp = function() {
     this.fileUtil = new tutao.native.device.FileUtil();
 };

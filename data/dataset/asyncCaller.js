@@ -1,7 +1,3 @@
-/**
- *
- */
-
 (function ($, Rocket) {
     function isCorrectHref(anchor) {
         var flag;

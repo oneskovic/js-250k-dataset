@@ -1,4 +1,3 @@
-
 Containers = new Mongo.Collection('docker.containers');
 ContainersInspect = new Mongo.Collection('docker.containers.inspect');
 ContainersStats = new Mongo.Collection('docker.containers.stats');

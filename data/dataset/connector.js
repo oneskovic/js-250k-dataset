@@ -2,16 +2,7 @@ var Item = require('burner').Item,
     Utils = require('burner').Utils,
     Vector = require('burner').Vector;
 
-/**
- * Creates a new Connector.
- *
- * Connectors render a straight line between two Flora items. The Connector carries
- * a reference to the two items as parentA and parentB. If the parent items move,
- * the Connector moves with them.
- *
- * @constructor
- * @extends Item
- */
+
 function Connector() {
   Item.call(this);
 }

@@ -1,65 +1,143 @@
-(function(){
+describe("webworks require", function () {
+    var root = "../../../../",
+    webworksRequire = require(root + "dependencies/require/require");
 
-var $try = function(){
-	for (var i = 0, l = arguments.length; i < l; i++){
-		try { return arguments[i](); } catch(e){}
-	}
-	return null;
-};
+    it("will throw an error if the module is not defined", function () {
+        expect(function () {
+            webworksRequire.require("test");
+        }).toThrow("module test cannot be found");
+    });
 
-var XHR = function(){
-	try { return new XMLHttpRequest(); } catch(e){}
-	try { return new ActiveXObject('MSXML2.XMLHTTP'); } catch(e){}
-	try { return new ActiveXObject('Microsoft.XMLHTTP'); } catch(e){}
-};
+    it("defines a module using module.exports", function () {
+        var testObj = {test: "TEST"};
+        webworksRequire.define("test", function (require, exports, module) {
+            module.exports = testObj;
+        });
+        expect(webworksRequire.require("test")).toEqual(testObj);
+    });
 
-var load = function(path){
-	var result = false;
-	if (!(/\.js$/).test(path)) path = path + '.js';
-	var xhr = XHR();
-	xhr.open('GET', path + '?d=' + new Date().getTime(), false);
-	xhr.send(null);
-	if (xhr.status >= 200 && xhr.status < 300) result = xhr.responseText;
-	return result;
-};
+    it("can use relative paths from within a module define", function () {
+        var testObj = {test: "TEST"};
+        webworksRequire.define("namespace/test", function (require, exports, module) {
+            module.exports = testObj;
+        });
+        webworksRequire.define("namespace/test2", function (require, exports, module) {
+            var nsTest = require('./test');
+            module.exports = nsTest;
+        });
+        expect(webworksRequire.require("namespace/test2")).toEqual(testObj);
+    });
 
-var normalize = function(path, base){
-	path = path.split('/').reverse();
-	base = base.split('/');
-	var last = base.pop();
-	if (last && !(/\.[A-Za-z0-9_-]+$/).test(last)) base.push(last);
-	var i = path.length;
-	while (i--){
-		var current = path[i];
-		switch (current){
-			case '.': break;
-			case '..': base.pop(); break;
-			default: base.push(current);
-		}
-	}
-	return base.join('/');
-};
+    it("can use relative paths from within a module define", function () {
+        var testObj = {test: "TEST"};
+        webworksRequire.define("namespace2/test/test", function (require, exports, module) {
+            module.exports = testObj;
+        });
+        webworksRequire.define("namespace3/test/test", function (require, exports, module) {
+            var nsTest = require('./../../namespace2/test/test');
+            module.exports = nsTest;
+        });
+        expect(webworksRequire.require("namespace3/test/test")).toEqual(testObj);
+    });
 
-var require = function req(module, path){
-	if (path) require.paths.unshift(path);
-	var cont = true, contents = false, base = '';
-	for (var i = 0, y = require.paths.length; (i < y) && cont; i++) (function(_current){
-		base = normalize(module, _current);
-		contents = load(base);
-		if (contents !== false){
-			cont = false;
-			base = base.replace(/(?:\/)[^\/]*$/, '');
-		}
-	})(require.paths[i]);
-	if (contents === false) throw new Error('Cannot find module "' + module + '"');
-	var exports = {}, fn = 'var require = function(m){ return _require(m, _base); };' + contents;
-	new Function('_require, _base, exports', fn).call(window, req, base, exports);
-	if (path) require.paths.shift();
-	return exports;
-};
+    it("can use require(deps, callback) signature", function () {
+        var module1 = "GRRR",
+            module2 = "ARRRG";
+        webworksRequire.define("module1", function (require, exports, module) {
+            module.exports = module1;
+        });
+        webworksRequire.define("module2", function (require, exports, module) {
+            module.exports = module2;
+        });
+        webworksRequire.require(["module1", "module2"], function (mod1, mod2) {
+            expect(mod1).toEqual(module1);
+            expect(mod2).toEqual(module2);
+        });
+    });
 
-require.paths = [window.location.pathname];
+    describe("js file tests", function () {
+        var mockRequest;
+        beforeEach(function () {
+            mockRequest = {
+                open: jasmine.createSpy(),
+                send: jasmine.createSpy(),
+                responseText: null
+            };
+            GLOBAL.XMLHttpRequest = jasmine.createSpy().andReturn(mockRequest);
 
-window.require = require;
+        });
 
-})();
+        afterEach(function () {
+            delete GLOBAL.XMLHttpRequest;
+        });
+        it("will attempt to load the file when it ends with .js", function () {
+            var moduleURI = "ext/blackberry.app/client.js",
+                url = "ext/blackberry.app/client.js",
+                appClient;
+            mockRequest.responseText = "module.exports = { test: 'TEST'}";
+            //spyOn(webworksRequire, "define").andCallThrough();
+            appClient = webworksRequire.require(moduleURI);
+            expect(mockRequest.open).toHaveBeenCalledWith("GET", url, false);
+            expect(mockRequest.send).toHaveBeenCalled();
+            //TODO: Figure out how to catch the define call
+            //expect(webworksRequire.define).toHaveBeenCalled();
+            expect(appClient.test).toEqual("TEST");
+            expect(webworksRequire.require("ext/blackberry.app/client")).toEqual(appClient);
+        });
+
+        it("will load modules using localRequire", function () {
+            var parentDefineName = "testBuilder",
+                moduleURI = "ext/blackberry.connection/client",
+                url = "ext/blackberry.connection/client.js";
+            mockRequest.responseText = "module.exports = { test: 'TEST'}";
+
+            webworksRequire.define(parentDefineName, function (require, exports, module) {
+                require(moduleURI);
+                module.exports = "NA";
+            });
+            webworksRequire.require(parentDefineName);
+            expect(mockRequest.open).toHaveBeenCalledWith("GET", url, false);
+            expect(mockRequest.send).toHaveBeenCalled();
+            expect(webworksRequire.require(moduleURI).test).toEqual("TEST");
+        });
+
+        it("will go across the bridge when the module name starts with local:// and ends with .js", function () {
+            var moduleURI = "local://ext/blackberry.system/client.js",
+                url = "http://localhost:8472/extensions/load/blackberry.system",
+                appClient;
+            /*jshint multistr:true */
+            mockRequest.responseText = "{\
+                \"client\": \"module.exports = { test: 'TEST'};\",\
+                \"dependencies\": []\
+            }";
+            /*jshint multistr:false */
+            //spyOn(webworksRequire, "define").andCallThrough();
+            appClient = webworksRequire.require(moduleURI);
+            expect(mockRequest.open).toHaveBeenCalledWith("GET", url, false);
+            expect(mockRequest.send).toHaveBeenCalled();
+            //TODO: Figure out how to catch the define call
+            //expect(webworksRequire.define).toHaveBeenCalled();
+            expect(appClient.test).toEqual("TEST");
+        });
+
+        it("will load dependencies in client js", function () {
+            var moduleURI = "local://ext/blackberry.xyz/client.js",
+                url = "http://localhost:8472/extensions/load/blackberry.xyz",
+                appClient;
+            /*jshint multistr:true */
+            mockRequest.responseText = "{\
+                \"client\": \"module.exports = { id: require('./manifest.json').namespace };\",\
+                \"dependencies\": [{\
+                    \"moduleName\": \"ext/blackberry.xyz/manifest.json\",\
+                    \"body\": \"{namespace: \\\"blackberry.xyz\\\" }\"\
+                }]\
+            }";
+            /*jshint multistr:false */
+
+            appClient = webworksRequire.require(moduleURI);
+            expect(mockRequest.open).toHaveBeenCalledWith("GET", url, false);
+            expect(mockRequest.send).toHaveBeenCalled();
+            expect(appClient.id).toEqual("blackberry.xyz");
+        });
+    });
+});

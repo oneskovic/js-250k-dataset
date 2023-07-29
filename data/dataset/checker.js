@@ -1,6 +1,3 @@
-/**
- * @constructor
- */
 var Checker = function Checker() {};
 
 /** @type {Checker} */

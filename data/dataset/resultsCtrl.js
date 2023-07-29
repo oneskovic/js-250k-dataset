@@ -1,6 +1,3 @@
-// graphIt function takes an object that includes nested arrays. 
-// The second item in the array (i.e. index '1') belongs to 
-// Watson's personality traits 'Openness'.
 var graphIt = function (watsonData){
   
   $('.us, .state').show();

@@ -1,19 +1,3 @@
-/**
- * Creates a IIRFilter effect.
- * Adapted from Corban Brook's dsp.js
- * 
- * @effect
- *
- * @arg =!sampleRate
- * @arg =!cutoff
- * @arg =!resonance
- * @arg =!type
- *
- * @param type:UInt units:Hz default:44100 sampleRate Sample Rate the apparatus operates on.
- * @param type:Float units:Hz min:40.0 default:20000 cutoff The cutoff frequency of the IIRFilter.
- * @param type:Float min:0.0 max:1.0 default:0.1 resonance The resonance of the IIRFilter.
- * @param type:UInt default:0 type The type of the filter (LowPass, HighPass, BandPass, Notch).
-*/
 function IIRFilter (sampleRate, cutoff, resonance, type) {
 	var	self	= this,
 		f	= [0.0, 0.0, 0.0, 0.0],

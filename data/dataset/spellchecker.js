@@ -1,13 +1,3 @@
-// Spell Checker Plugin for HTMLArea-3.0
-// Sponsored by www.americanbible.org
-// Implementation by Mihai Bazon, http://dynarch.com/mishoo/
-//
-// (c) dynarch.com 2003.
-// Distributed under the same terms as HTMLArea itself.
-// This notice MUST stay intact for use (see license.txt).
-//
-// $Id:spell-checker.js 856M 2007-06-13 18:34:34Z (local) $
-
 Xinha.Config.prototype.SpellChecker = { 'backend': 'php', 'personalFilesDir' : '', 'defaultDictionary' : 'en_GB', 'utf8_to_entities' : true };
 
 function SpellChecker(editor) {

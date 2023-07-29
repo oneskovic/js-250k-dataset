@@ -2,10 +2,7 @@
 
 tutao.provide('tutao.entity.sys.SecondFactorAuthData');
 
-/**
- * @constructor
- * @param {Object=} data The json data to store in this entity.
- */
+
 tutao.entity.sys.SecondFactorAuthData = function(data) {
   if (data) {
     this.updateData(data);

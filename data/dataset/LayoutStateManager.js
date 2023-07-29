@@ -1,6 +1,3 @@
-/*
- * Private internal class for reading and applying state
- */
 YAHOO.ext.LayoutStateManager = function(layout){
      // default empty state
      this.state = {

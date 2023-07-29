@@ -1,8 +1,6 @@
 'use strict';
 
-/**
- * @module br/test/viewhandler/Enabled
- */
+
 
 require('jquery');
 

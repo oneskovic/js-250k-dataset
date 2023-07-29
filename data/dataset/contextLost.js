@@ -1,4 +1,3 @@
-// Constructor
 ContextApp = function()
 {
 	Sim.App.call(this);

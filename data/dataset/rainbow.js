@@ -3,20 +3,14 @@ var glob = require('glob');
 var methods = require('methods');
 var fs = require('fs');
 var BaseController = require('./BaseController.js')
-/**
- * Main function to initialize routers of a Express app.
- *
- * @param  {Express} app  Express app instance
- * @param  {Object} paths (optional) For configure relative paths of
- *                        controllers and filters rather than defaults.
- */
+
 exports.route = function(app, paths) {
     paths = paths || {};
     app.set('views', approot + paths.template);
     var ctrlDir = approot + (paths.controllers || '/controllers');
     var fltrDir = approot + (paths.filters || '/filters');
     var tplDir = approot + (paths.template || '/templates');
-    glob.sync(ctrlDir + '/**/*.+(js|coffee)').forEach(function(file) {
+    glob.sync(ctrlDir + '*.+(js|coffee)').forEach(function(file) {
         file = file.replace(/\/index\.(js|coffee)$/, '');
         var router = require(file);
         var single = typeof router == 'function';

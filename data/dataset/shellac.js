@@ -1,17 +1,3 @@
-//		Author: Chrissy Clark(fivefourths@gmail.com)
-//		webtypographyforthelonely.com
-//
-//		shellac is a flexible little function for gracefully transferring
-//		designed type into canvas. unlike more robust solutions like cufon
-//		and typeface.js, which have little application in a post @font-face
-//		world, shellac finds purpose in performing a simple task flexibly
-//		and by easily being integrating into projects that require canvas to
-//		perform more complex operations (i.e. everything on web typography 
-//		for the lonely). It can't field everything yet, most notably the
-//		text-align property.
-		
-		
-
 var shellac = function(object, clean){ 
 
 	     function getStyle(styleProp) {

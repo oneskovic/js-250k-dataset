@@ -1,9 +1,3 @@
-/**
- * Aggregation formula for events and errors.
- *
- * @param   type       obj
- * @return  array
- */
 exports.generic = function(type) {
   return [
     { $match: { type: type }},
@@ -22,11 +16,7 @@ exports.generic = function(type) {
   ];
 }
 
-/**
- * Aggregation formula for xhr tracking type
- *
- * @return  array
- */
+
 exports.xhr = function() {
   return [
       { $match: { type: 2 }},

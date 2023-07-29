@@ -1,5 +1,3 @@
-// getPostsParameters gives an object containing the appropriate find and options arguments for the subscriptions's Posts.find()
-
 getPostsParameters = function (terms) {
 
   var maxLimit = 200;

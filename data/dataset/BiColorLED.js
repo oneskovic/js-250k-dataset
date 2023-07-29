@@ -1,9 +1,4 @@
- /**
- * Based on RGBLED.js which was written by Jeff Hoefs.
- *
- * Copyright (c) 2012-2013 Fabian Affolter <mail@fabian-affolter.ch>
- * Released under the MIT license. See LICENSE file for details.
- */
+ 
 
 JSUTILS.namespace('BO.io.BiColorLED');
 

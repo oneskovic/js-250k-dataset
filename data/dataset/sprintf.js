@@ -1,38 +1,3 @@
-//
-// Format arguments into a string
-//   var s = sprintf( pattern[, arg1[, arg2[, ... ] ] ] )
-// Arguments:
-//   pattern: format string
-//
-// Format sequences:
-//   %[flags][width][.precision]specifier
-//   flags:
-//     - left-justify (default is right-justify)
-//     + show '+' sign if positive
-//     0 pad with zeros, if numeric and right-justified (default is space)
-//   width:
-//     minimum width; if output would be narrower, padded with padding character
-//   precision:
-//     for strings, maximum width (truncated to fit)
-//     for floating point values, number of decimal places (rounded or padded to fit)
-//     otherwise, ignored
-//   specifier:
-//     % - literal '%' character, e.g. sprintf("we're %d%% complete", percent)
-//     c - character; numeric arg treated as char code; otherwise first char of arg as string
-//     s - string
-//     d - decimal integer, via Math.floor()
-//     i - decimal integer, via |0
-//     u - decimal integer, via >>>0
-//     o - octal integer, via Math.floor()
-//     b - binary integer, via Math.floor()
-//     x - hexadecimal integer (lowercase, e.g. d00d), via Math.floor()
-//     X - hexadecimal integer (uppercase, e.g. D00D), via Math.floor()
-//     f - decimal floating point
-//
-// Exceptions:
-//   If insufficient arguments specified, e.g. sprintf("%s %s", "abc")
-//   Unsupported specifier, e.g. sprintf("%r", obj)
-
 (function (global) {
   function sprintf(pattern) {
     var arg = 1;

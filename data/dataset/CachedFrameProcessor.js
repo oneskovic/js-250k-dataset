@@ -25,11 +25,7 @@
     this.cache_ = {};
   };
 
-  /**
-   * Set the processor function that will be called when there is a cache miss
-   * Function with 1 argument : pskl.model.Frame
-   * @param {Function} frameProcessor
-   */
+  
   ns.CachedFrameProcessor.prototype.setFrameProcessor = function (frameProcessor) {
     this.frameProcessor = frameProcessor;
   };

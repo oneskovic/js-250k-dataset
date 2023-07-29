@@ -1,6 +1,4 @@
-  /**
-   * Represents a disposable resource that only disposes its underlying disposable resource when all dependent disposable objects have been disposed.
-   */
+  
   var RefCountDisposable = Rx.RefCountDisposable = (function () {
 
     function InnerDisposable(disposable) {

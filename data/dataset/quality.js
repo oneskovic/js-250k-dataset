@@ -1,18 +1,6 @@
 module.exports = function(grunt) {
 
-  /**
-   * Define "validate" and "analyze" tasks, and include required plugins.
-   *
-   * These tasks are used to ensure code quality.
-   *
-   * grunt validate
-   *   Evaluate the quality of all custom code to make sure it is safe to push.
-   *   Should be reasonably fast and display on the command-line.
-   *
-   * grunt analyze
-   *   Deeper inspection & analyze of codebase, not done on every build.
-   *   Produces reports for Jenkins. May be a long-running task.
-   */
+  
   grunt.loadNpmTasks('grunt-phplint');
   grunt.loadNpmTasks('grunt-phpcs');
   grunt.loadNpmTasks('grunt-phpmd');
@@ -23,17 +11,17 @@ module.exports = function(grunt) {
   var analyze = [];
 
   var defaultPatterns = [
-    '<%= config.srcPaths.drupal %>/**/*.php',
-    '<%= config.srcPaths.drupal %>/**/*.module',
-    '<%= config.srcPaths.drupal %>/**/*.inc',
-    '<%= config.srcPaths.drupal %>/**/*.install',
-    '<%= config.srcPaths.drupal %>/**/*.profile',
+    '<%= config.srcPaths.drupal %>*.php',
+    '<%= config.srcPaths.drupal %>*.module',
+    '<%= config.srcPaths.drupal %>*.inc',
+    '<%= config.srcPaths.drupal %>*.install',
+    '<%= config.srcPaths.drupal %>*.profile',
     '!<%= config.srcPaths.drupal %>/sites/**',
-    '!<%= config.srcPaths.drupal %>/**/*.box.inc',
-    '!<%= config.srcPaths.drupal %>/**/*.features.*inc',
-    '!<%= config.srcPaths.drupal %>/**/*.pages_default.inc',
-    '!<%= config.srcPaths.drupal %>/**/*.panelizer.inc',
-    '!<%= config.srcPaths.drupal %>/**/*.strongarm.inc'
+    '!<%= config.srcPaths.drupal %>*.box.inc',
+    '!<%= config.srcPaths.drupal %>*.features.*inc',
+    '!<%= config.srcPaths.drupal %>*.pages_default.inc',
+    '!<%= config.srcPaths.drupal %>*.panelizer.inc',
+    '!<%= config.srcPaths.drupal %>*.strongarm.inc'
   ];
 
   grunt.config('phplint', {
@@ -43,7 +31,7 @@ module.exports = function(grunt) {
 
   if (grunt.config.get('config.phpcs') != undefined) {
     var phpcs = grunt.config.get('config.phpcs.dir') || [
-      '<%= config.srcPaths.drupal %>/**/*.css'
+      '<%= config.srcPaths.drupal %>*.css'
     ].concat(defaultPatterns);
 
     var phpStandard = grunt.config('config.phpcs.standard')

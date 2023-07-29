@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2014 Juniper Networks, Inc. All rights reserved.
- */
-
 fs = require('fs'),
 xml2js = require('xml2js'),
 g = require('./global'),

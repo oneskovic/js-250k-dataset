@@ -1,5 +1,3 @@
-// 因为context之间不能分享资源的原因
-// 这里只能使用使用gl.readPixels方法读取出来显示到canvas里
 define(function(reqUIBasere, exports, module){
 
 	var Base = reqUIBasere('./Base');

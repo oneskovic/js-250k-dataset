@@ -4,11 +4,7 @@ var util = require('util')
 var DynamoRequest = require('./DynamoRequest')
 var Builder = require('./Builder')
 
-/**
- * @param {Object} options
- * @constructor
- * @extends {Builder}
- */
+
 function UpdateBuilder(options) {
   Builder.call(this, options)
 

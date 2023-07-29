@@ -1,52 +1,55 @@
-var fs = require('fs'),
-    mongoskin = require('mongoskin'),
-    header = require('./../util/header'),
-    db = require('./../util/mongo')
-    config = require('./../config'),
-    BASE_URL = require('./../config').BASE_URL;
+var boards = require('../boards')
+  , config = require('../lib/config')
+  , out  = require('../lib/output')
+  , LeoUpload = require('../lib/upload');
 
-db.bind('user');
-module.exports = {
-    uploadImg: function(req, res) {
-        header.set(req, res);
-        var srcPath = req.files.upload.ws.path,
-            token = req.body.token;
-        db.user.find({token: mongoskin.helper.toObjectID(token)}).toArray(function(err, items) {
-            var str = '<script type="text/javascript">location.href="' + config.uploadRedirectUrl + '";' + '</script>';
-            if (!err && items.length) {
-                var desPath = './upload/' + items[0]['userid'] + '.png';
-                //重命名文件
-                fs.rename(srcPath, desPath, function(err) {
-                    if (err) {
-                        return res.send(str);
-                    } else {
-                        //删除原有文件
-                        fs.unlink(srcPath, function() {
-                            if (err) {
-                                return res.send(str);
-                            }
-                            //显示文件
-                            fs.readFile(desPath, "binary", function(error, file) {
-                                if (error) {
-                                    return res.send(str);
-                                } else {
-                                    var query = {token: mongoskin.helper.toObjectID(token)};
-                                    var $set = {$set: {avatar: BASE_URL + items[0]['userid'] + '.png'}
-                                    };
-                                    db.user.update(query, $set, function(err) {
-                                          return res.send(str);
-                                    });
-                                }
-                            });
+var Program = null;
 
-                        });
+module.exports.setup = function(program){
+  program
+    .command('upload')
+    .description('Upload firmware to device.')
+    .option('-b, --board [board]', 'Board name to compile and upload for. See `leo boards`')
+    .option('-p, --port [port]', 'Serial port to use.')
+    .action(run);
 
-                    }
-                });
-            } else {
-                return res.send(str);
-            }
-        });
-
-    }
+  Program = program;
 };
+
+function run(env){
+
+  if(config.ide.path === ''){
+    out.error('Unable to find Arduino IDE path. You can set it manually by running `leo config set ide.path \'/some/path\'`');
+    process.exit(1);
+  }
+  
+  if(!env.board){
+    out.error('Board not specified. -b');
+    process.exit(1);
+  }
+
+  if(!env.port) {
+    out.error('serial port not specified. -p ');
+    process.exit(1);
+  }
+
+  var board = boards[env.board];
+  if(board === undefined){
+    out.error('Board `'+env.board+'` not found. Use `leo boards` to list available boards.');
+    process.exit(1);
+  }
+
+  // Setup build 
+  var setup = board.platform(config, board.build, board);
+
+  var b = new LeoUpload(setup);
+
+  b.serialUpload(env.port,'.',function(err){
+    if(err)
+      return out.error(err)
+
+    out.log('Successfully uploaded hex file.');
+  });
+
+}
+

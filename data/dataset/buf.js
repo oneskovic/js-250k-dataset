@@ -1,48 +1,7 @@
 module.exports = function(neume, util) {
   "use strict";
 
-  /**
-   * $("buf", {
-   *   buffer: AudioBuffer|neume.Buffer = null,
-   *   playbackRate: signal = 1,
-   *   loop: boolean = false,
-   *   loopStart: number = 0,
-   *   loopEnd: number = 0,
-   *   mul: signal = 1,
-   *   add: signal = 0,
-   * }, ...inputs:signal)
-   *
-   * aliases:
-   *   $(AudioBuffer), $(neume.Buffer)
-   *
-   * no inputs
-   * +------------------------------+
-   * | BufferSourceNode             |
-   * | - buffer: buffer             |
-   * | - playbackRate: playbackRate |
-   * | - loop: loop                 |
-   * | - loopStart: loopStart       |
-   * | - loopEnd: loopEnd           |
-   * +------------------------------+
-   *   |
-   *
-   * has inputs
-   * +-----------+     +-----------+
-   * | inputs[0] | ... | inputs[N] |
-   * +-----------+     +-----------+
-   *   |                 |
-   *   +-----------------+
-   *   |
-   *   |             +------------------------------+
-   *   |             | BufferSourceNode             |
-   *   |             | - buffer: buffer             |
-   *   |             | - playbackRate: playbackRate |
-   * +-----------+   | - loop: loop                 |
-   * | GainNode  |   | - loopStart: loopStart       |
-   * | - gain: 0 <---| - loopEnd: loopEnd           |
-   * +-----------+   +------------------------------+
-   *   |
-   */
+  
   neume.register("buf", function(ugen, spec, inputs) {
     return make(util.defaults(spec.buf, spec.buffer), ugen, spec, inputs);
   });

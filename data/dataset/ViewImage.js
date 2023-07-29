@@ -1,4 +1,3 @@
-//* @protected
 /**
  Scroller used by enyo.ViewImage. This scroller provides:
  1) option to disable overscroll.

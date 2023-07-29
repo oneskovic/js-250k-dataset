@@ -1,8 +1,3 @@
-/*
-   SpectrumBox - A JavaScript spectral analyzer.
-   Mohit Cheppudira - 0xfe.blogspot.com
-*/
-
 /**
   @constructor
   Create an n-point FFT based spectral analyzer.

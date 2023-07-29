@@ -4,9 +4,7 @@ var modal = require('./client/modal')
 var session = require('session')
 var view = require('view')
 
-/**
- * Expose `Row`
- */
+
 
 var Row = module.exports = view(require('./journey.html'))
 

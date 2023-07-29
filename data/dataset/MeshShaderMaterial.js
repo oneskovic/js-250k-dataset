@@ -1,17 +1,3 @@
-/**
- * @author alteredq / http://alteredqualia.com/
- *
- * parameters = {
- *  fragment_shader: <string>,
- *  vertex_shader: <string>,
- *  uniforms: { "parameter1": { type: "f", value: 1.0 }, "parameter2": { type: "i" value2: 2 } },
- *  shading: THREE.SmoothShading,
- *  blending: THREE.NormalBlending,
- *  wireframe: <boolean>,
- *  wireframe_linewidth: <float>
- * }
- */
-
 THREE.MeshShaderMaterial = function ( parameters ) {
 
 	this.id = THREE.MeshShaderMaterialCounter.value ++;

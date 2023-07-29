@@ -1,4 +1,3 @@
-/*global describe before it */
 var assert = require('assert')
   , fs = require('fs')
   , path = require('path')

@@ -1,10 +1,3 @@
-// The BOSH_SERVICE here doesn't need to be on the same domain/port, but
-// it must have a /crossdomain.xml policy file that allows access from
-// wherever crossdomain.html lives.
-//
-// Most BOSH connection managers can serve static html files, so you should
-// be able to configure them to serve a /crossdomain.xml file to allow
-// access.
 var BOSH_SERVICE = 'http://bosh.metajack.im:5280/xmpp-httpbind'
 var connection = null;
 

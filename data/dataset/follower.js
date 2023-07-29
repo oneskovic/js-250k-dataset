@@ -1,4 +1,3 @@
-// namespacing!
 if (!com) {
     var com = { };
     if (!com.modestmaps) {

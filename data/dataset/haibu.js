@@ -1,10 +1,3 @@
-/*
- * haibu.js: Top level include for the haibu module
- *
- * (C) 2010, Nodejitsu Inc.
- *
- */
-
 var fs = require('fs'),
     path = require('path'),
     flatiron = require('flatiron'),

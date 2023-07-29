@@ -10,7 +10,7 @@ define(
 
 	function (OxBlood, Class, Module, FacebookSocial, $) {
 
-		/*global describe, expect, it, before, beforeEach, after, afterEach */
+		
 
 		"use strict";
 

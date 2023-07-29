@@ -1,78 +1,78 @@
-var on, off, emit;
+var _handlers = {};
 
-(function () {
-
-    var SERVER_EVENTS = 'server.events';
-
-    /**
-     * Fetches callback object of this module from the application context.
-     */
-    var callbacks = function () {
-        var cbs = application.get(SERVER_EVENTS);
-        if (cbs) {
-            return cbs;
-        }
-        cbs = {};
-        application.put(SERVER_EVENTS, cbs);
-        return cbs;
-    };
-
-    /**
-     * Fetches specified event object from the application context.
-     * @param event
-     * @return {*|Array}
-     */
-    var events = function (event) {
-        var cbs = callbacks();
-        return cbs[event] || (cbs[event] = []);
-    };
-
-    /**
-     * Registers an event listener in the server.
-     * @param event
-     * @param fn
-     * @return {*}
-     */
-    on = function (event, fn) {
-        var group = events(event);
-        group.push(fn);
-        return fn;
-    };
-
-    /**
-     * Removes specified event callback from the listeners.
-     * If this is called without fn, then all events will be removed.
-     * @param event
-     * @param fn callback function used during the on() method
-     */
-    off = function (event, fn) {
-        var index, cbs,
-            group = events(event);
-        if (fn) {
-            index = group.indexOf(fn);
-            group.splice(index, 1);
-            return;
-        }
-        cbs = callbacks();
-        delete cbs[event];
-    };
-
-    /**
-     * Executes event callbacks of the specified event by passing data.
-     * @param event
-     */
-    emit = function (event) {
-        var group = events(event),
-            log = new Log(),
-            args = Array.prototype.slice.call(arguments, 1);
-        log.info('Emitting event : ' + event);
-        group.forEach(function (fn) {
-            try {
-                fn.apply(this, args);
-            } catch (e) {
-                log.error(e);
+function _add(featureId, name, cb, success, fail, once) {
+    var handler;
+    if (featureId && name && typeof cb === "function") {
+        handler = {
+            func: cb,
+            once: !!once
+        };
+        //If this is the first time we are adding a cb
+        if (!_handlers.hasOwnProperty(name)) {
+            _handlers[name] = [handler];
+            //Do not call exec for once because its not necessary
+            if (!once) {
+                window.webworks.exec(success, fail, featureId, "add", {"eventName": name});
             }
-        });
-    };
+        } else if (!_handlers[name].some(function (element, index, array) {
+            return element.func === cb;
+        })) {
+            //Only add unique callbacks
+            _handlers[name].push(handler);
+        }
+    }
+}
 
-}());
+module.exports = {
+    add: function (featureId, name, cb, success, fail) {
+        _add(featureId, name, cb, success, fail, false);
+    },
+
+    once: function (featureId, name, cb, success, fail) {
+        _add(featureId, name, cb, success, fail, true);
+    },
+
+    isOn: function (name) {
+        return !!_handlers[name];
+    },
+
+    remove: function (featureId, name, cb, success, fail) {
+        if (featureId && name && typeof cb === "function") {
+            if (_handlers.hasOwnProperty(name)) {
+                _handlers[name] = _handlers[name].filter(function (element, index, array) {
+                    return element.func !== cb || element.once;
+                });
+
+                if (_handlers[name].length === 0) {
+                    delete _handlers[name];
+                    window.webworks.exec(success, fail, featureId, "remove", {"eventName": name});
+                }
+            }
+        }
+    },
+
+    trigger: function (name, args) {
+        var parsedArgs;
+        if (_handlers.hasOwnProperty(name)) {
+            if (args && args !== "undefined") {
+                parsedArgs = JSON.parse(decodeURIComponent(args));
+            }
+            //Call the handlers
+            _handlers[name].forEach(function (handler) {
+                if (handler) {
+                    //args should be an array of arguments
+                    handler.func.apply(undefined, parsedArgs);
+                }
+            });
+            //Remove the once listeners
+            _handlers[name] = _handlers[name].filter(function (handler) {
+                return !handler.once;
+            });
+            //Clean up the array if it is empty
+            if (_handlers[name].length === 0) {
+                delete _handlers[name];
+                //No need to call remove since this would only be for callbacks
+            }
+        }
+    }
+};

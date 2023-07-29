@@ -1,7 +1,4 @@
-﻿/**
- * @license Copyright (c) 2003-2013, CKSource - Frederico Knabben. All rights reserved.
- * For licensing, see LICENSE.md or http://ckeditor.com/license
- */
+﻿
 
 CKEDITOR.dialog.add( 'sourcedialog', function( editor ) {
 	var size = CKEDITOR.document.getWindow().getViewPaneSize();

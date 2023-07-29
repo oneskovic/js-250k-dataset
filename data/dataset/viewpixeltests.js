@@ -1,11 +1,3 @@
-//
-// Basic ReactPIXI example using pixi events to add/remove sprites.
-// Note that in order for a sprite to be clickable the sprite has
-// to be interactive (sprite.interactive = true)
-//
-// For react-pixi this means you should have 'interactive:true' in your props
-//
-
 // tell jshint that we use lodash
 /* global _ : false */
 /* global React : false */

@@ -19,15 +19,7 @@
     });
   }    
 
-  /**
-   * Merges the specified observable sequences into one observable sequence by using the selector function whenever all of the observable sequences or an array have produced an element at a corresponding index.
-   * The last element in the arguments must be a function to invoke for each series of elements at corresponding indexes in the sources.
-   *
-   * @example
-   * 1 - res = obs1.zip(obs2, fn);
-   * 1 - res = x1.zip([1,2,3], fn);  
-   * @returns {Observable} An observable sequence containing the result of combining elements of the sources using the specified result selector function. 
-   */   
+     
   observableProto.zip = function () {
     if (Array.isArray(arguments[0])) {
       return zipArray.apply(this, arguments);

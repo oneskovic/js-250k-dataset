@@ -1,5 +1,3 @@
-/*global console */
-
 define(['./wireClient', './webfinger'], function(wireClient, webfinger) {
 
   "use strict";

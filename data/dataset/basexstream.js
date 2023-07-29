@@ -1,9 +1,3 @@
-/*
- * Send and receive streams for BaseX. They expect and emit Buffers
- * 
- * andy bunce 2011-2014
- * see http://loose-bits.com/2012/08/02/nodejs-read-write-streams-pipes.html
- */
  
 
 /**

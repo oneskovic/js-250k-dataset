@@ -1,6 +1,3 @@
-// From hammer.js
-// https://github.com/hammerjs/hammer.js/blob/master/tests/unit/assets/utils.js
-
 var utils = {
     /**
      * trigger simple dom event

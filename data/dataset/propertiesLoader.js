@@ -1,16 +1,3 @@
-/*!
- * .______    _______     ___      .______       ______     ___   .__________.
- * (   _  )  (   ____)   /   \     (   _  )     (      )   /   \  (          )
- * |  |_)  ) |  |__     /  ^  \    |  |_)  )   |  ,----'  /  ^  \ `---|  |---`
- * |   _  <  |   __)   /  /_\  \   |      )    |  |      /  /_\  \    |  |
- * |  |_)  ) |  |____ /  _____  \  |  |)  ----.|  `----./  _____  \   |  |
- * (______)  (_______/__/     \__\ ( _| `.____) (______)__/     \__\  |__|
- *
- * Bearcat PropertiesLoader
- * Copyright(c) 2015 fantasyni <fantasyni@163.com>
- * MIT Licensed
- */
-
 var logger = require('pomelo-logger').getLogger('bearcat', 'PropertiesLoader');
 var FileUtil = require('../util/fileUtil');
 var Utils = require('../util/utils');

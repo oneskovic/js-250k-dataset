@@ -1,13 +1,3 @@
-/**
- * A simple event dispatcher mixin, borrowed from Backbone.Event.
- * Users should extend their objects/modules with this mixin.
- * @example
- * define(['lodash', 'eventMixin'], function(_, eventMixin) {
- * 	return _.extend({
- * 		...
- * 	}, eventMixin);
- * })
- */
 if (typeof module === 'object' && typeof define !== 'function') {
 	var define = function (factory) {
 		module.exports = factory(require, exports, module);

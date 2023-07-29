@@ -1,4 +1,4 @@
-﻿/*globals es*/
+﻿
 /// <reference path="../Libs/jquery-1.7.1.js" />
 /// <reference path="../Libs/json2.js" />
 

@@ -1,84 +1,120 @@
-var exec = require('child_process').exec,
-    bin = require('./binaries');
+var cp = require('child_process');
+var path = require('path');
+var Q = require('q');
+var mout = require('mout');
+var which = require('which');
+var PThrottler = require('p-throttler');
+var createError = require('./createError');
 
-module.exports = {
+// The concurrency limit here is kind of magic. You don't really gain a lot from
+// having a large number of commands spawned at once, so it isn't super
+// important for this number to be large. Reports have shown that much more than 5
+// or 10 cause issues for corporate networks, private repos or situations where
+// internet bandwidth is limited. We're running with a concurrency of 5 until
+// 1.4.X is released, at which time we'll move to what was discussed in #1262
+// https://github.com/bower/bower/pull/1262
+var throttler = new PThrottler(5);
 
-  /**
-   * @method isAdminUser
-   * @member nodewindows
-   * This asynchronous command determines whether the current user has administrative privileges.
-   * It passes a boolean value to the callback, returning `true` if the user is an administrator
-   * or `false` if it is not.
-   * @param {Function} callback
-   * @param {Boolean} callback.isAdmin
-   * Receives true/false as an argument to the callback.
-   */
-  isAdminUser: function(callback){
-    exec('NET SESSION',function(err,so,se){
-      if (se.length !== 0){
-        bin.elevate('NET SESSION',function(_err,_so,_se){
-          callback(_se.length === 0);
-        });
-      } else {
-        callback(true);
-      }
+var winBatchExtensions;
+var winWhichCache;
+var isWin = process.platform === 'win32';
+
+if (isWin) {
+    winBatchExtensions = ['.bat', '.cmd'];
+    winWhichCache = {};
+}
+
+function getWindowsCommand(command) {
+    var fullCommand;
+    var extension;
+
+    // Do we got the value converted in the cache?
+    if (mout.object.hasOwn(winWhichCache, command)) {
+        return winWhichCache[command];
+    }
+
+    // Use which to retrieve the full command, which puts the extension in the end
+    try {
+        fullCommand = which.sync(command);
+    } catch (err) {
+        return winWhichCache[command] = command;
+    }
+
+    extension = path.extname(fullCommand).toLowerCase();
+
+    // Does it need to be converted?
+    if (winBatchExtensions.indexOf(extension) === -1) {
+        return winWhichCache[command] = command;
+    }
+
+    return winWhichCache[command] = fullCommand;
+}
+
+// Executes a shell command, buffering the stdout and stderr
+// If an error occurs, a meaningful error is generated
+// Returns a promise that gets fulfilled if the command succeeds
+// or rejected if it fails
+function executeCmd(command, args, options) {
+    var process;
+    var stderr = '';
+    var stdout = '';
+    var deferred = Q.defer();
+
+    // Windows workaround for .bat and .cmd files, see #626
+    if (isWin) {
+        command = getWindowsCommand(command);
+    }
+
+    // Buffer output, reporting progress
+    process = cp.spawn(command, args, options);
+    process.stdout.on('data', function (data) {
+        data = data.toString();
+        deferred.notify(data);
+        stdout += data;
     });
-  },
+    process.stderr.on('data', function (data) {
+        data = data.toString();
+        deferred.notify(data);
+        stderr += data;
+    });
 
-  /**
-   * @method kill
-   * @member nodewindows
-   * Kill a specific process
-   * @param {Number} PID
-   * Process ID
-   * @param {Boolean} [force=false]
-   * Force close the process.
-   * @param {Function} [callback]
-   */
-  kill: function(pid,force,callback){
-    if (!pid){
-      throw new Error('PID is required for the kill operation.');
-    }
-    callback = callback || function(){};
-    if (typeof force == 'function'){
-      callback = force;
-      force = false;
-    }
-    exec("taskkill /PID "+pid+(force==true?' /f':''),callback);
-  },
+    // If there is an error spawning the command, reject the promise
+    process.on('error', function (error) {
+        return deferred.reject(error);
+    });
 
-  /**
-   * @method list
-   * @member nodewindows
-   * List the processes running on the server.
-   * @param {Function} callback
-   * Receives the process object as the only callback argument
-   * @param {Boolean} [verbose=false]
-   */
-  list: function(callback,verbose){
-    verbose = typeof verbose == 'boolean' ? verbose : false;
-    exec('tasklist /FO CSV'+(verbose==true?' /V':''),function(err,stdout,stderr){
-      var p = stdout.split('\r\n');
-      var proc = [];
-      var head = null;
-      while (p.length > 1){
-        var rec = p.shift();
-        rec = rec.replace(/\"\,/gi,'";').replace(/\"|\'/gi,'').split(';');
-        if (head == null){
-          head = rec;
-          for (var i=0;i<head.length;i++){
-            head[i] = head[i].replace(/ /gi,'');
-          }
-        } else {
-          var tmp = {};
-          for (var i=0;i<rec.length;i++){
-            tmp[head[i]] = rec[i].replace(/\"|\'/gi,'');
-          }
-          proc.push(tmp);
+    // Listen to the close event instead of exit
+    // They are similar but close ensures that streams are flushed
+    process.on('close', function (code) {
+        var fullCommand;
+        var error;
+
+        if (code) {
+            // Generate the full command to be presented in the error message
+            if (!Array.isArray(args)) {
+                args = [];
+            }
+
+            fullCommand = command;
+            fullCommand += args.length ? ' ' + args.join(' ') : '';
+
+            // Build the error instance
+            error = createError('Failed to execute "' + fullCommand + '", exit code of #' + code + '\n' + stderr, 'ECMDERR', {
+                details: stderr,
+                exitCode: code
+            });
+
+            return deferred.reject(error);
         }
-      }
-      callback(proc);
-    });
-  }
 
-};
+        return deferred.resolve([stdout, stderr]);
+    });
+
+    return deferred.promise;
+}
+
+function cmd(command, args, options) {
+    return throttler.enqueue(executeCmd.bind(null, command, args, options));
+}
+
+module.exports = cmd;

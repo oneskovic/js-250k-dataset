@@ -1,4 +1,3 @@
-/* globals window, _, VIZI */
 (function() {
 	"use strict";
 

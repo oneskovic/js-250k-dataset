@@ -1,6 +1,3 @@
-/**
- * This example demonstrates basic tree configuration.
- */
 Ext.define('KitchenSink.view.tree.BasicTrees', {
     extend: 'Ext.Container',
     xtype: 'basic-trees',

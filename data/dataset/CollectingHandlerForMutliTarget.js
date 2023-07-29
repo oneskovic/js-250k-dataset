@@ -1,10 +1,3 @@
-/*
-* Based on htmlparser2.CollectingHandler.
-*
-* Can send parsing events to multiple targets.
-*
-* */
-
 function CollectingHandlerForMutliTarget(cbsArray){
     this._cbsArray = cbsArray || [];
     this.events = [];

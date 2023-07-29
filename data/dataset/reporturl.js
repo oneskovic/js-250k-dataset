@@ -1,13 +1,6 @@
 'use strict';
 
-/**
- * @ngdoc filter
- * @name facetedviz.filter:reportUrl
- * @function
- * @description
- * # reportUrl
- * Filter in the facetedviz.
- */
+
 angular.module('vleApp')
   .filter('reportUrl', function (compactJSONFilter, _, consts) {
     function voyagerReport(params) {

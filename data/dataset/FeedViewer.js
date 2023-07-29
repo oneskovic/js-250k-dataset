@@ -1,14 +1,3 @@
-/**
- * @class FeedViewer.FeedViewer
- * @extends Ext.container.Viewport
- *
- * The main FeedViewer application
- * 
- * @constructor
- * Create a new Feed Viewer app
- * @param {Object} config The config object
- */
-
 Ext.define('FeedViewer.App', {
     extend: 'Ext.container.Viewport',
     

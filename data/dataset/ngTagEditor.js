@@ -26,7 +26,7 @@ angular.module('ngTagEditor', [])
 	}]).directive('tagEditor', function(){
 		return{
 			restrict: 'AE',
-			/* require: 'ngModel',*/
+			
 			scope: {
 				tags: '=ngModel'
 			},

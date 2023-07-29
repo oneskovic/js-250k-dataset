@@ -1,7 +1,7 @@
 var isIterateeCall = require('../internal/isIterateeCall'),
     keys = require('./keys');
 
-/** Used for native method references. */
+
 var objectProto = Object.prototype;
 
 /** Used to check objects for own properties. */

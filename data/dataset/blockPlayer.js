@@ -1,4 +1,3 @@
-// Load all required engine components
 R.Engine.define({
     "class":"BlockPlayer",
     "requires":[

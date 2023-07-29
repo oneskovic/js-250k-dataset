@@ -1,69 +1,56 @@
-var RELANG = {};
-RELANG['ko'] = {
-	html: 'HTML',
-	video: '비디오',
-	image: '이미지',
-	table: '표',
-	link: '링크',
-	link_insert: '링크 삽입...',
-	unlink: '링크 삭제',
-	formatting: '스타일',
-	paragraph: '단락',
-	quote: '인용',
-	code: '코드',
-	header1: '헤더 1',
-	header2: '헤더 2',
-	header3: '헤더 3',
-	header4: '헤더 4',
-	bold:  '굵게',
-	italic: '기울임꼴',
-	fontcolor: '글자색',
-	backcolor: '배경색',
-	unorderedlist: '글머리기호',
-	orderedlist: '번호매기기',	
-	outdent: '내어쓰기',
-	indent: '들여쓰기',
-	cancel: '취소',	
-	insert: '삽입',
-	save: '저장',	
-	_delete: '삭제',
-	insert_table: '표 삽입',		
-	insert_row_above: '열을 위에 추가',
-	insert_row_below: '열을 아래에 추가',
-	insert_column_left: '행을 왼쪽에 추가',
-	insert_column_right: '행을 오른쪽에 추가',									
-	delete_column: '컬럼 삭제',									
-	delete_row: '행 삭제',									
-	delete_table: '표 삭제',
-	rows: '열',
-	columns: '행',	
-	add_head: '표 헤더 추가',
-	delete_head: '표 헤더 체거',	
-	title: '제목',
-	image_position: '이미지 위치',
-	none: '없음',
-	left: '왼쪽',
-	right: '오른쪽',
-	image_web_link: '이미지 링크',
-	text: '텍스트',
-	mailto: '메일',
-	web: 'URL',
-	video_html_code: '비디오 삽입(embed) 코드',
-	file: '파일',	
-	upload: '업로드',
-	download: '다운로드',
-	choose: '선택',
-	or_choose: '또는 선택',
-	drop_file_here: '파일을 여기에 떨굼',
-	align_left:	'왼쪽정렬',	
-	align_center: '가운데정렬',
-	align_right: '오른쪽정렬',
-	align_justify: '가지런히정렬',
-	horizontalrule: '수평선',
-	fullscreen: '전체화면',
-	deleted: '취소선',
-	anchor: '링크',
-	link_new_tab: 'Open link in new tab',
-	underline: 'Underline',
-	alignment: 'Alignment'
-};
+(function (factory) {
+    if (typeof define === 'function' && define.amd) {
+        define(['moment'], factory); // AMD
+    } else if (typeof exports === 'object') {
+        module.exports = factory(require('../moment')); // Node
+    } else {
+        factory(window.moment); // Browser global
+    }
+}(function (moment) {
+    return moment.lang('ko', {
+        months : "1월_2월_3월_4월_5월_6월_7월_8월_9월_10월_11월_12월".split("_"),
+        monthsShort : "1월_2월_3월_4월_5월_6월_7월_8월_9월_10월_11월_12월".split("_"),
+        weekdays : "일요일_월요일_화요일_수요일_목요일_금요일_토요일".split("_"),
+        weekdaysShort : "일_월_화_수_목_금_토".split("_"),
+        weekdaysMin : "일_월_화_수_목_금_토".split("_"),
+        longDateFormat : {
+            LT : "A h시 mm분",
+            L : "YYYY.MM.DD",
+            LL : "YYYY년 MMMM D일",
+            LLL : "YYYY년 MMMM D일 LT",
+            LLLL : "YYYY년 MMMM D일 dddd LT"
+        },
+        meridiem : function (hour, minute, isUpper) {
+            return hour < 12 ? '오전' : '오후';
+        },
+        calendar : {
+            sameDay : '오늘 LT',
+            nextDay : '내일 LT',
+            nextWeek : 'dddd LT',
+            lastDay : '어제 LT',
+            lastWeek : '지난주 dddd LT',
+            sameElse : 'L'
+        },
+        relativeTime : {
+            future : "%s 후",
+            past : "%s 전",
+            s : "몇초",
+            ss : "%d초",
+            m : "일분",
+            mm : "%d분",
+            h : "한시간",
+            hh : "%d시간",
+            d : "하루",
+            dd : "%d일",
+            M : "한달",
+            MM : "%d달",
+            y : "일년",
+            yy : "%d년"
+        },
+        ordinal : '%d일',
+        meridiemParse : /(오전|오후)/,
+        isPM : function (token) {
+            return token === "오후";
+        }
+    });
+}));

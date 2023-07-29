@@ -1,11 +1,3 @@
-/*
-    Sticky.js 0.1.0
-    (c) Stanislav Morozov
-    MIT license.
-    For all details and documentation:
-    https://github.com/Z-Wave-Me/home-automation
-*/
-
 (function(root, factory) {
     if (typeof define === 'function' && define.amd) {
         define(['exports'], function(exports) {

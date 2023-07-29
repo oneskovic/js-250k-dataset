@@ -1,12 +1,3 @@
-/* ========================================================================
- * Ratchet: toggles.js v2.0.2
- * http://goratchet.com/components#toggles
- * ========================================================================
-   Adapted from Brad Birdsall's swipe
- * Copyright 2014 Connor Sears
- * Licensed under MIT (https://github.com/twbs/ratchet/blob/master/LICENSE)
- * ======================================================================== */
-
 !(function () {
   'use strict';
 

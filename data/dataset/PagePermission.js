@@ -1,7 +1,3 @@
-/*
- *  Checks page permission for request
- */
-
 var DBActions = require("../DBActions"),
     Router = require("../Router"),
     PermissionValidator = require('../permissions/PermissionValidator'),

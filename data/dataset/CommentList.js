@@ -1,4 +1,3 @@
-
 //
 //
 // NicoHTML5.CommentList

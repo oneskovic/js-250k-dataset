@@ -1,5 +1,3 @@
-// Instantiate a new Miso Dataset object and point it
-// at our trusty hero & villain database.
 var all = new Miso.Dataset({
   url: '../../data/all.json'
 });

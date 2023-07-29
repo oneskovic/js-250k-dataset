@@ -1,60 +1,119 @@
-(function() {
-  var $, Slide, SlideApp, exports;
-  var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
-    for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
-    function ctor() { this.constructor = child; }
-    ctor.prototype = parent.prototype;
-    child.prototype = new ctor;
-    child.__super__ = parent.prototype;
-    return child;
-  }, __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
-  $ = jQuery;
-  Slide = (function() {
-    __extends(Slide, Spine.Model);
-    function Slide() {
-      Slide.__super__.constructor.apply(this, arguments);
-    }
-    Slide.configure("Slide", "name", "content");
-    Slide.extend(Spine.Model.Local);
-    return Slide;
-  })();
-  SlideApp = (function() {
-    __extends(SlideApp, Spine.Controller);
-    function SlideApp() {
-      this.addAll = __bind(this.addAll, this);      SlideApp.__super__.constructor.apply(this, arguments);
-      Slide.fetch();
-      this.addAll();
-    }
-    SlideApp.prototype.addAll = function() {
-      var all_slides;
-      Slide.fetch();
-      all_slides = Slide.all();
-      if (all_slides.length === 0) {
-        alert("here");
-        Slide.create({
-          name: "one",
-          content: '<h1>This is your first slide! Edit it!</h1>'
-        });
-        all_slides = Slide.all();
-      }
-      $('#content').html("");
-      $.each(all_slides, function(key, value) {
-        var each_slide;
-        each_slide = '<section class="slide" id="' + value.id + '">' + value.content + '</section>';
-        window.a = each_slide;
-        return $('.deck-container').append(each_slide);
-      });
-      return $.deck('.slide');
-    };
-    return SlideApp;
-  })();
-  $(function() {
-    return window.slideapp = new SlideApp({
-      el: $("#content"),
-      item: "blarg"
-    });
-  });
-  exports = this;
-  exports.Slide = Slide;
-  exports.SlideApp = SlideApp;
-}).call(this);
+﻿
+
+(function ($) {
+
+    // Patch collection fetching to emit a `fetch` event.
+    Backbone.Collection.prototype.fetch = function () {
+        var fetch = Backbone.Collection.prototype.fetch;
+
+        return function () {
+            this.trigger("fetch");
+
+            return fetch.apply(this, arguments);
+        };
+    } ();
+
+//    var pageListView = new PageListView();
+
+//    var Router = Backbone.Router.extend({
+
+//        routes: {},
+
+//        // set up routing table
+//        initialize: function () {
+
+//            var router = this,
+
+//                routes = [
+//                    ['', 'ui', this.ui],
+//                    ['dashboard/', 'dashboard', this.dashboard],
+//                    [/^pages\/((?!(.*?)\w*new).*)$/, 'pages', this.pages]
+//                ];
+
+//            $(routes).each(function (index, route) {
+//                router.route.apply(router, route);
+//            });
+
+//        },
+//        ui: function () {
+
+//            console.log('ui');
+//            var route = this;
+//            var ui = new UiView();
+
+//        },
+//        dashboard: function () {
+
+//            var route = this;
+//            var dashboard = new DashboardView();
+
+//        },
+//        pages: function (url) {
+
+//            var route = this;
+
+//            console.log('pages: ' + url);
+
+//            pageListView.url = url;
+//            pageListView.render();
+
+//        }
+//    });
+
+    // Shorthand the application namespace
+    //var app = brickpile.app;
+
+    // Define your master router on the application namespace and trigger all
+    // navigation from this instance.
+//    app.router = new Router();
+
+    // Set selected class on the main navigation
+//    app.router.bind('all ', function (route, section) {
+//        var $el;
+//        route = route.replace('route:', '');
+
+//        $el = $('nav a.' + route);
+
+//        // If current route is highlighted, we're done.
+//        if ($el.hasClass('selected')) {
+//            return;
+//        } else {
+//            // Unhighlight active tab.
+//            $('nav a.selected').removeClass('selected');
+//            // Highlight active page tab.
+//            $el.addClass('selected');
+//        }
+//    });
+
+    // Trigger the initial route and enable HTML5 History API support
+//    Backbone.history.start({ pushState: true });
+
+    
+
+    // Ensure that we have a valid slug
+    //$('.slug').slugify('input.title');
+
+    // All navigation that is relative should be passed through the navigate
+    // method, to be processed by the router.  If the link has a data-bypass
+    // attribute, bypass the delegation completely.
+//    $(document).on("click", "a:not([data-bypass])", function (evt) {
+//        // Get the anchor href and protcol
+//        var href = $(this).attr("href");
+//        var protocol = this.protocol + "//";
+
+//        // Ensure the protocol is not part of URL, meaning its relative.
+//        if (href && href.slice(0, protocol.length) !== protocol) {
+//            // Stop the default event to ensure the link will not cause a page
+//            // refresh.
+//            evt.preventDefault();
+
+//            // This uses the default router defined above, and not any routers
+//            // that may be placed in modules.  To have this work globally (at the
+//            // cost of losing all route events) you can change the following line
+//            // to: Backbone.history.navigate(href, true);
+//            app.router.navigate(href, true);
+//        }
+//    });
+
+})(jQuery);    
+    

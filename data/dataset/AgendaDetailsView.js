@@ -1,4 +1,3 @@
-
 OKnesset.app.views.AgendaDetailsView = new Ext.extend(OKnesset.Panel, {
 	id : 'AgendaDetailsView',
 	scroll: 'vertical',

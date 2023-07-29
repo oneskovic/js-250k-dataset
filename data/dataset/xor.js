@@ -1,82 +1,69 @@
 'use strict';
 
-module.exports = function (math) {
-  var util = require('../../util/index'),
+describe('xorFilter', function() {
+  var filter;
 
-      BigNumber = math.type.BigNumber,
-      Complex = require('../../type/Complex'),
-      Unit = require('../../type/Unit'),
-      collection = math.collection,
+  beforeEach(module('a8m.xor'));
 
-      isNumber = util.number.isNumber,
-      isBoolean = util['boolean'].isBoolean,
-      isComplex = Complex.isComplex,
-      isUnit = Unit.isUnit,
-      isCollection = collection.isCollection;
+  beforeEach(inject(function($filter) {
+    filter = $filter('xor');
+  }));
 
-  /**
-   * Logical `xor`. Test whether one and only one value is defined with a nonzero/nonempty value.
-   * For matrices, the function is evaluated element wise.
-   *
-   * Syntax:
-   *
-   *    math.xor(x, y)
-   *
-   * Examples:
-   *
-   *    math.xor(2, 4);   // returns false
-   *
-   *    a = [2, 0, 0];
-   *    b = [2, 7, 0];
-   *    c = 0;
-   *
-   *    math.xor(a, b);   // returns [false, true, false]
-   *    math.xor(a, c);   // returns [true, false, false]
-   *
-   * See also:
-   *
-   *    and, not, or
-   *
-   * @param  {Number | BigNumber | Boolean | Complex | Unit | Array | Matrix | null} x First value to check
-   * @param  {Number | BigNumber | Boolean | Complex | Unit | Array | Matrix | null} y Second value to check
-   * @return {Boolean | Array | Matrix}
-   *            Returns true when one and only one input is defined with a nonzero/nonempty value.
-   */
-  math.xor = function xor(x, y) {
-    if (arguments.length != 2) {
-      throw new math.error.ArgumentsError('xor', arguments.length, 2);
-    }
+  it('should get 2 array collection and return exclusive or between them', function() {
+    expect(filter([1,2], [1])).toEqual([2]);
+    expect(filter([1, 2, 3], [5, 2, 1, 4])).toEqual([3, 5, 4]);
 
-    if ((isNumber(x) || isBoolean(x) || x === null) &&
-        (isNumber(y) || isBoolean(y) || y === null)) {
-      return !!(!!x ^ !!y);
-    }
+    expect(filter([1, 2, 3], [4, 5])).toEqual([1, 2, 3, 4, 5]);
+    expect(filter([1, 2, 3], [2, 3, 4])).toEqual([1, 4]);
+  });
 
-    if (isComplex(x)) {
-      return xor(!(x.re == 0 && x.im == 0), y);
-    }
-    if (isComplex(y)) {
-      return xor(x, !(y.re == 0 && y.im == 0));
-    }
+  it('should get objects as collection', function() {
+    expect(filter({ 0: 1, 1: 2 }, { 0: 3 })).toEqual([1, 2, 3]);
+    expect(filter({ 0: 1, 1: 2 }, { 0: 1 })).toEqual([2]);
+  });
 
-    if (x instanceof BigNumber) {
-      return xor(!(x.isZero() || x.isNaN()), y);
-    }
-    if (y instanceof BigNumber) {
-      return xor(x, !(y.isZero() || y.isNaN()));
-    }
+  it('should get an objects collection and filters by value', function() {
 
-    if (isUnit(x)) {
-      return xor(!(x.value === null || x.value == 0), y);
-    }
-    if (isUnit(y)) {
-      return xor(x, !(y.value === null || y.value == 0));
-    }
+    var array = [
+      { id: 1, name: 'foo' },
+      { id: 2, name: 'bar' },
+      { id: 3, name: 'baz' }
+    ];
 
-    if (isCollection(x) || isCollection(y)) {
-      return collection.deepMap2(x, y, xor);
-    }
+    expect(filter(array, array)).toEqual([]); // A (xor) A
+    expect(filter(array, [ { id: 1, name:'foo' } ])).toEqual([array[1], array[2]]);
 
-    throw new math.error.UnsupportedTypeError('xor', math['typeof'](x), math['typeof'](y));
-  };
-};
+    expect(filter(array, [ { id: 1 } ])).toEqual(
+      array.concat([{ id: 1 }])
+    );
+  });
+
+  it('should filter by specific property', function() {
+    var users = [
+      { id: 0, details: { first_name: 'foo', last_name: 'bar' } },
+      { id: 1, details: { first_name: 'foo', last_name: 'baz' } },
+      { id: 2, details: { first_name: 'foo', last_name: 'bag' } }
+    ];
+
+    expect(filter(users, [{ details: { first_name: 'foo' } }], 'details.first_name'))
+      .toEqual([]);
+    expect(filter(users, [{ id: 0 }, { id: 1 }], 'id')).toEqual([users[2]]);
+
+    expect(filter(users, [{ id: 3, details: { first_name: 'foo', last_name: 'bag' }}], 'id'))
+      .toEqual(
+        users.concat([{ id: 3, details: { first_name: 'foo', last_name: 'bag' }}]
+      ));
+  });
+
+  it('should filter by expression', function() {
+    expect(filter([ { id: 2 }, { id: 3 }], [ { id: 4 } ], 'id % 2')).toEqual([{ id: 3 }])
+  });
+
+
+  it('should get !collection and return it as-is', function() {
+    expect(filter(999)).toEqual(999);
+    expect(filter(!1)).toBeFalsy();
+    expect(null).toEqual(null);
+  });
+
+});

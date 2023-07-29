@@ -16,11 +16,7 @@ var MameSearch = (function(){
 	}
 
 
-    /**
-     * Starts the MameSearch search engine
-     * @param callback called when the search engine is ready
-     * @param progress if the indexes need to be initialized, this function is called with the progress value, ranging from 0 to 1.
-     */
+    
     this.start = function(callback, progress) {
 
         var loader = new fullproof.DataLoader();

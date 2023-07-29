@@ -1,5 +1,3 @@
-/// <reference path="../Server/ServerAdapter.ts" />
-/// <reference path="../Utilities/UtilityFunctions.ts" />
 var ShootR;
 (function (ShootR) {
     var LatencyResolver = (function () {

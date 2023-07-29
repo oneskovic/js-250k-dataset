@@ -1,8 +1,3 @@
-/**
- * @author: Bin Wang
- * @description:  马赛克 
- *
- */
 ;(function(Ps){
 
     window[Ps].module("Filter.mosaic",function(P){

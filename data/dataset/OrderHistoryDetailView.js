@@ -1,13 +1,6 @@
 var ns = namespace('dr.acme.view');
 
-/**
- * Order History Detail View
- * 
- * Will render the model in different ways depending on the function
- * called. They replace the html template in the layout specified
- * with the provided model
- * 
- */
+
 ns.OrderHistoryDetailView =  ns.BaseView.extend({
 	init: function() {
 		this._super();

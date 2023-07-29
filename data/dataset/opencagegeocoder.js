@@ -1,9 +1,7 @@
 var util             = require('util'),
     AbstractGeocoder = require('./abstractgeocoder');
 
-/**
- * Constructor
- */
+
 var OpenCageGeocoder = function OpenCageGeocoder(httpAdapter, apiKey, options) {
     this.options = ['language'];
 

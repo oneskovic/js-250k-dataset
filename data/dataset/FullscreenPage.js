@@ -1,6 +1,3 @@
-/*!
- * ${copyright}
- */
 sap.ui.define(["sap/m/semantic/ShareMenuPage", "sap/m/semantic/SemanticType", "sap/m/semantic/SemanticPageRenderer"], function(ShareMenuPage, SemanticType, SemanticPageRenderer) {
 	"use strict";
 

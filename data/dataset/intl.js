@@ -6,11 +6,7 @@ var _mods = {},
     ACTIVE_LANG = "yuiActiveLang",
     NONE = [];
 
-/**
- * Provides utilities to support the management of localized resources (strings and formatting patterns).
- *
- * @module intl
- */
+
 
 /**
  * The Intl utility provides a central location for managing sets of localized resources (strings and formatting patterns).

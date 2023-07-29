@@ -1,7 +1,3 @@
-/**
- * @name views.loginOrRegister
- * @namespace Login and register forms.
- */
 define(["globals", "ui", "lib/jquery", "util/bbgmView", "util/viewHelpers"], function (g, ui, $, bbgmView, viewHelpers) {
     "use strict";
 

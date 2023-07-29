@@ -1,121 +1,84 @@
-(function (tree) {
+IWitness.Media = Ember.Object.extend({
+  serviceType: null,
+  linkUrl:     null,
+  mediaUrl:    null,
+  canDisplayBinding: Ember.Binding.and("serviceType", "linkUrl", "mediaUrl")
+});
 
-tree.Media = function (value, features) {
-    var selectors = this.emptySelectors();
+IWitness.TwitterHostedMedia = IWitness.Media.extend({
+  serviceType: 'photo',
+  linkUrlBinding: 'url',
 
-    this.features = new(tree.Value)(features);
-    this.ruleset = new(tree.Ruleset)(selectors, value);
-    this.ruleset.allowImports = true;
-};
-tree.Media.prototype = {
-    toCSS: function (ctx, env) {
-        var features = this.features.toCSS(env);
+  mediaUrl: function(){
+    return this.get('media_url') + ':small';
+  }.property("media_url"),
 
-        this.ruleset.root = (ctx.length === 0 || ctx[0].multiMedia);
-        return '@media ' + features + (env.compress ? '{' : ' {\n  ') +
-               this.ruleset.toCSS(ctx, env).trim().replace(/\n/g, '\n  ') +
-                           (env.compress ? '}': '\n}\n');
-    },
-    eval: function (env) {
-        if (!env.mediaBlocks) {
-            env.mediaBlocks = [];
-            env.mediaPath = [];
-        }
-        
-        var media = new(tree.Media)([], []);
-        if(this.debugInfo) {
-            this.ruleset.debugInfo = this.debugInfo;
-            media.debugInfo = this.debugInfo;
-        }
-        media.features = this.features.eval(env);
-        
-        env.mediaPath.push(media);
-        env.mediaBlocks.push(media);
-        
-        env.frames.unshift(this.ruleset);
-        media.ruleset = this.ruleset.eval(env);
-        env.frames.shift();
-        
-        env.mediaPath.pop();
+  isPhoto: function() {
+    return this.get('type') == 'photo';
+  }.property('type'),
 
-        return env.mediaPath.length === 0 ? media.evalTop(env) :
-                    media.evalNested(env)
-    },
-    variable: function (name) { return tree.Ruleset.prototype.variable.call(this.ruleset, name) },
-    find: function () { return tree.Ruleset.prototype.find.apply(this.ruleset, arguments) },
-    rulesets: function () { return tree.Ruleset.prototype.rulesets.apply(this.ruleset) },
-    emptySelectors: function() { 
-        var el = new(tree.Element)('', '&', 0);
-        return [new(tree.Selector)([el])];
-    },
+  canDisplayBinding: Ember.Binding.and("isPhoto", "serviceType", "linkUrl", "mediaUrl")
+});
 
-    evalTop: function (env) {
-        var result = this;
+IWitness.TwitterLinkedMedia = IWitness.Media.extend({
+  linkUrlBinding: "expanded_url",
 
-        // Render all dependent Media blocks.
-        if (env.mediaBlocks.length > 1) {
-            var selectors = this.emptySelectors();
-            result = new(tree.Ruleset)(selectors, env.mediaBlocks);
-            result.multiMedia = true;
-        }
-
-        delete env.mediaBlocks;
-        delete env.mediaPath;
-
-        return result;
-    },
-    evalNested: function (env) {
-        var i, value,
-            path = env.mediaPath.concat([this]);
-
-        // Extract the media-query conditions separated with `,` (OR).
-        for (i = 0; i < path.length; i++) {
-            value = path[i].features instanceof tree.Value ?
-                        path[i].features.value : path[i].features;
-            path[i] = Array.isArray(value) ? value : [value];
-        }
-
-        // Trace all permutations to generate the resulting media-query.
-        //
-        // (a, b and c) with nested (d, e) ->
-        //    a and d
-        //    a and e
-        //    b and c and d
-        //    b and c and e
-        this.features = new(tree.Value)(this.permute(path).map(function (path) {
-            path = path.map(function (fragment) {
-                return fragment.toCSS ? fragment : new(tree.Anonymous)(fragment);
-            });
-
-            for(i = path.length - 1; i > 0; i--) {
-                path.splice(i, 0, new(tree.Anonymous)("and"));
-            }
-
-            return new(tree.Expression)(path);
-        }));
-
-        // Fake a tree-node that doesn't output anything.
-        return new(tree.Ruleset)([], []);
-    },
-    permute: function (arr) {
-      if (arr.length === 0) {
-          return [];
-      } else if (arr.length === 1) {
-          return arr[0];
-      } else {
-          var result = [];
-          var rest = this.permute(arr.slice(1));
-          for (var i = 0; i < rest.length; i++) {
-              for (var j = 0; j < arr[0].length; j++) {
-                  result.push([arr[0][j]].concat(rest[i]));
-              }
-          }
-          return result;
-      }
-    },
-    bubbleSelectors: function (selectors) {
-      this.ruleset = new(tree.Ruleset)(selectors.slice(0), [this.ruleset]);
+  mediaUrl: function(){
+    var service = this.get("service");
+    if (service) {
+      var matchObj = this.get('linkUrl').match(service.regex);
+      if (matchObj) return service.replacementPattern.replace("$1", matchObj[1]);
     }
-};
+  }.property("service", "linkUrl"),
 
-})(require('../tree'));
+  serviceType: function(){
+    var service = this.get("service");
+    if (service) return service.serviceType;
+  }.property("service"),
+
+  service: function(){
+    var linkUrl = this.get("linkUrl");
+    return _.find(this._mediaServices, function(svc) {
+      return linkUrl.match(svc.regex);
+    });
+  }.property("linkUrl"),
+
+  // regex must contain one match group
+  // replacementPattern specifies where to insert that match group with "$1"
+  _mediaServices: [
+    {
+      serviceType:        "photo",
+      regex:              /instagr\.am\/p\/(.*?)\//,
+      replacementPattern: "http://instagr.am/p/$1/media/?size=m"
+    }, {
+      serviceType:        "photo",
+      regex:              /twitpic\.com\/(\w+)/,
+      replacementPattern: "http://twitpic.com/show/large/$1"
+    }, {
+      serviceType:        "photo",
+      regex:              /twitgoo\.com\/(\w+)/,
+      replacementPattern: "http://twitgoo.com/$1/img"
+    }, {
+      serviceType:        "photo",
+      regex:              /lockerz\.com\/s\/(\w+)/,
+      replacementPattern: "http://api.plixi.com/api/tpapi.svc/imagefromurl?size=medium&url=http%3A%2F%2Flockerz.com%2Fs%2F$1"
+    }, {
+      serviceType:        "video",
+      regex:              /youtu\.be\/([\w\-]+)/,
+      replacementPattern: "http://www.youtube.com/embed/$1"
+    }, {
+      serviceType:        "video",
+      regex:              /youtube.com\/watch.*[?&]v=([\w\-]+)/,
+      replacementPattern: "http://www.youtube.com/embed/$1"
+    }, {
+      serviceType:        "video",
+      regex:              /twitvid.com\/(\w+)/,
+      replacementPattern: "http://www.twitvid.com/embed.php?autoplay=0&guid=$1"
+    }, {
+      serviceType:        "video",
+      regex:              /vimeo.com\/(?:m\/)?(\w+)/,
+      replacementPattern: "http://player.vimeo.com/video/$1"
+    }
+  ]
+  //  new MediaService("photo", /yfrog\.com\/(\w+)/,       "http://yfrog.com/$1:iphone"),
+});

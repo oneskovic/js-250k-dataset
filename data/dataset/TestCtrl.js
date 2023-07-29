@@ -4,11 +4,7 @@ angular.module('myApp').controller('TestCtrl', ['$scope', '$timeout', 'appHttp',
 	
 	$scope.user =UserModel.load();
 	
-	/*
-	$scope.swipe1 =function(evt, direction, params) {
-		alert(direction);
-	};
-	*/
+	
 	
 	/*
 	$scope.formVals ={

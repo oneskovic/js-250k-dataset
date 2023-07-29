@@ -1,7 +1,7 @@
 sc_require("views/view");
 
 SC.View.reopen(
-  /** @scope SC.View.prototype */ {
+   {
 
   // ..........................................................
   // MULTITOUCH SUPPORT

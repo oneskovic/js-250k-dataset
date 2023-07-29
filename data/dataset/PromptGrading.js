@@ -1,7 +1,3 @@
-/**
- * @module Application
- * @submodule Components
- */
 define([
     'require.text!templates/components/prompt-grading.html',
     'core/modules/GelatoComponent'

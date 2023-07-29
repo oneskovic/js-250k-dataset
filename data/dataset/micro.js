@@ -1,11 +1,3 @@
-/*
- * grunt-limit
- * https://github.com/markdalgleish/grunt-limit
- *
- * Copyright (c) 2013 Mark Dalgleish
- * Licensed under the MIT license.
- */
-
 'use strict';
 
 var q = require('q'),

@@ -1,7 +1,7 @@
 var isLength = require('../internal/isLength'),
     isObjectLike = require('../internal/isObjectLike');
 
-/** `Object#toString` result references. */
+
 var argsTag = '[object Arguments]',
     arrayTag = '[object Array]',
     boolTag = '[object Boolean]',

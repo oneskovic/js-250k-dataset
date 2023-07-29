@@ -1,6 +1,3 @@
-/**
- * Created by hollyschinsky on 9/11/14.
- */
 app.factory('TwitterService', function($q) {
 
     var authorizationResult = false;

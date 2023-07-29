@@ -1,8 +1,3 @@
-/**
- * grunt-jscrambler
- * @author José Magalhães (magalhas@gmail.com)
- * @license MIT <http://opensource.org/licenses/MIT>
- */
 'use strict';
 
 var _ = require('lodash');

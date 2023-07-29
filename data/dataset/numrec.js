@@ -1,5 +1,3 @@
-//>>built
-// wrapped by build app
 define("dojox/lang/functional/numrec", ["dojo","dijit","dojox","dojo/require!dojox/lang/functional/lambda,dojox/lang/functional/util"], function(dojo,dijit,dojox){
 dojo.provide("dojox.lang.functional.numrec");
 

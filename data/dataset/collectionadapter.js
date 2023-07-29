@@ -1,11 +1,3 @@
-// Backbone.Collection Adapter
-// ---------------------------
-//
-// INTERNAL TYPE
-//
-// Wrap a Collection with DataSource configuration so that
-// the two-way integration can occur without infinite loops
-
 kendo.Backbone.CollectionAdapter = (function(){
   "use strict";
 

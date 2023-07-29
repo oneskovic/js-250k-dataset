@@ -1,21 +1,3 @@
-/**
- * 右键菜单
- * @constructor
- * @author putaoshu@126.com
- * @date 2012
- * @param {Object} obj 主对象
- * @param {Object} options 组件配置
- * @param {Object} options.menu null 菜单主体
- * @param {Nummber} options.zIndex 2 菜单z-index
- * @param {Boolean} options.autoShow true 自适应:即在主体元素有被遮挡时,把主体转移到上面
- * @param {Boolean} options.preventContextmenu true 阻止系统默认右键菜单
- * @param {Number} options.diff 2 当前位置与菜单展示位置的差值
- * @param {Function} options.callback 回调函数
- * @example 
-vui.contextmenu($('#test'),{
-	menu:$('#contextmenu')
-})
- */
 vui.contextmenu = function(obj,options){
 	 options = $.extend({
 		menu : null, //菜单主体

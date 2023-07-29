@@ -1,82 +1,102 @@
-/*global Raphael, d3, $, define, _ */
-/*!
- * StreamLegend的兼容定义
- */
-;(function (name, definition) {
-  if (typeof define === 'function') { // Module
-    define(definition);
-  } else { // Assign to common namespaces or simply the global object (window)
-    this[name] = definition(function (id) { return this[id];});
-  }
-})('Percentage', function (require) {
-  var DataV = require('DataV');
+'use strict';
 
-  var Percentage = DataV.extend(DataV.Chart, {
-    initialize: function (container) {
-      this.node = $(container);
-      this.limit = 20;
-      this.from = 0;
-      this.to = 0;
-      /**
-       * 类型纬度
-       */
-      this.dimension.type = {
-          type: "string",
-          required: true,
-          index: 1
-      };
-      /**
-       * 值纬度
-       */
-      this.dimension.value = {
-          type: "number",
-          required: true,
-          index: 2
-      };
-    }
-  });
+angular.module('ui.utils.masks.global.percentage', [
+	'ui.utils.masks.helpers'
+])
+.directive('uiPercentageMask',
+	['$locale', '$parse', 'PreFormatters', 'NumberMasks', 'NumberValidators',
+	function ($locale, $parse, PreFormatters, NumberMasks, NumberValidators) {
+		function preparePercentageToFormatter (value, decimals) {
+			return PreFormatters.clearDelimitersAndLeadingZeros((parseFloat(value)*100).toFixed(decimals));
+		}
 
-  Percentage.prototype.init = function () {
-    var conf = this.defaults;
-    this.paper = new Raphael(this.node[0], conf.percentageWidth, conf.chartHeight);
-    this.node.css({
-      "width": conf.percentageWidth,
-      "height": conf.chartHeight,
-      "float": "left",
-      "margin-bottom": "0px",
-      "border-bottom": "0px",
-      "padding-bottom": "0px"
-    });
-  };
+		return {
+			restrict: 'A',
+			require: 'ngModel',
+			link: function (scope, element, attrs, ctrl) {
+				var decimalDelimiter = $locale.NUMBER_FORMATS.DECIMAL_SEP,
+					thousandsDelimiter = $locale.NUMBER_FORMATS.GROUP_SEP,
+					decimals = parseInt(attrs.uiPercentageMask);
 
-  Percentage.prototype.setSource = function (source, map) {
-    map = this.map(map);
-    this.grouped = _.groupBy(source, map.type);
-    this.types = _.keys(this.grouped);
-    if (this.types.length > this.limit) {
-      this.to = this.limit;
-    }
-  };
+				if (angular.isDefined(attrs.uiHideGroupSep)){
+					thousandsDelimiter = '';
+				}
 
-  Percentage.prototype.render = function () {
-    this.init();
-    var conf = this.defaults;
-    var y = conf.fontSize * 2 / 3;
-    if (!this.rect) {//init
-      this.rect = this.paper.rect(0, 0, conf.percentageWidth, conf.chartHeight)
-      .attr({
-        "fill": "#f4f4f4",
-        "stroke": "#aaa",
-        "stroke-width": 0.5
-      });
-      this.text = this.paper.text(conf.percentageWidth / 2, y, Math.round(100) + "%")
-      .attr({"text-anchor": "middle"});
-    }
-    // this.rect.animate({"y": (1 - maxY) * conf.chartHeight, "height": maxY * conf.chartHeight}, 750);
-    // this.text.attr({
-    //   "text": Math.round(maxY * 100) + "%"
-    // }).animate({"y": y}, 300);
-  };
+				if(isNaN(decimals)) {
+					decimals = 2;
+				}
 
-  return Percentage;
-});
+				var numberDecimals = decimals + 2;
+				var viewMask = NumberMasks.viewMask(decimals, decimalDelimiter, thousandsDelimiter),
+					modelMask = NumberMasks.modelMask(numberDecimals);
+
+				function formatter(value) {
+					if(ctrl.$isEmpty(value)) {
+						return value;
+					}
+
+					var valueToFormat = preparePercentageToFormatter(value, decimals);
+					return viewMask.apply(valueToFormat) + ' %';
+				}
+
+				function parse(value) {
+					if(ctrl.$isEmpty(value)) {
+						return value;
+					}
+
+					var valueToFormat = PreFormatters.clearDelimitersAndLeadingZeros(value) || '0';
+					if(value.length > 1 && value.indexOf('%') === -1) {
+						valueToFormat = valueToFormat.slice(0,valueToFormat.length-1);
+					}
+					var formatedValue = viewMask.apply(valueToFormat) + ' %';
+					var actualNumber = parseFloat(modelMask.apply(valueToFormat));
+
+					if (ctrl.$viewValue !== formatedValue) {
+						ctrl.$setViewValue(formatedValue);
+						ctrl.$render();
+					}
+
+					return actualNumber;
+				}
+
+				ctrl.$formatters.push(formatter);
+				ctrl.$parsers.push(parse);
+
+				if (attrs.uiPercentageMask) {
+					scope.$watch(attrs.uiPercentageMask, function(decimals) {
+						if(isNaN(decimals)) {
+							decimals = 2;
+						}
+						numberDecimals = decimals + 2;
+						viewMask = NumberMasks.viewMask(decimals, decimalDelimiter, thousandsDelimiter);
+						modelMask = NumberMasks.modelMask(numberDecimals);
+
+						parse(ctrl.$viewValue);
+					});
+				}
+
+				if(attrs.min){
+					ctrl.$parsers.push(function(value) {
+						var min = $parse(attrs.min)(scope);
+						return NumberValidators.minNumber(ctrl, value, min);
+					});
+
+					scope.$watch('min', function(value) {
+						NumberValidators.minNumber(ctrl, ctrl.$modelValue, value);
+					});
+				}
+
+				if(attrs.max) {
+					ctrl.$parsers.push(function(value) {
+						var max = $parse(attrs.max)(scope);
+						return NumberValidators.maxNumber(ctrl, value, max);
+					});
+
+					scope.$watch('max', function(value) {
+						NumberValidators.maxNumber(ctrl, ctrl.$modelValue, value);
+					});
+				}
+			}
+		};
+	}
+]);

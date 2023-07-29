@@ -2,17 +2,10 @@
 
 tutao.provide('tutao.crypto.AesInterface');
 
-/**
- * This Interface provides an abstraction of the AES cryptographic implementation.
- * A concrete instance is bound by the Locator.
- * @interface
- */
+
 tutao.crypto.AesInterface = function() {};
 
-/**
- * Create a random 128 bit symmetric AES key.
- * @return {Object} The key.
- */
+
 tutao.crypto.AesInterface.prototype.generateRandomKey = function() {};
 
 /**

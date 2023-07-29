@@ -13,16 +13,7 @@
         factory(root.uijet, root.Mustache);
     }
 }(this, function (uijet, Mustache) {
-    /**
-     * Mustache engine module.
-     *
-     * @module engine/mustache
-     * @category Module
-     * @sub-category Templates
-     * @extends BaseWidget
-     * @see {@link https://github.com/janl/mustache.js/#usage}
-     * @exports Mustache
-     */
+    
     uijet.use({
         /**
          * Renders a template.

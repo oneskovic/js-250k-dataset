@@ -1,4 +1,3 @@
-/* jslint node: true */
 /* jslint browser: true */
 /* global BlobBuilder */
 'use strict';

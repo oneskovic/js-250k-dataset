@@ -1,5 +1,3 @@
-/* Just a simple console to get server console in client, Regz. RaiX 2013 */
-
 // Set true to get all logs from server start
 var getAllLogs = false;
 // Enable / disable logging

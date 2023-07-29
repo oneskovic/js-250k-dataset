@@ -1,4 +1,3 @@
-/* Start Countdown Settings */
 /*global $:false */
 var startDate = new Date("01/01/2014"),
     endDate = new Date("04/06/2015"),

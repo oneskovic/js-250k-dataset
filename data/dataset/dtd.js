@@ -1,10 +1,3 @@
-/*
-  DTD mode
-  Ported to CodeMirror by Peter Kroon <plakroon@gmail.com>
-  Report bugs/issues here: https://github.com/marijnh/CodeMirror/issues
-  GitHub: @peterkroon
-*/
-
 CodeMirror.defineMode("dtd", function(config) {
   var indentUnit = config.indentUnit, type;
   function ret(style, tp) {type = tp; return style;}

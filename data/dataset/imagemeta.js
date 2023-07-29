@@ -1,9 +1,3 @@
-/**
- * Terms:
- *
- * Uint8Array, FileReader, BlobBuilder, atob, ArrayBuffer
- * @fileOverview Image控件
- */
 define([
     './util'
 ], function( Util ) {

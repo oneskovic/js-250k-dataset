@@ -1,6 +1,3 @@
-// Based on PaVEParser by Felix Geisendörfer
-// https://github.com/felixge/node-ar-drone/blob/master/lib/video/PaVEParser.js
-
 // The AR Drone 2.0 allows a tcp client to receive H264 (MPEG4.10 AVC) video
 // from the drone. However, the frames are wrapped by Parrot Video
 // Encapsulation (PaVE), which this class parses.

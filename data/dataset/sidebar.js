@@ -1,58 +1,60 @@
-/*
- * 
- * UI5Strap
- *
- * ui5strap.Sidebar
- * 
- * @author Jan Philipp Knöller <info@pksoftware.de>
- * 
- * Homepage: http://ui5strap.com
- *
- * Copyright (c) 2013-2014 Jan Philipp Knöller <info@pksoftware.de>
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * Released under Apache2 license: http://www.apache.org/licenses/LICENSE-2.0.txt
- * 
- */
+Template.sidebarCalendar.rendered = function () {
+    if ($(".jq-datepicker").length > 0) {
+        $(".jq-datepicker").datepicker({
+            showOtherMonths: true,
+            selectOtherMonths: true,
+            prevText: "",
+            nextText: ""
+        });
+    }
+};
 
-(function(){
-
-	jQuery.sap.declare("ui5strap.Sidebar");
-	jQuery.sap.require("ui5strap.library");
-
-	sap.ui.core.Control.extend("ui5strap.Sidebar", {
-		metadata : {
-
-			// ---- object ----
-			defaultAggregation : "content",
-			
-			// ---- control specific ----
-			library : "ui5strap",
-
-			properties : { 
-				"inverse" : {
-					type:"boolean", 
-					defaultValue:false
-				}
-			},
-			
-			aggregations : { 
-				content : {
-					singularName: "content"
-				}
-			}
-
-		}
-	});
-
-}());
+Template.sidebarFileUpload.rendered = function () {
+    $(".pl-sidebar").each(function () {
+        var $el = $(this);
+        $el.pluploadQueue({
+            runtimes: 'html5,gears,flash,silverlight,browserplus',
+            url: 'js/plupload/upload.php',
+            max_file_size: '10mb',
+            chunk_size: '1mb',
+            unique_names: true,
+            resize: {width: 320, height: 240, quality: 90},
+            filters: [
+                {title: "Image files", extensions: "jpg,gif,png"},
+                {title: "Zip files", extensions: "zip"}
+            ],
+            flash_swf_url: 'js/plupload/plupload.flash.swf',
+            silverlight_xap_url: 'js/plupload/plupload.silverlight.xap'
+        });
+        $(".plupload_header").remove();
+        var upload = $el.pluploadQueue();
+        if ($el.hasClass("pl-sidebar")) {
+            $(".plupload_filelist_header,.plupload_progress_bar,.plupload_start").remove();
+            $(".plupload_droptext").html("<span>Drop files to upload</span>");
+            $(".plupload_progress").remove();
+            $(".plupload_add").text("Or click here...");
+            upload.bind('FilesAdded', function (up, files) {
+                setTimeout(function () {
+                    up.start();
+                }, 500);
+            });
+            upload.bind("QueueChanged", function (up) {
+                $(".plupload_droptext").html("<span>Drop files to upload</span>");
+            });
+            upload.bind("StateChanged", function (up) {
+                $(".plupload_upload_status").remove();
+                $(".plupload_buttons").show();
+            });
+        } else {
+            $(".plupload_progress_container").addClass("progress").addClass('progress-striped');
+            $(".plupload_progress_bar").addClass("bar");
+            $(".plupload_button").each(function () {
+                if ($(this).hasClass("plupload_add")) {
+                    $(this).attr("class", 'btn pl_add btn-primary').html("<i class='icon-plus-sign'></i> " + $(this).html());
+                } else {
+                    $(this).attr("class", 'btn pl_start btn-success').html("<i class='icon-cloud-upload'></i> " + $(this).html());
+                }
+            });
+        }
+    });
+};

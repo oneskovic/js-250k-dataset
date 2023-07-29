@@ -1,10 +1,5 @@
-/**
- * Put affects you want to reuse in this file
- */
 exports.Affects = {
-	/**
-	 * Generic slow
-	 */
+	
 	slow: function (config)
 	{
 		var original_speed = config.target.getAttribute('speed');

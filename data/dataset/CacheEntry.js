@@ -2,17 +2,7 @@
 
 var moment = require('moment');
 
-/**
- * Cache entry abstraction
- * A single entry inside a cache
- *
- * It contains the data as originally returned by Stormpath along
- * with additional metadata like timestamps.
- * @param {object} value - value to store in cache
- * @param {Date=} createdAt - time when cache entry created
- * @param {Date=} lastAccessedAt - time when cache entry was last accessed
- * @constructor
- */
+
 function CacheEntry(value, createdAt, lastAccessedAt){
   var self = this;
   self.value = value;

@@ -1,131 +1,68 @@
+(function (global, factory) {
+  if (typeof define === "function" && define.amd) {
+    define(["exports", "foo"], factory);
+  } else if (typeof exports !== "undefined") {
+    factory(exports, require("foo"));
+  } else {
+    var mod = {
+      exports: {}
+    };
+    factory(mod.exports, global.foo);
+    global.actual = mod.exports;
+  }
+})(this, function (exports, _foo) {
+  "use strict";
 
-(function (e) {
-    if ("function" == typeof bootstrap)bootstrap("foo", e); else if ("object" == typeof exports)module.exports = e(); else if ("function" == typeof define && define.amd)define('lib',e); else if ("undefined" != typeof ses) {
-        if (!ses.ok())return;
-        ses.makeFoo = e
-    } else"undefined" != typeof window ? window.foo = e() : global.foo = e()
-})(function () {
-    var define, ses, bootstrap, module, exports;
-    return (function e(t, n, r) {
-        function s(o, u) {
-            if (!n[o]) {
-                if (!t[o]) {
-                    var a = typeof require == "function" && require;
-                    if (!u && a)return a(o, !0);
-                    if (i)return i(o, !0);
-                    throw new Error("Cannot find module '" + o + "'")
-                }
-                var f = n[o] = {exports: {}};
-                t[o][0].call(f.exports, function (e) {
-                    var n = t[o][1][e];
-                    return s(n ? n : e)
-                }, f, f.exports, e, t, n, r)
-            }
-            return n[o].exports
-        }
+  var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? obj : { "default": obj }; };
 
-        var i = typeof require == "function" && require;
-        for (var o = 0; o < r.length; o++)s(r[o]);
-        return s
-    })({1: [function (require, module, exports) {
-        var async = require('async');
+  var _defaults = function (obj, defaults) { var keys = Object.getOwnPropertyNames(defaults); for (var i = 0; i < keys.length; i++) { var key = keys[i]; var value = Object.getOwnPropertyDescriptor(defaults, key); if (value && value.configurable && obj[key] === undefined) { Object.defineProperty(obj, key, value); } } return obj; };
 
-        module.exports = {
-            foo: 'bar'
-        };
-    }, {"async": 2}], 2: [function (require, module, exports) {
-        var process = require("__browserify_process");
-        /*global setImmediate: false, setTimeout: false, console: false */
-        (function () {
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
 
-            var async = {};
+  _defaults(exports, _interopRequireWildcard(_foo));
 
-            // ... Async code here ...
-
-            // AMD / RequireJS
-            if (typeof define !== 'undefined' && define.amd) {
-                define([], function () {
-                    return async;
-                });
-            }
-            // Node.js
-            else if (typeof module !== 'undefined' && module.exports) {
-                module.exports = async;
-            }
-            // included directly via <script> tag
-            else {
-                root.async = async;
-            }
-
-        }());
-
-    }, {"__browserify_process": 3}], 3: [function (require, module, exports) {
-// shim for using process in browser
-
-        var process = module.exports = {};
-
-        process.nextTick = (function () {
-            var canSetImmediate = typeof window !== 'undefined'
-                && window.setImmediate;
-            var canPost = typeof window !== 'undefined'
-                    && window.postMessage && window.addEventListener
-                ;
-
-            if (canSetImmediate) {
-                return function (f) {
-                    return window.setImmediate(f)
-                };
-            }
-
-            if (canPost) {
-                var queue = [];
-                window.addEventListener('message', function (ev) {
-                    if (ev.source === window && ev.data === 'process-tick') {
-                        ev.stopPropagation();
-                        if (queue.length > 0) {
-                            var fn = queue.shift();
-                            fn();
-                        }
-                    }
-                }, true);
-
-                return function nextTick(fn) {
-                    queue.push(fn);
-                    window.postMessage('process-tick', '*');
-                };
-            }
-
-            return function nextTick(fn) {
-                setTimeout(fn, 0);
-            };
-        })();
-
-        process.title = 'browser';
-        process.browser = true;
-        process.env = {};
-        process.argv = [];
-
-        process.binding = function (name) {
-            throw new Error('process.binding is not supported');
-        }
-
-// TODO(shtylman)
-        process.cwd = function () {
-            return '/'
-        };
-        process.chdir = function (dir) {
-            throw new Error('process.chdir is not supported');
-        };
-
-    }, {}]}, {}, [1])
-        (1)
+  Object.defineProperty(exports, "foo", {
+    enumerable: true,
+    get: function get() {
+      return _foo.foo;
+    }
+  });
+  Object.defineProperty(exports, "foo", {
+    enumerable: true,
+    get: function get() {
+      return _foo.foo;
+    }
+  });
+  Object.defineProperty(exports, "bar", {
+    enumerable: true,
+    get: function get() {
+      return _foo.bar;
+    }
+  });
+  Object.defineProperty(exports, "bar", {
+    enumerable: true,
+    get: function get() {
+      return _foo.foo;
+    }
+  });
+  Object.defineProperty(exports, "default", {
+    enumerable: true,
+    get: function get() {
+      return _foo.foo;
+    }
+  });
+  Object.defineProperty(exports, "default", {
+    enumerable: true,
+    get: function get() {
+      return _foo.foo;
+    }
+  });
+  Object.defineProperty(exports, "bar", {
+    enumerable: true,
+    get: function get() {
+      return _foo.bar;
+    }
+  });
 });
-;
-
-
-require(['lib'], function (lib) {
-
-});
-
-
-define("main", function(){});

@@ -1,10 +1,3 @@
-/**
- * Prepros
- * (c) Subash Pathak
- * sbshpthk@gmail.com
- * License: MIT
- */
-
 /*jshint browser: true, node: true, loopfunc: true, curly: false*/
 /*global prepros, _*/
 

@@ -1,7 +1,3 @@
-/**
- * @author Samuel Maddock / http://samuelmaddock.com/
- */
-
 CATAN.ents.register('HexCorner', (function() {
 	"use strict";
 

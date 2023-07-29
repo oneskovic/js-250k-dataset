@@ -1,6 +1,3 @@
-/**
- * Model for a summit
- */
 Ext.define('CF.model.Summit', {
     extend: 'Ext.data.Model',
     fields: [

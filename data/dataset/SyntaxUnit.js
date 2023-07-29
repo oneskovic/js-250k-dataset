@@ -1,12 +1,3 @@
-/**
- * Base type to represent a single syntactic unit.
- * @class SyntaxUnit
- * @namespace parserlib.util
- * @constructor
- * @param {String} text The text of the unit.
- * @param {int} line The line of text on which the unit resides.
- * @param {int} col The column of text on which the unit resides.
- */
 function SyntaxUnit(text, line, col, type){
 
 

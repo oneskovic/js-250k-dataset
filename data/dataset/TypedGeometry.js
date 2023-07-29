@@ -1,7 +1,3 @@
-/**
- * @author mrdoob / http://mrdoob.com/
- */
-
 THREE.TypedGeometry = function ( size ) {
 
 	THREE.BufferGeometry.call( this );

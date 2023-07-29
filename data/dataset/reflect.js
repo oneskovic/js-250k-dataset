@@ -1,96 +1,53 @@
-Ext.ns('iwage.image.tools');
+/**
+ * @fileoverview Useful compiler idioms.
+ *
+ */
 
-Ext.define('iwage.image.tools.Reflect', {
-    mode:iwage.MODES.IMAGE,
-    persist:true,
-    unique:true,
-    toolLabel:'Reflejar',
-    extend:'iwage.tools.Common',
-    createControls:function () {
-        return [
-            {
-                xtype:'slider',
-                fieldLabel:'Tama&ntilde;o del reflejo',
-                itemId:'size',
-                width:350,
-                value:30,
-                minValue:0,
-                maxValue:100,
-                useTips:true,
-                tipText:function (thumb) {
-                    return Ext.String.format('{0}%', thumb.value);
-                }
-            },
-            {
-                xtype:'slider',
-                fieldLabel:'Intensidad',
-                itemId:'level',
-                width:350,
-                value:2,
-                minValue:0,
-                maxValue:3,
-                useTips:true,
-                tipText:function (thumb) {
-                    return [
-                        'Baja',
-                        'Media',
-                        'Alta',
-                        'Muy Alta'
-                    ][thumb.value];
-                }
-            }
-        ];
-    },
-    refresh:function (options) {
-        var values = this.getValues();
+goog.provide('goog.reflect');
 
-        if (!values) {
-            return;
-        }
 
-        // Remover las imagenes de prueba
-        $('.result.rounded').remove();
+/**
+ * Syntax for object literal casts.
+ * @see http://go/jscompiler-renaming
+ * @see http://code.google.com/p/closure-compiler/wiki/
+ *      ExperimentalTypeBasedPropertyRenaming
+ *
+ * Use this if you have an object literal whose keys need to have the same names
+ * as the properties of some class even after they are renamed by the compiler.
+ *
+ * @param {!Function} type Type to cast to.
+ * @param {Object} object Object literal to cast.
+ * @return {Object} The object literal.
+ */
+goog.reflect.object = function(type, object) {
+  return object;
+};
 
-        // Crear la imagen
-        var modifier = 1 + (values.size / 100);
-        var transition = ['ExponencialOut', 'QuadraticOut', 'Quadratic', 'Exponencial'][values.level];
 
-        $('#container').height(
-            $('.result').height() * modifier
-        );
+/**
+ * To assert to the compiler that an operation is needed when it would
+ * otherwise be stripped. For example:
+ * <code>
+ *     // Force a layout
+ *     goog.reflect.sinkValue(dialog.offsetHeight);
+ * </code>
+ * @type {Function}
+ */
+goog.reflect.sinkValue = new Function('a', 'return a');
 
-        $(iwage().utils.reflect($('.result').get(0), modifier, transition))
-            .addClass('result')
-            .addClass('rounded')
-            .appendTo($('.result').parent());
 
-        iwage.view.centerContainer(0, {
-            height:$('.result').height() * modifier
-        });
-    },
-    use:function (options) {
-        this.callParent(arguments);
-
-        // TODO usar metodos estandar
-        $('.result').hide();
-
-        this.refresh();
-    },
-    applyTool:function () {
-        // Reemplazar la imagen
-        iwage.file.set(
-            iwage.file.imageToDataUri($('.result.rounded').get(0))
-        );
-
-        this.destroy();
-    },
-    destroy:function () {
-        this.callParent(arguments);
-
-        // TODO usar metodos estandar
-        $('.result').show();
-
-        // Remover las imagenes de prueba
-        $('.result.rounded').remove();
-    }
-});
+/**
+ * Check if a property can be accessed without throwing an exception.
+ * @param {Object} obj The owner of the property.
+ * @param {string} prop The property name.
+ * @return {boolean} Whether the property is accessible. Will also return true
+ *     if obj is null.
+ */
+goog.reflect.canAccessProperty = function(obj, prop) {
+  /** @preserveTry */
+  try {
+    goog.reflect.sinkValue(obj[prop]);
+    return true;
+  } catch (e) {}
+  return false;
+};

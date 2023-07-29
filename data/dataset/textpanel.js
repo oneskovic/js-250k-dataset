@@ -1,8 +1,4 @@
-﻿/*
-*   textPanel
-*   author: ronglin
-*   create date: 2010.06.22
-*/
+﻿
 
 /*
 * config parameters:

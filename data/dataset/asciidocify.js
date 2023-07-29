@@ -4,16 +4,12 @@ var ASCIIDOCTOR_OPTIONS = Opal.hash2([ 'attributes' ], {
     'attributes':[ 'notitle!' ]
 });
 
-/**
- * AsciiDocify the content!
- */
+
 function asciidocify() {
     render(editor.getValue());
 }
 
-/**
- * Render AsciiDoc content as HTML
- */
+
 function render(data) {
     var generatedHtml = undefined;
     try {

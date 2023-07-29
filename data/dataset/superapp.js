@@ -1,6 +1,3 @@
-//= require <superclass>
-//= require <superevent>
-
 var SuperApp = new SuperClass;
 SuperApp.include(SuperEvent);
 SuperApp.include({

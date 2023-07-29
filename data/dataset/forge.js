@@ -1,10 +1,3 @@
-/**
- * Node.js module for Forge.
- *
- * @author Dave Longley
- *
- * Copyright 2011-2014 Digital Bazaar, Inc.
- */
 (function() {
 var name = 'forge';
 if(typeof define !== 'function') {

@@ -1,11 +1,3 @@
-//
-// uubench - Async Benchmarking v0.0.1
-// http://github.com/akdubya/uubench
-//
-// Copyright (c) 2010, Aleksander Williams
-// Released under the MIT License.
-//
-
 (function(uubench){
 
 function Bench(id, test, options, callback) {

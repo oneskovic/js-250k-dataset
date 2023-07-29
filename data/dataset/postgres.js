@@ -1,5 +1,3 @@
-/*global require,module,process*/
-
 var postgres = require('pg');
 var winston = require('winston');
 

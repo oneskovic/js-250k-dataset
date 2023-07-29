@@ -6,9 +6,7 @@ var DESCRIPTIONS_FILE = 'resources/descriptions.json';
 MenuState.prototype = new BaseState();
 MenuState.prototype.constructor = MenuState;
 
-/**
- * @constructor
- */
+
 function MenuState() {
 	// json with MenuState GUI
 	this.preloadJson(MENU_GUI_JSON);

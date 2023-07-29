@@ -1,4 +1,3 @@
-
 var helper = require('./specHelper');
 var crypto = require('crypto');
 

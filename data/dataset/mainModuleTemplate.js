@@ -23,9 +23,7 @@ var PersonDisplayer = F.Componentize({
   }
 });
 
-/* The project was created with an index.html that instantiates a MainComponent.
- * 'structure()' is the main method of any ui component. It declares what the
- * component 'looks like' - how it's composed.*/
+
 var MainComponent = exports.MainComponent = F.Componentize({
   structure: function() {
     return Div({

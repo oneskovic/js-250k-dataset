@@ -8,7 +8,7 @@ define(
     ],
     function(errors, TestPens, AbstractPen, TransformPen, transform)
 {
-    /*shortcuts*/
+    
     var TestPen = TestPens.AbstractTestPen,
         Transform = transform.Transform;
     

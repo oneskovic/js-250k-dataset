@@ -7,20 +7,7 @@ var Circle = require('../shapes/Circle')
 
 module.exports = GridBroadphase;
 
-/**
- * Broadphase that uses axis-aligned bins.
- * @class GridBroadphase
- * @constructor
- * @extends Broadphase
- * @param {object} [options]
- * @param {number} [options.xmin]   Lower x bound of the grid
- * @param {number} [options.xmax]   Upper x bound
- * @param {number} [options.ymin]   Lower y bound
- * @param {number} [options.ymax]   Upper y bound
- * @param {number} [options.nx]     Number of bins along x axis
- * @param {number} [options.ny]     Number of bins along y axis
- * @todo Should have an option for dynamic scene size
- */
+
 function GridBroadphase(options){
     Broadphase.apply(this);
 

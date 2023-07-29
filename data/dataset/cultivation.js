@@ -1,5 +1,3 @@
-// https://docs.google.com/document/d/1C55RswL6UMOOmVOZWoKV7WJyGWoH39kaq83R9ED4rc8/edit
-
 function canWear(){
 	return (this.getInstanceProp('cultivation_max_wear') === undefined || !this.proto_class) ? false : true;
 }

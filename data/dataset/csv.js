@@ -1,100 +1,126 @@
-/*
- * csv.js
- *
- * Author: dave@bit155.com
- *
- * ---------------------------------------------------------------------------
- * 
- * Copyright (c) 2010, David Heaton
- * All rights reserved.
- * 
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- * 
- *     * Redistributions of source code must retain the above copyright notice,
- *       this list of conditions and the following disclaimer.
- *  
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *  
- *      * Neither the name of bit155 nor the names of its contributors
- *        may be used to endorse or promote products derived from this software
- *        without specific prior written permission.
- *  
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
- * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/**
+ * A simple CSV loader/parser provided with Kratu for convenience
+ * @constructor
+ * @param {Object=} opt_options object to controll parser behavior.
  */
+function KratuCSVProvider(opt_options) {
+  'use strict';
+  this.forceReload = opt_options && !!opt_options.forceReload ? true : false;
+}
 
-var bit155 = bit155 || {};
-bit155.csv = bit155.csv || {};
 
 /**
- * Encodes a CSV cell.
- * @param cell {string} cell to encode
- */
-bit155.csv.cell = function(cell) {
-  var str;
-  
-  if (cell === undefined || cell === null) {
-    return "";
-  } else if (typeof cell === 'string') {
-    str = cell;
-  } else {
-    str = cell.toString();
-  }
-  
-  if (str.match(/[,"\n\r]/)) {
-    str = str.replace(/(["])/g, '"$1');
-    str = '"' + str + '"';
-  }  
-  return str;
-};
+ * Method to load and parse a CSV resource
+ * @param {string} url for resource.
+ * @param {Function} onSuccess called after successfully loaded a resource.
+ * @param {Function=} opt_onError (optional) error handler.
+*/
+KratuCSVProvider.prototype.load = function(url, onSuccess, opt_onError) {
+  'use strict';
+  var kratuCSVProvider = this;
+  var xhr = new XMLHttpRequest();
 
-/**
- * Encodes an array as a CSV row. Accepts an array of values or you can pass
- * variable arguments to it.
- *
- * @param row (any) a single array of values or any number of variable 
- *        arguments
- */
-bit155.csv.row = function() {
-  var row, text = '', i;
-  
-  if (arguments.length === 1) {
-    row = $.isArray(arguments[0]) ? arguments[0] : arguments;
-  } else {
-    row = arguments;
+  if (this.forceReload) {
+    url += (url.match(/\?/) ? '&' : '?') +
+        '__kratuTimestamp=' + new Date().getTime();
   }
-  
-  for (i = 0; i < row.length; i++) {
-    if (i > 0) {
-      text += ',';
+
+  xhr.onload = function(e) {
+    try {
+      var data = [];
+      kratuCSVProvider.parse(this.response, function(record) {
+        if (record === null) {
+          try {
+            onSuccess(data);
+          }
+          catch (err) {
+            throw 'Could not call callback with CSV from ' + url + ':\n' + err;
+          }
+        }
+        else {
+          data.push(record);
+        }
+      });
     }
-    text += bit155.csv.cell(row[i]);
-  }
-  return text;
+    catch (err) {
+      throw 'Could not parse CSV from ' + url + ':\n' + err;
+    }
+  };
+  xhr.onerror = opt_onError || function(err) {
+    throw 'Could not call ' + url + ':\n' + err;
+  };
+  xhr.open('GET', url);
+  xhr.send();
 };
 
-bit155.csv.csv = function(data) {
-  var text = '';
-  var i;
-  
-  if (!$.isArray(data)) {
-    return "";
+
+/**
+ * Method to parse a CSV string
+ * @param {string} csv to be parsed.
+ * @param {Function=} opt_callback (optional) called for each row of CSV data
+ *   when EOF is reached, opt_callback is called with null.
+ * @return {Array.<Object>} array of objects parsed from CSV.
+ */
+KratuCSVProvider.prototype.parse = function(csv, opt_callback) {
+  'use strict';
+  var cLength = csv.length;
+  var isInQuotes = false;
+  var currentColumnIdx = 0;
+  var columns = [];
+  var columnNames = [];
+  var records = [];
+
+  var extractColumn = function(from, to) {
+    var deleteQuote = csv.charAt(to - 1) == '"' ? 1 : 0;
+    var column = csv.substr(from, to - currentColumnIdx - deleteQuote);
+    return column.replace(/\"\"/g, '"');
+  };
+
+  for (var i = 0; i < cLength; i++) {
+    var character = csv.charAt(i);
+    if ((character === '\r' || character === '\n') && !isInQuotes) {
+      columns.push(extractColumn(currentColumnIdx, i));
+      if (columnNames.length) {
+        var record = {};
+        for (var n = 0; n < columnNames.length; n++) {
+          record[columnNames[n]] = columns[n];
+        }
+        if (opt_callback) {
+          opt_callback(record);
+        }
+        else {
+          records.push(record);
+        }
+      }
+      else {
+        columnNames = columns;
+      }
+      columns = [];
+      if (i < cLength) {
+        currentColumnIdx = i + 1;
+      }
+      // We have a \r\n line
+      if (character === '\r' && csv.charAt(i + 1) === '\n') {
+        i++;
+      }
+    }
+    else if (character == '"') {
+      if (isInQuotes && csv.charAt(i + 1) == '"') i++; // Found escaped "
+      else if (isInQuotes) isInQuotes = false;       // End of quote
+      else {
+        isInQuotes = true;
+        currentColumnIdx = i + 1;
+      }
+    }
+    else if (character == ',' && !isInQuotes) {
+      columns.push(extractColumn(currentColumnIdx, i));
+      currentColumnIdx = i + 1;
+    }
   }
-  
-  for (i = 0; i < data.length; i++) {
-    text += bit155.csv.row(data[i]) + '\n';
+  if (opt_callback) {
+    opt_callback(null); // Indicates that this was the last record
   }
-  
-  return text;
+  else {
+    return records;
+  }
 };

@@ -1,17 +1,3 @@
-/*
-Copyright 2007-2010 University of Cambridge
-Copyright 2007-2009 University of Toronto
-Copyright 2010-2011 Lucendo Development Ltd.
-Copyright 2010 OCAD University
-
-Licensed under the Educational Community License (ECL), Version 2.0 or the New
-BSD license. You may not use this file except in compliance with one these
-Licenses.
-
-You may obtain a copy of the ECL 2.0 License and BSD License at
-https://github.com/fluid-project/infusion/raw/master/Infusion-LICENSE.txt
-*/
-
 /** This file contains functions which depend on the presence of a DOM document
  * but which do not depend on the contents of Fluid.js **/
 

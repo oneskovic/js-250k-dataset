@@ -1,8 +1,3 @@
-/*!
- * @depends ../core/AudioletNode.js
- * @depends Sine.js
- */
-
 /**
  * Equal-power cross-fade between two signals
  *

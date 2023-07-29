@@ -1,9 +1,3 @@
-/**
- * @fileoverview Camera Manager - singleton to manage cameras, active, resize etc.
- * 
- * @author Tony Parisi
- */
-
 goog.provide('Vizi.CameraManager');
 
 Vizi.CameraManager.addCamera = function(camera)

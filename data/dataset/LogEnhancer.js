@@ -1,11 +1,3 @@
-/**
- * @author      Thomas Burleson
- * @date        November, 2013
- *
- * @description
- *
- *      Used within AngularJS to enhance functionality within the AngularJS $log service.
- */
 (function (){
     "use strict";
 

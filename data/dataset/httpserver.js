@@ -1,7 +1,3 @@
-/**
- * @fileoverview HTTP server interface as defined in [CommonJS JSGI
- * 0.3](http://wiki.commonjs.org/wiki/JSGI/Level0/A/Draft2).
- */
 var Fiber = require('fibers');
 var fs = require('fs').read;
 var parse = require('url').parse;

@@ -1,30 +1,6 @@
 (function (enyo, scope) {
 
-	/**
-	* {@link onyx.Submenu} is a control that collapses several menu items into a drawer,
-	* which may be opened and closed by tapping on its label. It is meant to be placed
-	* inside an {@link onyx.Menu}.
-	*
-	* ```
-	* {kind: 'onyx.MenuDecorator', components:[
-	* 	{content: 'Open menu'},
-	* 	{kind: 'onyx.Menu', components:[
-	* 		{content: 'One'},
-	* 		{content: 'Two'},
-	* 		{kind: 'onyx.Submenu', content: 'Sort by...', components: [
-	* 			{content: 'A'},
-	* 			{content: 'B'},
-	* 			{content: 'C'}
-	* 		]},
-	* 		{content: 'Three'}
-	* 	]}
-	* ]}
-	* ```
-	*
-	* @class  onyx.Submenu
-	* @extends enyo.Control
-	* @public
-	*/
+	
 	enyo.kind(
 		/** @lends  onyx.Submenu.prototype */ {
 

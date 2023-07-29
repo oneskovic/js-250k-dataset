@@ -1,6 +1,3 @@
-/**
- * Default data handler for Page schema
- */
 var async = require('async');
 
 /**

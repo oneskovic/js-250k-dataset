@@ -3,12 +3,7 @@ var path = require('path');
 var Constants = require('./constants');
 var exp = module.exports;
 
-/**
- * Get system remote service path
- *
- * @param  {String} role server role: frontend, backend
- * @return {String}      path string if the path exist else null
- */
+
 exp.getSysRemotePath = function(role) {
   var p = path.join(__dirname, '/../common/remote/', role);
   return fs.existsSync(p) ? p : null;

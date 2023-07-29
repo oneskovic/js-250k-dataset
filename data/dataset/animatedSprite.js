@@ -1,7 +1,3 @@
-/**
-    Class to represent an uninterrupted set of frames to animate.
-*/ 
-
 Enjine.AnimationSequence = function(startRow, startColumn, endRow, endColumn) {
     this.StartRow = startRow;
     this.StartColumn = startColumn;

@@ -1,105 +1,87 @@
-/**
- * Created with IntelliJ IDEA.
- * User: nisheeth
- * Date: 27/08/13
- * Time: 12:17
- * Email: nisheeth.k.kashyap@gmail.com
- * Repositories: https://github.com/nkashyap
- */
+module.exports = {
+	SCOPE_DEFAULT: "singleton",
+	SCOPE_SINGLETON: "singleton",
+	SCOPE_PROTOTYPE: "prototype",
 
-ConsoleIO.namespace("ConsoleIO.Constant.THEMES");
-ConsoleIO.namespace("ConsoleIO.Constant.IMAGE_URL");
-ConsoleIO.namespace("ConsoleIO.Constant.ICONS");
+	DEPENDS_ARGS: "args",
+	DEPENDS_PROPS: "props",
 
-ConsoleIO.Constant.THEMES = {
-    'web': {
-        layout: 'dhx_skyblue',
-        grid: 'dhx_skyblue',
-        win: 'dhx_skyblue'
-    },
-    'terrace': {
-        layout: 'dhx_terrace',
-        grid: 'dhx_terrace',
-        win: 'dhx_terrace'
-    },
-    get: function get(type) {
-        return ConsoleIO.Constant.THEMES[ConsoleIO.Settings.theme][type];
-    }
-};
+	SETTINGS_ARGS_ON: "argsOn",
+	SETTINGS_PROPS_ON: "propsOn",
+	SETTINGS_FACTORY_ARGS_ON: "factoryArgsOn",
 
-ConsoleIO.Constant.IMAGE_URL = {
-    'web': {
-        tree: "resources/lib/dhtmlx/web/imgs/csh_vista/",
-        tab: "resources/lib/dhtmlx/web/imgs/",
-        win: "resources/lib/dhtmlx/web/imgs/",
-        grid: "resources/lib/dhtmlx/web/imgs/"
-    },
-    'terrace': {
-        tree: "resources/lib/dhtmlx/terrace/imgs/csh_dhx_terrace/",
-        tab: "resources/lib/dhtmlx/terrace/imgs/",
-        win: "resources/lib/dhtmlx/terrace/imgs/",
-        grid: "resources/lib/dhtmlx/terrace/imgs/"
-    },
-    get: function get(type) {
-        return ConsoleIO.Constant.IMAGE_URL[ConsoleIO.Settings.theme][type];
-    }
-};
+	DEPEND_TYPE_BEAN: "d_bean",
+	DEPEND_TYPE_VALUE: "d_value",
+	DEPEND_TYPE_VAR: "d_var",
+	DEPEND_TYPE_ERROR: "d_error",
 
-ConsoleIO.Constant.ICONS = {
-    ONLINE: 'online.png',
-    OFFLINE: 'offline.png',
-    SUBSCRIBE: 'subscribe.png',
-    VERSION: 'version.png',
+	PROPS_DEFAULT: [],
+	ARGS_DEFAULT: [],
 
-    //Platform icons
-    PC: 'pc.png',
-    TV: 'tv.png',
-    STB: 'stb.png',
-    MOBILE: 'mobile.png',
-    TABLET: 'tablet.png',
-    MEDIA: 'media.png',
-    BLUERAY: 'blueray.png',
-    CONSOLE: 'playstation.png',
+	ASYNC_INIT_DEFAULT: false,
+	LAZY_INIT_DEFAULT: false,
+	ABSTRACT_DEFAULT: false,
 
-    //Manufacturers icons
-    LG: 'lg.png',
-    PHILIPS: 'philips.png',
-    SAMSUNG: 'samsung.png',
-    TOSHIBA: 'toshiba.png',
-    TESCO: 'tesco.png',
-    SONY: 'sony.png',
-    PANASONIC: 'panasonic.png',
-    MICROSOFT: 'microsoft.png',
-    MOZILLA: 'mozilla.png',
-    GOOGLE: 'google.png',
-    APPLE: 'apple.png',
-    ANDROID: 'android.png',
-    "OPERA SOFTWARE": 'opera.png',
+	INIT_CB_DEFAULT: function() {},
 
-    //Browser icons
-    GINGERBREAD: 'gingerbread.png',
-    CHROME: 'chrome.png',
-    IE: 'explorer.png',
-    FIREFOX: 'firefox.png',
-    OPERA: 'opera.png',
-    SAFARI: 'safari.png',
-    MAPLE: 'maple.png',
-    NETTV: 'nettv.png',
-    NETCAST: 'netcast.png',
-    TOSHIBATP: 'toshibatp.png',
-    ESPIAL: 'espial.png',
-    MSTAR: 'mstar.png',
-    VIERA: 'viera.png',
-    //"OREGAN MEDIA": '',
-    PLAYSTATION: 'playstation.png',
+	AOP_ADVICE_BEFORE: "before",
+	AOP_ADVICE_AFTER: "after",
+	AOP_ADVICE_AROUND: "around",
 
-    JAVASCRIPT: 'source.png',
-    STYLESHEET: 'stylesheet.png',
-    WEB: 'web.png',
-    FILE: '',
-    UNKNOWN: 'unknown.png',
-    FOLDEROPEN: '../../' + ConsoleIO.Constant.IMAGE_URL.get('tree') + '/folderOpen.gif',
+	PROXY_DEFAULT: true,
 
-    PROFILE: 'profiles.png',
-    FUNCTIONS: 'functions.png'
-};
+	DEFAULT_ENV: "dev",
+
+	LOGPATH: "log4js.json",
+
+	NAMESPACE_SEPERATOR: ":",
+
+	FUNC_ARGS_REGEXP: /function.*?\((.*?)\)\s*\{/,
+
+	FUNC_PROPS_REGEXP: /\s*this\.\$\w+\s*=(.|\s)*?;/g,
+
+	FUNC_COMMENT_LINE: /\/\/.*?\n/g,
+
+	FUNC_COMMENT_STAR: /\/\*(.|\s)*?\*\//g,
+
+	FUNC_ANNOTATION: "$",
+
+	PROTO_FUNC_PROPS_REGEXP: /\w+\s*\$\w+\s*=(.|\s)*?;/g,
+
+	META_PROPS: ["id", "order", "init", "destroy", "factoryBean",
+		"factoryMethod", "scope", "async", "abstract", "parent",
+		"lazy", "factoryArgs", "proxy", "aop", "mid", "table",
+		"cid", "constraint", "prefix"
+	],
+
+	AOP_META_PROPS: ["pointcut", "advice", "order", "runtime"],
+
+	META_AOP: "aop",
+
+	META_ID: "id",
+
+	META_AOP_ADVICE: "advice",
+
+	FILTER_BUILTIN: "builtin",
+	FILTER_MODEL: "model",
+	FILTER_BUILTIN_METHOD: "filter",
+
+	CONSTRAINT_ANNOTATION: "$",
+	CONSTRAINT_SPLIT: ";",
+	CONSTRAINT_METHOD: "validate",
+
+	MODEL_ATTRIBUTES: ["type", "primary", "default", "ref", "prefix"],
+	MODEL_ATTRIBUTE_PRIMARY: "primary",
+	MODEL_ATTRIBUTE_BALANCE: "balance",
+	MODEL_ATTRIBUTE_TYPE_ARRAY: "Array",
+	MODEL_ATTRIBUTE_TYPE_OBJECT: "Object",
+	MODEL_FILTER_BEFORE: 'before',
+	MODEL_FILTER_AFTER: 'after',
+
+	BEAN_SPECIAL_MODEL: "_$model",
+	BEAN_SPECIAL_CONSTRAINT: "_$constraint",
+
+	TYPE_NUMBER: "Number",
+
+	DEFINE_GETTER_PREFIX: "__"
+}

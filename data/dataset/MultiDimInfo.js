@@ -1,11 +1,3 @@
-/**
- * A MultiDimInfo contains dimension infos for multiple dimensions, 
- * for each dimension, it contains four arguments: dimension idx, tile start, tile end, zoom
- * A 2D MultiDimInfo corresponds to a selection in a 2D plot,
- * A 3D/4D tile corresponds to a selection in a data tile
- *
-**/
-
 var MultiDimInfo = Backbone.Model.extend({
 	
 	/**

@@ -1,5 +1,3 @@
-/*! ArrayWatcher.js
- *************************************/
 (function () {
    "use strict";
    ko.sync.ArrayWatcher = function(obsArray, store) {

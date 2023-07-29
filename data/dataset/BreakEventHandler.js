@@ -1,13 +1,7 @@
 var convert = require('./convert'),
     CallFramesProvider = require('./CallFramesProvider').CallFramesProvider;
 
-/**
- * @param {Object} config
- * @param {FrontendClient} frontendClient
- * @param {DebuggerClient} debuggerClient
- * @param {ScriptManager} scriptManager
- * @constructor
- */
+
 function BreakEventHandler(config, frontendClient, debuggerClient, scriptManager) {
   this._config = config;
   this._frontendClient = frontendClient;

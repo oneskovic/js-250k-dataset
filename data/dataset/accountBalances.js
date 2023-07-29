@@ -18,10 +18,7 @@ var accountBalances = function (req, res, next) {
     }
   });
 
-  /**
-  * prepareOptions
-  * parse request parameters to determine query options
-  */
+  
   function prepareOptions () {
     var options = {
       ledger_index : req.query.ledger_index,
@@ -38,11 +35,7 @@ var accountBalances = function (req, res, next) {
     return options;
   }
 
-  /**
-  * getBalances
-  * use ledger_index from getLedger api call
-  * to get balances using ripple REST
-  */
+  
 
   function getBalances(ledger, account) {
     var ledger_index = ledger.ledger_index;

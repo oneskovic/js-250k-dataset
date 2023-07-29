@@ -7,16 +7,7 @@ var http = require('http'),
 
 
 var Execute;
-/**
- *
- * @param url Container Url
- * @param appkey
- * @param appSecret
-  * @param session client session
-  * @param method request api
- * @param params
- * @constructor
- */
+
 var PostAPI = function (url, appkey, appSecret, session, method,  params, callback) {
     _.extend(params, {
         app_key:appkey,

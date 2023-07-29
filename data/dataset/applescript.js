@@ -1,9 +1,3 @@
-/*
-Language: AppleScript
-Authors: Nathan Grigg <nathan@nathanamy.org>
-         Dr. Drang <drdrang@gmail.com>
-*/
-
 function(hljs) {
   var STRING = hljs.inherit(hljs.QUOTE_STRING_MODE, {illegal: ''});
   var PARAMS = {

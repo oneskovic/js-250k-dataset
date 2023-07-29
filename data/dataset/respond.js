@@ -1,7 +1,3 @@
-/**
- * External dependencies.
- */
-
 var S = require('string');
 
 /**

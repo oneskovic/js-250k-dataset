@@ -1,7 +1,3 @@
-/*
- * ...
- */
-
 /* exported BlueButton */
 var BlueButton = function (source, opts) {
   var type, parsedData, parsedDocument;

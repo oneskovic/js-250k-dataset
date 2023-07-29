@@ -7,14 +7,7 @@ goog.require('ol.sphere.WGS84');
 
 
 
-/**
- * @classdesc
- * Interaction dedicated to measure length.
- *
- * @constructor
- * @extends {ngeo.interaction.Measure}
- * @param {ngeox.interaction.MeasureOptions=} opt_options Options
- */
+
 ngeo.interaction.MeasureLength = function(opt_options) {
 
   var options = goog.isDef(opt_options) ? opt_options : {};

@@ -1,4 +1,3 @@
-// createProject.js
 var loginModule = require("./login");
 //creates a new project
 casper.test.begin('Create Course', 5, function suite(test) {

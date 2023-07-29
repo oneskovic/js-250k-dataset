@@ -1,16 +1,5 @@
-/**
- * @class meta.ActionConfig
- *
- * Action配置类，用于配置URL至Action的映射其权限等内容
- */
 function ActionConfig() {
-    /**
-     * @property {string} url
-     *
-     * 配置对应的URL，不包含任何参数，框架用URL的`path`部分与此进行相等比对
-     *
-     * URL配置是 **大小写敏感** 的
-     */
+    
     this.url;
 
     /**

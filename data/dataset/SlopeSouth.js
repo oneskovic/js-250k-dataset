@@ -1,5 +1,3 @@
-/*global obelisk:true*/
-
 /*
  * Slope South
  */

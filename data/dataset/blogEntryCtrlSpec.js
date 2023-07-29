@@ -1,4 +1,3 @@
-
 describe('blogEntryCtrl test: ', function () {
     beforeEach(module('blogApp'));
     var io = io;

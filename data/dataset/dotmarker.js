@@ -1,5 +1,3 @@
-// see http://www.william-map.com/20100325/1/map.htm
-
 /* -------------------------------------------
  * DotMarker
  *

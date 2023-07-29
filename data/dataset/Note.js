@@ -1,117 +1,134 @@
-/*global define*/
-define([
-    'underscore',
-    'backbone',
-    'migrations/note',
-    'collections/removed',
-    'apps/encryption/auth',
-    'indexedDB'
-], function (_, Backbone, NotesDB, Removed, getAuth) {
-    'use strict';
+UmlCanvas.Note = Canvas2D.Rectangle.extend( {
+  prepare: function(sheet) {
+    if( this.prepared ) { return; }
+    if( !this.width  ) { this.width  = this.getBoxWidth (sheet); }
+    if( !this.height ) { this.height = this.getBoxHeight(sheet); }
+    this.prepared = true;
+  },
 
-    /**
-     * Notes model
-     */
-    var Model = Backbone.Model.extend({
+  postInitialize: function(props) {
+    // keep short-hand local reference
+    this.config = UmlCanvas.Note.Defaults;
+  },
 
-        idAttribute: 'id',
+  draw: function(sheet, left, top) {
+    this.prepare(sheet);
+    this.renderTextBox(sheet, left, top);
+    this.renderText(sheet, left, top);
+  },
 
-        database  : NotesDB,
-        storeName : 'notes',
+  renderTextBox: function renderTextBox(sheet, left, top) {
+    sheet.fillStyle      = this.config.backgroundColor;
+    sheet.strokeStyle    = this.config.lineColor;
+    sheet.lineWidth      = this.config.lineWidth;
+    sheet.useCrispLines  = this.config.useCrispLines;
 
-        defaults: {
-            'id'            :  undefined,
-            'title'         :  '',
-            'content'       :  '',
-            'taskAll'       :  0,
-            'taskCompleted' :  0,
-            'created'       :  Date.now(),
-            'updated'       :  Date.now(),
-            'notebookId'    :  0,
-            'tags'          :  [],
-            'isFavorite'    :  0,
-            'trash'         :  0,
-            'synchronized'  :  0,
-            'images'        :  []
-        },
+    sheet.fillStrokeRect( left, top, this.getWidth(), this.getHeight() );
+  },
 
-        validate: function (attrs) {
-            var errors = [];
-            if (attrs.title === '') {
-                errors.push('title');
-            }
+  renderText: function renderText(sheet, left, top) {
+    sheet.useCrispLines  = false;
+    sheet.font           = this.config.font;
+    sheet.fillStyle      = this.config.fontColor;
+    sheet.textAlign      = "left";
+    sheet.lineStyle      = "solid";
 
-            if (errors.length > 0) {
-                return errors;
-            }
-        },
+    var lines = this.getLines();
+    for ( var i=1, len=lines.length; i<=len; ++i ){
+      top += this.config.padding;
+      sheet.fillText( lines[i-1],
+        left + this.config.padding,
+        top  + ( parseInt(this.config.font) * i )
+      );
+    }
+  },
 
-        initialize: function () {
-            this.on('update:any', this.updateDate);
-            this.on('setFavorite', this.setFavorite);
+  getBoxWidth: function getBoxWidth(sheet) {
+    var boxWidth = this.getWidth() + (this.config.padding * 2);
+    this.getLines().iterate(function(line) {
+      var width = sheet.measureText(line) + (this.config.padding * 2);
+      if (width > boxWidth) {
+        boxWidth = width;
+      }
+    }.scope(this) );
+    return boxWidth;
+  },
 
-            if (this.isNew()) {
-                this.set('created', Date.now());
-                this.updateDate();
-            }
-        },
+  getBoxHeight: function getBoxHeight(sheet) {
+    var boxHeight = this.getHeight() + (this.config.padding * 2);
+    var textHeight = this.getLines().length * 
+    (parseInt(this.config.font) + this.config.padding)
+    + this.config.padding;
+    return (boxHeight > textHeight) ? boxHeight : textHeight;
+  },
 
-        encrypt: function (data) {
-            var auth = getAuth();
-            data = data || this.toJSON();
+  getLines: function getLines() {
+    return this.getText().split("\\n");
+  },
 
-            this.set('title', auth.encrypt(data.title));
-            this.set('content', auth.encrypt(data.content));
-            this.set('synchronized', 0);
-        },
+  asConstruct: function() {
+    var construct = this._super();
 
-        decrypt: function () {
-            var data = this.toJSON(),
-                auth = getAuth();
+    delete construct.modifiers.geo;
+    construct.modifiers.width  = '"' + this.getWidth() + '"';
+    construct.modifiers.height = '"' + this.getHeight() + '"';
 
-            data.title = auth.decrypt(data.title);
-            data.content = auth.decrypt(data.content);
-            return data;
-        },
+    if( this.getText() ) {
+      construct.modifiers.text = '"' + this.getText() + '"';
+    }
 
-        /**
-         * Note's last modified time
-         */
-        updateDate: function () {
-            this.set('updated', Date.now());
-            this.setSync();
-        },
+    if( this.getLinkedTo() ) {
+      construct.modifiers.linkedTo = '"' + this.getLinkedTo() + '"';
+    }
 
-        /**
-         * Saves model's id for sync purposes, then destroys it
-         */
-        destroySync: function () {
-            return new Removed().newObject(this, arguments);
-        },
+    return construct;
+  }
+} );
 
-        next: function () {
-            if (this.collection) {
-                return this.collection.at(this.collection.indexOf(this) + 1);
-            }
-        },
+UmlCanvas.Note.from = function( construct, diagram ) {
+  var props = {};
 
-        prev: function () {
-            if (this.collection) {
-                return this.collection.at(this.collection.indexOf(this) - 1);
-            }
-        },
+  props.name = construct.name;
 
-        setFavorite: function () {
-            var isFavorite = (this.get('isFavorite') === 1) ? 0 : 1;
-            this.trigger('update:any');
-            this.save({'isFavorite': isFavorite});
-        },
+  var text = construct.modifiers.get("text" );
+  if( text && text.value ) {
+    props.text = text.value.value;
+  }
 
-        setSync: function () {
-            this.set('synchronized', 0);
-        }
+  var width = construct.modifiers.get( "width" );
+  if( width && width.value ) {
+    props.width = parseInt(width.value.value);
+  }
 
-    });
+  var height = construct.modifiers.get("height" );
+  if( height && height.value ) {
+    props.height = parseInt(height.value.value);
+  }
 
-    return Model;
-});
+  var linkedTo = construct.modifiers.get("linkedTo");
+  if( linkedTo && linkedTo.value ) {
+    props.linkedTo = linkedTo.value.value;
+  }
+
+  var elem = new UmlCanvas.Note( props );
+  if( linkedTo && linkedTo.value ) {
+    linkedTo.value.value.split(",").iterate(function(elementName) {
+      var element = diagram.getDiagramClass(elementName);
+      diagram.addRelation(new UmlCanvas.NoteLink( {
+        note    : elem, 
+        element : element
+      } ));
+    } );
+  }
+
+  return elem;
+};
+
+UmlCanvas.Note.MANIFEST = {
+  name         : "note",
+  properties   : [ "text", "width", "height", "linkedTo" ],
+  propertyPath : [ Canvas2D.CompositeShape, Canvas2D.Rectangle ],
+  libraries    : [ "UmlCanvas", "Class Diagram", "Element" ]
+}
+
+Canvas2D.registerShape(UmlCanvas.Note);

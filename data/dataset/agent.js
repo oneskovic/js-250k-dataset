@@ -1,54 +1,92 @@
+var domain = require('domain');
+var WebSocket = require('ws');
+var os = require('os');
+var path = require('path');
+var fs = require('fs');
+var log = console.log;
 
-/**
- * Module dependencies.
- */
+var program = require('commander');
+program.version('0.0.1')
+.option('-h, --host <hostname>', 'server host to connect')
+.option('-g, --group <group>', 'server group')
+.option('-p, --plugins <plugins>', 'plugins')
+.option('-c, --config <config>', 'configuration path')
+;
 
-var Agent = require('superagent').agent
-  , methods = require('methods')
-  , http = require('http')
-  , Test = require('./test');
+program.parse(process.argv);
 
-/**
- * Expose `Agent`.
- */
-
-module.exports = TestAgent;
-
-/**
- * Initialize a new `TestAgent`.
- *
- * @param {Function|Server} app
- * @param {Object} options
- * @api public
- */
-
-function TestAgent(app, options){
-  if (!(this instanceof TestAgent)) return new TestAgent(app, options);
-  if ('function' == typeof app) app = http.createServer(app);
-  if (options) this._ca = options.ca;
-  Agent.call(this);
-  this.app = app;
+var host = program.host || 'localhost:3333';
+// set defaut port
+if (host.indexOf(':') < 0) {
+	host = host + ':3333';
 }
+var group = program.group || 'default';
 
-/**
- * Inherits from `Agent.prototype`.
- */
+log('starting proteus-monitor agent');
 
-TestAgent.prototype.__proto__ = Agent.prototype;
+var retrySec = 1;
 
-// override HTTP verb methods
-methods.forEach(function(method){
-  TestAgent.prototype[method] = function(url, fn){
-    var req = new Test(this.app, method.toUpperCase(), url);
-    req.ca(this._ca);
+var plugins = ['dstat'];
 
-    req.on('response', this.saveCookies.bind(this));
-    req.on('redirect', this.saveCookies.bind(this));
-    req.on('redirect', this.attachCookies.bind(this, req));
-    this.attachCookies(req);
+var d = domain.create();
+d.run(function() {
 
-    return req;
-  };
+	(function create() {
+		var ws = new WebSocket('ws://'+host);
+		log('connecting to the server', host);
+		ws.json = function json(type, method, obj) {
+			this.send(JSON.stringify({
+				type: type,
+				method: method,
+				data: obj
+			}));
+		};
+		ws.on('open', function() {
+			var hostname = os.hostname();
+			log('connected to server', host, 'as', hostname);
+			ws.connected = true;
+			ws.handlers = {
+				accept: function(data) {
+					log('server accepted the agent');
+					for (var i = 0; i < plugins.length; i++) {
+						var plugin = plugins[i];
+						var lib = require('./lib/plugins/agent/'+plugin);
+						log('registering plugin', plugin);
+						for (var name in lib) {
+							if (name === 'init') {
+								lib[name].call(ws);
+							} else {
+								ws.handlers[name] = lib[name];
+							}
+						}
+					}
+				}
+			};
+			ws.send('agent:'+hostname+':'+group);
+		});
+		ws.on('message', function(msg) {
+			var command = JSON.parse(msg);
+			var handler = ws.handlers[command.type];
+			if (handler) {
+				handler.call(ws, command.data);
+			} else {
+				log('undefined handler', command.type);
+			}
+		});
+		ws.on('error', function(err) {
+			if (err.code === 'ECONNREFUSED') {
+				log('failed to connect to the server. retrying after', retrySec, 'seconds');
+				setTimeout(create, retrySec*1000);
+			} else {
+				log(err.message);
+			}
+		});
+		ws.on('close', function() {
+			ws.connected = false;
+			log('disconnected from server', host);
+			create();
+		});
+		return ws;
+	})();
+
 });
-
-TestAgent.prototype.del = TestAgent.prototype.delete;

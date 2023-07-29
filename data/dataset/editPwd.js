@@ -1,8 +1,5 @@
 $(function () {
-    /*
-     *fixed bug: if the document is not ready, 
-     *the request send by src will course session param lost
-     */
+    
     $("#captcha_div").append("<img src=\"/captchaImg\" class=\"captcha\" />");
 
     $(".container .form-signin #refreshBtn").click(function () {

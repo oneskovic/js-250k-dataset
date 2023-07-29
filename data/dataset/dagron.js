@@ -1,8 +1,3 @@
-/*!
-  * Ender drag and drop
-  * license MIT, (c) Dustin Diaz
-  * https://github.com/ded/dagron
-  */
 !function ($) {
   $.ender({
     dagron: function (options) {

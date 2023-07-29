@@ -1,12 +1,3 @@
-/*
- * This module monitors the RSS memory at a specific interval.
- *
- * If the memory theshold is reached, it will try to closed all the servers
- * attached to stop accepting new connections. If the servers did not stopped
- * after the graceful time period, the process will be forced to exit.
- * Statistics are logged before exiting.
- */
-
 'use strict';
 
 var cluster = require('cluster');

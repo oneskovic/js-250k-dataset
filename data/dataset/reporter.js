@@ -1,108 +1,81 @@
-var util = require('util');
-var log = require('./logger').create('reporter');
-var MultiReporter = require('./reporters/multi');
-var baseReporterDecoratorFactory = require('./reporters/base').decoratorFactory;
-var SourceMapConsumer = require('source-map').SourceMapConsumer;
+var createDDPClientManager = require('../ddp/ddpClientManager');
 
-var createErrorFormatter = function(basePath, emitter, SourceMapConsumer) {
-  var lastServedFiles = [];
+module.exports = function createVelocityReporter(getDDPSetup) {
 
-  emitter.on('file_list_modified', function(filesPromise) {
-    filesPromise.then(function(files) {
-      lastServedFiles = files.served;
+  var getDDPClient = createDDPClientManager();
+
+  function callVelocityMethod(name, data) {
+    getDDPSetup().then(function (setup) {
+      return getDDPClient(setup);
+    }).then(function (ddpClient) {
+      ddpClient.call('velocity/' + name, [ data ], function (err) {
+        if (err) {
+          console.warn('An error occured while trying to call velocity method.');
+          console.warn(err);
+        }
+      });
+    }).catch(function (err) {
+      console.warn('An error occured while trying to connect to velocity server.')
+      console.warn(err);
     });
-  });
+  }
 
-  var findFile = function(path) {
-    for (var i = 0; i < lastServedFiles.length; i++) {
-      if (lastServedFiles[i].path === path) {
-        return lastServedFiles[i];
+  var initialized = false;
+
+  return function Velocity (runner) {
+
+    function getAncestors(test) {
+      if (!test) {
+        return [];
       }
+      var thisTitle = test.title || 'Gagarin';
+      if (thisTitle.charAt(thisTitle.length-1) === '.') {
+        thisTitle = thisTitle.substr(0, thisTitle.length-1);
+      }
+      return [ thisTitle ].concat(getAncestors(test.parent));
     }
-    return null;
-  };
 
-  var URL_REGEXP = new RegExp('http:\\/\\/[^\\/]*\\/' +
-                              '(base|absolute)' + // prefix
-                              '([^\\?\\s\\:]*)' + // path
-                              '(\\?\\w*)?' +      // sha
-                              '(\\:(\\d+))?' +    // line
-                              '(\\:(\\d+))?' +    // column
-                              '', 'g');
-
-  return function(msg, indentation) {
-    // remove domain and timestamp from source files
-    // and resolve base path / absolute path urls into absolute path
-    msg = (msg || '').replace(URL_REGEXP, function(_, prefix, path, __, ___, line, ____, column) {
-
-      if (prefix === 'base') {
-        path = basePath + path;
+    runner.on('start', function () {
+      if (initialized) {
+        return;
       }
+      callVelocityMethod('register/framework', 'gagarin');
+      callVelocityMethod('reports/reset', { framework: 'gagarin' });
 
-      var file = findFile(path);
-
-      if (file && file.sourceMap) {
-        line = parseInt(line || '0', 10);
-        column = parseInt(column || '0', 10);
-
-        var smc = new SourceMapConsumer(file.sourceMap);
-        var original = smc.originalPositionFor({line: line, column: column});
-
-        return util.format('%s:%d:%d <- %s:%d:%d', path, line, column, original.source,
-            original.line, original.column);
-      }
-
-      return path + (line ? ':' + line : '') + (column ? ':' + column : '');
+      initialized = true;
     });
 
-    // indent every line
-    if (indentation) {
-      msg = indentation + msg.replace(/\n/g, '\n' + indentation);
-    }
-
-    return msg + '\n';
-  };
-};
-
-
-var createReporters = function(names, config, emitter, injector) {
-  var errorFormatter = createErrorFormatter(config.basePath, emitter, SourceMapConsumer);
-  var reporters = [];
-
-  // TODO(vojta): instantiate all reporters through DI
-  names.forEach(function(name) {
-    if (['dots', 'progress'].indexOf(name) !== -1) {
-      var Cls = require('./reporters/' + name + (config.colors ? '_color' : ''));
-      return reporters.push(new Cls(errorFormatter, config.reportSlowerThan));
-    }
-
-    var locals = {
-      baseReporterDecorator: ['factory', baseReporterDecoratorFactory],
-      formatError: ['value', errorFormatter]
-    };
-
-    try {
-      reporters.push(injector.createChild([locals], ['reporter:' + name]).get('reporter:' + name));
-    } catch(e) {
-      if (e.message.indexOf('No provider for "reporter:' + name + '"') !== -1) {
-        log.warn('Can not load "%s", it is not registered!\n  ' +
-                 'Perhaps you are missing some plugin?', name);
-      } else {
-        log.warn('Can not load "%s"!\n  ' + e.stack, name);
-      }
-    }
-  });
-
-  // bind all reporters
-  reporters.forEach(function(reporter) {
-    emitter.bind(reporter);
-  });
-
-  return new MultiReporter(reporters);
-};
-
-createReporters.$inject = ['config.reporters', 'config', 'emitter', 'injector'];
+    runner.on('pass', function(test){
+      callVelocityMethod('reports/submit', {
+        name      : test.title,
+        framework : 'gagarin',
+        result    : 'passed',
+        duration  : test.duration,
+        ancestors : getAncestors(test),
+      });
+    });
 
 
-// PUBLISH
-exports.createReporters = createReporters;
+    runner.on('fail', function(test, err){
+      callVelocityMethod('reports/submit', {
+        name      : test.title,
+        framework : 'gagarin',
+        result    : 'failed',
+        duration  : test.duration,
+        ancestors : getAncestors(test),
+
+        // XXX do we need it for anything?
+        //failureType       : err.expected ? 'expect' : 'assert',
+
+        failureMessage    : err.message,
+        failureStackTrace : err.stack,
+      });
+    });
+
+    runner.on('end', function() {
+      //callVelocityMethod('reports/completed', { framework: 'gagarin' });
+    });
+  }
+
+}
+

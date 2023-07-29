@@ -1,102 +1,48 @@
-/*
- * Merges any amount of objects with the first.
- */
- 
-exports.merge = function () {
-	var i, key;
-	
-	if (arguments.length === 0) {
-		return { };
-	}
-	
-	for (i = arguments.length; i > 0; i -= 1) {
-		for (key in arguments[i]) {
-			if (arguments[i].hasOwnProperty(key)) {
-				arguments[0][key] = arguments[i][key];
-			}
-		}
-	}
-	
-	return arguments[0];
-};
+/*global define */
+define([
+    'languages/PHP/grammar',
+    'languages/PHP/interpreter',
+    'js/Engine',
+    'js/Interpreter',
+    'js/Parser',
+    'js/Stream'
+], function (
+    phpGrammarSpec,
+    phpInterpreterSpec,
+    Engine,
+    Interpreter,
+    Parser,
+    Stream
+) {
+    'use strict';
 
-/*
- * Get the current unixtime
- */
+    return {
+        createEngine: function (options) {
+            var tools = this,
+                stderr = new Stream(),
+                stdin = new Stream(),
+                stdout = new Stream(),
+                interpreter = tools.createInterpreter(stdin, stdout, stderr, options),
+                parser = new Parser(phpGrammarSpec, stderr),
+                engine = new Engine(parser, interpreter);
 
-exports.unixtime = function () {
-	return parseInt(new Date().getTime() / 1000, 10);
-};
+            interpreter.setEngine(engine);
 
-/*
- * Get the current timestamp
- */
+            return engine;
+        },
 
-exports.timestamp = function () {
-	// TODO: Implement
-	return exports.unixtime();
-};
+        createInterpreter: function (stdin, stdout, stderr, options) {
+            return new Interpreter(phpInterpreterSpec, stdin, stdout, stderr, options);
+        },
 
-/*
- * Find out if an Array contains all the given objects
- */
+        createParser: function () {
+            var stderr = new Stream();
 
-Array.prototype.contains = function () {
-	for (var i = 0; i < arguments.length; i += 1) {
-		if (this.indexOf(arguments[i]) === -1) {
-			return false;
-		}
-	}
-	return true;
-};
+            return new Parser(phpGrammarSpec, stderr);
+        },
 
-/*
- * Remove all given objects from an array
- */
-
-Array.prototype.remove = function () {
-	var result = this.slice(0, this.length), // Copy the array
-		i, index;
-	
-	// Splice the requested objects out
-	for (i = 0; i < arguments.length; i += 1) {
-		index = result.indexOf(arguments[i]);
-		if (index !== -1) {
-			result.splice(index, 1);
-		}
-	}
-	
-	return result;
-};
-
-/*
- * Filter the array to only contain unique elements
- */
-
-Array.prototype.unique = function () {
-	var hashmap = { },
-		result = [],
-		i, key;
-	
-	for (i = 0; i < this.length; i += 1) {
-		hashmap[this[i]] = true;
-	}
-	
-	for (key in hashmap) {
-		if (hashmap.hasOwnProperty(key)) {
-			result.push(key);
-		}
-	}
-	
-	return result;
-};
-
-/*
- * Converts a string to scandinavian lowercase.
- * This is required because of IRC's scandinavian origin.
- */
-
-String.prototype.toScandinavianLowerCase = function () {
-	var brackets = this.toLowerCase().replace('[', '{').replace(']', '}');
-	return brackets.replace('\\', '|').replace('~', '^');
-};
+        getGrammarSpec: function () {
+            return phpGrammarSpec;
+        }
+    };
+});

@@ -1,6 +1,3 @@
-/**
- * @scope enchant.InputSource.prototype
- */
 enchant.InputSource = enchant.Class.create(enchant.EventTarget, {
     /**
      * @name enchant.InputSource

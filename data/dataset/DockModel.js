@@ -1,7 +1,3 @@
-/**
- * The Dock Model contains the tree hierarchy that represents the state of the
- * panel placement within the dock manager.
- */
 dockspawn.DockModel = function()
 {
     this.rootNode = this.documentManagerNode = undefined;

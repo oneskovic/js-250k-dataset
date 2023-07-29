@@ -1,4 +1,3 @@
-//Because Browserify encapsulates every module, use strict won't apply to the global scope and break everything
 'use strict';
 
 /**

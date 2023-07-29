@@ -1,7 +1,3 @@
-/**
-A prompt with confirm and cancel buttons. The onConfirm and onCancel events fire when the user
-clicks the confirm and cancel buttons, respectively.
-*/
 enyo.kind({
 	name: "enyo.ConfirmPrompt",
 	kind: enyo.HFlexBox,

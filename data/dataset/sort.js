@@ -1,6 +1,3 @@
-// Based on http://vis.stanford.edu/protovis/ex/sort.html
-// Based on work by Robert Sedgewick
-
 var w = 960,
     h = 50,
     n = 240,

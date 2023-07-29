@@ -1,120 +1,121 @@
-/*
-  How do I fix the error EMFILE: Too many opened files?
+require('colors');
 
-    This is because of your system's max opened file limit.
-    For OSX the default is very low (256).
-    Temporarily increase your limit with `ulimit -n 2048`,
-    the number being the new max limit.
+var fs = require('fs'),
+    path = require('path'),
+    cli = require(__dirname + '/../cli_messages.js'),
+    init = require(__dirname + '/init.js'),
+    create = require(__dirname + '/create.js'),
+    info = require(__dirname + '/info.js'),
+    common = require(__dirname + '/../../lib/lmd_common.js'),
+    resolveName = common.getModuleFileByShortName,
+    lmdPackage = require(__dirname + '/../lmd_builder.js');
 
-    In some versions of OSX the above solution doesn't work.
-    In that case try `launchctl limit maxfiles 2048 2048` and restart your terminal.
+var optimist = require('optimist');
 
-  https://github.com/gruntjs/grunt-contrib-watch#how-do-i-fix-the-error-emfile-too-many-opened-files
+function printHelp(cli, errorMessage) {
+    var help = [
+        'Usage:'.bold.white.underline,
+        '',
 
-  https://superuser.com/questions/261023/how-to-change-default-ulimit-values-in-mac-os-x-10-6
-*/
+        '  lmd watch ' + '<build_name>'.blue + '[' + '+<mixin>...+<mixin>'.cyan + ']' + ' [' + '<flags>'.green + ']',
+        '',
 
-module.exports = function(grunt) {
+        'Example:'.bold.white.underline,
+        '',
 
-// https://github.com/gruntjs/grunt-contrib-watch/issues/71#issuecomment-26152333
+        '  lmd watch ' + 'development'.blue,
+        '  lmd watch ' + 'development'.blue + '+corp'.cyan,
+        '  lmd watch ' + 'development'.blue + '+en+corp'.cyan,
+        '  lmd watch ' + 'development'.blue + '+sourcemap'.cyan,
+        '  lmd watch ' + 'development'.blue + '+sourcemap'.cyan + ' --no-pack --async --js --css'.green,
+        '  lmd watch ' + 'development'.blue + ' --modules.name=path.js'.green,
+        ''
+    ];
 
-grunt.registerTask('watch:reports', function() {
+    cli.help(help, errorMessage);
+}
 
-  grunt.config('watch', {
+module.exports = function (cli, argv, cwd) {
+    argv = optimist.parse(argv);
 
-    jarmine_report: {
-      files : [
-        '<%= project.paths.reports %>/__jasmine/Phantom*/index.html'
-      ],
-      tasks: ['copy:karma_report_jasmine']
-    },
+    var status,
+        buildName,
+        mixinBuilds = argv._[1],
+        lmdDir = path.join(cwd, '.lmd');
 
-    reports: {
-      files : [
-        //'<%= project.paths.reports %>/coverage/index.html',
-        '<%= project.paths.reports %>/jasmine/index.html'
-      ],
-      options: {
-        livereload: '<%= project.reports.port.livereload %>'
-      }
+    if (mixinBuilds) {
+        mixinBuilds = mixinBuilds.split('+');
+
+        buildName = mixinBuilds.shift();
     }
 
-  });
-  return grunt.task.run('watch');
+    delete argv._;
+    delete argv.$0;
 
-});
-
-//---
-
-grunt.registerTask('watch:livereload', function() {
-
-  grunt.config('watch', {
-
-    reload: {
-      files : [
-        '<%= project.paths.build %>/**/*.{html,css,js}'
-      ],
-      options: {
-        livereload: '<%= project.frontend.port.livereload %>'
-      }
+    if (!init.check(cli, cwd)) {
+        return;
     }
 
-  });
-  return grunt.task.run('watch');
-
-});
-
-//---
-
-grunt.registerTask('watch:project', function() {
-
-  grunt.config('watch', {
-
-    js: {
-      files: [
-        '<%= project.paths.src %>/**/*.js'
-      ],
-      tasks : [
-        'newer:lintspaces:js',
-        'newer:jshint:project',
-        'newer:copy:dev_jstobuild'
-      ]
-    },
-
-    less: {
-      files: [
-        '<%= project.paths.src %>/**/*.less'
-      ],
-      tasks : [
-        'newer:lintspaces:less',
-        'less:dev'
-      ]
-    },
-
-    otherfiles: { // html, images, ...
-      files: [
-        '<%= project.paths.src %>/**/*',
-        '!<%= project.paths.src %>/**/*.{js,less}',
-        '!<%= project.paths.src %>/vendor/**/*',
-      ],
-      tasks : [
-        'newer:lintspaces:html',
-        'newer:copy:dev_tobuild'
-      ]
-    },
-
-    vendor: {
-      files: [
-        '<%= project.paths.src %>/vendor/**/*.{js,css,map}',
-        '!<%= project.paths.src %>/vendor/**/*.less',
-        '!<%= project.paths.src %>/vendor/**/docs/**/*'
-      ],
-      tasks : [ 'newer:copy:dev_vendortobuild' ]
+    if (!buildName) {
+        printHelp(cli);
+        return;
     }
 
-  });
-  return grunt.task.run('watch');
+    status = create.checkFile(cwd, buildName);
 
-});
+    if (status !== true) {
+        printHelp(cli, status === false ? 'build `' + buildName + '` is not exists' : status);
+        return;
+    }
 
+    // Check mixins
+    if (mixinBuilds.length) {
+        var isCanContinue = mixinBuilds.every(function (buildName) {
+            status = create.checkFile(cwd, buildName);
+
+            if (status !== true) {
+                printHelp(cli, status === false ? 'mixin build `' + buildName + '` is not exists' : status);
+                return false;
+            }
+            return true;
+        });
+
+        if (!isCanContinue) {
+            return;
+        }
+    }
+
+    mixinBuilds = mixinBuilds.map(function (mixinName) {
+        return resolveName(lmdDir, mixinName);
+    });
+
+    if (mixinBuilds.length) {
+        argv.mixins = mixinBuilds;
+    }
+
+    var lmdFile = path.join(lmdDir, resolveName(lmdDir, buildName));
+
+    var watchResult = new lmdPackage.watch(lmdFile, argv),
+        watchConfig = watchResult.watchConfig;
+
+    if (watchConfig.log) {
+        watchResult.log.pipe(cli.stream);
+    }
+
+};
+
+module.exports.completion = function (cli, argv, cwd, completionOptions) {
+    // module name completion
+    if (completionOptions.index === 1) {
+        var builds = info.getBuilds(cwd);
+
+        return cli.log(builds.join('\n'));
+    }
+
+    // <flags> & <options>
+    if (completionOptions.index > 1) {
+        var flagsOptions = info.getCompletionOptions({});
+
+        return cli.log(flagsOptions.join('\n'));
+    }
 };

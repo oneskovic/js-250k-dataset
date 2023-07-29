@@ -1,10 +1,3 @@
-// ==========================================================================
-// Project:   SproutCore Costello - Property Observing Library
-// Copyright: ©2006-2009 Sprout Systems, Inc. and contributors.
-//            Portions ©2008-2009 Apple Inc. All rights reserved.
-// License:   Licensed under MIT license (see license.js)
-// ==========================================================================
-
 /*globals module test ok equals same CoreTest */
 
 sc_require('debug/test_suites/array/base');

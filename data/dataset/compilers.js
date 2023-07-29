@@ -1,6 +1,3 @@
-
-/* Asset compilers */
-
 var app = protos.app;
 
 var mw = {

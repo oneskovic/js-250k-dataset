@@ -1,5 +1,3 @@
-/*globals describe, it, beforeEach, afterEach */
-
 var should = require("should"),
     DocumentStore = require("../lib/store/documentStore.js");
 

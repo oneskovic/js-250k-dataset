@@ -1,8 +1,3 @@
-/**
- * Created by Nicholas Hallahan <nhallahan@spatialdev.com>
- *       on 7/11/14.
- */
-
 // constants
 var POS_WKR_LOC = './scripts/lib/TileLayer.PBF.DynamicLabel/PositionWorker.js';
 

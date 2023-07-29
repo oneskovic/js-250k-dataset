@@ -1,24 +1,4 @@
-  /**
-    @class
-    <p>A multi-bucket aggregation that works on geo_point fields and groups points
-    into buckets that represent cells in a grid. The resulting grid can be sparse
-    and only contains cells that have matching data. Each cell is labeled using a
-    geohash which is of user-definable precision.</p>
-
-    @name ejs.GeoHashGridAggregation
-    @ejs aggregation
-    @borrows ejs.AggregationMixin.aggregation as aggregation
-    @borrows ejs.AggregationMixin.agg as agg
-    @borrows ejs.AggregationMixin._type as _type
-    @borrows ejs.AggregationMixin.toJSON as toJSON
-
-    @desc
-    <p>Aggregation that works on geo_point fields and groups points into buckets
-    that represent cells in a grid.</p>
-
-    @param {String} name The name which be used to refer to this aggregation.
-
-    */
+  
   ejs.GeoHashGridAggregation = function (name) {
 
     var

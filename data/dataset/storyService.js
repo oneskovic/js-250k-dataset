@@ -1,11 +1,3 @@
-/**
- * Created with IntelliJ IDEA.
- * User: Cory
- * Date: 3/2/14
- * Time: 6:44 PM
- * To change this template use File | Settings | File Templates.
- */
-
 "use strict";
 
 module.exports = function () {

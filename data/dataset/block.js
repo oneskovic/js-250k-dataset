@@ -1,118 +1,88 @@
-'use strict';
+var assert = require('assert')
 
-var Node = require('./node');
+var Block = require('../src/block')
 
-/**
- * Initialize a new `Block` with an optional `node`.
- *
- * @param {Node} node
- * @api public
- */
+var fixtures = require('./fixtures/block')
 
-var Block = module.exports = function Block(node){
-  this.nodes = [];
-  if (node) this.push(node);
-};
+describe('Block', function () {
+  describe('fromBuffer/fromHex', function () {
+    fixtures.valid.forEach(function (f) {
+      it('imports the block: ' + f.description + ' correctly', function () {
+        var block = Block.fromHex(f.hex)
 
-// Inherit from `Node`.
-Block.prototype = Object.create(Node.prototype);
-Block.prototype.constructor = Block;
+        assert.equal(block.version, f.version)
+        assert.equal(block.prevHash.toString('hex'), f.prevHash)
+        assert.equal(block.merkleRoot.toString('hex'), f.merkleRoot)
+        assert.equal(block.timestamp, f.timestamp)
+        assert.equal(block.bits, f.bits)
+        assert.equal(block.nonce, f.nonce)
+      })
+    })
 
-Block.prototype.type = 'Block';
+    fixtures.invalid.forEach(function (f) {
+      it('throws on ' + f.exception, function () {
+        assert.throws(function () {
+          Block.fromHex(f.hex)
+        }, new RegExp(f.exception))
+      })
+    })
+  })
 
-/**
- * Block flag.
- */
+  describe('toBuffer/toHex', function () {
+    fixtures.valid.forEach(function (f) {
+      var block
 
-Block.prototype.isBlock = true;
+      beforeEach(function () {
+        block = Block.fromHex(f.hex)
+      })
 
-/**
- * Replace the nodes in `other` with the nodes
- * in `this` block.
- *
- * @param {Block} other
- * @api private
- */
+      it('exports the block: ' + f.description + ' correctly', function () {
+        assert.equal(block.toHex(), f.hex)
+      })
+    })
+  })
 
-Block.prototype.replace = function(other){
-  var err = new Error('block.replace is deprecated and will be removed in v2.0.0');
-  console.warn(err.stack);
+  describe('getHash', function () {
+    fixtures.valid.forEach(function (f) {
+      var block
 
-  other.nodes = this.nodes;
-};
+      beforeEach(function () {
+        block = Block.fromHex(f.hex)
+      })
 
-/**
- * Push the given `node`.
- *
- * @param {Node} node
- * @return {Number}
- * @api public
- */
+      it('calculates ' + f.hash + ' for the block: ' + f.description, function () {
+        assert.equal(block.getHash().toString('hex'), f.hash)
+      })
+    })
+  })
 
-Block.prototype.push = function(node){
-  return this.nodes.push(node);
-};
+  describe('getId', function () {
+    fixtures.valid.forEach(function (f) {
+      var block
 
-/**
- * Check if this block is empty.
- *
- * @return {Boolean}
- * @api public
- */
+      beforeEach(function () {
+        block = Block.fromHex(f.hex)
+      })
 
-Block.prototype.isEmpty = function(){
-  return 0 == this.nodes.length;
-};
+      it('calculates ' + f.id + ' for the block: ' + f.description, function () {
+        assert.equal(block.getId(), f.id)
+      })
+    })
+  })
 
-/**
- * Unshift the given `node`.
- *
- * @param {Node} node
- * @return {Number}
- * @api public
- */
+  describe('getUTCDate', function () {
+    fixtures.valid.forEach(function (f) {
+      var block
 
-Block.prototype.unshift = function(node){
-  return this.nodes.unshift(node);
-};
+      beforeEach(function () {
+        block = Block.fromHex(f.hex)
+      })
 
-/**
- * Return the "last" block, or the first `yield` node.
- *
- * @return {Block}
- * @api private
- */
+      it('returns UTC date of ' + f.id, function () {
+        var utcDate = block.getUTCDate().getTime()
 
-Block.prototype.includeBlock = function(){
-  var ret = this
-    , node;
-
-  for (var i = 0, len = this.nodes.length; i < len; ++i) {
-    node = this.nodes[i];
-    if (node.yield) return node;
-    else if (node.textOnly) continue;
-    else if (node.includeBlock) ret = node.includeBlock();
-    else if (node.block && !node.block.isEmpty()) ret = node.block.includeBlock();
-    if (ret.yield) return ret;
-  }
-
-  return ret;
-};
-
-/**
- * Return a clone of this block.
- *
- * @return {Block}
- * @api private
- */
-
-Block.prototype.clone = function(){
-  var err = new Error('block.clone is deprecated and will be removed in v2.0.0');
-  console.warn(err.stack);
-
-  var clone = new Block;
-  for (var i = 0, len = this.nodes.length; i < len; ++i) {
-    clone.push(this.nodes[i].clone());
-  }
-  return clone;
-};
+        assert.equal(utcDate, f.timestamp * 1e3)
+      })
+    })
+  })
+})

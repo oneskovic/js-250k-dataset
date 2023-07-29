@@ -1,4 +1,3 @@
-// DATA_TEMPLATE: empty_table
 oTest.fnStart( "bAutoWidth" );
 
 /* It's actually a little tricky to test this. We can't test absolute numbers because

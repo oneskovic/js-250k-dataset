@@ -5,7 +5,7 @@ var arrayCopy = require('./arrayCopy'),
     reorder = require('./reorder'),
     replaceHolders = require('./replaceHolders');
 
-/** Used to compose bitmasks for wrapper metadata. */
+
 var BIND_FLAG = 1,
     BIND_KEY_FLAG = 2,
     CURRY_BOUND_FLAG = 4,

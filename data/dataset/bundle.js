@@ -1,5 +1,5 @@
 'use strict';
-/*jshint asi: true */
+
 
 var test       =  require('tap').test;
 var browserify =  require('browserify');

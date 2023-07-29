@@ -1,16 +1,7 @@
-    /**
-    A single arrow for pointing individual items in current subject 
-
-    @class Arrow
-    **/
+    
     var Arrow = jazz.Class().extending(FadableItem);
 
-    /**
-    The jQuery wrapped object which will be pointed by this arrow
-
-    @@field target
-    @type Object
-    **/
+    
     Arrow.field("target", {});
 
     /**

@@ -1,12 +1,3 @@
-/**
-@module lookup
-@class lookup
-
-@toc
-1. search
-2. searchResults
-*/
-
 'use strict';
 
 var self;

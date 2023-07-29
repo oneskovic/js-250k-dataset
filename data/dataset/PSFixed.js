@@ -1,23 +1,3 @@
-/**
- * PSFixed PSFixed.js file.
- * This plugin is a fake persistent storage backed.  It is configured with a
- * fixed list of stored objects and presents them to the user for insertion.
- * A sample config is below:
- *
- * PSFixed.config = {
- *     'xinha.png': {
- *         $type: 'image',
- *         URL: 'http://trac.xinha.org/chrome/common/trac_banner.png'
- *     },
- *     'browser': {
- *         $type: 'folder',
- *         'firefox.png': {
- *             $type: 'image',
- *             URL: 'http://www.mozilla.com/img/tignish/firefox/vs-firefox-logo.png'
- *         }
- *     }
- * }
- */
 (function() {
 var PSFixed = window.PSFixed = function PSFixed(editor) {
   this.editor = editor;

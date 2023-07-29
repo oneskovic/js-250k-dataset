@@ -42,9 +42,7 @@ Aria.testSuiteDefinition = function (testSuiteConfiguration) {
 	return Aria.classDefinition(testSuiteConfiguration);
 };
 
-/**
- * Test suite regrouping all tests of the aria namespace
- */
+
 Aria.testSuiteDefinition({
 	$classpath : 'MainTestSuite',
 	$tests : [

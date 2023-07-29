@@ -1,8 +1,4 @@
 /**
- * @author Mat Groves http://matgroves.com/ @Doormat23
- */
-
-/**
  *
  * This filter applies a twist effect making display objects appear twisted in the given direction
  * @class TwistFilter

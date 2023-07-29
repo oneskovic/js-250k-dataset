@@ -11,13 +11,7 @@ app.factory('FormHelper', ['$state', 'CoreService', 'gettextCatalog', function(
 
     this.model = model;
 
-    /**
-     * @param {string} id: id of the item that is to be deleted.
-     *
-     * @description
-     * Initiates a delete action. Prompts the user form confirmation
-     * before actioning the delete.
-     */
+    
     this.delete = function(id) {
 
       CoreService.confirm(gettextCatalog.getString('Are you sure?'),

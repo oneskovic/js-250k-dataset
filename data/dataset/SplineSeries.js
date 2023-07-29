@@ -1,10 +1,4 @@
 /**
- * Provides functionality for creating a spline series.
- *
- * @module charts
- * @submodule series-spline
- */
-/**
  * SplineSeries renders a graph with data points connected by a curve.
  *
  * @class SplineSeries

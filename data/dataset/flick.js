@@ -1,22 +1,3 @@
-/**
- *
- * Perform a flick on the screen or an element. If you want to flick on a specific
- * element make sure you provide a selector argument. If not just pass `xoffset`
- * and `yoffset` as command arguments.
- *
- * start at a particulat screen location
- *
- * @param {String=} selector   element to flick on
- * @param {Number=} xoffset    x offset of flick gesture (in pixels or relative units)
- * @param {Number=} yoffset    y offset of flick gesture (in pixels or relative units)
- * @param {Number=} speed      time (in seconds) to spend performing the flick
- * @callbackParameter error
- *
- * @uses protocol/element, protocol/touchFlick
- * @type mobile
- *
- */
-
 var async = require('async'),
     ErrorHandler = require('../utils/ErrorHandler.js');
 

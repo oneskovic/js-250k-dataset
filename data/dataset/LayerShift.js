@@ -1,26 +1,3 @@
-/*
----
-
-name: "App.LayerShift"
-
-description: ""
-
-license:
-	- "[GNU Lesser General Public License](http://opensource.org/licenses/lgpl-license.php)"
-	- "[MIT License](http://opensource.org/licenses/mit-license.php)"
-
-authors:
-	- "Shock <shocksilien@gmail.com>"
-
-requires:
-	- LibCanvas
-	- App
-
-provides: App.LayerShift
-
-...
-*/
-
 /** @class App.LayerShift */
 declare( 'LibCanvas.App.LayerShift', {
 

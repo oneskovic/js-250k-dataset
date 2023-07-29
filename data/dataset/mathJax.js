@@ -1,4 +1,3 @@
-// 这一步非常耗时
 try {
 	// mobile不要
 	if(!Mobile.isMobile()) {

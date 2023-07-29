@@ -1,99 +1,124 @@
-var path = require('path');
-var fs = require('graceful-fs');
-var crypto = require('crypto');
-var mm = require('minimatch');
+var fs = require('fs');
 
-var log = require('./logger').create('preprocess');
+function LineObj(line) {
+    this.addComment = false;
+    this.ifValue = false;
+    this.text = line;
+    this.index = -1;
+}
 
-var sha1 = function(data) {
-  var hash = crypto.createHash('sha1');
-  hash.update(data);
-  return hash.digest('hex');
-};
+function trim(str) {
+    return str.replace(/^\s\s*/, '')
+                .replace(/\s\s*$/, '');
+}
 
-var isBinary = Object.create(null);
-[
-  'adp', 'au', 'mid', 'mp4a', 'mpga', 'oga', 's3m', 'sil', 'eol', 'dra', 'dts', 'dtshd', 'lvp',
-  'pya', 'ecelp4800', 'ecelp7470', 'ecelp9600', 'rip', 'weba', 'aac', 'aif', 'caf', 'flac', 'mka',
-  'm3u', 'wax', 'wma', 'wav', 'xm', 'flac', '3gp', '3g2', 'h261', 'h263', 'h264', 'jpgv', 'jpm',
-  'mj2', 'mp4', 'mpeg', 'ogv', 'qt', 'uvh', 'uvm', 'uvp', 'uvs', 'dvb', 'fvt', 'mxu', 'pyv', 'uvu',
-  'viv', 'webm', 'f4v', 'fli', 'flv', 'm4v', 'mkv', 'mng', 'asf', 'vob', 'wm', 'wmv', 'wmx', 'wvx',
-  'movie', 'smv', 'ts', 'bmp', 'cgm', 'g3', 'gif', 'ief', 'jpg', 'jpeg', 'ktx', 'png', 'btif',
-  'sgi', 'svg', 'tiff', 'psd', 'uvi', 'sub', 'djvu', 'dwg', 'dxf', 'fbs', 'fpx', 'fst', 'mmr',
-  'rlc', 'mdi', 'wdp', 'npx', 'wbmp', 'xif', 'webp', '3ds', 'ras', 'cmx', 'fh', 'ico', 'pcx', 'pic',
-  'pnm', 'pbm', 'pgm', 'ppm', 'rgb', 'tga', 'xbm', 'xpm', 'xwd', 'zip', 'rar', 'tar', 'bz2', 'eot',
-  'ttf', 'woff'
-].forEach(function(extension) {
-  isBinary['.' + extension] = true;
-});
+function parseIf(str) {
+    return  trim(str.replace(/^\s*\/\/@if\b/, ''));
+}
 
-// TODO(vojta): instantiate preprocessors at the start to show warnings immediately
-var createPreprocessor = function(config, basePath, injector) {
-  var patterns = Object.keys(config);
-  var alreadyDisplayedWarnings = Object.create(null);
+function include(arr, obj) {
+    return (arr.indexOf(obj) !== -1);
+}
 
-  return function(file, done) {
-    var thisFileIsBinary = isBinary[path.extname(file.originalPath)];
-    var preprocessors = [];
-    var nextPreprocessor = function(error, content) {
-      // normalize B-C
-      if (arguments.length === 1 && typeof error === 'string') {
-        content = error;
-        error = null;
-      }
+function processIf(ifLineObj, defines) {
+    var pv,
+        pa,
+        i;
 
-      if (error) {
-        file.content = null;
-        file.contentPath = null;
-        return done(error);
-      }
-
-      if (!preprocessors.length) {
-        file.contentPath = null;
-        file.content = content;
-        return done();
-      }
-
-      preprocessors.shift()(content, file, nextPreprocessor);
-    };
-    var instantiatePreprocessor = function(name) {
-      if (alreadyDisplayedWarnings[name]) {
-        return;
-      }
-
-      try {
-        preprocessors.push(injector.get('preprocessor:' + name));
-      } catch (e) {
-        if (e.message.indexOf('No provider for "preprocessor:' + name + '"') !== -1) {
-          log.warn('Can not load "%s", it is not registered!\n  ' +
-                   'Perhaps you are missing some plugin?', name);
-        } else {
-          log.warn('Can not load "%s"!\n  ' + e.stack, name);
+    pv = parseIf(ifLineObj.text);
+    pa = pv.split(',');
+    for (i = 0; i < pa.length; i++) {
+        if (include(defines, pa[i])) {
+            ifLineObj.ifValue = true;
+            break;
         }
+    }
+}
 
-        alreadyDisplayedWarnings[name] = true;
-      }
-    };
+function start(options) {
+    var lines = [],
+        i,
+        temparr,
+        codeData = "";
 
-    // collects matching preprocessors
-    // TODO(vojta): should we cache this ?
-    for (var i = 0; i < patterns.length; i++) {
-      if (mm(file.originalPath, patterns[i])) {
-        if (thisFileIsBinary) {
-          log.warn('Ignoring preprocessing (%s) %s because it is a binary file.',
-              config[patterns[i]].join(', '), file.originalPath);
-        } else {
-          config[patterns[i]].forEach(instantiatePreprocessor);
-        }
-      }
+    temparr = fs.readFileSync(options.src, 'utf8').split('\n');
+
+    for (i = 0; i < temparr.length; i++) {
+        lines.push(new LineObj(temparr[i]));
     }
 
-    return fs.readFile(file.originalPath, function(err, buffer) {
-      file.sha = sha1(buffer);
-      nextPreprocessor(null, thisFileIsBinary ? buffer : buffer.toString());
-    });
-  };
-};
-createPreprocessor.$inject = ['config.preprocessors', 'config.basePath', 'injector'];
+    process(lines, options.defines);
 
-exports.createPreprocessor = createPreprocessor;
+    for (i = 0; i < lines.length; i++) {
+        if (!lines[i].addComment) {
+            codeData += lines[i].text + '\n';
+        }
+    }
+
+    fs.writeFileSync(options.dst, codeData);
+}
+
+function process(arr, defines) {
+    var ifPattern = /^\s*\/\/@if\b/g,
+        elsePattern = /^\s*\/\/@else/g,
+        endifPattern = /^\s*\/\/@endif/g,
+        i,
+        ifLineObj,
+        elseLineObj,
+        endifLineObj,
+        j;
+
+    //iterate over the lines
+    for (i = 0; i < arr.length; i++) {
+        if (ifPattern.test(arr[i].text)) {
+            ifLineObj = arr[i];
+            processIf(ifLineObj, defines);
+            ifLineObj.index = i;
+
+        } else if (elsePattern.test(arr[i].text)) {
+            elseLineObj = arr[i];
+            elseLineObj.index = i;
+        } else if (endifPattern.test(arr[i].text)) {
+            endifLineObj = arr[i];
+            endifLineObj.index = i;
+            //an endif has been found now process all the block
+            if (ifLineObj.ifValue) {
+                //comment out the else block if it exists
+                if (elseLineObj) {
+                    for (j = elseLineObj.index + 1 ; j <= endifLineObj.index - 1; j++) {
+                        arr[j].addComment = true;
+                    }
+                }
+
+            } else {
+                // commend out the if block
+                if (elseLineObj) { // from if till else
+                    for (j = ifLineObj.index + 1 ; j <= elseLineObj.index - 1; j++) {
+                        arr[j].addComment = true;
+                    }
+                } else { // from if till endif
+                    for (j = ifLineObj.index + 1 ; j <= endifLineObj.index - 1; j++) {
+                        arr[j].addComment = true;
+                    }
+                }
+            }
+            if (ifLineObj) {
+                ifLineObj.addComment = true;
+            }
+            if (elseLineObj) {
+                elseLineObj.addComment = true;
+            }
+            if (endifLineObj) {
+                endifLineObj.addComment = true;
+            }
+            //unset all locations;
+            ifLineObj = null;
+            elseLineObj = null;
+            endifLineObj = null;
+        }
+    }
+}
+
+module.exports = {
+    preprocess: start
+};

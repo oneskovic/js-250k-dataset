@@ -1,5 +1,3 @@
-// Copyright 2012 Google Inc.
-
 /**
  * @author Chris Broadfoot (Google)
  * @fileoverview

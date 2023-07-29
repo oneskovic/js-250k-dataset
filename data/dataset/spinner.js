@@ -1,4 +1,3 @@
-// Private properties
 var touchStartY = 0;
 
 /**

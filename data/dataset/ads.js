@@ -13,10 +13,7 @@
         BOTTOM_CENTER   : "BOTTOM_CENTER"
     };
 
-    /**
-     *
-     * @param params Object< {preloadFullScreen<boolean>, preloadBanner<boolean> }
-     */
+    
     CocoonJS.AdController.init= function( params ) {
 
         if ( !CocoonJS.available ) {
@@ -38,12 +35,7 @@
         return CocoonJS.AdController;
     };
 
-    /**
-     * Set an event trigger callback function.
-     *
-     * @param fn "onbannershow" | "onfullscreenshow" | "onfullscreenhide" | "onbannerchange"
-     * @param callback function()
-     */
+    
     CocoonJS.AdController.addEventListener= function( fn, callback ) {
         if ( !CocoonJS.available ) {
             return this;

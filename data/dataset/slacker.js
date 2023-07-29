@@ -1,11 +1,3 @@
-/*
- * Chrome-Last.fm-Scrobbler Slacker.com Connector
- *
- * Uses Jordan Perr's pandora connector as a template --- http://jperr.com --- jordan[at]jperr[dot]com
- *
- * Joe Crawford joe@artlung.com
- */
-
 /********* Configuration: ***********/
 
 // changes to the DOM in this container will trigger an update.

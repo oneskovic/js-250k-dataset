@@ -62,9 +62,7 @@ DuckieTV.factory('SidePanelState', function() {
     }
 })
 
-/**
- * Click trap directive that catches clicks outside the sidepanel and hides it.
- */
+
 .directive('clicktrap', ["SidePanelState",
     function(SidePanelState) {
         return {

@@ -1,6 +1,3 @@
-/**
- * Start the girder backbone app.
- */
 $(function () {
     girder.events.trigger('g:appload.before');
     var app = new girder.App({

@@ -1,10 +1,3 @@
-/**
- * Created with JetBrains PhpStorm.
- * User: ernesto
- * Date: 11/11/12
- * Time: 1:45 PM
- * To change this template use File | Settings | File Templates.
- */
 Ext.define('App.view.MedicalRecordMenu', {
     extend: 'Ext.List',
     xtype:'medicalrecordmenu',

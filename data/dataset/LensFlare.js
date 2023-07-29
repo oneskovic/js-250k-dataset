@@ -1,8 +1,3 @@
-/**
- * @author mikael emtinger / http://gomo.se/
- * @author alteredq / http://alteredqualia.com/
- */
-
 THREE.LensFlare = function ( texture, size, distance, blending, color ) {
 
 	THREE.Object3D.call( this );

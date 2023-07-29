@@ -1,5 +1,3 @@
-/* myLoc.js */
-
 var map = null;
 var ourCoords =  {
 	latitude: 47.624851,

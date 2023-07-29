@@ -1,4 +1,3 @@
-//The map class should just generate a set of hex items
 window.Civ = window.Civ || {};
 Civ.EditorPanel = function(el) {
     this.el = el;

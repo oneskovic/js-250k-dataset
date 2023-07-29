@@ -1,8 +1,6 @@
 (function ($) {
 
-/**
- * Controller for command view.
- */
+
 var cv = termkit.commandView = function (shell) {
   var that = this;
 

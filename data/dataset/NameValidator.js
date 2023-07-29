@@ -1,4 +1,3 @@
-// TODO: this class needs to be separately unit tested, and lots of the repetitive tests in the model validators should be removed
 brjs.dashboard.app.NameValidator = function()
 {
 };

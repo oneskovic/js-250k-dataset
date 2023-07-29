@@ -1,143 +1,102 @@
-/*global define*/
-define([
-        '../Core/defaultValue',
-        '../Core/defined',
-        '../Core/defineProperties',
-        '../Core/DeveloperError',
-        '../Core/Iso8601'
-    ], function(
-        defaultValue,
-        defined,
-        defineProperties,
-        DeveloperError,
-        Iso8601) {
-    "use strict";
+var Property = require('../lib/property');
 
-    /**
-     * The interface for all properties, which represent a value that can optionally vary over time.
-     * This type defines an interface and cannot be instantiated directly.
-     *
-     * @alias Property
-     * @constructor
-     *
-     * @see CompositeProperty
-     * @see ConstantProperty
-     * @see SampledProperty
-     * @see TimeIntervalCollectionProperty
-     * @see MaterialProperty
-     * @see PositionProperty
-     * @see ReferenceProperty
-     */
-    var Property = function() {
-        DeveloperError.throwInstantiationError();
-    };
-
-    defineProperties(Property.prototype, {
-        /**
-         * Gets a value indicating if this property is constant.  A property is considered
-         * constant if getValue always returns the same result for the current definition.
-         * @memberof Property.prototype
-         *
-         * @type {Boolean}
-         * @readonly
-         */
-        isConstant : {
-            get : DeveloperError.throwInstantiationError
-        },
-        /**
-         * Gets the event that is raised whenever the definition of this property changes.
-         * The definition is considered to have changed if a call to getValue would return
-         * a different result for the same time.
-         * @memberof Property.prototype
-         *
-         * @type {Event}
-         * @readonly
-         */
-        definitionChanged : {
-            get : DeveloperError.throwInstantiationError
-        }
+describe('Property', function () {
+  it('should have a name', function () {
+    var prop = new Property('test');
+    prop.name.should.eql('test');
+  });
+  
+  describe('.use()', function () {
+    it('should work', function () {
+      var prop = new Property();
+      prop.use(function () { return false; });
+      prop.validate(1).should.match(/failed/);
+    })
+    
+    it('should return an error message', function () {
+      var prop = new Property();
+      prop.use(function () { return false; }, 'fail');
+      prop.validate(1).should.eql('fail');
+    })
+    
+    it('should support chaining', function () {
+      var prop = new Property();
+      prop.use(function () {}).should.eql(prop);
     });
-
-    /**
-     * Gets the value of the property at the provided time.
-     * @function
-     *
-     * @param {JulianDate} time The time for which to retrieve the value.
-     * @param {Object} [result] The object to store the value into, if omitted, a new instance is created and returned.
-     * @returns {Object} The modified result parameter or a new instance if the result parameter was not supplied.
-     */
-    Property.prototype.getValue = DeveloperError.throwInstantiationError;
-
-    /**
-     * Compares this property to the provided property and returns
-     * <code>true</code> if they are equal, <code>false</code> otherwise.
-     * @function
-     *
-     * @param {Property} [other] The other property.
-     * @returns {Boolean} <code>true</code> if left and right are equal, <code>false</code> otherwise.
-     */
-    Property.prototype.equals = DeveloperError.throwInstantiationError;
-
-    /**
-     * @private
-     */
-    Property.equals = function(left, right) {
-        return left === right || (defined(left) && left.equals(right));
-    };
-
-    /**
-     * @private
-     */
-    Property.arrayEquals = function(left, right) {
-        if (left === right) {
-            return true;
-        }
-        if ((!defined(left) || !defined(right)) || (left.length !== right.length)) {
-            return false;
-        }
-        var length = left.length;
-        for (var i = 0; i < length; i++) {
-            if (!Property.equals(left[i], right[i])) {
-                return false;
-            }
-        }
-        return true;
-    };
-
-    /**
-     * @private
-     */
-    Property.isConstant = function(property) {
-        return !defined(property) || property.isConstant;
-    };
-
-    /**
-     * @private
-     */
-    Property.getValueOrUndefined = function(property, time, result) {
-        return defined(property) ? property.getValue(time, result) : undefined;
-    };
-
-    /**
-     * @private
-     */
-    Property.getValueOrDefault = function(property, time, valueDefault, result) {
-        return defined(property) ? defaultValue(property.getValue(time, result), valueDefault) : valueDefault;
-    };
-
-    /**
-     * @private
-     */
-    Property.getValueOrClonedDefault = function(property, time, valueDefault, result) {
-        var value;
-        if (defined(property)) {
-            value = property.getValue(time, result);
-        }
-        if (!defined(value)) {
-            value = valueDefault.clone(value);
-        }
-        return value;
-    };
-
-    return Property;
-});
+  })
+  
+  describe('.required()', function () {
+    it('should work', function () {
+      var prop = new Property();
+      prop.required();
+      prop.validate(null).should.match(/failed/);
+      prop.validate(100).should.eql(false);
+    })
+    
+    it('should return an error message', function () {
+      var prop = new Property();
+      prop.required('fail');
+      prop.validate(null).should.eql('fail');
+    })
+  })
+  
+  describe('.type()', function () {
+    it('should work', function () {
+      var prop = new Property();
+      prop.type('string');
+      prop.validate(1).should.match(/failed/);
+      prop.validate('test').should.eql(false);
+      prop.validate(null).should.eql(false);
+    })
+    
+    it('should have an `is` property', function () {
+      var prop = new Property();
+      prop.type('string');
+      prop.is.should.eql('string');
+    })
+    
+    it('should return an error message', function () {
+      var prop = new Property();
+      prop.type('string', 'fail');
+      prop.validate(1).should.eql('fail');
+    })
+  })
+  
+  describe('.match()', function () {
+    it('should work', function () {
+      var prop = new Property();
+      prop.match(/^abc$/);
+      prop.validate('cab').should.match(/failed/);
+      prop.validate('abc').should.eql(false);
+      prop.validate(null).should.eql(false);
+    })
+    
+    it('should return an error message', function () {
+      var prop = new Property();
+      prop.match(/^abc$/, 'fail');
+      prop.validate('cab').should.eql('fail');
+    })
+  })
+  
+  describe('.message()', function () {
+    it('should work', function () {
+      var prop = new Property();
+      prop.message('fail');
+      prop.use(function (val) { return val });
+      prop.validate(false).should.eql('fail');
+      prop.validate(true).should.eql(false);
+    })
+  })
+  
+  describe('.validate()', function () {
+    it('should work', function () {
+      var prop = new Property();
+      prop.required();
+      prop.match(/^abc$/);
+      prop.validate(null).should.match(/failed/);
+      prop.validate('abc').should.eql(false);
+      prop.validate('cab').should.match(/failed/);
+    });
+  });
+  
+})

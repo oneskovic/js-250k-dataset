@@ -1,7 +1,3 @@
-/*
- *	function return tileinformation accroding to type
- */
-
 var TileInformation = function(type) {
   
   var tileInformation = null;

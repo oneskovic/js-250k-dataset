@@ -1,7 +1,3 @@
-/**
- * diceware.js - generate N distinct words from a dictionary of 7776 possibilities
- */
-
 function Diceware() {
   this.wordlist = [];
   if (typeof Math.log2 === 'undefined') {

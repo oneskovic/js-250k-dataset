@@ -1,9 +1,3 @@
-/**
- * @class Abstract FOV algorithm
- * @param {function} lightPassesCallback Does the light pass through x,y?
- * @param {object} [options]
- * @param {int} [options.topology=8] 4/6/8
- */
 ROT.FOV = function(lightPassesCallback, options) {
 	this._lightPasses = lightPassesCallback;
 	this._options = {

@@ -1,3 +1,5 @@
+if(!dojo._hasResource["dojox.lang.functional.listcomp"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
+dojo._hasResource["dojox.lang.functional.listcomp"] = true;
 dojo.provide("dojox.lang.functional.listcomp");
 
 // This module adds high-level functions and related constructs:
@@ -12,8 +14,8 @@ dojo.provide("dojox.lang.functional.listcomp");
 
 	var listcomp = function(/*String*/ s){
 		var frag = s.split(g_re), act = s.match(g_re),
-			head = ["var r = [];"], tail = [], i = 0, l = act.length;
-		while(i < l){
+			head = ["var r = [];"], tail = [];
+		for(var i = 0; i < act.length;){
 			var a = act[i], f = frag[++i];
 			if(a == "for" && !/^\s*\(\s*(;|var)/.test(f)){
 				f = f.replace(/^\s*\(/, "(var ");
@@ -48,3 +50,5 @@ dojo.provide("dojox.lang.functional.listcomp");
 		}
 	});
 })();
+
+}

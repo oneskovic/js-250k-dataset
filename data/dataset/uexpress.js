@@ -1,6 +1,3 @@
-// uexpress.js
-// use underscore as a rendering engine for express 2 and 3
-
 // imports
 // http://documentcloud.github.com/underscore
 var _ = require('underscore')

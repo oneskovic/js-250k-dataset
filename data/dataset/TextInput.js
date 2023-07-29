@@ -1,78 +1,111 @@
-/**
-* Copyright (c) 2011, Facebook, Inc.
-* All rights reserved.
-*
-* Redistribution and use in source and binary forms, with or without
-* modification, are permitted provided that the following conditions are met:
-*
-*   * Redistributions of source code must retain the above copyright notice,
-*     this list of conditions and the following disclaimer.
-*   * Redistributions in binary form must reproduce the above copyright notice,
-*     this list of conditions and the following disclaimer in the documentation
-*     and/or other materials provided with the distribution.
-*   * Neither the name Facebook nor the names of its contributors may be used to
-*     endorse or promote products derived from this software without specific
-*     prior written permission.
-*
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-* AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-* IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-* DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-* FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-* DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-* SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-* CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-* OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-* OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*
-*
-*/
-requireCss("./textInput/textInput.css");
+require.def("ace/TextInput", ["ace/lib/event"], function(event) {
 
+var TextInput = function(parentNode, host) {
 
-var fun   = require("../../uki-core/function"),
-    utils = require("../../uki-core/utils"),
-    dom   = require("../../uki-core/dom"),
-    view  = require("../../uki-core/view"),
+    var text = document.createElement("textarea");
+    var style = text.style;
+    style.position = "absolute";
+    style.left = "-10000px";
+    style.top = "-10000px";
+    parentNode.appendChild(text);
 
-    Base      = require("../../uki-core/view/base").Base,
-    Focusable = require("./focusable").Focusable;
+    var PLACEHOLDER = String.fromCharCode(0);
+    sendText();
 
+    var inCompostion = false;
+    var copied = false;
 
-var TextInput = view.newClass('fb.TextInput', Base, Focusable, {}),
-    proto = TextInput.prototype;
+    function sendText() {
+        if (!copied) {
+            var value = text.value;
+            if (value) {
+                if (value.charCodeAt(value.length-1) == PLACEHOLDER.charCodeAt(0)) {
+                    value = value.slice(0, -1);
+                    if (value)
+                        host.onTextInput(value);
+                } else
+                    host.onTextInput(value);
+            }
+        }
+        copied = false;
 
-fun.delegateProp(
-  proto,
-  ['value', 'select', 'placeholder', 'size', 'maxlen', 'disabled', 'name'],
-  '_dom');
+        // Safari doesn't fire copy events if no text is selected
+        text.value = PLACEHOLDER;
+        text.select();
+    }
 
-proto.value = function(v) {
-  if (v === undefined) {
-    return this._dom.value;
-  }
-  this._dom.value = v;
-  return this;
+    var onTextInput = function(e) {
+        setTimeout(function() {
+            if (!inCompostion)
+                sendText();
+        }, 0);
+    };
+
+    var onCompositionStart = function(e) {
+        inCompostion = true;
+        sendText();
+        text.value = "";
+        host.onCompositionStart();
+        setTimeout(onCompositionUpdate, 0);
+    };
+
+    var onCompositionUpdate = function() {
+        host.onCompositionUpdate(text.value);
+    };
+
+    var onCompositionEnd = function() {
+        inCompostion = false;
+        host.onCompositionEnd();
+        onTextInput();
+    };
+
+    var onCopy = function() {
+        copied = true;
+        text.value = host.getCopyText();
+        text.select();
+        copied = true;
+        setTimeout(sendText, 0);
+    };
+
+    var onCut = function() {
+        copied = true;
+        text.value = host.getCopyText();
+        host.onCut();
+        text.select();
+        setTimeout(sendText, 0);
+    };
+
+    event.addListener(text, "keypress", onTextInput);
+    event.addListener(text, "textInput", onTextInput);
+    event.addListener(text, "paste", onTextInput);
+    event.addListener(text, "propertychange", onTextInput);
+
+    event.addListener(text, "copy", onCopy);
+    event.addListener(text, "cut", onCut);
+
+    event.addListener(text, "compositionstart", onCompositionStart);
+    event.addListener(text, "compositionupdate", onCompositionUpdate);
+    event.addListener(text, "compositionend", onCompositionEnd);
+
+    event.addListener(text, "blur", function() {
+        host.onBlur();
+    });
+
+    event.addListener(text, "focus", function() {
+        host.onFocus();
+        text.select();
+    });
+
+    this.focus = function() {
+        host.onFocus();
+        text.select();
+        text.focus();
+    };
+
+    this.blur = function() {
+        text.blur();
+    };
 };
 
-fun.addProp(proto, 'binding', function(val) {
-  if (this._binding) {
-    this._binding.destruct();
-  }
-  var Binding = require("../binding").Binding;
-  this._binding = val && new Binding(
-    utils.extend({
-      view: this,
-      model: val.model,
-      viewEvent: 'blur change'
-    }, val));
+return TextInput;
 });
-
-proto._createDom = function() {
-  this._dom = dom.createElement(
-    'input',
-    { type: 'text', className: 'ufb-text-input' });
-};
-
-
-exports.TextInput = TextInput;

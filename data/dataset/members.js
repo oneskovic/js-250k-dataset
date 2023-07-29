@@ -1,10 +1,7 @@
 module.exports = function(editor) {
 	return {
 
-		/**
-		 * Method: GET
-		 * Gets all members for index view
-		 */
+		
 		all: function(req, res){
 			editor.harp.getMembers(function(err, members){
 				res.render("members/all", {nav:'members', members:members });	

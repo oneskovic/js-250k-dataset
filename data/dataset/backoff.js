@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2012 Mathieu Turcotte
- * Licensed under the MIT license.
- */
-
 var events = require('events');
 var util = require('util');
 

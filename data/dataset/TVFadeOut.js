@@ -1,10 +1,3 @@
-/**
- * A 1/2 second fade out animation.
- * @class TVFadeOut
- * @constructor
- * @param el {HTMLElement} the element to animate
- * @param callback {Function} function to invoke when the animation is finished
- */
 YAHOO.widget.TVFadeOut = function(el, callback) {
     /**
      * The element to animate

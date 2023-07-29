@@ -1,7 +1,7 @@
 jQuery(document).ready(function($) {
 	liveblog.uploader = new wp.Uploader({
 
-		/* Selectors */
+		
 		// @todo selctors need to be class-based and the upload.dropzone needs to be used to select the current message and container
 		browser: '#liveblog-messages',
 		dropzone: '#liveblog-container',

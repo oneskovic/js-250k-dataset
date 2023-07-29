@@ -1,4 +1,3 @@
-//a thin wrapper around tiny-lr module
 var log = require('bole')('budo')
 var xtend = require('xtend')
 var tinylr = require('tiny-lr')

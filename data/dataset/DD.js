@@ -1,4 +1,3 @@
-/*global YAHOO,WireIt */
 /**
  * WireIt.util.DD is a wrapper class for YAHOO.util.DD, to redraw the wires associated with the given terminals while drag-dropping
  * @class DD

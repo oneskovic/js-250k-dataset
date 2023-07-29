@@ -10,16 +10,7 @@ goog.require('ol.css');
 
 
 
-/**
- * @classdesc
- * A button control which, when pressed, changes the map view to a specific
- * extent. To style this control use the css selector `.ol-zoom-extent`.
- *
- * @constructor
- * @extends {ol.control.Control}
- * @param {olx.control.ZoomToExtentOptions=} opt_options Options.
- * @api stable
- */
+
 ol.control.ZoomToExtent = function(opt_options) {
   var options = goog.isDef(opt_options) ? opt_options : {};
 

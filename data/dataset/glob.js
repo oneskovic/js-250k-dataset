@@ -1,64 +1,108 @@
 'use strict';
 
+
+// node_modules
+var minimatch = require('minimatch');
+var grunt     = require('grunt');
+var _         = require('lodash');
+
+
+// Local utils
+var compareFn = require('./lib/compare');
+
+
+// The module to be exported.
+var Utils = module.exports = exports = {};
+Utils.toString = Object.prototype.toString;
+
+
 /**
- * Module dependencies
+ * Returns an array of all file paths that match the given wildcard patterns,
+ * then reads each file and return its contents as a string, and last normalizes
+ * all line linefeeds in the string
+ * @author: Jon Schlinkert <http://ghtub.com/jonschlinkert>
+ *
+ * @param {String|Array} src Globbing pattern(s).
+ * @param {Function=} Accepts two objects (a,b) and returning 1 if a >= b otherwise -1.
+ * Properties passed to compare_fn are:
+ *   {
+ *     index: original index of file strating with 1
+ *     path: full file path
+ *     content: content of file
+ *   }
  */
-
-var fs = require('fs');
-var path = require('path');
-var glob = require('globby');
-var uniq = require('array-unique');
-var mm = require('micromatch');
-var relative = require('relative');
-var extend = require('extend-shallow');
-var ignore = require('./ignore').ignore;
-var cwd = require('./cwd');
-
-module.exports = function(dir, patterns, options, fn) {
-  patterns = patterns && patterns.length || ['**/*.js', '.verb.md'];
-  var opts = extend({cwd: cwd, dot: true}, options);
-  opts.ignore = union(ignore, opts.ignore || []);
-  return lookup(opts.cwd, patterns, opts.ignore);
+Utils.globFiles = function (src, compare_fn) {
+  compare_fn = compareFn(compare_fn);
+  var content = void 0;
+  var index = 0;
+  return content = grunt.file.expand(src).map(function (path) {
+    index += 1;
+    return {
+      index: index,
+      path: path,
+      content: grunt.file.read(path)
+    };
+  }).sort(compare_fn).map(function (obj) {
+    return obj.content;
+  }).join(grunt.util.normalizelf(grunt.util.linefeed));
 };
 
-function lookup (dir, patterns, ignore) {
-  var files = tryReaddir(dir);
-  var len = files.length, i = 0;
-  var res = [];
 
-  while (len--) {
-    var name = files[i++];
-    var fp = path.resolve(dir, name);
-    if (contains(relative(fp), ignore)) continue;
-
-    if (fs.statSync(fp).isDirectory()) {
-      res.push.apply(res, lookup(fp, patterns, ignore));
-
-    } else if (!patterns || mm.any(name, patterns)) {
-      res.push(fp);
+Utils.buildObjectPaths = function (obj) {
+  var files = [];
+  _.forOwn(obj, function (value, key) {
+    var file = key;
+    var recurse = function (obj) {
+      return _.forOwn(obj, function (value, key) {
+        if (file.length !== 0) {
+          file += '/';
+        }
+        file += key;
+        if (_.isObject(value)) {
+          return recurse(value);
+        }
+      });
+    };
+    if (_.isObject(value)) {
+      recurse(value);
     }
-  }
-  return res;
-}
+    return files.push(file);
+  });
+  return files;
+};
 
-function contains(fp, patterns) {
-  var len = patterns.length;
-  while (len--) {
-    if (mm.contains(fp, patterns[len])) {
-      return true;
+
+Utils.globObject = function (obj, pattern) {
+  var files = Utils.buildObjectPaths(obj);
+  var matches = files.filter(minimatch.filter(pattern));
+  var result = {};
+
+  var getValue = function (obj, path) {
+    var keys = path.split('/');
+    var value = _.cloneDeep(obj);
+    _.forEach(keys, function (key) {
+      if (_.has(value, key)) {
+        return value = _.cloneDeep(value[key]);
+      }
+    });
+    return value;
+  };
+
+  var setValue = function (obj, path, value) {
+    var keys = path.split('/');
+    var key = keys.shift();
+    if (keys.length) {
+      obj[key] = setValue({}, keys.join('/'), value);
+    } else {
+      obj[key] = value;
     }
-  }
-  return false;
-}
+    return obj;
+  };
 
+  _.forEach(matches, function (match) {
+    var value = getValue(obj, match);
+    return result = setValue(result, match, value);
+  });
+  return result;
 
-function tryReaddir(dir) {
-  try {
-    return fs.readdirSync(dir);
-  } catch(err) {}
-  return [];
-}
-
-function union() {
-  return uniq([].concat.apply([], arguments));
-}
+};

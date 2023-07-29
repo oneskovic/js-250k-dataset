@@ -1,25 +1,3 @@
-/**
- *
- * Set the current browser orientation.
- *
- * <example>
-    :setOrientation.js
-    client
-        .setOrientation('landscape')
-        .getOrientation(function(err, orientation) {
-            console.log(orientation); // outputs: "landscape"
-        })
-        .end();
- * </example>
- *
- * @param {String} orientation the new browser orientation (`landscape/portrait`)
- * @callbackParameter error
- *
- * @uses protocol/orientation
- * @type mobile
- *
- */
-
 var async = require('async'),
     ErrorHandler = require('../utils/ErrorHandler.js');
 

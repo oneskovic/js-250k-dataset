@@ -1,4 +1,3 @@
-
 function waitsForBootstrap() {
     expect(angular.hasBootstrapped()).toBe(false);
     waitsFor(angular.hasBootstrapped);

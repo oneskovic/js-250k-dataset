@@ -1,96 +1,117 @@
-define([
-	"../core",
-	"../core/init",
-	"../deferred"
-], function( jQuery ) {
-
-// The deferred used on DOM ready
-var readyList;
-
-jQuery.fn.ready = function( fn ) {
-	// Add the callback
-	jQuery.ready.promise().done( fn );
-
-	return this;
-};
-
-jQuery.extend({
-	// Is the DOM ready to be used? Set to true once it occurs.
-	isReady: false,
-
-	// A counter to track how many items to wait for before
-	// the ready event fires. See #6781
-	readyWait: 1,
-
-	// Hold (or release) the ready event
-	holdReady: function( hold ) {
-		if ( hold ) {
-			jQuery.readyWait++;
-		} else {
-			jQuery.ready( true );
-		}
-	},
-
-	// Handle when the DOM is ready
-	ready: function( wait ) {
-
-		// Abort if there are pending holds or we're already ready
-		if ( wait === true ? --jQuery.readyWait : jQuery.isReady ) {
-			return;
-		}
-
-		// Remember that the DOM is ready
-		jQuery.isReady = true;
-
-		// If a normal DOM Ready event fired, decrement, and wait if need be
-		if ( wait !== true && --jQuery.readyWait > 0 ) {
-			return;
-		}
-
-		// If there are functions bound, to execute
-		readyList.resolveWith( document, [ jQuery ] );
-
-		// Trigger any bound ready events
-		if ( jQuery.fn.trigger ) {
-			jQuery( document ).trigger("ready").off("ready");
-		}
-	}
-});
+///import baidu.browser.safari;
+///import baidu.browser.ie;
+///import baidu.browser.opera;
+///import baidu.dom;
 
 /**
- * The ready event handler and self cleanup method
+ * 使函数在页面dom节点加载完毕时调用
+ * @name baidu.dom.ready
+ * @function
+ * @grammar baidu.dom.ready(callback)
+ * @param {Function} callback 页面加载完毕时调用的函数
+ * @remark
+ * 如果有条件将js放在页面最底部, 也能达到同样效果，不必使用该方法。
+ * @meta standard
  */
-function completed() {
-	document.removeEventListener( "DOMContentLoaded", completed, false );
-	window.removeEventListener( "load", completed, false );
-	jQuery.ready();
-}
+baidu.dom.ready = function () {
+    var isReady = false,
+        readyBound = false,
+        readyList = [];
 
-jQuery.ready.promise = function( obj ) {
-	if ( !readyList ) {
+    function ready() {
+        if (!isReady) {
+            isReady = true;
+            for (var i = 0, j = readyList.length; i < j; i++) {
+                    readyList[i]();
+            }
+        }
+    }
 
-		readyList = jQuery.Deferred();
+    // 本函数代码逻辑来自Jquery，thanks Jquery
+    function bindReady() {
+        if (readyBound) {
+            return;
+        }
+        readyBound = true;
 
-		// Catch cases where $(document).ready() is called after the browser event has already occurred.
-		// we once tried to use readyState "interactive" here, but it caused issues like the one
-		// discovered by ChrisS here: http://bugs.jquery.com/ticket/12282#comment:15
-		if ( document.readyState === "complete" ) {
-			// Handle it asynchronously to allow scripts the opportunity to delay ready
-			setTimeout( jQuery.ready );
+        var doc = document,
+            w = window,
+            opera = baidu.browser.opera;
 
-		} else {
+        // Mozilla, Opera (see further below for it) and webkit nightlies currently support this event
+        if (doc.addEventListener && !opera) {
+            // Use the handy event callback
+            doc.addEventListener("DOMContentLoaded", opera ? function () {
+                if (isReady) {
+                    return;
+                }
+                for (var i = 0; i < doc.styleSheets.length; i++) {
+                    if (doc.styleSheets[i].disabled) {
+                        setTimeout( arguments.callee, 0 );
+                        return;
+                    }
+                }
+                // and execute any waiting functions
+                ready();
+            } : ready, false);
+        } else if (baidu.browser.ie && w == top) {
+            // If IE is used and is not in a frame
+            // Continually check to see if the doc is ready
+            (function () {
+                if (isReady) {
+                    return;
+                }
 
-			// Use the handy event callback
-			document.addEventListener( "DOMContentLoaded", completed, false );
+                try {
+                    // If IE is used, use the trick by Diego Perini
+                    // http://javascript.nwbox.com/IEContentLoaded/
+                    doc.documentElement.doScroll("left");
+                } catch (error) {
+                    setTimeout(arguments.callee, 0);
+                    return;
+                }
+                // and execute any waiting functions
+                ready();
+            })();
+        } else if (baidu.browser.safari) {
+            var numStyles;
+            (function () {
+                if (isReady) {
+                    return;
+                }
+                if (doc.readyState != "loaded" && doc.readyState != "complete") {
+                    setTimeout( arguments.callee, 0 );
+                    return;
+                }
+                if (numStyles === undefined) {
+                    numStyles = 0;
+                    var s1 = doc.getElementsByTagName('style'),
+                        s2 = doc.getElementsByTagName('link');
+                    if (s1) {
+                        numStyles += s1.length;
+                    }
+                    if (s2) {
+                        for (var i = 0, j = s2.length; i < j; i ++) {
+                            if (s2[i].getAttribute("rel") == "stylesheet") {
+                                numStyles ++;
+                            }
+                        }
+                    }
+                }
+                if (doc.styleSheets.length != numStyles) {
+                    setTimeout(arguments.callee, 0);
+                    return;
+                }
+                ready();
+            })();
+        }
 
-			// A fallback to window.onload, that will always work
-			window.addEventListener( "load", completed, false );
-		}
-	}
-	return readyList.promise( obj );
-};
+        // A fallback to window.onload, that will always work
+        w.attachEvent ? w.attachEvent("onload", ready) : w.addEventListener("load", ready, false);
+    }
 
-// Kick off the DOM ready check even if the user does not
-jQuery.ready.promise();
-
-});
+    return function (callback) {
+        bindReady();
+        isReady ? callback() : (readyList[readyList.length] = callback);
+    };
+}();

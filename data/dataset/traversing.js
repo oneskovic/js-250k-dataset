@@ -1,75 +1,54 @@
-fn.find = function(selector) {
-    var results = [],
-        i = 0,
-        length = this.length,
-        finder = function(el) {
-            if (isFunction(el.querySelectorAll)) {
-                [].forEach.call(el.querySelectorAll(selector), function(found) {
-                    results.push(found);
-                });
-            }
-        };
+describe('jBone Traversing', function() {
 
-    for (; i < length; i++) {
-        finder(this[i]);
-    }
-
-    return jBone(results);
-};
-
-fn.get = function(index) {
-    return index != null ?
-
-        // Return just the one element from the set
-        (index < 0 ? this[index + this.length] : this[index]) :
-
-        // Return all the elements in a clean array
-        slice.call(this);
-};
-
-fn.eq = function(index) {
-    return jBone(this[index]);
-};
-
-fn.parent = function() {
-    var results = [],
-        parent,
-        i = 0,
-        length = this.length;
-
-    for (; i < length; i++) {
-        if (!~results.indexOf(parent = this[i].parentElement) && parent) {
-            results.push(parent);
-        }
-    }
-
-    return jBone(results);
-};
-
-fn.toArray = function() {
-    return slice.call(this);
-};
-
-fn.is = function() {
-    var args = arguments;
-
-    return this.some(function(el) {
-        return el.tagName.toLowerCase() === args[0];
+    it('Initialized', function() {
+        expect(jBone().find).to.be.a("function");
+        expect(jBone().get).to.be.a("function");
+        expect(jBone().eq).to.be.a("function");
+        expect(jBone().parent).to.be.a("function");
+        expect(jBone().toArray).to.be.a("function");
     });
-};
 
-fn.has = function() {
-    var args = arguments;
+    it('find(selector)', function() {
+        var a = jBone('<div><span></span><p><span></span></p></div>');
 
-    return this.some(function(el) {
-        return el.querySelectorAll(args[0]).length;
+        expect(a.find('span')).to.have.length(2);
+        expect(a.find('p')).to.have.length(1);
+        expect(a.find('div')).to.have.length(0);
     });
-};
 
-fn.add = function(selector, context) {
-    return this.pushStack(
-        jBone.unique(
-            jBone.merge(this.get(), jBone(selector, context))
-        )
-    );
-};
+    it('get(index)', function() {
+        var a = jBone('<div></div><span></span>');
+
+        expect(a.get(1).tagName.toLowerCase()).to.be('span');
+        expect(a.get(1)).to.be.an(HTMLElement);
+    });
+
+    it('eq(index)', function() {
+        var a = jBone('<div></div><span><a></a></span>');
+
+        expect(a.eq(1)).to.be.an(jBone);
+        expect(a.eq(1).get(0).childNodes).to.have.length(1);
+    });
+
+    it('parent()', function() {
+        var a = jBone('<div><p><span></span></p></div>'),
+            span = a.find('span');
+
+        expect(span.parent()[0].tagName.toLowerCase()).to.be.eql('p');
+        expect(span.parent()).to.have.length(1);
+    });
+
+    it('parent() with multiple elements', function() {
+        var span = $('<span><span><span><a/><a/></span></span></span>'),
+            a = span.find('a');
+
+        expect(a.parent()).to.have.length(1);
+    });
+
+    it('parent() with multiple parents', function() {
+        var span = $('<span><span><span><a/><a/></span></span></span>'),
+            a = span.find('a, span');
+
+        expect(a.parent()).to.have.length(3);
+    });
+});

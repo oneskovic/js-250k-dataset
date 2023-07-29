@@ -1,12 +1,3 @@
-/** Changes descriptor constructor.
- * @param {Array} path absolute changed path
- * @param {Array} listenerPath absolute listener path
- * @param {Boolean} valueChanged value changed flag
- * @param {Immutable.Map} previousValue previous backing value
- * @param {Immutable.Map} previousMeta previous meta binding backing value
- * @public
- * @class ChangesDescriptor
- * @classdesc Encapsulates binding changes for binding listeners. */
 var ChangesDescriptor =
   function (path, listenerPath, valueChanged, previousValue, previousMeta) {
     /** @private */

@@ -1,10 +1,6 @@
 var runnable = function(fw){
 
-	/**
-	 * 1、将model文件build到一个文件，require进来
-	 * 2、再读取一遍里面的fields,如果是model就吧modelname里面的前缀给去掉，存放在modelTempContainter里面备用；
-	 * 3、
-	 */
+	
 
 	/**
 	 * build model

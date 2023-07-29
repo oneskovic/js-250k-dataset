@@ -1,8 +1,3 @@
-/**
- * Peanut butter goes great with jelly.
- *
- * @author Dan Tao <daniel.tao@gmail.com>
- */
 var Jelly = (function() {
     var recordButton = $("button.test-record"),
         recordResult = $("div.test-record-result");

@@ -1,10 +1,3 @@
-/*
- * fileStats.js
- * A module to which uses async-cache to provide file stats information.
- * fs.stat() is requested only once in a while. The result is then stored
- * in the cache which is served to other modules upon request.
- * async-cache allows to significantly decrease I/O hits.
- */
 define(['async-cache', 'fs', 'conf', 'handlebars'], function(AsyncCache, fs, conf, Handlebars) {
     // async-cache to retrieve file stat information
     var stats = new AsyncCache({

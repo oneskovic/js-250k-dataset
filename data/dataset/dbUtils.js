@@ -1,4 +1,3 @@
-
 var Promise    = require('bluebird');
 var mysql      = require('mysql');
 Promise.promisifyAll(require("mysql/lib/Connection").prototype);

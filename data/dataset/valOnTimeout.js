@@ -16,12 +16,7 @@ angular.module('calendee.valOnTimeout',[]).
                 if(attrs.hasOwnProperty('blurLimit')) blurLimit = parseInt(attrs.blurLimit, 10) || 500;
 
 
-                /**
-                 * Start timer for specified period.  If not cancelled before triggered, the 'timeout' property will
-                 * be added to the field.
-                 *
-                 * @param timeLimit
-                 */
+                
                 var startTimer = function(timeLimit) {
 
                     timer = $timeout(function(){

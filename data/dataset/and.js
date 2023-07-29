@@ -14,34 +14,7 @@ module.exports = function (math) {
       isUnit = Unit.isUnit,
       isCollection = collection.isCollection;
 
-  /**
-   * Logical `and`. Test whether two values are both defined with a nonzero/nonempty value.
-   * For matrices, the function is evaluated element wise.
-   *
-   * Syntax:
-   *
-   *    math.and(x, y)
-   *
-   * Examples:
-   *
-   *    math.and(2, 4);   // returns true
-   *
-   *    a = [2, 0, 0];
-   *    b = [3, 7, 0];
-   *    c = 0;
-   *
-   *    math.and(a, b);   // returns [true, false, false]
-   *    math.and(a, c);   // returns [false, false, false]
-   *
-   * See also:
-   *
-   *    not, or, xor
-   *
-   * @param  {Number | BigNumber | Boolean | Complex | Unit | Array | Matrix | null} x First value to check
-   * @param  {Number | BigNumber | Boolean | Complex | Unit | Array | Matrix | null} y Second value to check
-   * @return {Boolean | Array | Matrix}
-   *            Returns true when both inputs are defined with a nonzero/nonempty value.
-   */
+  
   math.and = function and(x, y) {
     if (arguments.length != 2) {
       throw new math.error.ArgumentsError('and', arguments.length, 2);

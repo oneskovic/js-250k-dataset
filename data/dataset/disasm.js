@@ -1,9 +1,7 @@
 if (typeof yasp == 'undefined') yasp = { };
 
 (function () {
-  /**
-   * @class
-   */
+  
   yasp.disasm = {};
 
   /** disassembles one command

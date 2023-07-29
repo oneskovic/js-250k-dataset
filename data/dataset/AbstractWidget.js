@@ -7,16 +7,9 @@
   }
 }(function () {
 
-/**
- * Baseclass for all widgets. 
- * 
- * Provides abstract hooks for child classes.
- *
- * @param properties A map of fields to set. May be new or public fields.
- * @class AbstractWidget
- */
+
 AjaxSolr.AbstractWidget = AjaxSolr.Class.extend(
-  /** @lends AjaxSolr.AbstractWidget.prototype */
+  
   {
   /**
    * @param {Object} attributes

@@ -46,27 +46,7 @@
 				[ 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5]
 			], BLOCKS.walkable);
 
-			/*var cells = [],
-				mapW = 20,
-				mapH = 25,
-				platH = 4,
-				ladder = null;
-
-			for (var y = 0; y < mapH; y++) {
-				cells[y] = [];
-				if (y % platH === 0) {
-					ladder = Ω.utils.rand(mapW);
-				}
-				for (var x = 0; x < mapW; x++) {
-					if (y % platH === 0 && Ω.utils.rand(100) > 10) {
-						cells[y].push(ladder && x === ladder ? 1 : 5);
-						continue;
-					}
-					cells[y].push(ladder && x === ladder ? 1 : 0)
-
-				}
-			}
-			this.map.populate(cells);*/
+			
 
 			this.camera = new Ω.TrackingCamera(
 				this.players[0],

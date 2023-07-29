@@ -1,61 +1,52 @@
-/**
- * Defines the Flat Surface Shader namespace for all the awesomeness to exist upon.
- * @author Matthew Wagerfield
- */
-FSS = {
-  FRONT  : 0,
-  BACK   : 1,
-  DOUBLE : 2,
-  SVGNS  : 'http://www.w3.org/2000/svg'
-};
+//@
+//@ ## five
+//@
+//@ Main object. Typical usage is:
+//@
+//@ ```
+//@ var five = require('path-to-node-five-dir');
+//@ ```
 
-/**
- * @class Array
- * @author Matthew Wagerfield
- */
-FSS.Array = typeof Float32Array === 'function' ? Float32Array : Array;
+var qt = require('node-qt');
 
-/**
- * @class Utils
- * @author Matthew Wagerfield
- */
-FSS.Utils = {
-  isNumber: function(value) {
-    return !isNaN(parseFloat(value)) && isFinite(value);
-  }
-};
+var app = new qt.QApplication();
+var timerHandler, tickStop = false;
 
-/**
- * Request Animation Frame Polyfill.
- * @author Paul Irish
- * @see https://gist.github.com/paulirish/1579671
- */
-(function() {
+//@
+//@ #### useInterval()
+//@ Add event handler to Node's event loop via setTimeout(). This is the default event loop integration.
+exports.useInterval = function() {
+  if (timerHandler)
+    clearInterval(timerHandler);    
+  tickStop = true;  
+  
+  timerHandler = setInterval(function(){
+    app.processEvents();
+  }, 0);
+}
 
-  var lastTime = 0;
-  var vendors = ['ms', 'moz', 'webkit', 'o'];
+//@
+//@ #### useTick()
+//@ Add event handler to Node's event loop via `process.nextTick()`.
+//@ This should used in applications that require more instant responsiveness (CPU-intensive!).
+exports.useTick = function() {
+  var registerNextTick = function() {
+    process.nextTick(function(){
+      app.processEvents();
+      if (!tickStop) registerNextTick();
+    });
+  };
 
-  for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
-    window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
-    window.cancelAnimationFrame  = window[vendors[x]+'CancelAnimationFrame'] || window[vendors[x]+'CancelRequestAnimationFrame'];
-  }
+  if (timerHandler)
+    clearInterval(timerHandler);
+  tickStop = false;
+  
+  registerNextTick();
+}
 
-  if (!window.requestAnimationFrame) {
-    window.requestAnimationFrame = function(callback, element) {
-      var currentTime = new Date().getTime();
-      var timeToCall = Math.max(0, 16 - (currentTime - lastTime));
-      var id = window.setTimeout(function() {
-        callback(currentTime + timeToCall);
-      }, timeToCall);
-      lastTime = currentTime + timeToCall;
-      return id;
-    };
-  }
-
-  if (!window.cancelAnimationFrame) {
-    window.cancelAnimationFrame = function(id) {
-      clearTimeout(id);
-    };
-  }
-
-}());
+//@
+//@ #### stop()
+//@ Stop Node-Five's event loop. Applications never exit without a call to this method.
+exports.stop = function() {
+  clearInterval(timerHandler);
+}

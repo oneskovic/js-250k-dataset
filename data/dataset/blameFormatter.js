@@ -1,11 +1,6 @@
 const moment = require('moment');
 
-/**
- * Parses the git commit revision from blame data for a line of code.
- *
- * @param {string} line - the blame data for a particular line of code
- * @return {string} - the git revision hash string.
- */
+
 function parseRevision(line) {
   var revisionRegex = /^\w+/;
   return line.match(revisionRegex)[0];

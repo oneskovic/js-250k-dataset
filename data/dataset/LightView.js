@@ -1,12 +1,3 @@
-/**
- * @class THREEFAB.LightView
- *
- * @author itooamaneatguy / http://kadrmasconcepts.com/blog/
- * @description Setup color view.
- *
- */
-
-
 THREEFAB.LightView = Backbone.View.extend({
 	
 	el: document.createElement('li'),

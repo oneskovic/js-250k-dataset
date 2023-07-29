@@ -1,11 +1,6 @@
 (function(window) {
 
-    /**
-     * Do not use thumbs.js on touch-enabled devices
-     * 
-     * Thanks to Jesse MacFadyen (purplecabbage):
-     * https://gist.github.com/850593#gistcomment-22484
-     */
+    
     try {
         document.createEvent('TouchEvent');
         return;

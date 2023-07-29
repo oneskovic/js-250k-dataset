@@ -1,118 +1,68 @@
-/*
-股票功能
-*/
+App.StockController = Ember.ArrayController.extend( EmberDC.ControllerMixin, {
 
-var mongodb = require('../models/db');
-//var crypto = require('crypto');
-var User = require('../models/user');
-var Stoc = require('../models/stoc');
+  
+  metrics: [
+    {value:'sighting',       label: 'Sightings'}
+  ],
 
-var stock={};
-module.exports = stock;
+  startDate: moment().subtract('years', 50),
+  endDate: moment().subtract('years', 4),
 
-stock.show = function(req,res){
-	req.params.uid=req.params.uid.toLowerCase();//统一小写后处理
-	var id=/[0-9]{6}/.exec(req.params.uid);//左边导航需要
-	var isWatch=false;
-	if(req.session.user){
-		for(var i=0,l=req.session.user.stock.length;i<l;i++){
-			if(req.params.uid==req.session.user.stock[i]){
-				isWatch=true;
-			}
-		}
-	}
-	
-	res.render('stock', {
-		id:id,
-		isWatch:isWatch,
-		user:req.session.user
-	});
-};
+  /**
+   * @method _createDimensions
+   * Create the defined dimensions from the controller.
+   * @return {void}
+   * @private
+   */
+  _createDimensions: function() {
+    var self = this;
 
-stock.watch=function(req,res){
-	var stoc = new Stoc({
-		name: req.query.name, 
-		uid: req.query.uid,
-		top: req.query.add,
-		beWatch: {
-			name:req.query.beWatchName,
-			top:req.query.beWatchTop
-		} 
-	});
-	//插入stock数据
-	stoc.watch(function(data){
-		if(data.status==200){
-			if(req.query.add==1){
-				req.session.user.stock.push(data.uid);
-			}else{
-				var newSe=[];
-				for(var i=0,l=req.session.user.stock.length;i<l;i++){
-					if(req.session.user.stock[i]!=data.uid){
-						newSe.push(req.session.user.stock[i]);
-					}
-				}
-				req.session.user.stock=newSe;
-			}
-			res.send({ok:true});
-		}
-	});
-};
+    var content = Ember.get(this, 'content');
 
-stock.aboutName=function(req,res){
-	var uid=req.query.uid;
-	Stoc.aboutName(uid,function(obj){
-		if(obj){
-			res.send({ok:true,info:obj});
-		}else{
-			res.send({ok:false});
-		}
-	});
-};
+    content.forEach(function(d, i) {
+      d.date = moment(d.sighted, 'YYYYMMDD').toDate();
+    });
 
-stock.hotStock=function(req,res){
-	Stoc.hotStock(function(obj){
-		res.send({ok:true,list:obj});
-	});
-};
+    d3.json("us-states.json", function (statesJson) {
+      self.set('usStates', statesJson);
+    });
 
-stock.bigpipeHotStock=function(callback){
-	Stoc.hotStock(function(obj){
-		//res.send({ok:true,list:obj});
-		callback({ok:true,list:obj})
-	});
-};
+    // Date Dimension
+    this.set('dimensions.date', this._crossfilter.dimension(function(d) { return d.date; }));
+    this.set('dimensions.state', this._crossfilter.dimension(function (d) { return d.state; }));
+    this.set('dimensions.daysOfWeek', this._crossfilter.dimension(function (d) {
+      var day = d.date.getDay();
+      var name=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+      return day+"."+name[day];
+    }));
+  },
 
-stock.talkHistory=function(req,res){
-	var uid=req.query.stock;
-	var num=req.query.num;
-	var count=Number(num);
-	Stoc.talkHistory(uid,count,function(info){
-		if(info.length>0){
-			res.send({ok:true,history:info[0].history});
-		}else{
-			res.send({ok:false});
-		}
-	});
-};
 
-/*
-*重构
-*/
-stock.showAjax = function(req,res){
-	req.params.uid=req.params.uid.toLowerCase();//统一小写后处理
-	var id=/[0-9]{6}/.exec(req.params.uid);//左边导航需要
-	var isWatch=false;
-	if(req.session.user){
-		for(var i=0,l=req.session.user.stock.length;i<l;i++){
-			if(req.params.uid==req.session.user.stock[i]){
-				isWatch=true;
-			}
-		}
-	}
-	
-	res.send({
-		id:id,
-		isWatch:isWatch,
-		user:req.session.user
-	});
-};
+  /**
+   * @method _createGroups
+   * Create the defined groups from the controller.
+   * @return {void}
+   * @private
+   */
+  _createGroups: function() {
+    this.set('groups.all', this._crossfilter.groupAll());
+    this.set('groups.daysOfWeek', this.get('dimensions.daysOfWeek').group());
+    this.set('groups.dateComposite', this.get('dimensions.date').group(d3.time.month).reduce(
+      function(p, v){
+          return {
+            sighting: p.sighting+1
+          }
+      },
+      function(p, v){
+        return {
+          sighting: p.sighting-1
+        }
+      },
+      function(){return {sighting:0};}
+    ));
+
+    this.set('groups.state', this.get('dimensions.state').group());
+  }
+
+
+});

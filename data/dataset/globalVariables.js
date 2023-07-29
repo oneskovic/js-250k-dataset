@@ -1,6 +1,3 @@
-/**
- * Counts global JavaScript variables
- */
 /* global document: true, window: true */
 'use strict';
 

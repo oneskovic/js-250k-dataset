@@ -1,9 +1,3 @@
-/**
- Resources view StackView for navigation selection
- @class ResourcesWaspView
- @constructor
- @return {Object} instantiated ResourcesWaspView
- **/
 define(['jquery', 'backbone', 'jsencrypt', 'gibberish-aes', 'md5', 'moment'], function ($, Backbone, jsencrypt, aes, md5, moment) {
 
     var ResourcesWaspView = Backbone.View.extend({

@@ -1,6 +1,4 @@
-/*
-delegation
-*/"use strict"
+"use strict"
 
 var Map = require("prime/map")
 

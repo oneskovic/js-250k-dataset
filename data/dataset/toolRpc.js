@@ -1,4 +1,3 @@
-
 if (! tool)
 	var tool = {};
 

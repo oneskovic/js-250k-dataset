@@ -1,93 +1,67 @@
-/*
- * Copyright (C) 2011 Klokan Technologies GmbH (info@klokantech.com)
- *
- * The JavaScript code in this page is free software: you can
- * redistribute it and/or modify it under the terms of the GNU
- * General Public License (GNU GPL) as published by the Free Software
- * Foundation, either version 3 of the License, or (at your option)
- * any later version.  The code is distributed WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU GPL for more details.
- *
- * USE OF THIS CODE OR ANY PART OF IT IN A NONFREE SOFTWARE IS NOT ALLOWED
- * WITHOUT PRIOR WRITTEN PERMISSION FROM KLOKAN TECHNOLOGIES GMBH.
- *
- * As additional permission under GNU GPL version 3 section 7, you
- * may distribute non-source (e.g., minimized or compacted) forms of
- * that code without the copy of the GNU GPL normally required by
- * section 4, provided you include this license notice and a URL
- * through which recipients can access the Corresponding Source.
- *
- */
+describe("geo", function () {
+    var geo = require('ripple/geo'),
+        db = require('ripple/db'),
+        event = require('ripple/event');
 
-/**
- * @fileoverview Class containing functions for geo-related calculations.
- *               TODO: move more functions into this file.
- *
- * @author petr.sloup@klokantech.com (Petr Sloup)
- *
- */
+    describe("getPositionInfo", function () {
+        it("returns valid values", function () {
+            var positionInfo = geo.getPositionInfo();
 
-goog.provide('we.math.geo');
+            expect(typeof positionInfo).toEqual("object");
+            expect(typeof positionInfo.latitude).toEqual("number");
+            expect(typeof positionInfo.longitude).toEqual("number");
+            expect(typeof positionInfo.altitude).toEqual("number");
+            expect(typeof positionInfo.accuracy).toEqual("number");
+            expect(typeof positionInfo.altitudeAccuracy).toEqual("number");
+            expect(typeof positionInfo.heading).toEqual("number");
+            expect(typeof positionInfo.speed).toEqual("number");
+            expect(typeof positionInfo.cellID).toEqual("number");
+            expect(positionInfo.timeStamp instanceof Date).toEqual(true);
+        });
 
-goog.require('goog.math');
+        it("'s internal position info object is immutable", function () {
+            var positionInfo = geo.getPositionInfo(),
+                immutablePositionInfo;
+            positionInfo.altitude = 1;
+            immutablePositionInfo = geo.getPositionInfo();
+            expect(positionInfo.altitude).not.toEqual(immutablePositionInfo.altitude);
+        });
+    });
 
+    describe("updatePositionInfo", function () {
+        it("throws exception when invalid input", function () {
+            var positionInfo = {
+                    latitude: "12",
+                    longitude: false,
+                    altitudeAccuracy: true,
+                    cellID: 62,
+                    timeStamp: "dfdgfdgfdgfdgf"
+                };
 
-/**
- * Calculates at what distance should given bounds be view to fit on screen.
- * @param {number} minlat ..
- * @param {number} maxlat ..
- * @param {number} minlon ..
- * @param {number} maxlon ..
- * @param {number} viewportAspectRatio Aspect ratio (w/h) of the viewport.
- * @param {number} fov Field-of-view in radians.
- * @return {number} Proposed distance.
- */
-we.math.geo.calcDistanceToViewBounds = function(minlat, maxlat, minlon, maxlon,
-                                                viewportAspectRatio, fov) {
-  var centerLat = (minlat + maxlat) / 2;
+            expect(function () {
+                geo.updatePositionInfo(positionInfo);
+            }).toThrow();
+        });
 
-  var distEW = we.scene.Earth.calculateDistance(centerLat, minlon,
-                                                centerLat, maxlon);
+        it("updates successfully", function () {
+            var positionInfo = {
+                latitude: 11,
+                longitude: 21,
+                altitude: 31,
+                accuracy: 41,
+                altitudeAccuracy: 51,
+                heading: 0,
+                speed: 0,
+                cellID: 61,
+                timeStamp: new Date()
+            };
 
-  var distNS = we.scene.Earth.calculateDistance(minlat, 0,
-                                                maxlat, 0);
+            spyOn(db, "saveObject");
+            spyOn(event, "trigger");
 
-  var aspectR = Math.min(Math.max(viewportAspectRatio, distEW / distNS), 1.0);
+            geo.updatePositionInfo(positionInfo, 4, true);
 
-  // Create a LookAt using the experimentally derived distance formula.
-  var alpha = goog.math.toRadians(goog.math.toDegrees(fov) /
-                                  (aspectR + 0.4) - 2.0);
-  var expandToDistance = Math.max(distNS, distEW);
-
-  var beta = Math.min(Math.PI / 2,
-                      alpha + expandToDistance / (2 * we.scene.EARTH_RADIUS));
-
-  var lookAtRange = 1.5 * we.scene.EARTH_RADIUS *
-      (Math.sin(beta) * Math.sqrt(1 + 1 / Math.pow(Math.tan(alpha), 2)) - 1);
-
-  return lookAtRange;
-};
-
-
-/**
- * Calculates center of given bounds.
- * @param {number} minlat ..
- * @param {number} maxlat ..
- * @param {number} minlon ..
- * @param {number} maxlon ..
- * @return {Array.<number>} [lat, lon].
- */
-we.math.geo.calcBoundsCenter = function(minlat, maxlat, minlon, maxlon) {
-  minlon = goog.math.modulo(minlon, 2 * Math.PI);
-  maxlon = goog.math.modulo(maxlon, 2 * Math.PI);
-
-  var lonDiff = minlon - maxlon;
-  if (lonDiff < -Math.PI) {
-    minlon += 2 * Math.PI;
-  } else if (lonDiff > Math.PI) {
-    maxlon += 2 * Math.PI;
-  }
-
-  return [(minlat + maxlat) / 2, (minlon + maxlon) / 2];
-};
+            expect(db.saveObject.callCount).toBe(1);
+        });
+    });
+});

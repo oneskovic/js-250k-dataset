@@ -1,7 +1,3 @@
-/*!
- * ${copyright}
- */
-
 // Provides control sap.ui.core.InvisibleText.
 sap.ui.define(['jquery.sap.global', './Control', './library', 'jquery.sap.strings'],
 	function(jQuery, Control, library, strings) {

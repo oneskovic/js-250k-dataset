@@ -4,10 +4,7 @@ var path          = require("path");
 var utils         = require("../utils");
 var defaultConfig = require("../default-config");
 
-/**
- * @param emitter
- * @returns {Function}
- */
+
 module.exports = function (emitter) {
 
     function emitReload(path, log) {

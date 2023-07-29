@@ -1,5 +1,3 @@
-/*global kitchensink*/
-
 kitchensink.Views = kitchensink.Views || {};
 
 (function() {

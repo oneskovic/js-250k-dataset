@@ -1,7 +1,3 @@
-/**
- * Internal module used to create static and instance join methods
- */
-
 var slice = Array.prototype.slice,
     strategyMethodNames = {
         strict: "joinStrict",

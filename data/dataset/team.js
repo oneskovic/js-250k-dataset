@@ -1,6 +1,3 @@
-/**
- * Club module
- */
 angular.module( 'league.team', [
   'ui.state',
   'league.club',

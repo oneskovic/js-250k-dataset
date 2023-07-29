@@ -1,6 +1,3 @@
-/*
-	测试http请求是否超时
-*/
 var testconf = require('./testconf.js');
 var should = require('should');
 var path = require('path');

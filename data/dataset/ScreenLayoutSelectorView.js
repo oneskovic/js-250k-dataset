@@ -1,9 +1,3 @@
-/**
- Select new screen layout (template) for a campaign > timeline
- @class ScreenLayoutSelectorView
- @constructor
- @return {Object} instantiated ScreenLayoutSelectorView
- **/
 define(['jquery', 'backbone', 'StackView'], function ($, Backbone, StackView) {
 
     BB.SERVICES.SCREEN_LAYOUT_SELECTOR_VIEW = 'ScreenLayoutSelectorView';

@@ -1,7 +1,3 @@
-/**
- * @name views.eventLog
- * @namespace Event log.
- */
 define(["dao", "globals", "ui", "lib/bluebird", "lib/knockout", "util/bbgmView", "util/helpers", "views/components"], function (dao, g, ui, Promise, ko, bbgmView, helpers, components) {
     "use strict";
 

@@ -1,6 +1,3 @@
-
-    //  AES based pseudorandom number generator
-
     /*  Constructor.  Called with an array of 32 byte (0-255) values
 	containing the initial seed.  */
 

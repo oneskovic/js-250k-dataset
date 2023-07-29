@@ -1,81 +1,51 @@
+(function() {
+  var Keyframes, Prefixer,
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-/*!
- * Stylus - Keyframes
- * Copyright(c) 2010 LearnBoost <dev@learnboost.com>
- * MIT Licensed
- */
+  Prefixer = require('./prefixer');
 
-/**
- * Module dependencies.
- */
+  Keyframes = (function(_super) {
+    __extends(Keyframes, _super);
 
-var Atrule = require('./atrule');
+    function Keyframes() {
+      return Keyframes.__super__.constructor.apply(this, arguments);
+    }
 
-/**
- * Initialize a new `Keyframes` with the given `segs`,
- * and optional vendor `prefix`.
- *
- * @param {Array} segs
- * @param {String} prefix
- * @api public
- */
+    Keyframes.prototype.add = function(atRule, prefix) {
+      var already, cloned, prefixed;
+      prefixed = prefix + atRule.name;
+      already = atRule.parent.some(function(i) {
+        return i.name === prefixed && i.params === atRule.params;
+      });
+      if (already) {
+        return;
+      }
+      cloned = this.clone(atRule, {
+        name: prefixed
+      });
+      return atRule.parent.insertBefore(atRule, cloned);
+    };
 
-var Keyframes = module.exports = function Keyframes(segs, prefix){
-  Atrule.call(this, 'keyframes');
-  this.segments = segs;
-  this.prefix = prefix || 'official';
-};
+    Keyframes.prototype.process = function(node) {
+      var parent, prefix, _i, _len, _ref, _results;
+      parent = this.parentPrefix(node);
+      _ref = this.prefixes;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        prefix = _ref[_i];
+        if (parent && parent !== prefix) {
+          continue;
+        }
+        _results.push(this.add(node, prefix));
+      }
+      return _results;
+    };
 
-/**
- * Inherit from `Atrule.prototype`.
- */
+    return Keyframes;
 
-Keyframes.prototype.__proto__ = Atrule.prototype;
+  })(Prefixer);
 
-/**
- * Return a clone of this node.
- * 
- * @return {Node}
- * @api public
- */
+  module.exports = Keyframes;
 
-Keyframes.prototype.clone = function(parent){
-  var clone = new Keyframes;
-  clone.lineno = this.lineno;
-  clone.column = this.column;
-  clone.filename = this.filename;
-  clone.segments = this.segments.map(function(node) { return node.clone(parent, clone); });
-  clone.prefix = this.prefix;
-  clone.block = this.block.clone(parent, clone);
-  return clone;
-};
-
-/**
- * Return a JSON representation of this node.
- *
- * @return {Object}
- * @api public
- */
-
-Keyframes.prototype.toJSON = function(){
-  return {
-    __type: 'Keyframes',
-    segments: this.segments,
-    prefix: this.prefix,
-    block: this.block,
-    lineno: this.lineno,
-    column: this.column,
-    filename: this.filename
-  };
-};
-
-/**
- * Return `@keyframes name`.
- *
- * @return {String}
- * @api public
- */
-
-Keyframes.prototype.toString = function(){
-  return '@keyframes ' + this.segments.join('');
-};
+}).call(this);

@@ -1,8 +1,3 @@
-
-/**
- * Module dependencies.
- */
-
 var Suite = require('../suite')
   , Test = require('../test')
   , utils = require('../utils');;

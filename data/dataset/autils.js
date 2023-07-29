@@ -1,7 +1,5 @@
 "use strict";
-/**
- * Devwik.Utils: Various utility functions
- */
+
 var Devwik = function() {};
 Devwik.Utils = function() {};
 

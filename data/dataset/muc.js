@@ -1,5 +1,3 @@
-
-
 Strophe.Test = {
     BOSH_URL: "/xmpp-httpbind",
     XMPP_DOMAIN: 'speeqe.com',

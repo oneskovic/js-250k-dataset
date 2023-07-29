@@ -1,4 +1,3 @@
-/*! https://mths.be/codepointat v0.2.0 by @mathias */
 if (!String.prototype.codePointAt) {
 	(function() {
 		'use strict'; // needed to support `apply`/`call` with `undefined`/`null`

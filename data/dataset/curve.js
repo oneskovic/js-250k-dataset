@@ -1,89 +1,124 @@
-/* Copyright (c) 2006-2013 by OpenLayers Contributors (see authors.txt for
- * full list of contributors). Published under the 2-clause BSD license.
- * See license.txt in the OpenLayers distribution or repository for the
- * full text of the license. */
-
-/**
- * @requires OpenLayers/Geometry/MultiPoint.js
- */
-
-/**
- * Class: OpenLayers.Geometry.Curve
- * A Curve is a MultiPoint, whose points are assumed to be connected. To 
- * this end, we provide a "getLength()" function, which iterates through 
- * the points, summing the distances between them. 
- * 
- * Inherits: 
- *  - <OpenLayers.Geometry.MultiPoint>
- */
-OpenLayers.Geometry.Curve = OpenLayers.Class(OpenLayers.Geometry.MultiPoint, {
+define(function(require, exports, module) {
+    var Constraint = require('./Constraint');
+    var Vector = require('../../math/Vector');
 
     /**
-     * Property: componentTypes
-     * {Array(String)} An array of class names representing the types of 
-     *                 components that the collection can include.  A null 
-     *                 value means the component types are not restricted.
-     */
-    componentTypes: ["OpenLayers.Geometry.Point"],
-
-    /**
-     * Constructor: OpenLayers.Geometry.Curve
-     * 
-     * Parameters:
-     * point - {Array(<OpenLayers.Geometry.Point>)}
-     */
-    
-    /**
-     * APIMethod: getLength
-     * 
-     * Returns:
-     * {Float} The length of the curve
-     */
-    getLength: function() {
-        var length = 0.0;
-        if ( this.components && (this.components.length > 1)) {
-            for(var i=1, len=this.components.length; i<len; i++) {
-                length += this.components[i-1].distanceTo(this.components[i]);
-            }
-        }
-        return length;
-    },
-
-    /**
-     * APIMethod: getGeodesicLength
-     * Calculate the approximate length of the geometry were it projected onto
-     *     the earth.
+     *  A constraint that keeps a physics body on a given implicit curve
+     *    regardless of other physical forces are applied to it.
      *
-     * projection - {<OpenLayers.Projection>} The spatial reference system
-     *     for the geometry coordinates.  If not provided, Geographic/WGS84 is
-     *     assumed.
-     * 
-     * Returns:
-     * {Float} The appoximate geodesic length of the geometry in meters.
+     *    A curve constraint is two surface constraints in disguise, as a curve is
+     *    the intersection of two surfaces, and is essentially constrained to both
+     *
+     *  @class Curve
+     *  @constructor
+     *  @extends Constraint
+     *  @param {Options} [options] An object of configurable options.
+     *  @param {Function} [options.equation] An implicitly defined surface f(x,y,z) = 0 that body is constrained to e.g. function(x,y,z) { x*x + y*y - r*r } corresponds to a circle of radius r pixels
+     *  @param {Function} [options.plane] An implicitly defined second surface that the body is constrained to
+     *  @param {Number} [options.period] The spring-like reaction when the constraint is violated
+     *  @param {Number} [options.number] The damping-like reaction when the constraint is violated
      */
-    getGeodesicLength: function(projection) {
-        var geom = this;  // so we can work with a clone if needed
-        if(projection) {
-            var gg = new OpenLayers.Projection("EPSG:4326");
-            if(!gg.equals(projection)) {
-                geom = this.clone().transform(projection, gg);
-            }
-        }
-        var length = 0.0;
-        if(geom.components && (geom.components.length > 1)) {
-            var p1, p2;
-            for(var i=1, len=geom.components.length; i<len; i++) {
-                p1 = geom.components[i-1];
-                p2 = geom.components[i];
-                // this returns km and requires lon/lat properties
-                length += OpenLayers.Util.distVincenty(
-                    {lon: p1.x, lat: p1.y}, {lon: p2.x, lat: p2.y}
-                );
-            }
-        }
-        // convert to m
-        return length * 1000;
-    },
+    function Curve(options) {
+        this.options = Object.create(Curve.DEFAULT_OPTIONS);
+        if (options) this.setOptions(options);
 
-    CLASS_NAME: "OpenLayers.Geometry.Curve"
+        //registers
+        this.J = new Vector();
+        this.impulse = new Vector();
+
+        Constraint.call(this);
+    }
+
+    Curve.prototype = Object.create(Constraint.prototype);
+    Curve.prototype.constructor = Curve;
+
+    /** @const */ var epsilon = 1e-7;
+    /** @const */ var pi = Math.PI;
+
+    Curve.DEFAULT_OPTIONS = {
+        equation  : function(x,y,z) {
+            return 0;
+        },
+        plane : function(x,y,z) {
+            return z;
+        },
+        period : 0,
+        dampingRatio : 0
+    };
+
+    /**
+     * Basic options setter
+     *
+     * @method setOptions
+     * @param options {Objects}
+     */
+    Curve.prototype.setOptions = function setOptions(options) {
+        for (var key in options) this.options[key] = options[key];
+    };
+
+    /**
+     * Adds a curve impulse to a physics body.
+     *
+     * @method applyConstraint
+     * @param targets {Array.Body} Array of bodies to apply force to.
+     * @param source {Body} Not applicable
+     * @param dt {Number} Delta time
+     */
+    Curve.prototype.applyConstraint = function applyConstraint(targets, source, dt) {
+        var options = this.options;
+        var impulse = this.impulse;
+        var J = this.J;
+
+        var f = options.equation;
+        var g = options.plane;
+        var dampingRatio = options.dampingRatio;
+        var period = options.period;
+
+        for (var i = 0; i < targets.length; i++) {
+            var body = targets[i];
+
+            var v = body.velocity;
+            var p = body.position;
+            var m = body.mass;
+
+            var gamma;
+            var beta;
+
+            if (period === 0) {
+                gamma = 0;
+                beta = 1;
+            }
+            else {
+                var c = 4 * m * pi * dampingRatio / period;
+                var k = 4 * m * pi * pi / (period * period);
+
+                gamma = 1 / (c + dt*k);
+                beta  = dt*k / (c + dt*k);
+            }
+
+            var x = p.x;
+            var y = p.y;
+            var z = p.z;
+
+            var f0  = f(x, y, z);
+            var dfx = (f(x + epsilon, p, p) - f0) / epsilon;
+            var dfy = (f(x, y + epsilon, p) - f0) / epsilon;
+            var dfz = (f(x, y, p + epsilon) - f0) / epsilon;
+
+            var g0  = g(x, y, z);
+            var dgx = (g(x + epsilon, y, z) - g0) / epsilon;
+            var dgy = (g(x, y + epsilon, z) - g0) / epsilon;
+            var dgz = (g(x, y, z + epsilon) - g0) / epsilon;
+
+            J.setXYZ(dfx + dgx, dfy + dgy, dfz + dgz);
+
+            var antiDrift = beta/dt * (f0 + g0);
+            var lambda = -(J.dot(v) + antiDrift) / (gamma + dt * J.normSquared() / m);
+
+            impulse.set(J.mult(dt*lambda));
+            body.applyImpulse(impulse);
+        }
+    };
+
+    module.exports = Curve;
 });

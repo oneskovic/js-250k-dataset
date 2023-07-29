@@ -1,14 +1,3 @@
-/* Persian (Farsi) keyboard layouts
-* translate by Majid Ramezani -> majid.r830@gmail.com
-* ---------------------------------------------------------------------------------------------------------
-* To use:
-*  Point to this js file into your page header: <script src="layouts/persian.js" type="text/javascript"></script>
-*  Initialize the keyboard using: $('input').keyboard({ layout: 'Persian' });
-*  in select add - > "Persian (Farsi), persian, Persian",
-*
-* based on http://unicode-table.com/en/#
-*/
-
 jQuery.keyboard.layouts['Persian'] = {
 	'name': 'Persian (Farsi)',
 	'lang': ['fa'],

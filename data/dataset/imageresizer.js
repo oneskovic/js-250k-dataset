@@ -19,19 +19,7 @@
       return canvas;
     },
 
-    /**
-     * Manual implementation of resize using a nearest neighbour algorithm
-     * It is slower than relying on the native 'disabledImageSmoothing' available on CanvasRenderingContext2d.
-     * But it can be useful if :
-     * - IE < 11 (doesn't support msDisableImageSmoothing)
-     * - need to display a gap between pixel
-     *
-     * @param  {Canvas2d} source original image to be resized, as a 2d canvas
-     * @param  {Number} zoom   ratio between desired dim / source dim
-     * @param  {Number} margin gap to be displayed between pixels
-     * @param  {String} color or the margin (will be transparent if not provided)
-     * @return {Canvas2d} the resized canvas
-     */
+    
     resizeNearestNeighbour : function (source, zoom, margin, marginColor) {
       margin = margin || 0;
       var canvas = pskl.utils.CanvasUtils.createCanvas(zoom*source.width, zoom*source.height);

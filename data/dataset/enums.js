@@ -14,7 +14,7 @@
         }
         Object.freeze(this);
     }
-    /** We don’t want the mutable Object.prototype in the prototype chain */
+    
     Symbol.prototype = Object.create(null);
     Symbol.prototype.constructor = Symbol;
     /**

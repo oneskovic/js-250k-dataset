@@ -1,6 +1,3 @@
-/**
- * Created by ezgoing on 14/9/2014.
- */
 'use strict';
 YUI.add('crop-box', function (Y) {
     Y.cropbox = Y.Base.create('crop-box', Y.Base, [],

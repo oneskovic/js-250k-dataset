@@ -1,4 +1,3 @@
-
 var helpers = require('./helpers.js'),
     async = require('async'),
     fs = require('fs');

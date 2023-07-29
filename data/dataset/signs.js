@@ -1,5 +1,5 @@
 'use strict';
-/*global __plugin, require, module, exports*/
+
 /************************************************************************
 ## Signs Module
 

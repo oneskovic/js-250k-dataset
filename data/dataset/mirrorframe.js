@@ -1,8 +1,3 @@
-/* Demonstration of embedding CodeMirror in a bigger application. The
- * interface defined here is a mess of prompts and confirms, and
- * should probably not be used in a real project.
- */
-
 function MirrorFrame(place, options) {
   this.home = document.createElement("DIV");
   if (place.appendChild)

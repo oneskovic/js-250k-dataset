@@ -1,12 +1,6 @@
 define('views/ModalDialog', ['domUtils', 'events'], function(DOM, Events) {
   
-/*!
- * modal 0.1
- * http://lab.hakim.se/modal
- * MIT licensed
- *
- * Copyright (C) 2012 Hakim El Hattab, http://hakim.se
- */
+
   var container = document.documentElement,
       popup = document.querySelector( '.modal-popup-animate' ),
       cover = document.querySelector( '.modal-cover' ),

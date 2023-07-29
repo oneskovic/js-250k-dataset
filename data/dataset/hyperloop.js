@@ -1,9 +1,3 @@
-/**
- * hyperloop symbol de-duplication build script
- *
- * @author Jeff Haynie
- * @date 02/06/2014
- */
 var fs = require('fs'),
 	path = require('path'),
 	os = require('os'),

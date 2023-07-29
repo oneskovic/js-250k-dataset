@@ -1,8 +1,3 @@
-/**
- * @fileOverview Magix全局对象
- * @author 行列<xinglie.lkf@taobao.com>
- * @version 1.2
- **/
 define('magix', ['jquery', 'brix/event'], function($, BXEvent) {
     var G_IsArray = $.isArray;
     var G_IsFunction = $.isFunction;

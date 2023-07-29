@@ -1,10 +1,3 @@
-
-/*!
- * Ext JS Connect
- * Copyright(c) 2010 Sencha Inc.
- * MIT Licensed
- */
-
 /**
  * Conditional GET request support.
  *

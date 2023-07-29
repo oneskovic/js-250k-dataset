@@ -1,84 +1,142 @@
-/*
-    ***** BEGIN LICENSE BLOCK *****
-    
-    Copyright © 2009 Center for History and New Media
-                     George Mason University, Fairfax, Virginia, USA
-                     http://zotero.org
-    
-    This file is part of Zotero.
-    
-    Zotero is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-    
-    Zotero is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-    
-    You should have received a copy of the GNU Affero General Public License
-    along with Zotero.  If not, see <http://www.gnu.org/licenses/>.
-    
-    ***** END LICENSE BLOCK *****
-*/
+Groups = new Meteor.Collection2("groups", {
+
+    schema: {
+        title: {
+            type: String,
+            label: "Title"
+
+        },
+
+        userId: {
+            type: String,
+            label: "user Id"
+
+        },
 
 
-Zotero.Groups = new function () {
-	this.__defineGetter__('addGroupURL', function () ZOTERO_CONFIG.WWW_BASE_URL + 'groups/new/');
-	
-	this.get = function (id) {
-		if (!id) {
-			throw ("groupID not provided in Zotero.Groups.get()");
-		}
-		var group = new Zotero.Group;
-		group.id = id;
-		if (!group.exists()) {
-			return false;
-		}
-		return group;
-	}
-	
-	
-	this.getAll = function () {
-		var groups = [];
-		var sql = "SELECT groupID FROM groups ORDER BY name COLLATE locale";
-		var groupIDs = Zotero.DB.columnQuery(sql);
-		if (!groupIDs) {
-			return groups;
-		}
-		for each(var groupID in groupIDs) {
-			var group = this.get(groupID);
-			groups.push(group);
-		}
-		return groups;
-	}
-	
-	
-	this.getByLibraryID = function (libraryID) {
-		var groupID = this.getGroupIDFromLibraryID(libraryID);
-		return this.get(groupID);
-	}
-	
-	
-	this.getGroupIDFromLibraryID = function (libraryID) {
-		var sql = "SELECT groupID FROM groups WHERE libraryID=?";
-		var groupID = Zotero.DB.valueQuery(sql, libraryID);
-		if (!groupID) {
-			throw ("Group with libraryID " + libraryID + " does not exist "
-					+ "in Zotero.Groups.getGroupIDFromLibraryID()");
-		}
-		return groupID;
-	}
-	
-	
-	this.getLibraryIDFromGroupID = function (groupID) {
-		var sql = "SELECT libraryID FROM groups WHERE groupID=?";
-		var libraryID = Zotero.DB.valueQuery(sql, groupID);
-		if (!libraryID) {
-			throw ("Group with groupID " + groupID + " does not exist "
-					+ "in Zotero.Groups.getLibraryIDFromGroupID()");
-		}
-		return libraryID;
-	}
-}
+        workspaceId: {
+            type: String,
+            label: "user Id"
+
+        },
+
+        workflowCode: {
+            type: String,
+            optional: true
+
+        },
+
+        members: {
+            type: [String],
+            label: "Members"
+
+        },
+
+        users: {
+            type: [String],
+            label: "Members"
+
+        },
+
+        createdAt: {
+            type: Date,
+            autoValue: function () {
+                if (this.isInsert) {
+                    return new Date;
+                } else if (this.isUpsert) {
+                    return {$setOnInsert: new Date};
+                } else {
+                    this.unset();
+                }
+            },
+            denyUpdate: true
+        },
+        // Force value to be current date (on server) upon update
+        // and don't allow it to be set upon insert.
+        updatedAt: {
+            type: Date,
+            autoValue: function () {
+                if (this.isUpdate) {
+                    return new Date();
+                }
+            },
+            denyInsert: true,
+            optional: true
+        }
+    }
+});
+
+GroupsManager = {
+    allMembers: function (group) {
+        if (group.members)  return Meteor.users.find({_id: {$in: group.members}});
+        return [];
+    },
+
+    notMembers: function (group) {
+        return  Meteor.users.find({_id: {$nin: group.members}});
+
+    },
+
+    allUsers: function (group) {
+        if (group.users)  return Meteor.users.find({_id: {$in: group.users}});
+        return [];
+    },
+
+    notUsers: function (group) {
+        return  Meteor.users.find({_id: {$nin: group.members}});
+
+    },
+    /**
+     * user group for current workspace
+     * @param user
+     */
+    userGroup: function (user) {
+        return Groups.findOne({$and: [
+            {workspaceId: user.currentWorkspaceId},
+            { members: user._id}
+        ]});
+    },
+
+    /**
+     * user group for  workspace
+     * @param user
+     */
+    userGroupForWorkspace: function (user, workspaceId) {
+        return Groups.findOne({$and: {workspaceId: workspaceId, members: user._id}});
+    }
+};
+
+
+Meteor.methods({
+    createNewGroup: function (attributes) {
+
+        var user = Meteor.user();
+        attributes.userId = user._id;
+        attributes.members = [user._id];
+        attributes.users = [];
+        //временно
+        attributes.workflowCode = "developer";
+        var group = Groups.insert(attributes);
+        return group;
+
+    },
+
+    addUserToGroup: function (group, user) {
+
+        Groups.update(group._id, {$addToSet: {members: user._id}});
+        Workspaces.update(group.workspaceId, {$addToSet: {members: user._id}});
+
+        Groups.update({users: user._id}, {$pull: {users: user._id}}, true);
+
+        return Groups.update(group._id, {$addToSet: {users: user._id}});
+    },
+
+    addMembersToGroup: function (group, user) {
+
+        Workspaces.update(group.workspaceId, {$addToSet: {members: user._id}});
+
+        return Groups.update(group._id, {$addToSet: {members: user._id}});
+
+
+    }
+});

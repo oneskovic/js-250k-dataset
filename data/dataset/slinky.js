@@ -1,10 +1,3 @@
-/*
- * <%= title %> v<%= version %>
- * 
- * Copyright (c) <%= new Date().getFullYear() %> Sorin Iclanzan
- * Licensed under the MIT license.
- */
-
 (function ($, window, undefined) {
   'use strict';
 

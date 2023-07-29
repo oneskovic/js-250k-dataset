@@ -1,12 +1,3 @@
-/**
- * RKit: yoga
- * move block from one place to another with reverting when breakpoint was leave
- *
- * Used data attributes
- * data-push="{selector}"
- * data-dir="{after|before|append|prepend}"
- * data-bp="{media{M|T|D}}"
- */
 RKit.Yoga = (function($) {
    'use strict';
 

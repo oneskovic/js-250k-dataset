@@ -1,9 +1,7 @@
 YUI.add('yide-layertab', function(Y) {
 
    
-   /**
-    *  LayerTab
-    */
+   
    Y.LayerTab = function() {
       Y.LayerTab.superclass.constructor.apply(this, arguments);
       

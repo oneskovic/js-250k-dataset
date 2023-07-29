@@ -1,129 +1,47 @@
-function GameBoyAdvanceSIO() {
-	this.SIO_NORMAL_8 = 0;
-	this.SIO_NORMAL_32 = 1;
-	this.SIO_MULTI = 2;
-	this.SIO_UART = 3;
-	this.SIO_GPIO = 8;
-	this.SIO_JOYBUS = 12;
+///import baidu.data.dataSource.DataSource;
+///import baidu.sio.callByBrowser;
+///import baidu.sio.callByServer;
+///import baidu.json.stringify;
 
-	this.BAUD = [ 9600, 38400, 57600, 115200 ];
-}
-
-GameBoyAdvanceSIO.prototype.clear = function() {
-	this.mode = this.SIO_GPIO;
-	this.sd = false;
-
-	this.irq = false;
-	this.multiplayer = {
-		baud: 0,
-		si: 0,
-		id: 0,
-		error: 0,
-		busy: 0,
-
-		states: [ 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF ]
-	};
-
-	this.linkLayer = null;
-};
-
-GameBoyAdvanceSIO.prototype.setMode = function(mode) {
-	if (mode & 0x8) {
-		mode &= 0xC;
-	} else {
-		mode &= 0x3;
-	}
-	this.mode = mode;
-
-	this.core.INFO('Setting SIO mode to ' + hex(mode, 1));
-};
-
-GameBoyAdvanceSIO.prototype.writeRCNT = function(value) {
-	if (this.mode != this.SIO_GPIO) {
-		return;
-	}
-
-	this.core.STUB('General purpose serial not supported');
-};
-
-GameBoyAdvanceSIO.prototype.writeSIOCNT = function(value) {
-	switch (this.mode) {
-	case this.SIO_NORMAL_8:
-		this.core.STUB('8-bit transfer unsupported');
-		break;
-	case this.SIO_NORMAL_32:
-		this.core.STUB('32-bit transfer unsupported');
-		break;
-	case this.SIO_MULTI:
-		this.multiplayer.baud = value & 0x0003;
-		if (this.linkLayer) {
-			this.linkLayer.setBaud(this.BAUD[this.multiplayer.baud]);
-		}
-
-		if (!this.multiplayer.si) {
-			this.multiplayer.busy = value & 0x0080;
-			if (this.linkLayer && this.multiplayer.busy) {
-				this.linkLayer.startMultiplayerTransfer();
-			}
-		}
-		this.irq = value & 0x4000;
-		break;
-	case this.SIO_UART:
-		this.core.STUB('UART unsupported');
-		break;
-	case this.SIO_GPIO:
-		// This register isn't used in general-purpose mode
-		break;
-	case this.SIO_JOYBUS:
-		this.core.STUB('JOY BUS unsupported');
-		break;
-	}
-};
-
-GameBoyAdvanceSIO.prototype.readSIOCNT = function() {
-	var value = (this.mode << 12) & 0xFFFF;
-	switch (this.mode) {
-	case this.SIO_NORMAL_8:
-		this.core.STUB('8-bit transfer unsupported');
-		break;
-	case this.SIO_NORMAL_32:
-		this.core.STUB('32-bit transfer unsupported');
-		break;
-	case this.SIO_MULTI:
-		value |= this.multiplayer.baud;
-		value |= this.multiplayer.si;
-		value |= (!!this.sd) << 3;
-		value |= this.multiplayer.id << 4;
-		value |= this.multiplayer.error;
-		value |= this.multiplayer.busy;
-		value |= (!!this.multiplayer.irq) << 14;
-		break;
-	case this.SIO_UART:
-		this.core.STUB('UART unsupported');
-		break;
-	case this.SIO_GPIO:
-		// This register isn't used in general-purpose mode
-		break;
-	case this.SIO_JOYBUS:
-		this.core.STUB('JOY BUS unsupported');
-		break;
-	}
-	return value;
-};
-
-GameBoyAdvanceSIO.prototype.read = function(slot) {
-	switch (this.mode) {
-	case this.SIO_NORMAL_32:
-		this.core.STUB('32-bit transfer unsupported');
-		break;
-	case this.SIO_MULTI:
-		return this.multiplayer.states[slot];
-	case this.SIO_UART:
-		this.core.STUB('UART unsupported');
-		break;
-	default:
-		this.core.WARN('Reading from transfer register in unsupported mode');
-		break;
-	}
-	return 0;
+/**
+ * 跨域数据源类
+ * @param {String}     url                           数据源地址
+ * @param {Object}     [options]                     配置
+ * @param {Number}     [options.maxCache = 10]       缓存数据的最大个数
+ * @param {Boolean}    [options.cache = true]        是否使用缓存
+ * @param {Function}   [optons.transition]           转换数据算法  
+ * @param {Function}   [options.onbeforeget]         beforeget事件
+ */
+baidu.data.dataSource.sio = function(url, options){
+    options = baidu.object.extend({
+        url: url
+    }, options || {});
+	
+    var dataSource = new baidu.data.dataSource.DataSource(options);
+	
+	/**
+	 * 获取数据
+	 * @param {Object}    options                 配置
+	 * @param {String}    [options.key = url + param]            用于存取缓存
+	 * @param {String}    [options.callByType = 'server']        请求的类型
+	 * @param {Object}    [options.param]                        需要发送的数据
+	 * @param {Function}  [options.onsuccess]                    加载成功回调函数
+	 */
+    dataSource.get = function(options){
+        var me = this;
+        options = options || {};
+        options.key = options.key || (me.url + (options.param ? "?" + baidu.json.stringify(options.param) : ""));
+        if (options.callByType && options.callByType.toLowerCase() == "browser") {
+            options.callByType = "callByBrowser";
+        }
+        else {
+            options.callByType = "callByServer";
+        }
+        if (!me.dispatchEvent("onbeforeget", options)) {
+            baidu.sio[options.callByType](options.key, function(){
+                me._get(options);
+            });
+        }
+    };
+    return dataSource;
 };

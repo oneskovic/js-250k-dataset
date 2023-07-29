@@ -1,12 +1,4 @@
-﻿/**
- * @class 
- * @extends soya2d.DisplayObject
- * @classdesc 显示对象容器继承自显示对象，是所有显示容器的基类。<br/>
- * 该类用于管理包含子节点的容器相关的方法。<br/>
- 注意，该类不应直接实例化,应使用该类的子类或继承该类
- * @param {Object} data 同父类定义参数
- * @author {@link http://weibo.com/soya2d MrSoya} 
- */
+﻿
 soya2d.DisplayObjectContainer = function(data){
     data = data||{};
     soya2d.DisplayObject.call(this,data);

@@ -4,20 +4,7 @@ define([
     'use strict';
 
     return angular.module('superdesk.directives.sort', ['superdesk.asset'])
-        /**
-         * sdSort inserts sort links based on current sort field and direction.
-         *
-         * Usage:
-         * <a href=""
-         *      sd-sort
-         *      data-label="{{ 'Name'|translate }}"
-         *      data-field="display_name"
-         * ></a>
-         *
-         * Params:
-         * @scope {string} label - user friendly text for sort field
-         * @scope {string} field - field name for sort field
-         */
+        
         .directive('sdSort', ['$location', 'asset', function($location, asset) {
             return {
                 scope: {

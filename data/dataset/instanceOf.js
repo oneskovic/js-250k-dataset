@@ -12,14 +12,7 @@ define([
         $class = '$class_' + random,
         $interface = '$interface_' + random;
 
-    /**
-     * Check if an interface is descendant of another.
-     *
-     * @param {Function} interf1 The interface to be checked
-     * @param {Function} interf2 The interface to be expected as the ancestor
-     *
-     * @return {Boolean} True if it's a descendant, false otherwise
-     */
+    
     function interfaceDescendantOf(interf1, interf2) {
         var x,
             parents = interf1[$interface].parents;

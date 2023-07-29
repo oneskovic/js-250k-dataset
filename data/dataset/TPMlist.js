@@ -1,6 +1,3 @@
-//列表插件
-//元素属性： data-api，请求api地址 ； data-datas 请求参数 data-tpl 模板地址 data-tabletpagesize 平板每页显示条数, data-phonepagesize 手机每页显示条数
-//author : luofei614<http://weibo.com/luofei614>
 ;(function($){
 $.fn.extend({
  'TPMlist':function(options){

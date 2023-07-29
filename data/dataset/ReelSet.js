@@ -1,5 +1,3 @@
-// Copyright (c) 2013 David Gallardo Moreno. All rights reserved.
-
 /**
  * @fileoverview Collection of ss2d.Reel objects.
  * @author David Gallardo Moreno (portalg@gmail.com)

@@ -1,56 +1,67 @@
-/**
- * Module dependencies.
- */
-var AuthorizationError = require('oauth2orize').AuthorizationError;
+var util = require('util');
+
+
+
+exports.parse = parse;
+exports.format = format;
 
 /**
- * Parse request parameters defined by OpenID Connect.
- *
- * This module is a wildcard parser that parses authorization requests for
- * extensions parameters defined by OpenID Connect.
- *
- * Examples:
- *
- *     server.grant(openid.extensions());
- *
- * References:
- *  - [OpenID Connect Basic Client Profile 1.0 - draft 28](http://openid.net/specs/openid-connect-basic-1_0.html)
- *  - [OpenID Connect Implicit Client Profile 1.0 - draft 11](http://openid.net/specs/openid-connect-implicit-1_0.html)
- *  - [OpenID Connect Messages 1.0 - draft 20](http://openid.net/specs/openid-connect-messages-1_0.html)
- *
- * @return {Object} module
- * @api public
+ * Parse extensions header value
  */
-module.exports = function() {
-  
-  function request(req) {
-    var q = req.query
-      , ext = {};
-    
-    ext.nonce = q.nonce;
-    ext.display = q.display || 'page';
-    if (q.prompt) { ext.prompt = q.prompt.split(' '); }
-    if (q.max_age) { ext.maxAge = parseInt(q.max_age); }
-    if (q.ui_locales) { ext.uiLocales = q.ui_locales.split(' '); }
-    if (q.claims_locales) { ext.claimsLocales = q.claims_locales.split(' '); }
-    ext.idTokenHint = q.id_token_hint;
-    ext.loginHint = q.login_hint;
-    if (q.acr_values) { ext.acrValues = q.acr_values.split(' '); }
-    
-    // TODO: Add support for "claims" parameter
-    // TODO: Add support for "registration" parameter
-    // TODO: Add support for "request" parameter
-    // TODO: Add support for "request_uri" parameter
-    
-    if (ext.prompt && ext.prompt.length > 1) {
-      if (ext.prompt.indexOf('none') != -1) { throw new AuthorizationError('Prompt includes none with other values', 'invalid_request'); }
+
+function parse(value) {
+  value = value || '';
+
+  var extensions = {};
+
+  value.split(',').forEach(function(v) {
+    var params = v.split(';');
+    var token = params.shift().trim();
+    var paramsList = extensions[token] = extensions[token] || [];
+    var parsedParams = {};
+
+    params.forEach(function(param) {
+      var parts = param.trim().split('=');
+      var key = parts[0];
+      var value = parts[1];
+      if (typeof value === 'undefined') {
+        value = true;
+      } else {
+        // unquote value
+        if (value[0] === '"') {
+          value = value.slice(1);
+        }
+        if (value[value.length - 1] === '"') {
+          value = value.slice(0, value.length - 1);
+        }
+      }
+      (parsedParams[key] = parsedParams[key] || []).push(value);
+    });
+
+    paramsList.push(parsedParams);
+  });
+
+  return extensions;
+}
+
+/**
+ * Format extensions header value
+ */
+
+function format(value) {
+  return Object.keys(value).map(function(token) {
+    var paramsList = value[token];
+    if (!util.isArray(paramsList)) {
+      paramsList = [paramsList];
     }
-    
-    return ext;
-  }
-  
-  var mod = {};
-  mod.name = '*';
-  mod.request = request;
-  return mod;
+    return paramsList.map(function(params) {
+      return [token].concat(Object.keys(params).map(function(k) {
+        var p = params[k];
+        if (!util.isArray(p)) p = [p];
+        return p.map(function(v) {
+          return v === true ? k : k + '=' + v;
+        }).join('; ');
+      })).join('; ');
+    }).join(', ');
+  }).join(', ');
 }

@@ -1,5 +1,3 @@
-/*global describe, d, it*/
-
 'use strict';
 
 module.exports = function(knex) {

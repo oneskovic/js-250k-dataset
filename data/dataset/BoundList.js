@@ -1,7 +1,3 @@
-/**
- * Component layout for {@link Ext.view.BoundList}.
- * @private
- */
 Ext.define('Ext.layout.component.BoundList', {
     extend: 'Ext.layout.component.Auto',
     alias: 'layout.boundlist',

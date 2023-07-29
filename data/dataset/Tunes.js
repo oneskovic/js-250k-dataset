@@ -1,125 +1,129 @@
-Albums = new Meteor.Collection("albums");
-Playlist = new Meteor.Collection("playlist");
+'use strict';
 
-Meteor.publish("albums", function() {
-	return Albums.find({});
-});
+(function(window) {
 
-Meteor.publish("playlist", function() {
-	return Playlist.find({});
-});
-// 
-// Meteor.publish("player", function() {
-// 	return Player.find({});
-// });
+  var tunesApp = angular.module('tunesApp', []);
 
+  // // app with fake backend (uncoment if you want to use it)
+  // var tunesAppFake = angular.module('tunesAppFake', ['tunesApp', 'ngMockE2E']);
+  // tunesAppFake.run(function($httpBackend) {
+  //   $httpBackend.whenGET(/templates\/.*/).passThrough();
+  //   $httpBackend.whenGET('albums.json').respond([
+  //     {
+  //       "title": "test album",
+  //       "artist": "test artist",
+  //       "tracks": [
+  //         {
+  //           "title": "test track 1",
+  //           "url": "music/blue.mp3"
+  //         },
+  //         {
+  //           "title": "test track 2",
+  //           "url": "music/jazz.mp3"
+  //         }
+  //       ]
+  //     }
+  //   ]);
+  // });
 
-if (Meteor.isClient) {
-	console.log("CLIENT");
-  Template.hello.greeting = function () {
-    return "Welcome to tunes.";
+  window.TunesCtrl = function($scope, $http, player) {
+    $scope.player = player;
+    $http.get('albums.json').success(function(data) {
+      $scope.albums = data;
+    });
   };
 
-  Template.hello.events({
-    'click input' : function () {
-      // template data, if any, is available in 'this'
-      if (typeof console !== 'undefined')
-        console.log("You pressed the button");
-    }
+
+  tunesApp.factory('player', function(audio, $rootScope) {
+    var player,
+        playlist = [],
+        paused = false,
+        current = {
+          album: 0,
+          track: 0
+        };
+
+    player = {
+      playlist: playlist,
+
+      current: current,
+
+      playing: false,
+
+      play: function(track, album) {
+        if (!playlist.length) return;
+
+        if (angular.isDefined(track)) current.track = track;
+        if (angular.isDefined(album)) current.album = album;
+
+        if (!paused) audio.src = playlist[current.album].tracks[current.track].url;
+        audio.play();
+        player.playing = true;
+        paused = false;
+      },
+
+      pause: function() {
+        if (player.playing) {
+          audio.pause();
+          player.playing = false;
+          paused = true;
+        }
+      },
+
+      reset: function() {
+        player.pause();
+        current.album = 0;
+        current.track = 0;
+      },
+
+      next: function() {
+        if (!playlist.length) return;
+        paused = false;
+        if (playlist[current.album].tracks.length > (current.track + 1)) {
+          current.track++;
+        } else {
+          current.track = 0;
+          current.album = (current.album + 1) % playlist.length;
+        }
+        if (player.playing) player.play();
+      },
+
+      previous: function() {
+        if (!playlist.length) return;
+        paused = false;
+        if (current.track > 0) {
+          current.track--;
+        } else {
+          current.album = (current.album - 1 + playlist.length) % playlist.length;
+          current.track = playlist[current.album].tracks.length - 1;
+        }
+        if (player.playing) player.play();
+      }
+    };
+
+    playlist.add = function(album) {
+      if (playlist.indexOf(album) != -1) return;
+      playlist.push(album);
+    };
+
+    playlist.remove = function(album) {
+      var index = playlist.indexOf(album);
+      if (index == current.album) player.reset();
+      playlist.splice(index, 1);
+    };
+
+    audio.addEventListener('ended', function() {
+      $rootScope.$apply(player.next);
+    }, false);
+
+    return player;
   });
-}
 
-if (Meteor.isServer) {
-	console.log("ALBUM COUNT");
-	console.log(Albums.find().count());
-	console.log("PLAYLIST COUNT");
-	console.log(Playlist.find().count());
-	console.log("SERVE");
-  Meteor.startup(function () {
-	console.log("START");
-	if (Albums.find().count() === 0) {
-		console.log("NO ALBUMS");
-		var data = [{
-		    "title": "Bound - Zen Bound Ingame Music",
-		    "artist": "Ghost Monkey",
-		    "tracks": [{
-		        "title": "Care",
-		        "url": "music/blue.mp3"
-		    },
-		    {
-		        "title": "Rope and Wood",
-		        "url": "music/jazz.mp3"
-		    },
-		    {
-		        "title": "Problem Solvent",
-		        "url": "music/minimalish.mp3"
-		    },
-		    {
-		        "title": "Unpaint My Skin",
-		        "url": "music/slower.mp3"
-		    },
-		    {
-		        "title": "Nostalgia",
-		        "url": "music/blue.mp3"
-		    },
-		    {
-		        "title": "Interludum",
-		        "url": "music/jazz.mp3"
-		    },
-		    {
-		        "title": "Grind",
-		        "url": "music/minimalish.mp3"
-		    },
-		    {
-		        "title": "Diagrams",
-		        "url": "music/slower.mp3"
-		    },
-		    {
-		        "title": "Hare",
-		        "url": "music/blue.mp3"
-		    },
-		    {
-		        "title": "Carefree",
-		        "url": "music/jazz.mp3"
-		    },
-		    {
-		        "title": "Tunnel At The End Of Light",
-		        "url": "music/minimalish.mp3"
-		    }]
-		},
-		{
-		    "title": "Where the Earth Meets the Sky",
-		    "artist": "Tom Heasley",
-		    "tracks": [{
-		        "title": "Ground Zero",
-		        "url": "music/blue.mp3"
-		    },
-		    {
-		        "title": "Western Sky",
-		        "url": "music/jazz.mp3"
-		    },
-		    {
-		        "title": "Monterey Bay",
-		        "url": "music/minimalish.mp3"
-		    },
-		    {
-		        "title": "Where the Earth Meets the Sky",
-		        "url": "music/slower.mp3"
-		    }]
-		}];
-		console.log(data);
-		Playlist.insert({albums: []});
-		
-		
-		for (var i = 0; i < data.length; i++) {
-			console.log("FOR");
-			Albums.insert(data[i]);
-		}		
-    // code to run on server at startup
-  }
-});
-}
 
-// Meteor.publish('albums', function () {
-//   return Albums.find({});
-// });
+  // extract the audio for making the player easier to test
+  tunesApp.factory('audio', function($document) {
+    var audio = $document[0].createElement('audio');
+    return audio;
+  });
+
+})(window);

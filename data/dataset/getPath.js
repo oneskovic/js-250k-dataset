@@ -1,10 +1,3 @@
-/**
- * 获取真实url
- * 来自massframework
- * @param  {[type]} url [description]
- * @return {[type]}     [description]
- */
-
 function getPath(url, root) {
     var ret = url;
     var tmp;

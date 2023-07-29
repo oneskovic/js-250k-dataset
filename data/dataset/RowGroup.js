@@ -1,20 +1,3 @@
-/**
-A <a href="#enyo.Group">Group</a> in which each control is automatically
-displayed in an <a href="#enyo.Item">Item</a>, so they have small guide lines between them.
-
-Here's an example:
-
-	{kind: "RowGroup", caption: "Audio/Video Options", components: [
-		{layoutKind: "HFlexLayout", components: [
-			{content: "Sound", flex: 1},
-			{kind: "ToggleButton"}
-		]},
-		{layoutKind: "HFlexLayout", components: [
-			{content: "Video", flex: 1},
-			{kind: "ToggleButton"}
-		]}
-	]}
-*/
 enyo.kind({
 	name: "enyo.RowGroup",
 	kind: enyo.Group,

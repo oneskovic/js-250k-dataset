@@ -1,13 +1,4 @@
-﻿/**
- * Mix in class that lets arbitrary classes act as message sources. The
- * mixin adds the public methods add_listener, remove_listener and post_message.
- * There are aliases, called post, addListener and removeListener, these are
- * deprecated and will at some point be removed.
- *
- * Note that the presence of a _public_ post method means anyone can
- * dispatch messages on an object, not just the object itself.
- *
- */
+﻿
 
 window.cls || ( window.cls = {} );
 

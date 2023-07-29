@@ -1,11 +1,3 @@
-/* qworker.js - Richard Revis - http://theplanis.com
- * Initialises a queue worker and binds a message handler to listen to local
- * messages from the qclient controller
- * The best way to read this file is to trace actions from messageHandler
- * In normal operation a cycle of:
- * workloadManager/download work -> packetHandler/uploadResult -> workloadManager
- * will occur until a stop message is recieved
- */
 function QWorker() {
     this.queueURL = '/queue/';
     // Download tracker

@@ -1,7 +1,3 @@
-        // Copyright: 2015 AlignAlytics
-        // License: "https://github.com/PMSI-AlignAlytics/dimple/blob/master/MIT-LICENSE.txt"
-        // Source: /src/objects/chart/methods/addSeries.js
-        // Help: http://github.com/PMSI-AlignAlytics/dimple/wiki/dimple.chart#wiki-addSeries
         this.addSeries = function (categoryFields, plotFunction, axes) {
             // Deal with no axes passed
             if (axes === null || axes === undefined) { axes = this.axes; }

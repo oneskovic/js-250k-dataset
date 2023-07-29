@@ -1,7 +1,3 @@
-/**
- * Created by Stefano on 06/04/2014.
- */
-
 CircularBufferIterator.prototype = new Iterator();
 CircularBufferIterator.prototype.constructor = CircularBufferIterator;
 

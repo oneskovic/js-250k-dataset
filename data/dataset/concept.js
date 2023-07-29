@@ -1,4 +1,3 @@
-// concept.js
 /*
    Copyright (c) 2014 3 Round Stones Inc., Some Rights Reserved
    Licensed under the Apache License, Version 2.0, http://www.apache.org/licenses/LICENSE-2.0

@@ -1,75 +1,57 @@
-
-/*!
- * Stylus - Each
- * Copyright(c) 2010 LearnBoost <dev@learnboost.com>
- * MIT Licensed
- */
-
-/**
- * Module dependencies.
- */
-
-var Node = require('./node')
-  , nodes = require('./');
-
-/**
- * Initialize a new `Each` node with the given `val` name,
- * `key` name, `expr`, and `block`.
- *
- * @param {String} val
- * @param {String} key
- * @param {Expression} expr
- * @param {Block} block
- * @api public
- */
-
-var Each = module.exports = function Each(val, key, expr, block){
-  Node.call(this);
-  this.val = val;
-  this.key = key;
-  this.expr = expr;
-  this.block = block;
-};
-
-/**
- * Inherit from `Node.prototype`.
- */
-
-Each.prototype.__proto__ = Node.prototype;
-
-/**
- * Return a clone of this node.
- * 
- * @return {Node}
- * @api public
- */
-
-Each.prototype.clone = function(parent){
-  var clone = new Each(this.val, this.key);
-  clone.expr = this.expr.clone(parent, clone);
-  clone.block = this.block.clone(parent, clone);
-  clone.lineno = this.lineno;
-  clone.column = this.column;
-  clone.filename = this.filename;
-  return clone;
-};
-
-/**
- * Return a JSON representation of this node.
- *
- * @return {Object}
- * @api public
- */
-
-Each.prototype.toJSON = function(){
-  return {
-    __type: 'Each',
-    val: this.val,
-    key: this.key,
-    expr: this.expr,
-    block: this.block,
-    lineno: this.lineno,
-    column: this.column,
-    filename: this.filename
-  };
-};
+steal('can/util/can.js', function (can) {
+	
+	// The following is from jQuery
+	var isArrayLike = function(obj){
+		var length = obj.length;
+		return typeof arr !== "function" &&
+			( length === 0 || typeof length === "number" && length > 0 && ( length - 1 ) in obj );
+	};
+	
+	can.each = function (elements, callback, context) {
+		var i = 0,
+			key,
+			len,
+			item;
+		if (elements) {
+			if ( isArrayLike(elements) ) {
+				if(can.List && elements instanceof can.List ) {
+					for (len = elements.attr("length"); i < len; i++) {
+						item = elements.attr(i);
+						if (callback.call(context || item, item, i, elements) === false) {
+							break;
+						}
+					}
+				} else {
+					for (len = elements.length; i < len; i++) {
+						item = elements[i];
+						if (callback.call(context || item, item, i, elements) === false) {
+							break;
+						}
+					}
+				}
+				
+			} else if (typeof elements === "object") {
+				
+				if (can.Map && elements instanceof can.Map || elements === can.route) {
+					var keys = can.Map.keys(elements);
+					for(i =0, len = keys.length; i < len; i++) {
+						key = keys[i];
+						item = elements.attr(key);
+						if (callback.call(context || item, item, key, elements) === false) {
+							break;
+						}
+					}
+				} else {
+					for (key in elements) {
+						if (elements.hasOwnProperty(key) && callback.call(context || elements[key], elements[key], key, elements) === false) {
+							break;
+						}
+					}
+				}
+				
+			}
+		}
+		return elements;
+	};
+	return can;
+});

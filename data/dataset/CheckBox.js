@@ -1,3 +1,5 @@
+if(!dojo._hasResource["dijit.form.CheckBox"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
+dojo._hasResource["dijit.form.CheckBox"] = true;
 dojo.provide("dijit.form.CheckBox");
 
 dojo.require("dijit.form.Button");
@@ -22,89 +24,36 @@ dojo.declare(
 		// In case 2, the regular html inputs are invisible but still used by
 		// the user. They are turned quasi-invisible and overlay the background-image.
 
-		templatePath: dojo.moduleUrl("dijit.form", "templates/CheckBox.html"),
+		templateString:"<fieldset class=\"dijitReset dijitInline\" waiRole=\"presentation\"\n\t><input\n\t \ttype=\"${type}\" name=\"${name}\"\n\t\tclass=\"dijitReset dijitCheckBoxInput\"\n\t\tdojoAttachPoint=\"inputNode,focusNode\"\n\t \tdojoAttachEvent=\"onmouseover:_onMouse,onmouseout:_onMouse,onclick:_onClick\"\n/></fieldset>\n",
 
 		baseClass: "dijitCheckBox",
 
 		//	Value of "type" attribute for <input>
 		type: "checkbox",
 
-		// value: String
-		//		As an initialization parameter, equivalent to value field on normal checkbox
-		//		(if checked, the value is passed as the value when form is submitted).
-		//
-		//		However, attr('value') will return either the string or false depending on
-		//		whether or not the checkbox is checked.
-		//
-		//		attr('value', string) will check the checkbox and change the value to the
-		//		specified string
-		//
-		//		attr('value', boolean) will change the checked state.
+		// value: Value
+		//	equivalent to value field on normal checkbox (if checked, the value is passed as
+		//	the value when form is submitted)
 		value: "on",
 
-		_setValueAttr: function(/*String or Boolean*/ newValue){
-			// summary:
-			//		Handler for value= attribute to constructor, and also calls to
-			//		attr('value', val).
-			// description:
-			//		During initialization, just saves as attribute to the <input type=checkbox>.
-			//		
-			//		After initialization,
-			//		when passed a boolean, controls whether or not the CheckBox is checked.
-			//		If passed a string, changes the value attribute of the CheckBox (the one
-			//		specified as "value" when the CheckBox was constructed (ex: <input
-			//		dojoType="dijit.CheckBox" value="chicken">)
-			if(typeof newValue == "string"){
-				this.value = newValue;
-				dojo.attr(this.focusNode, 'value', newValue);
-				newValue = true;
-			}
-			if(this._created){
-				this.attr('checked', newValue);
-			}
-		},
-
-		_getValueAttr: function(){
-			// summary:
-			//		Hook so attr('value') works.
-			// description:
-			//		If the CheckBox is checked, returns the value attribute.
-			//		Otherwise returns false.
-			return (this.checked ? this.value : false);
-		},
-
-		postMixInProperties: function(){
-			if(this.value == ""){
-				this.value = "on";
-			}
+		postCreate: function(){
+			dojo.setSelectable(this.inputNode, false);
+			this.setChecked(this.checked);
 			this.inherited(arguments);
 		},
-		
-		 _fillContent: function(/*DomNode*/ source){
-			// Override Button::_fillContent() since it doesn't make sense for CheckBox,
-			// since CheckBox doesn't even have a container
+
+		setChecked: function(/*Boolean*/ checked){
+			if(dojo.isIE){
+				if(checked){ this.inputNode.setAttribute('checked', 'checked'); }
+				else{ this.inputNode.removeAttribute('checked'); }
+			}else{ this.inputNode.checked = checked; }
+			this.inherited(arguments);
 		},
 
-		reset: function(){
-			this._hasBeenBlurred = false;
-
-			this.attr('checked', this.params.checked || false);
-
-			// Handle unlikely event that the <input type=checkbox> value attribute has changed
-			this.value = this.params.value || "on";
-			dojo.attr(this.focusNode, 'value', this.value);
-		},
-		
-		_onFocus: function(){
-			if(this.id){
-				dojo.query("label[for='"+this.id+"']").addClass("dijitFocusedLabel");
-			}
-		},
-
-		_onBlur: function(){
-			if(this.id){
-				dojo.query("label[for='"+this.id+"']").removeClass("dijitFocusedLabel");
-			}
+		setValue: function(/*String*/ value){
+			if(value == null){ value = ""; }
+			this.inputNode.value = value;
+			dijit.form.CheckBox.superclass.setValue.call(this,value);
 		}
 	}
 );
@@ -115,34 +64,56 @@ dojo.declare(
 	{
 		// summary:
 		// 		Same as an HTML radio, but with fancy styling.
+		//
+		// description:
+		// Implementation details
+		//
+		// Specialization:
+		// We keep track of dijit radio groups so that we can update the state
+		// of all the siblings (the "context") in a group based on input
+		// events. We don't rely on browser radio grouping.
 
 		type: "radio",
 		baseClass: "dijitRadio",
 
-		_setCheckedAttr: function(/*Boolean*/ value){
-			// If I am being checked then have to deselect currently checked radio button
+		// This shared object keeps track of all widgets, grouped by name
+		_groups: {},
+
+		postCreate: function(){
+			// add this widget to _groups
+			(this._groups[this.name] = this._groups[this.name] || []).push(this);
+
 			this.inherited(arguments);
-			if(!this._created){ return; }
-			if(value){
-				var _this = this;
-				// search for radio buttons with the same name that need to be unchecked
-				dojo.query('INPUT[type=radio][name='+this.name+']', this.focusNode.form||dojo.doc).forEach(
-					function(inputNode){
-						if(inputNode != _this.focusNode && inputNode.form == _this.focusNode.form){
-							var widget = dijit.getEnclosingWidget(inputNode);
-							if(widget && widget.checked){
-								widget.attr('checked', false);
-							}
-						}
+		},
+
+		uninitialize: function(){
+			// remove this widget from _groups
+			dojo.forEach(this._groups[this.name], function(widget, i, arr){
+				if(widget === this){
+					arr.splice(i, 1);
+					return;
+				}
+			}, this);
+		},
+
+		setChecked: function(/*Boolean*/ checked){
+			// If I am being checked then have to deselect currently checked radio button
+			if(checked){
+				dojo.forEach(this._groups[this.name], function(widget){
+					if(widget != this && widget.checked){
+						widget.setChecked(false);
 					}
-				);
+				}, this);
 			}
+			this.inherited(arguments);			
 		},
 
 		_clicked: function(/*Event*/ e){
 			if(!this.checked){
-				this.attr('checked', true);
+				this.setChecked(true);
 			}
 		}
 	}
 );
+
+}

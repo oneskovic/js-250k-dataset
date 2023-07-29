@@ -1,8 +1,3 @@
-
-/**
- * @unit-test-setup
- * @ignore
- */
 function setup() {
   require('Common');
 }

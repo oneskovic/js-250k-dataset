@@ -1,12 +1,3 @@
-/*
- * Ext JS Library 2.2.1
- * Copyright(c) 2006-2009, Ext JS, LLC.
- * licensing@extjs.com
- * 
- * http://extjs.com/license
- */
-
-
 /**
  * @class Ext.state.CookieProvider
  * @extends Ext.state.Provider

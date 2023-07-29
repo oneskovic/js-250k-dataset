@@ -1,6 +1,3 @@
-/**
- * Controller for map components with osm objects.
- */
 Ext.define('Kort.controller.OsmMap', {
     extend: 'Ext.app.Controller',
 

@@ -1,7 +1,3 @@
-// moment.js locale configuration
-// locale : azerbaijani (az)
-// author : topchiyev : https://github.com/topchiyev
-
 (function (factory) {
     if (typeof define === 'function' && define.amd) {
         define(['moment'], factory); // AMD

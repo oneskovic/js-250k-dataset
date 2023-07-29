@@ -1,56 +1,60 @@
-/**
- * @author Ed Spencer
- * @class Ext.data.ResultSet
- * @extends Object
- * 
- * <p>Simple wrapper class that represents a set of records returned by a Proxy.</p>
- * 
- * @constructor
- * Creates the new ResultSet
- */
-Ext.data.ResultSet = Ext.extend(Object, {
-    /**
-     * @cfg {Boolean} loaded
-     * True if the records have already been loaded. This is only meaningful when dealing with
-     * SQL-backed proxies
-     */
-    loaded: true,
-    
-    /**
-     * @cfg {Number} count
-     * The number of records in this ResultSet. Note that total may differ from this number
-     */
-    count: 0,
-    
-    /**
-     * @cfg {Number} total
-     * The total number of records reported by the data source. This ResultSet may form a subset of
-     * those records (see count)
-     */
-    total: 0,
-    
-    /**
-     * @cfg {Boolean} success
-     * True if the ResultSet loaded successfully, false if any errors were encountered
-     */
-    success: false,
-    
-    /**
-     * @cfg {Array} records The array of record instances. Required
-     */
+dojo.provide("dojo.data.old.ResultSet");
+dojo.require("dojo.lang.assert");
+dojo.require("dojo.collections.Collections");
 
-    constructor: function(config) {
-        Ext.apply(this, config);
-        
-        /**
-         * DEPRECATED - will be removed in Ext JS 5.0. This is just a copy of this.total - use that instead
-         * @property totalRecords
-         * @type Mixed
-         */
-        this.totalRecords = this.total;
-        
-        if (config.count == undefined) {
-            this.count = this.records.length;
-        }
-    }
-});
+// -------------------------------------------------------------------
+// Constructor
+// -------------------------------------------------------------------
+dojo.data.old.ResultSet = function(/* dojo.data.old.provider.Base */ dataProvider, /* Array */ arrayOfItems) {
+	/**
+	 * summary:
+	 * A ResultSet holds a collection of Items.  A data provider
+	 * returns a ResultSet in reponse to a query.
+	 * (The name "Result Set" comes from the MySQL terminology.)
+	 */
+	dojo.lang.assertType(dataProvider, dojo.data.old.provider.Base, {optional: true});
+	dojo.lang.assertType(arrayOfItems, Array, {optional: true});
+	dojo.data.old.Observable.call(this);
+	this._dataProvider = dataProvider;
+	this._arrayOfItems = [];
+	if (arrayOfItems) {
+		this._arrayOfItems = arrayOfItems;
+	}
+};
+dojo.inherits(dojo.data.old.ResultSet, dojo.data.old.Observable);
+
+// -------------------------------------------------------------------
+// Public instance methods
+// -------------------------------------------------------------------
+dojo.data.old.ResultSet.prototype.toString = function() {
+	var returnString = this._arrayOfItems.join(', ');
+	return returnString; // string
+};
+
+dojo.data.old.ResultSet.prototype.toArray = function() {
+	return this._arrayOfItems; // Array
+};
+
+dojo.data.old.ResultSet.prototype.getIterator = function() {
+	return new dojo.collections.Iterator(this._arrayOfItems);
+};
+
+dojo.data.old.ResultSet.prototype.getLength = function() {
+	return this._arrayOfItems.length; // integer
+};
+
+dojo.data.old.ResultSet.prototype.getItemAt = function(/* numeric */ index) {
+	return this._arrayOfItems[index];
+};
+
+dojo.data.old.ResultSet.prototype.indexOf = function(/* dojo.data.old.Item */ item) {
+	return dojo.lang.indexOf(this._arrayOfItems, item); // integer
+};
+
+dojo.data.old.ResultSet.prototype.contains = function(/* dojo.data.old.Item */ item) {
+	return dojo.lang.inArray(this._arrayOfItems, item); // boolean
+};
+
+dojo.data.old.ResultSet.prototype.getDataProvider = function() {
+	return this._dataProvider; // dojo.data.old.provider.Base
+};

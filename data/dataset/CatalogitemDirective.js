@@ -9,9 +9,7 @@
     'ga_layer_metadata_popup_service'
   ]);
 
-  /**
-   * See examples on how it can be used
-   */
+  
   module.directive('gaCatalogitem',
       function($compile, gaCatalogtreeMapUtils, gaMapUtils,
           gaLayers, gaLayerMetadataPopup, gaBrowserSniffer, gaPreviewLayers) {

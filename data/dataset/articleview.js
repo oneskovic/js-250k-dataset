@@ -1,9 +1,3 @@
-/* articleview.js
-part of PlainReader by Luke Hagan
-created: 2012-07-07
-released under the MIT license (see LICENSE.md for details) */
-
-/*global console, $, document, PR */
 /*jslint white: true */
 
 /*

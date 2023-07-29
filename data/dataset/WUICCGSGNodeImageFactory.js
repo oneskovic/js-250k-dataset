@@ -1,11 +1,3 @@
-/**
- * this class represent an Image Factory for WUIC
- * @class WUICCGSGNodeImageFactory
- * @extends CGSGObject
- * @param {String} groupId
- * @constructor
- * @type {WUICCGSGNodeImageFactory}
- */
 var WUICCGSGNodeImageFactory = CGSGObject.extend(
         {
             initialize: function (groupId) {

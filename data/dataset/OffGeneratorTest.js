@@ -28,9 +28,7 @@ define("OffGeneratorTest", [], function()
 
     OffGeneratorTest.prototype.markAsSucceeded = function()
     {
-        /*
-         * jQuery/Mootools
-         */
+        
         if (typeof $ !== 'undefined')
         {
             $(this.dom_element).addClass('test_succeeded');
@@ -47,9 +45,7 @@ define("OffGeneratorTest", [], function()
 
     OffGeneratorTest.prototype.markAsFailed = function()
     {
-        /*
-         * jQuery/Mootools
-         */
+        
         if (typeof $ !== 'undefined')
         {
             $(this.dom_element).addClass('test_failed');

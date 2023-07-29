@@ -1,60 +1,50 @@
 'use strict';
 
+angular.module('insight.address').controller('AddressController',
+  function($scope, $rootScope, $routeParams, $location, Global, Address, getSocket) {
+    $scope.global = Global;
 
 
-// NOT USE
+    var socket = getSocket($scope);
+
+    var _startSocket = function () {
+      socket.emit('subscribe', $routeParams.addrStr);
+      socket.on($routeParams.addrStr, function(tx) {
+        $rootScope.$broadcast('tx', tx);
+        var beep = new Audio('/sound/transaction.mp3');
+        beep.play();
+      });
+    };
+
+    socket.on('connect', function() {
+      _startSocket();
+    });
+
+    $scope.params = $routeParams;
 
 
+    $scope.findOne = function() {
+      $rootScope.currentAddr = $routeParams.addrStr;
+      _startSocket();
 
+      Address.get({
+          addrStr: $routeParams.addrStr
+        },
+        function(address) {
+          $rootScope.titleDetail = address.addrStr.substring(0, 7) + '...';
+          $rootScope.flashMessage = null;
+          $scope.address = address;
+        },
+        function(e) {
+          if (e.status === 400) {
+            $rootScope.flashMessage = 'Invalid Address: ' + $routeParams.addrStr;
+          } else if (e.status === 503) {
+            $rootScope.flashMessage = 'Backend Error. ' + e.data;
+          } else {
+            $rootScope.flashMessage = 'Address Not Found';
+          }
+          $location.path('/');
+        });
+    };
 
-
-angular.module('itaxiApp')
-    .controller('addressCtrl', ['$scope', '$logger', 'gmaps', 'taxi', '$fetchData', '$auth', '$http', '$rootScope', '$state',
-        function ($scope, $logger, gmaps, taxi, $fetchData, $auth, $http, $rootScope, $state) {
-            var startPoint = new google.maps.places.Autocomplete((document.getElementById('startPoint')), { types: ['geocode'] });
-            var endPoint = new google.maps.places.Autocomplete((document.getElementById('endPoint')), { types: ['geocode'] });
-
-            var directionsService = new google.maps.DirectionsService();
-            var directionsDisplay = new google.maps.DirectionsRenderer();
-
-            $scope.router = function (index) {
-
-
-                directionsDisplay.setDirections({ routes: [] });
-
-                if (index != null) {
-
-                    var start = index.start;
-                    var end = index.end;
-                    directionsDisplay.setPanel(document.getElementById('panel'));
-
-                    var request = {
-                        origin: document.getElementById('startPoint').value,
-                        destination: document.getElementById('endPoint').value,
-                        travelMode: google.maps.DirectionsTravelMode.DRIVING
-                    };
-
-
-                    directionsService.route(request, function (response, status) {
-                        if (status == google.maps.DirectionsStatus.OK) {
-                            directionsDisplay.setDirections(response);
-                        }
-                    });
-
-                } else {
-                    $rootScope.notify('Vui lòng nhập đầy đủ!', 1000);
-                }
-            };
-
-
-            $scope.callTaxi = function (index) {
-                $state.go('app.home');
-            };
-
-
-            /*
-             * Get Geoloction
-             *  */
-
-
-        }]);
+  });

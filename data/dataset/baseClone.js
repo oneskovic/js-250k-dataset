@@ -9,7 +9,7 @@ var arrayCopy = require('./arrayCopy'),
     isObject = require('../lang/isObject'),
     keys = require('../object/keys');
 
-/** `Object#toString` result references. */
+
 var argsTag = '[object Arguments]',
     arrayTag = '[object Array]',
     boolTag = '[object Boolean]',

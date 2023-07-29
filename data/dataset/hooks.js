@@ -1,8 +1,6 @@
 var deprecated = require('depd')('loopback-datasource-juggler');
 
-/*!
- * Module exports
- */
+
 module.exports = Hookable;
 
 /*

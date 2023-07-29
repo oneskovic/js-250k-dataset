@@ -1,8 +1,3 @@
-// DefinitionList plugin for Xinha
-// Distributed under the same terms as Xinha itself.
-// This notice MUST stay intact for use (see license.txt).
-
-
 function DefinitionList(editor) {
   this.editor = editor;
   var cfg = editor.config;

@@ -1,8 +1,4 @@
 /**
-* Raphael compatibility layer 
-*/
-
-/**
  */
 Donatello.prototype.drag = function( onmove, onstart, onend ) {
 	$( this.node() ).draggable( {

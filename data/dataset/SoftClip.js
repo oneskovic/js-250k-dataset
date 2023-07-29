@@ -1,7 +1,3 @@
-/*!
- * @depends ../core/AudioletNode.js
- */
-
 /**
  * A soft-clipper, which distorts at values over +-0.5.
  *

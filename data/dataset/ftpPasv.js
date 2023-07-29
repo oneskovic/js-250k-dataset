@@ -1,10 +1,3 @@
-/*
- * @package jsFTP
- * @copyright Copyright(c) 2011 Ajax.org B.V. <info AT ajax DOT org>
- * @author Sergi Mansilla <sergi DOT mansilla AT gmail DOT com>
- * @license https://github.com/sergi/jsFTP/blob/master/LICENSE MIT License
- */
-
 var Net = require("net");
 var S;
 try { S = require("streamer"); }

@@ -1,4 +1,3 @@
-/* jshint undef: true, unused: true, latedef: true */
 /* jshint quotmark: single, eqeqeq: true */
 /* jshint node: true */
 /* global renderJade */

@@ -15,13 +15,7 @@ var httpsServer;
 var privateKeyFile = path.join(__dirname, '..', 'keys', 'privatekey.pem');
 var certificateFile = path.join(__dirname, '..', 'keys', 'certificate.pem');
 
-/**
- * Start up nproxy server on the specified port
- * and combine the processors defined as connect middlewares into it.
- * 
- * @param {String} port the port proxy server will listen on
- * @param {Object} options options for the middlewares
- */
+
 function nproxy(port, options){
   var nm;
 

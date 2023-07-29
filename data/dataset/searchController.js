@@ -1,6 +1,3 @@
-/**
- * Search
- */
 openNote.controller("searchController", function(	$scope, 
 													$rootScope, 
 													searchService,

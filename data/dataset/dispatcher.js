@@ -1,126 +1,97 @@
 /**
- * Copyright 2014, Yahoo! Inc.
- * Copyrights licensed under the New BSD License. See the accompanying LICENSE file for terms.
- */
-'use strict';
-
-var Action = require('./Action');
-var DEFAULT = 'default';
-var DispatcherContext = require('./DispatcherContext');
-
-/**
- * @class Dispatcher
- * @param {Object} options Dispatcher options
- * @param {Array} options.stores Array of stores to register
+ * An object capable of registering and firing different events.
+ *
  * @constructor
+ * @private
  */
-function Dispatcher (options) {
-    options = options || {};
-    options.stores = options.stores || [];
-    this.stores = {};
-    this.handlers = {};
-    this.handlers[DEFAULT] = [];
-    options.stores.forEach(function (store) {
-        this.registerStore(store);
-    }, this);
+function Dispatcher_() {
+  this.eventListeners_ = {};
+  this.numMouseEventListeners_ = 0;
 }
 
-Dispatcher.prototype.createContext = function createContext(context) {
-    return new DispatcherContext(this, context);
-};
 
 /**
- * Registers a store so that it can handle actions.
- * @method registerStore
- * @static
- * @param {Object} store A store class to be registered. The store should have a static
- *      `name` property so that it can be loaded later.
- * @throws {Error} if store is invalid
- * @throws {Error} if store is already registered
- */
-Dispatcher.prototype.registerStore = function registerStore(store) {
-    if ('function' !== typeof store) {
-        throw new Error('registerStore requires a constructor as first parameter');
-    }
-    var storeName = this.getStoreName(store);
-    if (!storeName) {
-        throw new Error('Store is required to have a `storeName` property.');
-    }
-    if (this.stores[storeName]) {
-        if (this.stores[storeName] === store) {
-            // Store is already registered, nothing to do
-            return;
-        }
-        throw new Error('Store with name `' + storeName + '` has already been registered.');
-    }
-    this.stores[storeName] = store;
-    if (store.handlers) {
-        Object.keys(store.handlers).forEach(function storeHandlersEach(action) {
-            var handler = store.handlers[action];
-            this._registerHandler(action, storeName, handler);
-        }, this);
-    }
-};
-
-/**
- * Method to discover if a storeName has been registered
- * @method isRegistered
- * @static
- * @param {Object|String} store The store to check
- * @returns {boolean}
- */
-Dispatcher.prototype.isRegistered = function isRegistered(store) {
-    var storeName = this.getStoreName(store),
-        storeInstance = this.stores[storeName];
-
-    if (!storeInstance) {
-        return false;
-    }
-
-    if ('function' === typeof store) {
-        if (store !== storeInstance) {
-            return false;
-        }
-    }
-    return true;
-};
-
-/**
- * Gets a name from a store
- * @method getStoreName
- * @static
- * @param {String|Object} store The store name or class from which to extract
- *      the name
- * @returns {String}
- */
-Dispatcher.prototype.getStoreName = function getStoreName(store) {
-    if ('string' === typeof store) {
-        return store;
-    }
-    return store.storeName || store.name;
-};
-
-/**
- * Adds a handler function to be called for the given action
- * @method registerHandler
+ * Destroys the event dispatcher.
+ *
+ * @this {Dispatcher_}
  * @private
- * @static
- * @param {String} action Name of the action
- * @param {String} name Name of the store that handles the action
- * @param {String|Function} handler The function or name of the method that handles the action
- * @returns {number}
  */
-Dispatcher.prototype._registerHandler = function registerHandler(action, name, handler) {
-    this.handlers[action] = this.handlers[action] || [];
-    this.handlers[action].push({
-        name: this.getStoreName(name),
-        handler: handler
-    });
-    return this.handlers.length - 1;
+Dispatcher_.prototype.destroy_ = function() {
+  EventHelpers_.totalNumMouseEventListeners_ -= this.numMouseEventListeners_;
+  this.eventListeners_ = null;
 };
 
-module.exports = {
-    createDispatcher: function (options) {
-        return new Dispatcher(options);
-    }
+
+/**
+ * Fires an event.
+ *
+ * @this {Dispatcher_}
+ * @private
+ *
+ * @param {Object} thisArg This object in the callback.
+ * @param {Event} event Event description.
+ */
+Dispatcher_.prototype.dispatchEvent_ = function(thisArg, event) {
+  log_.assert_(event, 'event must be valid.', '(Dispatcher_::dispatchEvent_)');
+
+  var listeners = this.eventListeners_[event['type']];
+  if (listeners)
+    for (var i = 0, len = listeners.length; i < len; ++i)
+      listeners[i].call(thisArg, event);
+};
+
+
+/**
+ * Removes an event handler.
+ *
+ * @this {Dispatcher_}
+ * @private
+ *
+ * @param {string} type Event type.
+ * @param {function(Event)} listener Event listener.
+ */
+Dispatcher_.prototype.off_ = function(type, listener) {
+  log_.assert_(type, 'type must be valid.', '(Dispatcher_::off_)');
+  log_.assert_(listener, 'listener must be valid.', '(Dispatcher_::off_)');
+  log_.assert_(typeof listener === 'function',
+      'listener must be a function.', '(Dispatcher_::off_)');
+
+  if (EventHelpers_.isMouseEvent_(type)) {
+    EventHelpers_.totalNumMouseEventListeners_--;
+    this.numMouseEventListeners_--;
+  }
+
+  var listeners = this.eventListeners_[type];
+  if (listeners && listeners.indexOf(listener))
+    listeners.splice(listeners.indexOf(listener), 1);
+};
+
+
+/**
+ * Adds an event handler.
+ *
+ * @this {Dispatcher_}
+ * @private
+ *
+ * @param {string} type Event type.
+ * @param {function(Event)} listener Event listener.
+ */
+Dispatcher_.prototype.on_ = function(type, listener) {
+  log_.assert_(type, 'type must be valid.', '(Dispatcher_::on_)');
+  log_.assert_(listener, 'listener must be valid.', '(Dispatcher_::on_)');
+  log_.assert_(typeof listener === 'function',
+      'listener must be a function.', '(Dispatcher_::on_)');
+
+  if (EventHelpers_.isMouseEvent_(type)) {
+    EventHelpers_.totalNumMouseEventListeners_++;
+    this.numMouseEventListeners_++;
+  }
+
+  var eventListeners = this.eventListeners_[type];
+
+  if (!eventListeners)
+    eventListeners = this.eventListeners_[type] = [];
+
+  if (eventListeners.indexOf(listener) === -1)
+    eventListeners.push(listener);
 };

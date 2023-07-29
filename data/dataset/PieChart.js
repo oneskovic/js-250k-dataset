@@ -1,6 +1,3 @@
-/**
- * Demonstrates how use Ext.chart.series.Pie
- */
     //<feature charts>
 Ext.define('Kitchensink.view.PieChart', {
     extend: 'Ext.Panel',

@@ -1,4 +1,3 @@
-  // Get the right animation frame method
   var requestAnimFrame, cancelAnimFrame;
   if (root.requestAnimationFrame) {
     requestAnimFrame = root.requestAnimationFrame;

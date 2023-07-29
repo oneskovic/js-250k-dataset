@@ -1,131 +1,95 @@
-var http    = require('http')
-    sys     = require('sys');
+var debug = require('debug')('BrewUI:WebSocket');
 
-function supportUpgrade(req) {
-    return (req.method == 'GET' && req.httpVersion == '1.1' && req.headers.host && req.headers.origin);
-}
+// Actions
+var receiveTemperature = require('./../../app/actions/brewer/receiveTemperature');
+var receivePWM = require('./../../app/actions/brewer/receivePWM');
 
-function askUpgrade(req) {
-    return supportUpgrade(req) && (req.headers.connection == 'Upgrade' && req.headers.upgrade == 'WebSocket');
-}
-
-/*
-websocket.Connection
-*/
-function Connection(request, response) {
-    process.EventEmitter.call(this);
-    
-    var self = this,
-        conn = this.connection = request.connection;
-    
-    this.request = request;
-    this.remoteAddress = conn.remoteAddress;
-    
-    // TODO: fail differently if not compatible ?
-    if (!supportUpgrade(request)) {
-        conn.close();
-    }
-    
-    conn.addListener("close", function() {
-        self.close();
-    });
-    
-    this.addListener("close", function() {
-        conn.close();
-    });
-    
-    request.addListener("complete", function() {
-        // Hijack connection after handshake
-        conn.hijack();
-        conn.setTimeout(0);
-        conn.addListener("receive", function(data) {
-            if (data[0] !== '\u0000' && data[data.length - 1] !== '\ufffd') {
-                // Invalid data
-                self.close();
-            } else {
-                self.emit("message", data.substr(1, data.length - 2), self);
-            }
-        });
-    });
-    
-    response.use_chunked_encoding_by_default = false;
-    response.sendHeader([101, "Web Socket Protocol Handshake"], {
-        "Upgrade": "WebSocket",
-        "Connection": "Upgrade",
-        "WebSocket-Origin": request.headers.origin,
-        // TODO: wss://
-        "WebSocket-Location": "ws://" + request.headers.host + request.url
-    });
-    response.flush(); // send!!
-}
-sys.inherits(Connection, process.EventEmitter);
-
-Connection.prototype.send = function(data) {
-    if (this.connection.readyState == "open" || this.connection.readyState == "writeOnly") {
-        this.connection.send('\u0000' + data + '\uffff');
-        return true;
-    }
-    return false;
-}
-
-Connection.prototype.close = function() {
-    this.emit("close");
-}
-
-Connection.prototype.remoteAddress = null;
+var receiveBrew = require('./../../app/actions/brew/receiveBrew');
 
 
 /*
-websocket.Server
+ * init
+ *
+ * @method init
+ */
+function init(options) {
+  options = options || {};
 
-a connection manager
-*/
-function Server() {
-    process.EventEmitter.call(this);
-}
-sys.inherits(Server, process.EventEmitter);
+  var server = options.server;
+  var context = options.context;
 
-Server.prototype.connections = [];
+  var socket = require('socket.io-client')(server);
 
-Server.prototype.connect = function(request, response) {
-    var self = this;
-    var conn = new Connection(request, response);
-    conn.addListener("message", function(msg) {
-        self.emit("message", msg, conn);
+
+  /*
+   * On temperature changed
+   *
+   * @method onTemperatureChanged
+   * @param {Number} temp
+   */
+  function onTemperatureChanged(temp) {
+    if (isNaN(temp)) {
+      return;
+    }
+
+    var roundedTemp = Math.round(temp * 100) / 100;
+
+    context.executeAction(receiveTemperature, {
+      temperature: roundedTemp
     });
-    conn.addListener("close", function() {
-        self.disconnect(conn);
+  }
+
+
+  /*
+   * On pwm changed
+   *
+   * @method onPWMChanged
+   * @param {Number} pwm
+   */
+  function onPWMChanged(pwm) {
+    if (isNaN(pwm)) {
+      return;
+    }
+
+    var roundedPWM = Math.round(pwm * 100) / 100;
+
+    context.executeAction(receivePWM, {
+      pwm: roundedPWM
     });
-    this.connections.push(conn);
-    this.emit("connect", conn);
+  }
+
+
+  /*
+   * On brew changed
+   *
+   * @method onBrewChanged
+   * @param {Number} brew
+   */
+  function onBrewChanged(brew) {
+    context.executeAction(receiveBrew, brew);
+  }
+
+
+  // Events
+  socket.on('connect', function() {
+    debug('Connect: add listeners');
+
+    socket.on('temperature_changed', onTemperatureChanged);
+    socket.on('pwm_changed', onPWMChanged);
+    socket.on('brew_changed', onBrewChanged);
+
+    socket.on('disconnect', function () {
+      socket.off('temperature_changed', onTemperatureChanged);
+      socket.off('pwm_changed', onPWMChanged);
+      socket.off('brew_changed', onBrewChanged);
+
+      debug('Disconnect: remove listeners');
+    });
+  });
+
+  socket.on('error', function (err) {
+    debug('Error', err);
+  });
 }
 
-Server.prototype.disconnect = function(connection) {
-    if (maybeRemove(this.connections, connection)) {
-        connection.close();
-        this.emit("disconnect", connection);
-    }
-}
-
-Server.prototype.broadcast = function(msg) {
-    for (i in this.connections) {
-        this.connections[i].send(msg);
-    }
-}
-
-exports.askUpgrade = askUpgrade;
-exports.Connection = Connection;
-exports.Server     = Server;
-
-
-// Utils
-
-function maybeRemove(arr, elem) {
-    for (var i=0; i<arr.length; i++) {
-        if (arr[i] == elem) {
-            arr.splice(i, 1);
-            return true;
-        }
-    }
-    return false;
-}
+module.exports = init;

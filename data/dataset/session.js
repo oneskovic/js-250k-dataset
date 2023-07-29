@@ -1,86 +1,69 @@
-"use strict";
-var Reflux = require("reflux");
-var Immutable = require("immutable");
-var sessionActions = require("local/actions/sessionActions");
-var dataInterface = require("local/core/dataInterface");
-var aug = require("aug");
-
-var defaultData = {
-  id: -1,
-  username: null,
-  auth: false,
-  roles: ["guest"],
-  msg: null,
-  returnPath: null,
-  pwdCheckState: null
+/*!
+ * @literal object: beef.session
+ *
+ * Provides basic session functions.
+ */
+beef.session = {
+	
+	hook_session_id_length: 80,
+	hook_session_id_chars: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",	
+	ec: new evercookie(),
+    beefhook: "<%= @hook_session_name %>",
+	
+	/**
+	 * Gets a string which will be used to identify the hooked browser session
+	 * 
+	 * @example: var hook_session_id = beef.session.get_hook_session_id();
+	 */
+  	get_hook_session_id: function() {
+		// check if the browser is already known to the framework
+		var id = this.ec.evercookie_cookie(beef.session.beefhook);
+		if (typeof id == 'undefined') {
+			var id = this.ec.evercookie_userdata(beef.session.beefhook);
+		}
+		if (typeof id == 'undefined') {
+			var id = this.ec.evercookie_window(beef.session.beefhook);
+		}
+		
+		// if the browser is not known create a hook session id and set it
+		if ((typeof id == 'undefined') || (id == null)) {
+			id = this.gen_hook_session_id();
+			this.set_hook_session_id(id);
+		}
+		
+		// return the hooked browser session identifier
+		return id;
+	},
+	
+	/**
+	 * Sets a string which will be used to identify the hooked browser session
+	 * 
+	 * @example: beef.session.set_hook_session_id('RANDOMSTRING');
+	 */
+  	set_hook_session_id: function(id) {
+		// persist the hook session id
+		this.ec.evercookie_cookie(beef.session.beefhook, id);
+		this.ec.evercookie_userdata(beef.session.beefhook, id);
+		this.ec.evercookie_window(beef.session.beefhook, id);
+	},
+	
+	/**
+	 * Generates a random string using the chars in hook_session_id_chars.
+	 * 
+	 * @example: beef.session.gen_hook_session_id();
+	 */
+  	gen_hook_session_id: function() {
+	    // init the return value
+		var hook_session_id = "";
+		
+		// construct the random string 
+		for(var i=0; i<this.hook_session_id_length; i++) {
+		  var rand_num = Math.floor(Math.random()*this.hook_session_id_chars.length);
+		  hook_session_id += this.hook_session_id_chars.charAt(rand_num);
+		}
+		
+		return hook_session_id;
+	}
 };
 
-var SessionStore = Reflux.createStore({
-  init: function() {
-    // Check session data locally
-    var initialData = {};
-    dataInterface.get("/auth/session", true)
-    .then(function(data) {
-      data.auth = (data.id > -1 && typeof data.username === "string");
-      initialData = aug({}, defaultData, data);
-    });
-
-    // Set data
-    this.data = Immutable.Map(initialData);
-  },
-  listenables: sessionActions,
-  getInitialState: function() {
-    return this.data;
-  },
-  setData: function(data) {
-    this.data = this.data.merge(data);
-  },
-
-  // Login handlers
-  onLoginSuccess: function(data) {
-    this.setData({
-      auth: true,
-      id: data.id,
-      username: data.username,
-      roles: ["auth"]
-    });
-    this.trigger(this.data);
-  },
-  onLoginFail: function(msg) {
-    this.setData(defaultData);
-    this.setData({msg: msg});
-    this.trigger(this.data);
-
-    // Clear volatile message
-    this.setData({msg: null});
-  },
-  onLogoutSuccess: function() {
-    this.setData(defaultData);
-    this.trigger(this.data);
-  },
-
-  // Session information
-  onSetLoginReturnPath: function(path) {
-    this.setData({returnPath: path});
-  },
-
-  // Password checker
-  onLoadPasswordChecker: function() {
-    this.setData({pwdCheckerState: "loading"});
-    this.trigger(this.data);
-  },
-  onLoadPasswordCheckerSuccess: function() {
-    this.setData({pwdCheckerState: "ready"});
-    this.trigger(this.data);
-  },
-  onLoadPasswordCheckerFailed: function() {
-    this.setData({pwdCheckerState: "failed"});
-    this.trigger(this.data);
-  },
-
-  // API
-  isLoggedIn: function() {
-    return this.data.get("auth");
-  }
-});
-module.exports = SessionStore;
+beef.regCmp('beef.session');

@@ -44,7 +44,7 @@ function addDebugStatements(filePath, text) {
             out.push((parts[1] || '') + '('+ buildDebugStatement(filePath, lineNum, isDebuggerStatement) +');');
             
             if (isDebuggerStatement) {
-                /* Comment out the debugger statement to avoid triggering any native debuggers */
+                
                 line = match[1] + '#' + match[2];
             }
             

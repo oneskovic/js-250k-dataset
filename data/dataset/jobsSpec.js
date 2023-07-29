@@ -1,6 +1,5 @@
 $(function () {
-    /* Include the built version of the our templates.  This means that grunt
-    * must be run to generate these before the test. */
+    
     girderTest.addCoveredScripts([
         '/static/built/plugins/jobs/templates.js',
         '/plugins/jobs/web_client/js/misc.js',

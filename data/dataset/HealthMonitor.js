@@ -1,7 +1,3 @@
-/// <reference path="../../Scripts/endgate-0.2.0.d.ts" />
-/// <reference path="../../Scripts/typings/jquery/jquery.d.ts" />
-/// <reference path="../Ships/ShipLifeController.ts" />
-/// <reference path="../Ships/Ship.ts" />
 var ShootR;
 (function (ShootR) {
     var HealthMonitor = (function () {

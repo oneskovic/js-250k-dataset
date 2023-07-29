@@ -1,8 +1,3 @@
-/**
- * 
- * Script for loading and caching commit history
- * 
- */
 !function(root, $) {
     /**
      * Fetch latest commits from Github API and cache them

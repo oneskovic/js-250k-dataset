@@ -1,7 +1,3 @@
-/* -  This is a javascript snippet to be used with
-      http://mcdlr.com/js-inject/             - */
-
-
 /* -  MinuteDock - http://minutedock.com/         - *\
 |* -  Add timeBar to visualize progress on Goals  - *|
 \* -  v1.4                                        - */

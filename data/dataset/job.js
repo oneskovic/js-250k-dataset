@@ -1,7 +1,5 @@
 define(['factory', 'class', 'config', 'progress_indicator', 'jquery'], function(Factory, Class, Config, Progress) {
-    /**
-     * Package: Base
-     */
+    
 
     /**
      * Class: Job

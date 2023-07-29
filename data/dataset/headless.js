@@ -1,8 +1,6 @@
 var firepad = firepad || { };
 
-/**
- * Instance of headless Firepad for use in NodeJS. Supports get/set on text/html.
- */
+
 firepad.Headless = (function() {
 
   var TextOperation   = firepad.TextOperation;

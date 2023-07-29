@@ -1,15 +1,3 @@
-/*!
- * BootstrapTreeView
- *
- * Requires jQuery v2.0.3
- * http://sizzlejs.com/
- *
- * Copyright 2013 Jeroen van de Ven
- * Released under the MIT license
- * https://github.com/JeroenvdV/BootstrapTreeView
- *
- * Date: 2013-11-09
- */
 $(document).ready(function () {
 
 	//Enables collapsing of the children

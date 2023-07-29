@@ -1,4 +1,3 @@
-/*global describe:true, expect:true, it:true */
 /*jshint expr:true */
 define([
 

@@ -1,6 +1,3 @@
-/**
- * This example demonstrates using a paging display.
- */
 Ext.define('KitchenSink.view.grid.Paging', {
     extend: 'Ext.grid.Panel',
 

@@ -1,33 +1,3 @@
-/* ************************************************************************
-
-   qooxdoo - the new era of web development
-
-   http://qooxdoo.org
-
-   Copyright:
-     2009 1&1 Internet AG, Germany, http://www.1und1.de
-
-   License:
-     LGPL: http://www.gnu.org/licenses/lgpl.html
-     EPL: http://www.eclipse.org/org/documents/epl-v10.php
-     See the LICENSE file in the project's top-level directory for details.
-
-   Authors:
-     * Fabian Jakobs (fjakobs)
-
-************************************************************************ */
-
-/**
- * Timer, which accelerates after each interval. The initial delay and the
- * interval time can be set using the properties {@link #firstInterval}
- * and {@link #interval}. The {@link #interval} events will be fired with
- * decreasing interval times while the timer is running, until the {@link #minimum}
- * is reached. The {@link #decrease} property sets the amount of milliseconds
- * which will decreased after every firing.
- *
- * This class is e.g. used in the {@link qx.ui.form.RepeatButton} and
- * {@link qx.ui.form.HoverButton} widgets.
- */
 qx.Class.define("qx.event.AcceleratingTimer",
 {
   extend : qx.core.Object,

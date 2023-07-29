@@ -1,10 +1,3 @@
-/*
- *
- *
- *
- * Copyright (c) 2015 PAIO
- * Licensed under the MIT license.
- */
 (function () {
   "use strict";
 

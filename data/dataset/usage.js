@@ -1,5 +1,3 @@
-// Load modules
-
 var Http = require('http');
 var Request = require('request');
 var Hawk = require('../lib');

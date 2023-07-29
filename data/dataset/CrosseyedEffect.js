@@ -1,7 +1,3 @@
-/**
- * @author alteredq / http://alteredqualia.com/
- */
-
 THREE.CrosseyedEffect = function ( renderer ) {
 
 	// API

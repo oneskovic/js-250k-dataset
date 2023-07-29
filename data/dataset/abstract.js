@@ -1,22 +1,5 @@
-/**
- * @private
- */
 Ext.define('Ext.ux.device.twitter.Abstract', {
-	/**
-	 * Pops up a Twitter compose sheet view with your specified tweet.
-	 * 
-	 * @param {Object} config An object which contains the following config options:
-	 *
-	 * @param {String} config.tweet The default tweet text to add to the compose window.
-	 * 
-	 * @param {String} config.url An optional URL to attatch to the Tweet.
-	 * 
-	 * @param {String} config.image An optional image URL to attatch to the Tweet.
-	 * 
-	 * @param {Function} config.success The callback when the Tweet is successfully posted.
-	 * 
-	 * @param {Function} config.failure The callback when the Tweet is unsuccessfully posted.
-	 */
+	
     compose: Ext.emptyFn,
 
     /**

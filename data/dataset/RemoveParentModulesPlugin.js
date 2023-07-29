@@ -1,7 +1,3 @@
-/*
-	MIT License http://www.opensource.org/licenses/mit-license.php
-	Author Tobias Koppers @sokra
-*/
 function hasModule(chunk, module, checkedChunks) {
 	if(chunk.modules.indexOf(module) >= 0) return [chunk];
 	if(chunk.entry) return false;

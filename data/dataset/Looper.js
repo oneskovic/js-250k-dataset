@@ -1,6 +1,3 @@
-/// <reference path="../Interfaces/ITyped.ts" />
-/// <reference path="ILooper.ts" />
-/// <reference path="TimedCallback.ts" />
 var EndGate;
 (function (EndGate) {
     (function (_) {

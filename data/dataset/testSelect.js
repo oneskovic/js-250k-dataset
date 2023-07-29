@@ -2,9 +2,7 @@
 
   'use strict';
 
-  /**
-   * Select elements test.
-   */
+  
   describe('An HTML form with a select element and one valid selected option', function(){
 
     beforeEach(function () {

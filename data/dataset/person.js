@@ -1,64 +1,97 @@
-Ext.define('KitchenSink.model.Person', {
-    extend: 'KitchenSink.model.Base',
-    fields: ['firstName', 'lastName', 'age', 'favoriteColor'],
-    statics: {
-        generateData: (function() {
-            var lasts = ['Jones', 'Smith', 'Lee', 'Wilson', 'Black', 'Williams', 'Lewis', 'Johnson', 'Foot', 'Little', 'Vee', 'Train', 'Hot', 'Mutt'],
-                firsts = ['Fred', 'Julie', 'Bill', 'Ted', 'Jack', 'John', 'Mark', 'Mike', 'Chris', 'Bob', 'Travis', 'Kelly', 'Sara'],
-                colors = ['Red', 'Green', 'Blue'];
+var _ = require('lodash');
 
-            function getRandom(array) {
-                var index = Ext.Number.randomInt(0, array.length - 1);
-                return array[index];
-            }
+// if exports is an array, it will be the same like loading multiple files...
+//module.exports = require('cqrs-domain').defineEvent({
+module.exports = [
 
-            function getName(seen) {
-                var name = {
-                    first: getRandom(firsts),
-                    last: getRandom(lasts)
-                };
-
-                if (seen[name.first + name.last]) {
-                    return getName(seen);
-                } else {
-                    return name;
-                }
-            }
-
-            return function(total, adults, children) {
-                var out = [],
-                    seenNames = {},
-                    adultsUndef = adults === undefined,
-                    childrenUndef = children === undefined,
-                    name;
-
-                if (!adultsUndef && !childrenUndef) {
-                    total = adults + children;
-                } else {
-                    // We rely on total now
-                    total = total || 15;
-                    if (adultsUndef && childrenUndef) {
-                        adults = Ext.Number.randomInt(Math.floor(total * 0.25), Math.floor(total * 0.75));
-                        children = total - adults;
-                    } else if (adultsUndef) {
-                        adults = total - children;
-                    } else {
-                        children = total - adults;
-                    }
-                }
-
-                for (i = 0; i < total; ++i) {
-                    name = getName(seenNames);
-                    out.push({
-                        firstName: name.first,
-                        lastName: name.last,
-                        age: i >= adults ? Ext.Number.randomInt(0, 17) : Ext.Number.randomInt(18, 100),
-                        favoriteColor: getRandom(colors)
-                    });
-                }
-
-                return out;
-            };
-            })()
+  // aggregate
+  require('../../../../../').defineAggregate({
+    name: 'person'//, // optional, default is last part of path name
+    // versionPath: 'version', // can be defined globally, but can be overwritten here...
+    },
+    // optionally, define some initialization data...
+    {
+      emails: ['default@mycomp.org'],
+      phoneNumbers: []
+    })
+    // define snapshot need algorithm...
+    .defineSnapshotNeed(function (loadingTime, events, aggregate) {
+      return events.length >= 20;
     }
-});
+  ),
+
+  // commands
+  require('../../../../../').defineCommand({
+    name: 'enterNewPerson',  // optional, default is file name without extenstion and without _vx
+    // version: 1, // optional, default 0
+    payload: 'payload' // if not defined it will pass the whole command...
+  }, function (data, aggregate) {
+    aggregate.apply('enteredNewPerson', data);
+    // or
+    // aggregate.apply({
+    //   event: 'enteredNewPerson',
+    //   payload: data
+    // });
+  }),
+
+  require('../../../../../').defineCommand({
+    name: 'unregisterAllContactInformation'//,  // optional, default is file name without extenstion and without _vx
+    // payload: 'payload' // if not defined it will pass the whole command...
+  }, function (cmd, aggregate) {
+
+    _.each(aggregate.get('phoneNumbers'), function(number) {
+      aggregate.apply('unregisteredPhoneNumber', {
+        number: number
+      });
+      // or
+      // aggregate.apply({
+      //   event: 'unregisteredPhoneNumber',
+      //   payload: {
+      //     number: number
+      //   }
+      // });
+    });
+
+    _.each(aggregate.get('emails'), function(mail) {
+      aggregate.apply('unregisteredEMailAddress', {
+        email: mail
+      });
+      // or
+      // aggregate.apply(aggregate.toEvent({
+      //   event: 'unregisteredEMailAddress',
+      //   payload: {
+      //     email: mail
+      //   }
+      // });
+    });
+  }),
+  
+
+  // events
+
+  require('../../../../../').defineEvent({
+    name: 'enteredNewPerson', // optional, default is file name without extension
+    payload: 'payload' // if not defined it will pass the whole event...
+  }, function (data, aggregate) {
+    aggregate.set('firstname', data.firstname);
+    aggregate.set('lastname', data.lastname);
+    aggregate.get('emails').push(data.email);
+  }),
+
+  require('../../../../../').defineEvent({
+    name: 'unregisteredEMailAddress', // optional, default is file name without extenstion and without _vx
+    // version: 1, // optional, default 0
+    payload: 'payload' // if not defined it will pass the whole event...
+  }, function (data, aggregate) {
+    aggregate.set('emails', _.without(aggregate.get('emails'), data.email));
+  }),
+
+  require('../../../../../').defineEvent({
+    name: 'unregisteredPhoneNumber'//,  // optional, default is file name without extenstion and without _vx
+    // version: 1, // optional, default 0
+    // payload: 'payload' // if not defined it will pass the whole event...
+  }, function (cmd, aggregate) {
+    aggregate.set('phoneNumbers', _.without(aggregate.get('phoneNumbers'), cmd.payload.number));
+  })
+
+];

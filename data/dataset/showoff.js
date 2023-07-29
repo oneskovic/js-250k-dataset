@@ -1,6 +1,3 @@
-// TODO: Figure out how to get rid of all the extra space at the end of the step navigator due to webkit scaling.
-// TODO: Vertically center the step content in the navigator previews
-
 (function() {
 	var createClass = function(name, css) {
 		var cssClass = name + ' {';

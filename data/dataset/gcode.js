@@ -1,9 +1,3 @@
-/*
- Language: G-code (ISO 6983)
- Contributors: Adam Joseph Cook <adam.joseph.cook@gmail.com>
- Description: G-code syntax highlighter for Fanuc and other common CNC machine tool controls.
- */
-
 function(hljs) {
     var GCODE_IDENT_RE = '[A-Z_][A-Z0-9_.]*';
     var GCODE_CLOSE_RE = '\\%';

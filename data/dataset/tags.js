@@ -1,92 +1,56 @@
-// ****** TAGS ***********
+Tags = new Meteor.Collection2('tags' ,{
+    schema: {}
+});
 
-var req = require('./serverRequests');
+Tags.allow({
+    insert: function (userId, doc) {
+        // only allow posting if you are logged in
+        return true;
+    },
 
-/**
- * Creating a new tag
- * @class Asana
- * @method createTag
- * @apiRequest POST /tags
- * @param {JSON} Data
- * @param {Functon} callback Method to execute on completion
- */
-this.createTag = function(ref, callback) {
-  return req.post('/tags', JSON.stringify({data: ref}), callback);
-};
+    update: function (userId, doc) {
+        // only allow posting if you are logged in
+        return true;
+    }
+});
 
-/**
- * Creating a new tag in project
- * @class Asana
- * @method createTagWorkspace
- * @apiRequest POST /workspaces/workspace-id/tags
- * @param {String} Project ID
- * @param {JSON} Data
- * @param {Functon} callback Method to execute on completion
- */
-this.createTagWorkspace = function(ref, callback) {
- return req.post('/tags', JSON.stringify({data: ref}), callback);
-};
 
-/**
- * Get tag by ID
- * @class Asana
- * @method getTag
- * @apiRequest GET /tags/tag-id
- * @param {String} Tag ID
- * @param {String} Options pretty / fields / expand 
- * @param {Functon} callback Method to execute on completion
- */
-this.getTag = function(tag_id, options, callback) {
-  return req.get('/tags/' + tag_id + req.getOptions(options), callback);
-};
+Meteor.methods({
+    tagsUpdate: function (tagsadded, tagsremoved) {
+        var user = Meteor.user();
 
-/**
- * Updatting a tag
- * @class Asana
- * @method updateTag
- * @apiRequest PUT /tags/tag-id
- * @param {String} Tag ID
- * @param {JSON} Data
- * @param {Functon} callback Method to execute on completion
- */
-this.updateTag = function(tag_id, ref, callback){
-  return req.put('/tags/' + tag_id, JSON.stringify({data: ref}), callback);
-};
+        // ensure the user is logged in
+        if (!user)
+            throw new Meteor.Error(401, "You need to login to post new stories");
 
-/**
- * Get all tasks in tag
- * @class Asana
- * @method getTagTasks
- * @apiRequest GET /tags/tag-id/tasks
- * @param {String} Tag ID
- * @param {String} Options pretty / fields / expand 
- * @param {Functon} callback Method to execute on completion
- */
-this.getTagTasks = function(tag_id, options, callback){
-  return req.get('/tags/' + tag_id + '/tasks' + req.getOptions(options), callback);
-};
 
-/**
- * Get all tags
- * @class Asana
- * @method getTags
- * @apiRequest GET /tags
- * @param {String} Options pretty / fields / expand 
- * @param {Functon} callback Method to execute on completion
- */
-this.getTags = function(options, callback){
-  return req.get('/tags/' + req.getOptions(options), callback);
-};
+        if (tagsremoved)
+            Tags.update({title: tagsremoved.id}, {$inc: {count: -1}});
 
-/**
- * Get all tags in workspace
- * @class Asana
- * @method getTagsWorkspace
- * @apiRequest GET  /workspaces/workspace-id/tags
- * @param {String} Workspace ID
- * @param {String} Options pretty / fields / expand 
- * @param {Functon} callback Method to execute on completion
- */
-this.getTagsWorkspace = function(workspace_id, options, callback){
-  return req.get('/workspaces/' + workspace_id + '/tags' + req.getOptions(options), callback);
-};
+
+        if (tagsadded) {
+            var newtag = Tags.find({title: tagsadded.id});
+
+
+            if (newtag.count() > 0)
+                Tags.update({title: tagsadded.id}, {$inc: {count: 1}});
+            else {
+
+                var newtag = {
+                    title: tagsadded.id,
+                    background: 'rgb(60, 104, 187)',
+                    color: 'rgb(182, 195, 219)',
+                    count: 1
+                };
+                Tags.insert(newtag);
+            }
+
+        }
+
+        // console.log(tagsadded);
+        //console.log(tagsremoved);
+
+        return tagsadded;
+    }
+});
+

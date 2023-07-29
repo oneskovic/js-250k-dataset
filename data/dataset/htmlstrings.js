@@ -4,11 +4,7 @@ define([
 ], function(lang,dd){
 
 	var htmlstrings = lang.getObject("filter.htmlstrings", true, dd);
-/*=====
-	htmlstrings = {
-		// TODO: summary
-	};
-=====*/
+
 
 	lang.mixin(htmlstrings, {
 		_linebreaksrn: /(\r\n|\n\r)/g,

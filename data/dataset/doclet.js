@@ -1,94 +1,63 @@
-/*!
- * ${copyright}
- */
+'use strict';
 
-// Provides implementation of sap.ui.demokit.util.jsanalyzer.Doclet 
-sap.ui.define(['jquery.sap.global'],
-	function(jQuery, esprima_) {
+describe('jsdoc/doclet', function() {
+    // TODO: more tests
+    var _ = require('underscore');
+    var Doclet = require('jsdoc/doclet').Doclet;
 
-	"use strict";
+    var debug = !!env.opts.debug;
+    var docSet = jasmine.getDocSetFromFile('test/fixtures/doclet.js');
+    var test1 = docSet.getByLongname('test1')[0];
+    var test2 = docSet.getByLongname('test2')[0];
 
-	/* ---- private functions ---- */
+    var expectList = '* List item 1';
+    var expectStrong = '**Strong** is strong';
 
-	/**
-	 * Removes the mandatory comment markers and the optional but common asterisks at the beginning of each line.
-	 *
-	 * The result is easier to parse/analyze.
-	 *
-	 * @param {string} comment Comment to unwrap
-	 * @return {string} Unwrapped comment
-	 * @private 
-	 */
-	function unwrap(comment) {
+    afterEach(function() {
+        env.opts.debug = debug;
+    });
 
-		if (!comment) {
-			return '';
-		}
+    it('does not mangle Markdown in a description that uses leading asterisks', function() {
+        expect(test2.description.indexOf(expectList)).toBeGreaterThan(-1);
+        expect(test2.description.indexOf(expectStrong)).toBeGreaterThan(-1);
+    });
 
-		return comment.replace(/^\/\*\*+/, '')                // remove opening slash+stars
-			.replace(/\*+\/$/, '')                            // remove closing star+slash
-			.replace(/(^|\r\n|\r|\n)([ \t*]*[ \t]*)/g, '$1'); // remove left margin
+    it('adds the AST node as a non-enumerable property by default', function() {
+        var descriptor = Object.getOwnPropertyDescriptor(test1.meta.code, 'node');
 
-	}
+        expect(descriptor.enumerable).toBe(false);
+    });
 
-	var rtag = /((?:^|\r\n|\r|\n)[ \t]*@)([a-zA-Z][-_a-zA-Z0-9]*)/g;
+    it('adds the AST node as an enumerable property in debug mode', function() {
+        var descriptor;
+        var doclet;
 
-	/**
-	 * Creates a Doclet from the given comment string
-	 * @param {string} comment Comment string.
-	 * @constructor
-	 * @private
-	 */
-	function Doclet(comment) {
+        env.opts.debug = true;
+        doclet = jasmine.getDocSetFromFile('test/fixtures/doclet.js').getByLongname('test1')[0];
+        descriptor = Object.getOwnPropertyDescriptor(doclet.meta.code, 'node');
 
-		this.comment = comment = unwrap(comment);
-		this.tags = [];
+        expect(descriptor.enumerable).toBe(true);
+    });
 
-		var m;
-		var lastContent = 0;
-		var lastTag = "description";
-		while ( (m = rtag.exec(comment)) != null ) {
-			this._addTag(lastTag, comment.slice(lastContent, m.index));
-			lastTag = m[2];
-			lastContent = rtag.lastIndex;
-		}
-		this._addTag(lastTag, comment.slice(lastContent));
-	}
+    describe('setScope', function() {
+        it('should accept the correct scope names', function() {
+            function setScope(scopeName) {
+                var doclet = new Doclet('/** Huzzah, a doclet! */', {});
+                doclet.setScope(scopeName);
+            }
 
-	Doclet.prototype._addTag = function(tag, content) {
-		if ( /^(public|private|protected)$/.test(tag) ) {
-			this.visibility = tag;
-		} else if ( /^(classdesc|description|deprecated|experimental|since|name|alias)$/.test(tag) ) {
-			this[tag] = jQuery.trim(content);
-		} else if ( tag === "class" ) {
-			content = jQuery.trim(content);
-			if ( content.split(/\s+/).length > 1 ) {
-				this.classdesc = content;
-			}
-		} else {
-			this.tags.push({ tag: tag, content: jQuery.trim(content)});
-		}
-	};
+            _.values(require('jsdoc/name').SCOPE.NAMES).forEach(function(scopeName) {
+                expect( setScope.bind(null, scopeName) ).not.toThrow();
+            });
+        });
 
-	Doclet.prototype.isPublic = function() {
-		return this.visibility === 'public';
-	};
-	
-	Doclet.get = function(node) {
-		var comment = null;
-		var leadingComments = node.leadingComments;
+        it('should throw an error for invalid scope names', function() {
+            function setScope() {
+                var doclet = new Doclet('/** Woe betide this doclet. */', {});
+                doclet.setScope('fiddlesticks');
+            }
 
-		if (jQuery.isArray(leadingComments) ) {
-			for (var i = 0; i < leadingComments.length; i++) {
-				if ( leadingComments[i].value && /^\*/.test(leadingComments[i].value) ) {
-					comment = leadingComments[i].value;
-				}
-			}
-		}
-
-		return comment ? new Doclet(comment) : null;
-	};
-	
-	return Doclet;
-	
-}, true);
+            expect(setScope).toThrow();
+        });
+    });
+});

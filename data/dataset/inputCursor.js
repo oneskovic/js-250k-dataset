@@ -1,9 +1,3 @@
-/**
- * 输入框光标位置相关处理
- * @constructor
- * @name vui.inputCursor
- * @author dong
- */
 vui.inputCursor = {
 	/** @lends vui.inputCursor */
 	/**

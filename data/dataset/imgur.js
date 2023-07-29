@@ -1,35 +1,3 @@
-/*
-	Imgur.js 0.1.0
-
-	@author Kevin Jantzer, Blackstone Audio
-	@since 2015-02-12
-
-	https://gist.github.com/kjantzer/6b97badbafd7042c730b
-
-	Inspired from:
-	https://gist.github.com/pinceladasdaweb/9807321
-	http://www.htmlgoodies.com/html5/javascript/drag-files-into-the-browser-from-the-desktop-HTML5.html
-
-	The script uses [Backbone Modal](https://github.com/kjantzer/backbonejs-modal-view) to display spinners and alerts
-
-	Use:  
-	```javascript
-	var imgur = new Imgur({el: yourElement})
-	imgur.on('upload:success', function(resp, file, xhttp){
-		console.log(resp.data.link);
-	}})
-
-	// failed handler
-	imgur.on('upload:fail', function(resp, file, xhttp){})
-	```
-
-	Methods:
-	```javascript
-	imgur.disable();
-	imgur.enable();
-	```
-*/
-
 var Imgur = Backbone.View.extend({
 
 	disable: function(){ this.isDisabled = true; },

@@ -1,4 +1,3 @@
-/*global angular:true */
 (function () {
   'use strict';
 

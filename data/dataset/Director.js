@@ -1,5 +1,3 @@
-// # $Id: Kinetic.pm 1493 2005-04-07 19:20:18Z theory $
-
 Test.Harness.Director = function () {};
 Test.Harness.Director.VERSION = '0.11';
 

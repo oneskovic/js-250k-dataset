@@ -1,16 +1,3 @@
-/*
-* MediqQueryListener proof of concept using CSS transitions by Paul Hayes
-* November 5th 2011
-*
-* Based on the excellent matchMedia polyfill
-* https://github.com/paulirish/matchMedia.js
-*
-* matchMedia() polyfill - test whether a CSS media type or media query applies
-* authors: Scott Jehl, Paul Irish, Nicholas Zakas
-* Copyright (c) 2011 Scott, Paul and Nicholas.
-* Dual MIT/BSD license
-*/
-
 mql = (function(doc, undefined) {
 
     var bool,

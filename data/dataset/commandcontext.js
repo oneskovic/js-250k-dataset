@@ -2,9 +2,7 @@
   
 var cv = termkit.commandView;
 
-/**
- * Represents the system context for a command.
- */
+
 cv.commandContext = function (shell) {
   this.$element = this.$markup();
   

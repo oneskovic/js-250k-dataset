@@ -10,7 +10,7 @@ goog.require('ol.layer.Tile');
 goog.require('ol.source.MapQuest');
 
 
-/** @const **/
+
 var app = {};
 
 

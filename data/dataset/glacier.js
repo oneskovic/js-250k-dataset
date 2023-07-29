@@ -29,9 +29,7 @@ AWS.util.update(AWS.Glacier.prototype, {
     }
   },
 
-  /**
-   * @!group Computing Checksums
-   */
+  
 
   /**
    * Computes the SHA-256 linear and tree hash checksums for a given

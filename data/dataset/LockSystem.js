@@ -1,10 +1,6 @@
 'use strict';
 
-/**
- * @file ActionMethod like restart, stop, monitor... are here
- * @author Alexandre Strzelewicz <as@unitech.io>
- * @project PM2
- */
+
 
 var util = require('util');
 

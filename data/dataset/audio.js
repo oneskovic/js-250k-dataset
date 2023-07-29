@@ -1,115 +1,83 @@
-var Sburb = (function(Sburb){
+'use strict';
+angular.module('myApp').controller('AudioCtrl',
+	function ($sce) {
+		this.currentTime = 0;
+		this.totalTime = 0;
+		this.state = null;
+		this.volume = 1;
+		this.isCompleted = false;
+		this.API = null;
 
-Sburb.globalVolume = 1;
+		this.onPlayerReady = function (API) {
+			this.API = API;
+		};
 
+		this.onError = function (event) {
+      console.log("VIDEOGULAR ERROR EVENT");
+			console.log(event);
+		};
 
+		this.onCompleteVideo = function () {
+			this.isCompleted = true;
+		};
 
+		this.onUpdateState = function (state) {
+			this.state = state;
+		};
 
-///////////////////////////////////////
-//Sound Class
-///////////////////////////////////////
+		this.onUpdateTime = function (currentTime, totalTime) {
+			this.currentTime = currentTime;
+			this.totalTime = totalTime;
+		};
 
-//Constructor
-Sburb.Sound = function(asset){
-	if (asset) {
-		this.asset = asset;
-		var that = this;
-		window.addEventListener('beforeunload', function() {
-			that.pause();
-		});
+		this.onUpdateVolume = function (newVol) {
+			this.volume = newVol;
+		};
+
+		this.media = [
+			{
+				sources: [
+          {src: $sce.trustAsResourceUrl("http://static.videogular.com/assets/audios/videogular.mp3"), type: "audio/mpeg"},
+          {src: $sce.trustAsResourceUrl("http://static.videogular.com/assets/audios/videogular.ogg"), type: "audio/ogg"}
+				]
+			},
+			{
+				sources: [
+					{src: $sce.trustAsResourceUrl("http://static.videogular.com/assets/videos/big_buck_bunny_720p_h264.mov"), type: "video/mp4"},
+					{src: $sce.trustAsResourceUrl("http://static.videogular.com/assets/videos/big_buck_bunny_720p_stereo.ogg"), type: "video/ogg"}
+				]
+			}
+		];
+
+		this.config = {
+			autoHide: false,
+			autoHideTime: 3000,
+			autoPlay: false,
+			sources: this.media[0].sources,
+			loop: true,
+			preload: "auto",
+			controls: false,
+			theme: {
+				url: "styles/themes/default/videogular.css"
+			}
+		};
+
+		this.changeSource = function () {
+			this.config.sources = this.media[1].sources;
+			this.config.tracks = undefined;
+			this.config.loop = false;
+			this.config.preload = true;
+		};
+
+		this.wrongSource = function () {
+			this.config.sources = [
+        {src: $sce.trustAsResourceUrl("http://static.videogular.com/assets/videos/videogula.mp4"), type: "video/mp4"},
+        {src: $sce.trustAsResourceUrl("http://static.videogular.com/assets/videos/videogula.webm"), type: "video/webm"},
+        {src: $sce.trustAsResourceUrl("http://static.videogular.com/assets/videos/videogula.ogg"), type: "video/ogg"}
+      ];
+			this.config.tracks = undefined;
+			this.config.loop = false;
+			this.config.preload = true;
+		};
 	}
-}
-
-//play this sound
-Sburb.Sound.prototype.play = function(pos) {
-    if(window.chrome) {
-	if(this.playedOnce) {
-	    // console.log("load again");
-            this.asset.load();
-	} else {
-	    this.playedOnce = true;
-	}
-        if(pos) {
-            // chrome doesnt like us changing the play time
-            // unless we're already playing
-            var oThis = this;
-            this.asset.addEventListener('playing', function() {
-                oThis.asset.currentTime = pos;
-                oThis.asset.pause();
-                oThis.asset.removeEventListener('playing', arguments.callee);
-                oThis.asset.play();
-            },false);
-        }
-    } else if(pos) {
-        this.asset.currentTime = pos; 
-    }
-	this.fixVolume();
-	this.asset.play();	
-}
-
-//pause this sound
-Sburb.Sound.prototype.pause = function() {
-	this.asset.pause();
-	//console.log("pausing the sound...");
-}
-
-//stop this sound
-Sburb.Sound.prototype.stop = function() {
-	this.pause();
-	this.asset.currentTime = 0;
-	//console.log("stopping the sound...");
-}
-
-//has the sound stopped
-Sburb.Sound.prototype.ended = function() {
-	return this.asset.ended;
-}
-
-//ensure the sound is playing at the global volume
-Sburb.Sound.prototype.fixVolume = function(){
-	this.asset.volume = Sburb.globalVolume;
-	//console.log("fixing the volume...");
-}
-
-
-
-
-
-/////////////////////////////////////
-//BGM Class (inherits Sound)
-/////////////////////////////////////
-
-//constructor
-Sburb.BGM = function(asset, startLoop, priority) {
-    Sburb.Sound.call(this,asset);
-    this.startLoop = 0;
-    this.endLoop = 0;
-    
-    this.setLoopPoints(startLoop?startLoop:0); 
-}
-
-Sburb.BGM.prototype = new Sburb.Sound();
-
-//set the points in the sound to loop
-Sburb.BGM.prototype.setLoopPoints = function(start, end) {
-	tmpAsset = this.asset
-	tmpAsset.addEventListener('ended', function() {
-	//	console.log("I'm loopin' as hard as I can cap'n! (via event listener)");
-		tmpAsset.currentTime = start;
-		tmpAsset.play();
-	},false);
-	this.startLoop = start;
-	this.endLoop = end;
-	// do we need to have an end point? does that even make sense
-}
-
-//loop the sound
-Sburb.BGM.prototype.loop = function() {
-	//	console.log("looping...");
-		this.play(this.startLoop);
-}
-
-
-
-return Sburb;
-})(Sburb || {});
+);

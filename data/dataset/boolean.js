@@ -1,8 +1,3 @@
-
-/*!
- * Module dependencies.
- */
-
 var SchemaType = require('../schematype');
 
 /**
@@ -74,11 +69,10 @@ SchemaBoolean.prototype.castForQuery = function ($conditional, val) {
   if (2 === arguments.length) {
     handler = SchemaBoolean.$conditionalHandlers[$conditional];
 
-    if (handler) {
-      return handler.call(this, val);
-    }
+    if (!handler)
+      throw new Error("Can't use " + $conditional + " with Boolean.");
 
-    return this.cast(val);
+    return handler.call(this, val);
   }
 
   return this.cast($conditional);

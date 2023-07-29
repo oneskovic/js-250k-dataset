@@ -38,7 +38,7 @@ var TodoApp = ub.createView({
 
         deleteTodos: { type: DeleteTodo },
         
-        /** Views **/
+        
         textbox: {
             type: Textbox,
             props: {

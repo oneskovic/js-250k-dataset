@@ -1,6 +1,3 @@
-/**
- * This class has been deprecated. Use `Ext.data.schema.Schema` instead.
- */
 Ext.define('Ext.data.ModelManager', {
     alternateClassName: 'Ext.ModelMgr',
 

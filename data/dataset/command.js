@@ -1,76 +1,104 @@
-// Copyright 2009 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+var util = require("util");
+var Buffer = require("buffer").Buffer,
+    CRLF      = "\r\n";
 
+
+var Command = exports.Command = function (commandAsArray, client) {
+    var commandName = this.commandName = commandAsArray.shift();
+    if (typeof commandAsArray[commandAsArray.length-1] === "function") {
+        this.commandCallback = commandAsArray.pop();
+    }
+
+    // Helps the client to accept the option {encoding: "binary"} for client.get
+    // Useful when retrieving a stored image
+    if (commandName === "get" && commandAsArray[commandAsArray.length-1].encoding) {
+        this.encoding = commandAsArray.pop().encoding;
+    }
+    this.commandArgs = commandAsArray;
+    this.client = client;
+    this.isPubSub = /^p?(un)?subscribe$/.test(commandName);
+};
+
+Command.prototype = {
+// So we keep things lightweight in our commandHistory
+toHash: function () {
+    var commandName = this.commandName;
+    var hash = {
+        commandName: commandName
+    };
+    if (this.hasOwnProperty("commandCallback")) {
+        hash.commandCallback = this.commandCallback;
+    }
+    if (commandName === "select") {
+        hash.db = this.commandArgs[0];
+    }
+    var args = this.commandArgs;
+    if (args[args.length-1] === "withscores") {
+        hash.withscores = true;
+    }
+    if (this.encoding) hash.encoding = this.encoding;
+    return hash;
+},
+
+// Default Callback in case a commandCallback is not explicitly
+// set on the command instance
+commandCallback: function (err, reply) {
+  if (err) util.log(err);
+},
+
+hasBufferArgs: function () {
+    var args = this.commandArgs;
+    for (var i = 0, len = args.length; i < len; i++) {
+        if (Buffer.isBuffer(args[i])) {
+            return true;
+        }
+    }
+    return false;
+},
 /**
- * @fileoverview Commands that the editor can execute.
-*
-*
- * @see ../demos/editor/editor.html
+ * Returns the command in a form that can get sent over the stream
+ * to the Redis server. Either returns a Buffer or a String.
  */
-goog.provide('goog.editor.Command');
-
-
-/**
- * Commands that the editor can excute via execCommand or queryCommandValue.
- * @enum {string}
- */
-goog.editor.Command = {
-  // Prepend all the strings of built in execCommands with a plus to ensure
-  // that there's no conflict if a client wants to use the
-  // browser's execCommand.
-  UNDO: '+undo',
-  REDO: '+redo',
-  LINK: '+link',
-  FORMAT_BLOCK: '+formatBlock',
-  INDENT: '+indent',
-  OUTDENT: '+outdent',
-  REMOVE_FORMAT: '+removeFormat',
-  STRIKE_THROUGH: '+strikeThrough',
-  HORIZONTAL_RULE: '+insertHorizontalRule',
-  SUBSCRIPT: '+subscript',
-  SUPERSCRIPT: '+superscript',
-  UNDERLINE: '+underline',
-  BOLD: '+bold',
-  ITALIC: '+italic',
-  FONT_SIZE: '+fontSize',
-  FONT_FACE: '+fontName',
-  FONT_COLOR: '+foreColor',
-  EMOTICON: '+emoticon',
-  BACKGROUND_COLOR: '+backColor',
-  ORDERED_LIST: '+insertOrderedList',
-  UNORDERED_LIST: '+insertUnorderedList',
-  TABLE: '+table',
-  JUSTIFY_CENTER: '+justifyCenter',
-  JUSTIFY_FULL: '+justifyFull',
-  JUSTIFY_RIGHT: '+justifyRight',
-  JUSTIFY_LEFT: '+justifyLeft',
-  BLOCKQUOTE: '+BLOCKQUOTE', // This is a nodename. Should be all caps.
-  DIR_LTR: 'ltr', // should be exactly 'ltr' as it becomes dir attribute value
-  DIR_RTL: 'rtl', // same here
-  IMAGE: 'image',
-  EDIT_HTML: 'editHtml',
-
-  // queryCommandValue only: returns the default tag name used in the field.
-  // DIV should be considered the default if no plugin responds.
-  DEFAULT_TAG: '+defaultTag',
-
-  // TODO(nicksantos): Try to give clients an API so that they don't need
-  // these execCommands.
-  CLEAR_LOREM: 'clearlorem',
-  UPDATE_LOREM: 'updatelorem',
-  USING_LOREM: 'usinglorem',
-
-  // Modal editor commands (usually dialogs).
-  MODAL_LINK_EDITOR: 'link'
+writeToStream: function () {
+    var commandArgs = this.commandArgs,
+        commandName = this.commandName,
+        numArgs = commandArgs.length,
+        expectedBulks = 1 + numArgs, // +1 for commandName
+        useBuffer = this.hasBufferArgs(),
+        cmdStr = "*" + (1 + numArgs) + CRLF +    // Bulks to expect; +1 for commandName
+                 "$" + commandName.length + CRLF + // Command Name Bytelength
+                 commandName + CRLF,
+        stream = this.client.stream,
+        i, arg;
+    if (useBuffer) {
+        stream.write(cmdStr);
+        for (i = 0; i < numArgs; i++) {
+            arg = commandArgs[i];
+            if (Buffer.isBuffer(arg)) {
+                stream.write("$" + arg.length + CRLF);
+                stream.write(arg);
+                stream.write(CRLF);
+            } else {
+                arg = arg + '';
+                stream.write("$" + arg.length + CRLF + arg + CRLF);
+            }
+        }
+    } else if (this.client.utf8) {
+        stream.write(cmdStr);
+        for (i = 0; i < numArgs; i++) {
+            arg = commandArgs[i] + '';
+            if (!Buffer.isBuffer(arg)) arg = new Buffer(arg);
+            stream.write("$" + arg.length + CRLF);
+            stream.write(arg);
+            stream.write(CRLF);
+        }
+    } else {
+        for (i = 0; i < numArgs; i++) {
+            arg = commandArgs[i] + '';
+            cmdStr += "$" + arg.length + CRLF + arg + CRLF;
+        }
+        stream.write(cmdStr);
+    }
+//    delete this.client; // Removes client from command, so command's easier on the eyes when util inspecting
+}
 };

@@ -1,7 +1,3 @@
-/**
-* Class: Transformation
-* Description: Represents a transformation matrix.
-*/
 JSM.Transformation = function ()
 {
 	this.matrix = JSM.MatrixIdentity ();

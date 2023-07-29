@@ -1,7 +1,3 @@
-/**
- * Created by Michael on 04/10/2014.
- */
-
 var collisionDetector = (function() {
     var module = {};
     var screenWidth = document.documentElement.clientWidth;

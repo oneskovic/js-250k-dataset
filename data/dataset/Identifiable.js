@@ -1,9 +1,3 @@
-//@tag dom,core
-
-/**
- * An Identifiable mixin.
- * @private
- */
 Ext.define('Ext.mixin.Identifiable', {
     statics: {
         uniqueIds: {}
@@ -27,8 +21,7 @@ Ext.define('Ext.mixin.Identifiable', {
         var id = this.id,
             prototype, separator, xtype, uniqueIds, prefix;
 
-        // Cannot test falsiness. Zero is a valid ID.
-        if (!(id || id === 0)) {
+        if (!id) {
             prototype = this.self.prototype;
             separator = this.defaultIdSeparator;
 
@@ -38,11 +31,10 @@ Ext.define('Ext.mixin.Identifiable', {
                 xtype = this.xtype;
 
                 if (xtype) {
-                    prefix = this.defaultIdPrefix + xtype.replace(this.idCleanRegex, separator) + separator;
-                } else if (!(prefix = prototype.$className)) {
-                    prefix = this.defaultIdPrefix + 'anonymous' + separator;
-                } else {
-                    prefix = prefix.replace(this.idCleanRegex, separator).toLowerCase() + separator;
+                    prefix = this.defaultIdPrefix + xtype + separator;
+                }
+                else {
+                    prefix = prototype.$className.replace(this.idCleanRegex, separator).toLowerCase() + separator;
                 }
 
                 prototype.identifiablePrefix = prefix;

@@ -1,9 +1,3 @@
-/**
- * @fileoverview
- * '들여쓰기' Icon Source,
- * Class Trex.Tool.Indent configuration을 포함
- *
- */
 TrexConfig.addTool(
     "indent",
     {

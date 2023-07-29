@@ -1,5 +1,3 @@
-// Load modules
-
 var Lab = require('lab');
 var Hoek = require('hoek');
 var Hawk = require('../lib');

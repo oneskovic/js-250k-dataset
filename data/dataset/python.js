@@ -1,19 +1,3 @@
-/*
----
-description: Python language fuel.
-
-license: MIT-style
-
-authors:
-  - Italo Maia
-
-requires:
-  - Core/1.3
-  - Fuel
-
-provides: [Fuel.python]
-...
-*/
 Fuel.python = new Class({
     
     Extends:Fuel,

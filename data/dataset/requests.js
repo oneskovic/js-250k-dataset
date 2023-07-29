@@ -1,69 +1,64 @@
-/* global describe, it */
+var util        = require('util'),
+    Client      = require('./client').Client,
+    defaultUser = require('./helpers').defaultUser;
 
-'use strict'
 
-var async = require('async')
-var fixtures = require('./fixtures')
-var HTTPSnippet = require('../src')
-var targets = require('../src/targets')
-var shell = require('child_process')
-var util = require('util')
+var Requests = exports.Requests = function (options) {
+  this.jsonAPIName = 'requests';
+  this.jsonAPIName2 = 'request';
+  Client.call(this, options);
+};
 
-require('should')
+// Inherit from Client base object
+util.inherits(Requests, Client);
 
-var base = './test/fixtures/output/'
-var requests = [ 'application-form-encoded',
-  'application-json',
-  'cookies',
-  'custom-method',
-  'headers',
-  'https',
-  'multipart-data',
-  'multipart-form-data',
-  'short'
-]
+// ######################################################## Requests
+// ====================================== Listing Requests
+Requests.prototype.list = function (cb) {
+  this.requestAll('GET', ['requests'], cb);//all
+};
 
-// test all the things!
-async.each(fixtures.cli, function (cli) {
-  describe(targets[cli.target].info.title + ' Request Validation', function () {
-    async.each(cli.clients, function (client) {
-      async.each(requests, function (request) {
-        it(client + ' request should match mock for ' + request, function (done) {
-          var stdout = ''
-          var fixture = cli.target + '/' + client + '/' + request + HTTPSnippet.extname(cli.target)
-          var command = util.format(cli.run, base + fixture)
+Requests.prototype.listOpen = function (cb) {
+  this.requestAll('GET', ['requests', 'open'], cb);//all
+};
 
-          var ls = shell.exec(command)
+Requests.prototype.listSolved = function (cb) {
+  this.requestAll('GET', ['requests', 'solved'], cb);//all
+};
 
-          ls.stdout.on('data', function (data) {
-            stdout += data
-          })
+Requests.prototype.listCCD = function (orgID, cb) {
+  this.requestAll('GET', ['requests', 'ccd'], cb);//all
+};
 
-          ls.on('exit', function (code) {
-            try {
-              var har = JSON.parse(stdout)
-            } catch (err) {
-              err.should.be.null
-            }
+Requests.prototype.listByUser = function (userID, cb) {
+  this.requestAll('GET', ['users', userID, 'requests'], cb);//all
+};
 
-            // make an exception for multipart/form-data
-            if (fixtures.requests[request].headers) {
-              fixtures.requests[request].headers.map(function (header, index) {
-                if (header.name === 'content-type' && header.value === 'multipart/form-data') {
-                  delete fixtures.requests[request].headers[index]
-                }
-              })
-            }
+Requests.prototype.listByOrganization = function (orgID, cb) {
+  this.requestAll('GET', ['organizations', orgID, 'requests'], cb);//all
+};
 
-            har.should.have.property('log')
-            har.log.should.have.property('entries').and.be.Array
-            har.log.entries[0].should.have.property('request')
-            har.log.entries[0].request.should.containDeep(fixtures.requests[request])
+// ====================================== Viewing Requests
+Requests.prototype.getRequest = function (requestID, cb) {
+  this.request('GET', ['requests', requestID], cb);
+};
 
-            done()
-          })
-        })
-      })
-    })
-  })
-})
+// ====================================== Creating Requests
+Requests.prototype.create = function (request, cb) {
+  this.request('POST', ['requests'], request,  cb);
+};
+
+// ====================================== Updating Requests
+Requests.prototype.update = function (requestID, request, cb) {
+  this.request('PUT', ['requests', requestID], request,  cb);
+};
+
+// ====================================== Listing Comments
+Requests.prototype.listComments = function (requestID, cb) {
+  this.requestAll('GET', ['requests', requestID, 'comments'], cb);//all
+};
+
+// ====================================== Get Comment
+Requests.prototype.getComment = function (requestID, commentID, cb) {
+  this.requestAll('GET', ['requests', requestID, 'comments', commentID], cb);
+};

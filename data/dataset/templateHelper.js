@@ -1,7 +1,3 @@
-/**
- * @module jsdoc/util/templateHelper
- */
-
 var hash = require('pajhome/hash');
 exports.globalName = 'global';
 exports.fileExtension = '.html';

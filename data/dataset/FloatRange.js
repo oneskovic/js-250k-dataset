@@ -2,13 +2,7 @@ define(["require", "exports", "module", "../../math/mathUtils"], function(requir
 
 var mathUtils = require('../../math/mathUtils');
 
-/**
- * construct a new `FloatRange`
- * provides utilities for dealing with a range of Numbers.
- * @param {Number} [min=0] the minimum in the range
- * @param {Number} [max=1.0] the maximum in the range
- * @constructor
- */
+
 var FloatRange = function(min, max){
 	min = min || 0.0;
 	max = typeof max === 'number' ? max : 1.0;

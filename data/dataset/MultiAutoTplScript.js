@@ -1,7 +1,3 @@
-/**
- * Script for the autocomplete sample
- * @class samples.widgets.form.templates.AutoCompleteSampleScript
- */
 Aria.tplScriptDefinition({
     $classpath : 'test.aria.widgets.form.multiautocomplete.template.MultiAutoTplScript',
     $dependencies : ['aria.resources.handlers.LCRangeResourceHandler'],

@@ -1,10 +1,3 @@
-/**
- * ThumbsUp view
- *
- * @type {*|void|Object|extend|extend|extend}
- */
-
-
 app.ThumbsupView = Backbone.View.extend({
 
   initialize: function () {

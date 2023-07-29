@@ -1,8 +1,3 @@
-
-/**
- * Module dependencies.
- */
-
 var SchemaType = require('../schematype')
   , CastError = SchemaType.CastError
   , driver = global.MONGOOSE_DRIVER_PATH || './../drivers/node-mongodb-native'

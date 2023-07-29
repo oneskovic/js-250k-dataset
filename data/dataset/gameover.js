@@ -1,7 +1,3 @@
-
-/**
- * Title Screen
- */
 var GameOverScreen = me.ScreenObject.extend( {
 
 	onResetEvent: function() {

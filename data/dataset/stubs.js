@@ -1,8 +1,3 @@
-//create stubs for all the collections
-// nationalvote = new Meteor.Collection('nationalvote')
-// nationalvoter = new Meteor.Collection('nationalvoter')
-// admin = new Meteor.Collection('admin')
-
 // history = new Meteor.Collection('history')
 
 // userinfo= new Meteor.Collection('userinfo')

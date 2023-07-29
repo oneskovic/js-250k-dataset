@@ -1,7 +1,3 @@
-/**
- * Component layout for Ext.form.FieldSet components
- * @private
- */
 Ext.define('Ext.layout.component.FieldSet', {
     extend: 'Ext.layout.component.Body',
     alias: ['layout.fieldset'],

@@ -1,7 +1,3 @@
-/**
- * The base brain code for player/monsters. Basically a container for state and decisions to control the movement
- * of any complex creature in the game
- */
 Brain = pc.components.Component('Brain',
     {
         State:{

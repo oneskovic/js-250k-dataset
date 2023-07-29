@@ -1,12 +1,3 @@
-/**
- *      CCU.IO Geofency Adapter
- *      11'2013 Hobbyquaker
- *
- *      Version 0.4
- *
- *
- */
-
 var settings = require(__dirname+'/../../settings.js');
 
 if (!settings.adapters.geofency || !settings.adapters.geofency.enabled) {

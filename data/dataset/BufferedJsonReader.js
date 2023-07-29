@@ -1,13 +1,3 @@
-/*
- * Ext.ux.data.BufferedJsonReader V0.1
- * Copyright(c) 2007, http://www.siteartwork.de
- * 
- * Licensed under the terms of the Open Source LGPL 3.0
- * http://www.gnu.org/licenses/lgpl.html
- *
- * @author Thorsten Suckow-Homberg <ts@siteartwork.de>
- */
-
 Ext.namespace('Ext.ux.data');
 
 

@@ -1,114 +1,59 @@
-var EventEmitter = require('events').EventEmitter;
-var Stream = require('stream');
-var util = require('util');
-var colors = require('colors');
-var Strftime = require('strftime');
-var ObjectStream = require('zetta-streams').ObjectStream;
+define([], function() {
+  'use strict';
 
-var LEVELS = ['log', 'info', 'warn', 'error'];
+  var noop    = function() {},
+      console = window.console || {};
 
-function Logger(options) {
-  EventEmitter.call(this);
-  this.options = options || {};
-  this.pubsub = this.options.pubsub;
-}
-util.inherits(Logger, EventEmitter);
+  function Logger(name) {
+    this.name   = name;
+    this._log   = noop;
+    this._warn  = noop;
+    this._error = noop;
+    this._enabled = false;
+    return this;
+  }
 
-LEVELS.forEach(function(level) {
-  Logger.prototype[level] = function(event, msg, data) {
-    this.emit(level, event, msg, data);
+  Logger.prototype.isEnabled = function () {
+    return this._enabled;
   };
-});
 
-/*
- * Logger intercepts messages sent from all over the fog runtime. We format them accordingly.
- *
- */
-Logger.prototype.init = function() {
-  var self = this;
+  Logger.prototype.setName = function(name){
+    this.name = name;
+  };
 
-  this.removeAllListeners();
-
-  LEVELS.slice(1).forEach(function(level) {
-    self.on(level, function(event, msg, data) {
-      if (!event || !msg) {
-        return;
+  Logger.prototype.enable = function() {
+    if (Function.prototype.bind && typeof console === "object") {
+      var logFns = ["log", "warn", "error"];
+      for (var i = 0; i < logFns.length; i++) {
+        console[logFns[i]] = Function.prototype.call.bind(console[logFns[i]], console);
       }
-
-      if (typeof data !== 'object') {
-        data = {
-          timestamp: new Date().getTime()
-        };
-      }
-
-      // add timestamp if it does not exist.
-      if (!data.timestamp) {
-        data.timestamp  = new Date().getTime();
-      }
-
-      self.emit('message', level, event, msg, data);
-
-      if (self.pubsub) {
-        self._sendToPubsub(level, event, msg, data);
-      }
-    });
-  });
-
-  this.on('log', function(event, msg, data) {
-    self.emit('info', event, msg, data);
-  });
-};
-
-Logger.prototype._sendToPubsub = function(level, event, msg, data) {
-  if (!data) {
-    data = {};
-  }
-
-  var obj = ObjectStream.format((data.topic || 'logs'), null);
-  delete obj.data; // only used for objectstream messages
-
-  Object.keys(data).forEach(function(key) {
-    obj[key] = data[key];
-  });
-
-  if (msg) {
-    obj.msg = msg;
-  }
-
-  obj.level = level;
-  obj.event = event;
-
-  this.pubsub.publish('logs', obj);
-};
-
-function ConsoleOutput(log) {
-
-  function format(level, event, msg, d) {
-    var dateStr = Strftime('%b-%d-%Y %H:%M:%S ', new Date(d.timestamp)).green;
-    msg = '[' + event + '] ' + msg;
-    if (level === 'info' || level === 'log') {
-      console.log(dateStr + msg.blue);
-    } else if(level === 'warn') {
-      console.log(dateStr + msg.yellow);
-    } else if (level === 'error') {
-      console.error(dateStr + msg.red);
     }
-  }
 
-  log.on('message', format);
-};
+    this._log     = (console.log   || noop);
+    this._warn    = (console.warn  || this._log);
+    this._error   = (console.error || this._log);
+    this._enabled = true;
 
-var logger = null;
-module.exports = function() {
-  if(logger) {
-    return logger;
-  } else {
-    logger = Object.create(Logger.prototype);
-    logger.constructor.apply(logger, arguments);
-    logger.init();
-    return logger;
-  }
-};
+    return this;
+  };
 
-module.exports.LEVELS = LEVELS;
-module.exports.ConsoleOutput = ConsoleOutput;
+  Logger.prototype.write = function(output, args){
+    var parameters = Array.prototype.slice.call(args);
+    parameters.unshift(this.name + ":");
+    output.apply(console, parameters);
+  };
+
+  Logger.prototype.log = function() {
+    this.write(this._log, arguments);
+  };
+
+  Logger.prototype.warn = function() {
+    this.write(this._warn, arguments);
+  };
+
+  Logger.prototype.error = function() {
+    this.write(this._error, arguments);
+  };
+
+  return Logger;
+});

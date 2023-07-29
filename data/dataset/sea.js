@@ -1,8 +1,3 @@
-/**
- * Add the capability to load CMD modules in node environment
- * @author lifesinger@gmail.com
- */
-
 var fs = require("fs")
 var path = require("path")
 var vm = require("vm")

@@ -1,10 +1,3 @@
-/**
- * Implements the top level registration of grid handlers and manages their
- * states.
- *
- * @param {Object} GridDispatch.grids  Collection of grid handlers
- * @constructor
- */
 function GridDispatch() {
   if (!enquire) {
     throw new Error('enquire.js not present, please load it before calling any methods');

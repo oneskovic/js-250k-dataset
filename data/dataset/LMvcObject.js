@@ -1,10 +1,3 @@
-/** @language chinese
- * MVC框架的控制器，模型和视图的共通父类。
- * @class LMvcObject
- * @constructor
- * @since 1.8.4
- * @public
- */
 var LMvcObject = (function() {
 	function LMvcObject(){
 	}

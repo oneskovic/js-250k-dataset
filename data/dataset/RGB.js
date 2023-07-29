@@ -1,17 +1,5 @@
 (function () {
-    /**
-     * RGB Filter
-     * @function
-     * @name RGB
-     * @memberof Kinetic.Filters
-     * @param {Object} imageData
-     * @author ippo615
-     * @example
-     * node.cache();
-     * node.filters([Kinetic.Filters.RGB]);
-     * node.blue(120);
-     * node.green(200);
-     */
+    
     Kinetic.Filters.RGB = function (imageData) {
         var data = imageData.data,
             nPixels = data.length,

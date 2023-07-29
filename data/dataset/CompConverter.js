@@ -1,4 +1,3 @@
-/****** INIT CompConverter ******/
 (function(){
     var isExportDirectoryCreated = false;
     var directoryCreationFailed = false;

@@ -1,12 +1,3 @@
-/*
- * Tangram
- * Copyright 2010 Baidu Inc. All rights reserved.
- * 
- * @author: meizz
- * @namespace: baidu.fx.collapse
- * @version: 2010-01-23
- */
-
 ///import baidu.dom.g;
 ///import baidu.dom.hide;
 ///import baidu.object.extend;

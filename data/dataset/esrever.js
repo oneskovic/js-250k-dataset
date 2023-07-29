@@ -1,4 +1,3 @@
-/*! https://mths.be/esrever v0.1.0 by @mathias */
 ;(function(root) {
 
 	// Detect free variables `exports`

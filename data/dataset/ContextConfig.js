@@ -1,8 +1,3 @@
-/*
- * EaselFL is EaselJS rendering to Flash
- * @author Brett Johnson, periscopic.com
- */
-
 /** 
 * Copyright (c) 2012 periscopic, inc.
 * 

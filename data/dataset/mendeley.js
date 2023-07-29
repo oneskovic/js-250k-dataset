@@ -1,4 +1,3 @@
-/* jslint node: true */
 /*global mendeleySimple: false, mendeleyAdvanced: false, mendeleyParse: false, empty: false */
 "use strict";
 

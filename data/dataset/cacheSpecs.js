@@ -5,13 +5,7 @@ var assert = require('assert');
 var fs = require('fs');
 
 
-/**
- * Creates instance of example app using an injected version of express-hbs to track the number of times a
- * file is read. Additionally, the $NODE_ENV environment variable may be set.
- *
- * @param env
- * @returns {{app: hbs, readCounts: {}}}
- */
+
 function createApp(env) {
   var readCounts = {};
   var hbs = rewire('../lib/hbs');

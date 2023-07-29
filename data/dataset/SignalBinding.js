@@ -1,6 +1,3 @@
-    // SignalBinding -------------------------------------------------
-    //================================================================
-
     /**
      * Object that represents a binding between a Signal and a listener function.
      * <br />- <strong>This is an internal constructor and shouldn't be called by regular users.</strong>

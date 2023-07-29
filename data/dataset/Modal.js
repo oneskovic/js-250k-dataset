@@ -13,13 +13,7 @@
     }
 }(function (uijet) {
 
-    /**
-     * Modal dialog composite class.
-     *
-     * @class Modal
-     * @extends BaseWidget
-     * @category Composite
-     */
+    
     uijet.Widget('Modal', {
         options : {
             type_class: ['uijet_pane', 'uijet_modal'],

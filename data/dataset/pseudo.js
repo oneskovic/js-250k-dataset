@@ -1,37 +1,6 @@
 'use strict';
 
-/* Pseudolocalizations
- *
- * PSEUDO is a dict of strategies to be used to modify the English
- * context in order to create pseudolocalizations.  These can be used by
- * developers to test the localizability of their code without having to
- * actually speak a foreign language.
- *
- * Currently, the following pseudolocales are supported:
- *
- *   qps-ploc - Ȧȧƈƈḗḗƞŧḗḗḓ Ḗḗƞɠŀīīşħ
- *
- *     In Accented English all English letters are replaced by accented
- *     Unicode counterparts which don't impair the readability of the content.
- *     This allows developers to quickly test if any given string is being
- *     correctly displayed in its 'translated' form.  Additionally, simple
- *     heuristics are used to make certain words longer to better simulate the
- *     experience of international users.
- *
- *   qps-plocm - ɥsıʅƃuƎ pǝɹoɹɹıW
- *
- *     Mirrored English is a fake RTL locale.  All words are surrounded by
- *     Unicode formatting marks forcing the RTL directionality of characters.
- *     In addition, to make the reversed text easier to read, individual
- *     letters are flipped.
- *
- *     Note: The name above is hardcoded to be RTL in case code editors have
- *     trouble with the RLO and PDF Unicode marks.  In reality, it should be
- *     surrounded by those marks as well.
- *
- * See https://bugzil.la/900182 for more information.
- *
- */
+
 
 var reAlphas = /[a-zA-Z]/g;
 var reVowels = /[aeiouAEIOU]/g;

@@ -1,17 +1,4 @@
 /**
- * Tweene - JavaScript Animation Proxy 
- * 
- * @link http://tweene.com
- *   
- * Copyright (c) 2014, Federico Orru'   <federico@buzzler.com>
- * 
- * @license Artistic License 2.0 
- * See LICENSE.txt for details
- * 
- */
-
-
-/**
  * Ticker object used to emulate delay, progress callbacks, async calls.
  * It uses RequestAnimationFrame when available, with fallback to setTimeout.
  * We instantiate a single Ticker in Tweene.ticker

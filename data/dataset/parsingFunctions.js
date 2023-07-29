@@ -1,12 +1,6 @@
 var ParsingFunctions = {};
 
-/**
- * The Utility Functions module provides utility functions which correspond to general concepts.
- *
- * @module multigraph
- * @submodule utilityfunctions
- * @main utilityfunctions
- */
+
 
 /**
  * Functions which provide abstractions for the parser.

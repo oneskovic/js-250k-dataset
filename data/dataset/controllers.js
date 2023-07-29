@@ -1,62 +1,105 @@
-/**
- * Controllers
- *
- * By default, Sails controllers automatically bind routes for each of their functions.
- * Additionally, each controller will automatically bind routes for a CRUD API
- * controlling the model which matches its name, if one exists.
- * 
- * NOTE:	These settings are for the global configuration of controllers.	
- *			You may also override these settings on a per-controller basis
- *			by modifying the 'blueprints' object in your controllers
- *
- * For more information on controller configuration and blueprints, check out:
- * http://sailsjs.org/#documentation
- */
+'use strict';
 
-module.exports.controllers = {
+(function(){
+	var app = angular.module('app');
 
+	// RouteCtrl - expose app.routes and the current route for the navbar
+	app.controller('RouteCtrl', function ($scope, $route) {
+	        $scope.$route = $route;
+	        $scope.links = app.routes;
+	});
 
-  blueprints: {
+	// HomeCtrl - expose the changed entities in the EntityManager
+	app.controller('HomeCtrl', ['$scope', 'dataservice', 'logger', function ($scope, dataservice, logger) {
 
-    // Optional mount path prefix for blueprints
-    // (the automatically bound routes in your controllers)
-    // e.g. '/api/v2'
-    prefix: '',
+	    $scope.reset = function () {
+	        dataservice.rejectChanges();
+	    }
 
+	    $scope.update = function () {
+	        dataservice.saveChanges();
+	    }
 
-    // Whether routes are automatically generated for every action in your controllers
-    // (also maps `index` to /:controller)
-    // '/:controller', '/:controller/index', and '/:controller/:action'
-    actions: true,
+	    // expose all the changed entities from the entityManager
+	    $scope.changedEntities = dataservice.getChanges();
+	    dataservice.subscribeChanges(function (changeargs) {
+	        $scope.changedEntities = dataservice.getChanges();
+	    });
 
+	}]);
 
-    // ** NOTE **
-    // These CRUD shortcuts exist for your convenience during development,
-    // but you'll want to disable them in production.
-    // '/:controller/find/:id?'
-    // '/:controller/create'
-    // '/:controller/update/:id'
-    // '/:controller/destroy/:id'
-    shortcuts: true,
+	// CustomerCtrl - load the customers and configure the grid to display them
+	app.controller('CustomerCtrl', ['$scope', '$modal', 'dataservice', 'gridservice', 'logger', function ($scope, $modal, dataservice, gridservice, logger) {
 
+	    $scope.customers = $scope.customers || [];
 
-    // Automatic REST blueprints enabled?
-    // e.g.
-    // 'get /:controller/:id?'
-    // 'post /:controller'
-    // 'put /:controller/:id'
-    // 'delete /:controller/:id'
-    rest: true,
+	    $scope.reset = function (customer) {
+	        customer.entityAspect.rejectChanges();
+	    };
 
+	    $scope.update = function (customer) {
+	        dataservice.saveChanges([customer]);
+	    };
 
-    // If a blueprint route catches a request,
-    // only match :id param if it's an integer
-    //
-    // e.g.	only trigger route handler if requests look like:
-    //		get /user/8
-    // instead of:
-    //		get /user/a8j4g9jsd9ga4ghjasdha
-    expectIntegerId: false
-  }
+	    // Grid stuff
+	    var columnDefs = [{ field: 'companyName', displayName: 'Company Name', width: '50%' },
+	 	                 { field: 'contactName', displayName: 'Contact Name', width: '30%' },
+	 	                 { field: 'country', displayName: 'Country', width: '20%' }];
 
-};
+	    var selectionFunction = function (rowitem, event) {
+	        $scope.customer = rowitem.entity;
+	    };
+	    
+	    var gridConfig = {
+	    		gridName: 'customerGrid',
+	    		dataName: 'customers',
+	    		columnDefs: columnDefs,
+	    		queryFunction: dataservice.getCustomerPage,
+	    		selectionFunction: selectionFunction
+	    };
+	    
+	    gridservice.buildPagedGrid($scope, gridConfig);
+
+	}]);
+
+	app.controller('OrderCtrl', ['$scope', '$modal', 'dataservice', 'gridservice', 'logger', 
+	    function ($scope, $modal, dataservice, gridservice, logger) {
+
+	    var columnDefs = [{ field: 'customer.companyName', displayName: 'Customer', width: '12%' },
+	                      { field: 'employee.fullName', displayName: 'Employee', width: '12%' },
+	                      { field: 'orderDate', displayName: 'Order Date', width: '5%', cellFilter: "date:'shortDate'"},
+	                      { field: 'requiredDate', displayName: 'Required Date', width: '5%', cellFilter: "date:'shortDate'"},
+	                      { field: 'shippedDate', displayName: 'Shipped Date', width: '5%', cellFilter: "date:'shortDate'"},
+	                      { field: 'freight', displayName: 'Freight', width: '5%', cellFilter: 'currency'},
+	                      { field: 'shipName', displayName: 'Ship Name', width: '12%'},
+	                      { field: 'shipAddress', displayName: 'Ship Address', width: '12%'},
+	                      { field: 'shipCity', displayName: 'Ship City', width: '12%'},
+	                      { field: 'shipRegion', displayName: 'Region', width: '5%'},
+	                      { field: 'shipPostalCode', displayName: 'Post Code', width: '5%'},
+	                      { field: 'shipCountry', displayName: 'Country', width: '10%'}];
+	    
+	    var gridConfig = {
+	    		columnDefs: columnDefs,
+	    		queryFunction: dataservice.getOrderPage
+	    };
+	    
+	    gridservice.buildPagedGrid($scope, gridConfig);
+
+	    $scope.popup = function() {
+	    	var modalInstance = $modal.open({
+	    		templateUrl: 'App/views/entityEdit.html',
+	    		scope: $scope,
+	    		backdrop: 'static'
+	    	});
+
+	    	modalInstance.result.then(function(customer) {
+	    		//nothing
+	    	}, function(entity) {
+	    		entity.entityAspect.rejectChanges();
+	    	});
+	    };
+
+	    
+	}]);
+
+})();

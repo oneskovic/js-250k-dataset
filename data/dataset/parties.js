@@ -36,7 +36,7 @@ Object.extend(Object.extend(Ajax.Validator.prototype, Autocompleter.Base.prototy
     this.updateChoices(request.responseText);
   },
 
-  /* Copied verbatim from controls.js, except for KEY_ESC */
+  
   onKeyPress: function(event) {
     if(this.active)
       switch(event.keyCode) {

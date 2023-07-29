@@ -4,12 +4,7 @@ var log = require("../../../shared/logger.js").get("server"),
     models = require("../../../shared/registries/modelRegistry.js"),
     config = require("../../../shared/config.js");
 
-/**
- * returns a model-class or modelInstance if ID was set
- * @param {!String} modelPath
- * @param {String} id
- * @return {Object}
- */
+
 function getModel(modelPath, id) {
 
     //loadModel

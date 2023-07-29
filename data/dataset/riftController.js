@@ -1,4 +1,3 @@
-
 goog.require('Vizi.Prefabs');
 
 Vizi.Prefabs.RiftController = function(param)

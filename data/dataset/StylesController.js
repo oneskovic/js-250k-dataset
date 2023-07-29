@@ -1,4 +1,3 @@
-
 console.log("loading " + module.id);
 
 var mysql = require("mysql");

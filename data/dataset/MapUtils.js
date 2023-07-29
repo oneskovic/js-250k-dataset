@@ -4,11 +4,7 @@ sap.ui.define(['jquery.sap.global', 'google.maps'],
 
         var MapUtils = {};
 
-        /**
-         * Get google maps LatLng object
-         * @param {Object} oValue
-         * @returns {google.maps.LatLng}
-         */
+        
         MapUtils.objToLatLng = function(oValue) {
             return new gmaps.LatLng(oValue.lat, oValue.lng);
         };

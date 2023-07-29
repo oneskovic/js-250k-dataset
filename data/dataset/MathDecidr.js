@@ -1,10 +1,3 @@
-/**
- * MathDecidr.js
- * 
- * 
- * 
- * @author "Josh Goldberg" <josh@fullscreenmario.com>
- */
 function MathDecidr(settings) {
     "use strict";
     if (this === window) {

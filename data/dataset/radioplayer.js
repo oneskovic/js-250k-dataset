@@ -1,13 +1,3 @@
-/**
- * Connector for RadioPlayer enabled streams (http://www.radioplayer.co.uk/)
- * Made by Jiminald
- * Based loosely on the Google Music connector by Sharjeel Aziz
- * Reworked by gerjomarty
- *
- * To update the inject list, Open a RadioPlayer, view the A-Z list, and run the following command below
- * function onlyUnique(value, index, self) { return self.indexOf(value) === index; } var list = new Array(); $('.overlay-item-link').each(function(i, v){ var url = $(v).attr('href'); url = url.substring(7); url = url.substring(0, url.indexOf('/')); list.push('*://'+url+'/*'); }); list = list.filter(onlyUnique); console.log(JSON.stringify(list));
- */
-
 // Used to remember last song title and not scrobble if it is the same
 var lastArtist = '';
 var lastTrack = '';

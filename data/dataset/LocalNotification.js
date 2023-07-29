@@ -1,15 +1,3 @@
-/**
-	Phonegap LocalNotification Plugin
-	Copyright (c) Greg Allen 2011
-	Updates Drew Dahlman 2013
-	
-	MIT Licensed
-
-	Usage:
-	plugins.localNotification.add({ date: new Date(), message: 'This is a notification', badge: 1, id: 123, sound:'sub.caf',background:'app.background()',foreground:'app.running()' });
-	plugins.localNotification.cancel(123);
-	plugins.localNotification.cancelAll();
-**/
 if (typeof cordova !== "undefined") {
 	var LocalNotification = function() {};
 

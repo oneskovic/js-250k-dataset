@@ -1,11 +1,3 @@
-/**
-* This library ONLY WORKS IN AIR atm 
-* 
-* This is a conversion of the actionscript library from twstreamer <http://github.com/r/twstreamer/> into JavaScript.
-* No license was listed on the git repo, so I am assuming something public domain or new-BSD-ish.
-* 
-* @constructor
-*/
 var SpazTwitterStream = function(opts) {
 	var that = this;
 

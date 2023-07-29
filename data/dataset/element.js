@@ -1,145 +1,77 @@
-/*
----
+/*global define */
+define([
+    'js/util',
+    '../Error'
+], function (
+    util,
+    PHPError
+) {
+    'use strict';
 
-name: "App.Element"
+    function ElementReference(valueFactory, callStack, arrayValue, key, value) {
+        this.arrayValue = arrayValue;
+        this.key = key;
+        this.reference = null;
+        this.callStack = callStack;
+        this.value = value;
+        this.valueFactory = valueFactory;
+    }
 
-description: "LibCanvas.Layer"
+    util.extend(ElementReference.prototype, {
+        clone: function () {
+            var element = this;
 
-license:
-	- "[GNU Lesser General Public License](http://opensource.org/licenses/lgpl-license.php)"
-	- "[MIT License](http://opensource.org/licenses/mit-license.php)"
+            return new ElementReference(element.valueFactory, element.callStack, element.arrayValue, element.key, element.value);
+        },
 
-authors:
-	- "Shock <shocksilien@gmail.com>"
+        getKey: function () {
+            return this.key;
+        },
 
-requires:
-	- LibCanvas
-	- App
+        getValue: function () {
+            var element = this;
 
-provides: App.Element
+            // Special value of native null (vs. NullValue) represents undefined
+            if (!element.value && !element.reference) {
+                element.callStack.raiseError(PHPError.E_NOTICE, 'Undefined ' + element.arrayValue.referToElement(element.key.getNative()));
+                return element.valueFactory.createNull();
+            }
 
-...
-*/
+            return element.value ? element.value : element.reference.getValue();
+        },
 
-/** @class App.Element */
-declare( 'LibCanvas.App.Element', {
+        isDefined: function () {
+            var element = this;
 
-	layer   : null,
-	zIndex  : 0,
-	renderer: null,
-	settings: {},
-	opacity : 1,
-	opacityThreshold: 0.01,
+            return element.value || element.reference;
+        },
 
-	/** @constructs */
-	initialize: function (layer, settings) {
-		this.bindMethods([ 'redraw', 'destroy' ]);
+        isReference: function () {
+            return !!this.reference;
+        },
 
-		this.events = new Events(this);
-		this.settings = new Settings({ hidden: false })
-			.set(this.settings)
-			.set(settings)
-			.addEvents(this.events);
-		layer.addElement( this );
+        setReference: function (reference) {
+            var element = this;
 
-		var ownShape = this.shape && this.shape != this.constructor.prototype.shape;
+            element.reference = reference;
+            element.value = null;
+        },
 
-		if (ownShape || this.settings.get('shape')) {
-			if (!ownShape) this.shape = this.settings.get('shape');
-			this.saveCurrentBoundingShape();
-		}
-		if (this.settings.get('zIndex') != null) {
-			this.zIndex = Number( this.settings.get('zIndex') );
-		}
+        setValue: function (value) {
+            var element = this,
+                isFirstElement = (element.arrayValue.getLength() === 0);
 
-		this.configure();
-	},
+            if (element.reference) {
+                element.reference.setValue(value);
+            } else {
+                element.value = value.getForAssignment();
+            }
 
-	configure: function () {
-		return this;
-	},
+            if (isFirstElement) {
+                element.arrayValue.setPointer(element.arrayValue.getKeys().indexOf(element.key.getNative().toString()));
+            }
+        }
+    });
 
-	previousBoundingShape: null,
-
-	get currentBoundingShape () {
-		return this.shape.getBoundingRectangle().fillToPixel();
-	},
-
-	redraw: function () {
-		if (this.layer) {
-			this.layer.redrawElement( this );
-		}
-		return this;
-	},
-
-	destroy: function () {
-		if (this.layer) {
-			this.layer.rmElement( this );
-		}
-		return this;
-	},
-
-	distanceMove: function (point) {
-		this.shape.move(point);
-		return this;
-	},
-
-	hasPoint: function (point) {
-		return this.shape.hasPoint( point );
-	},
-
-	isTriggerPoint: function (point) {
-		if (this.hasMousePoint) {
-			return this.hasMousePoint(point);
-		} else {
-			return this.hasPoint(point);
-		}
-	},
-
-	addShift: function (shift) {
-		this.shape.move( shift );
-		if (this.previousBoundingShape)
-			this.previousBoundingShape.move( shift );
-		return this;
-	},
-
-	isVisible: function () {
-		return !this.settings.get('hidden') && this.opacity > this.opacityThreshold;
-	},
-
-	onUpdate: function (time) {
-		return this;
-	},
-
-	clearPrevious: function ( ctx ) {
-		if (this.previousBoundingShape) ctx.clear( this.previousBoundingShape );
-		return this;
-	},
-
-	saveCurrentBoundingShape: function () {
-		var shape = this.currentBoundingShape;
-		this.previousBoundingShape = shape.fillToPixel ?
-			shape.clone().fillToPixel() : shape.clone().grow( 2 );
-		return this;
-	},
-
-	renderToWrapper: function (ctx, resources) {
-		if (this.opacity < this.opacityThreshold) {
-			return;
-		}
-		ctx.save();
-		if (this.opacity + this.opacityThreshold < 1) {
-			ctx.set({ globalAlpha: this.opacity });
-		}
-		this.renderTo(ctx, resources);
-		ctx.restore();
-		return this;
-	},
-
-	renderTo: function (ctx, resources) {
-		if (this.renderer) {
-			this.renderer.renderTo(ctx, resources);
-		}
-		return this;
-	}
+    return ElementReference;
 });

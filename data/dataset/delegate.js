@@ -1,64 +1,76 @@
-/* ************************************************************************
+steal('can/util/can.js', 'can/event', 'can/event/propagate', 'can/construct', function(can) {
 
-   qooxdoo - the new era of web development
+	// ## can.event.delegate
+	//
+	// Adds a delegate event listener.
+	/**
+	 * @function can.event.delegate.delegate
+	 * @parent can.event.delegate
+	 * @plugin can/event/delegate
+	 * @signature `obj.delegate( selector, event, handler )`
+	 *
+	 * Adds a delegate event listener.
+	 *
+	 * @param {String} selector A selector to match against the stack of propagated objects.
+	 *                          The names used are based on the names of the constructors of 
+	 *													the original objects.
+	 * @param {Object|String} event The event name or object to listen to.
+	 * @param {Function} handler The handler to call when the event occurs.
+	 * @return {Object} this
+	 */
+	can.event.delegate = function(selector, event, handler) {
+		// Split the selector into parts that can be verified
+		var parts = selector && selector.split(/\s+/),
+			// Implement the custom delegation handler
+			// This is used to verify the selector prior to executing the original handler
+			delegate = function(ev) {
+				// Verify descendants against the selector
+				// These descendants are tracked in the `can/event/propagate` plugin
+				for (var i = 0, j = 0, descendant; j < parts.length && (descendant = ev.descendants[i]); i++) {
+					// A descendant name is considered valid if it matches the `shortName` or `_shortName`
+					// properties on the constructor. Generally, this assumes that `can.Construct` or a 
+					// similar can-based class is used (which defines those properties by default).
+					if (descendant.constructor && (parts[j] === descendant.constructor._shortName || parts[j] === descendant.constructor.shortName)) {
+						j++;
+					}
+				}
 
-   http://qooxdoo.org
+				// Only if every part of the selector was matched, execute the handler
+				if (j >= parts.length) {
+					return handler.apply(this, arguments);
+				}
+			};
 
-   Copyright:
-     2004-2010 1&1 Internet AG, Germany, http://www.1und1.de
+		// Cache the selector and handler, so that we can undelegate later with only that information.
+		delegate.handler = handler;
+		delegate.selector = selector;
+		return can.addEvent.call(this, event, delegate);
+	};
 
-   License:
-     LGPL: http://www.gnu.org/licenses/lgpl.html
-     EPL: http://www.eclipse.org/org/documents/epl-v10.php
-     See the LICENSE file in the project's top-level directory for details.
-
-   Authors:
-     * Christian Hagendorn (chris_schmidt)
-     * Martin Wittemann (martinwittemann)
-
-************************************************************************ */
-
-/**
- * Methods to work with the delegate pattern.
- */
-qx.Class.define("qx.util.Delegate",
-{
-  statics :
-  {
-    /**
-     * Returns the delegate method given my its name.
-     *
-     * @param delegate {Object} The delegate object to check the method.
-     * @param specificMethod {String} The name of the delegate method.
-     * @return {Function|null} The requested method or null, if no method is set.
-     */
-    getMethod : function(delegate, specificMethod)
-    {
-      if (qx.util.Delegate.containsMethod(delegate, specificMethod)) {
-        return qx.lang.Function.bind(delegate[specificMethod], delegate);
-      }
-
-      return null;
-    },
-
-
-
-    /**
-     * Checks, if the given delegate is valid or if a specific method is given.
-     *
-     * @param delegate {Object} The delegate object.
-     * @param specificMethod {String} The name of the method to search for.
-     * @return {Boolean} True, if everything was ok.
-     */
-    containsMethod : function (delegate, specificMethod)
-    {
-      var Type = qx.lang.Type;
-
-      if (Type.isObject(delegate)) {
-        return Type.isFunction(delegate[specificMethod]);
-      }
-
-      return false;
-    }
-  }
+	// ## can.event.undelegate
+	//
+	// Removes a delegate event listener.
+	/**
+	 * @function can.event.delegate.undelegate
+	 * @parent can.event.delegate
+	 * @plugin can/event/delegate
+	 * @signature `object.undelegate( selector, event, handler )`
+	 *
+	 * Removes a delegate event listener.
+	 *
+	 * @param {String} selector A selector to match against the stack of propagated objects.
+	 * @param {Object|String} event The event name or object to listen to.
+	 * @param {Function} handler The handler to call when the event occurs.
+	 * @return {Object} this
+	 */
+	can.event.undelegate = function(selector, event, fn) {
+		var isFunction = typeof fn === 'function';
+		// Attempt to remove the event, with a custom verification function
+		return can.removeEvent.call(this, event, fn, function(ev) {
+			// This allows us to check for the cached selector and handler
+			// as part of the verification. This is necessary because the user isn't 
+			// going to have access to the custom handler generated for delegation.
+			return isFunction && (ev.handler === fn || (ev.handler.handler === fn && ev.handler.selector === selector)) || !isFunction && ev.cid === fn;
+		});
+	};
 });

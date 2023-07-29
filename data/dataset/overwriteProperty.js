@@ -1,9 +1,3 @@
-/*!
- * Chai - overwriteProperty utility
- * Copyright(c) 2012-2013 Jake Luer <jake@alogicalparadox.com>
- * MIT Licensed
- */
-
 /**
  * ### overwriteProperty (ctx, name, fn)
  *

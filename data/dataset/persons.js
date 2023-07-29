@@ -1,6 +1,3 @@
-/**
- * Author: Per Spilling, per@kodemaker.no
- */
 var myApp = angular.module('persons', ['ngResource', 'ui.bootstrap'], function ($dialogProvider) {
     $dialogProvider.options({backdropClick: false, dialogFade: true});
 });

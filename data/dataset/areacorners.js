@@ -1,21 +1,8 @@
-/* areacorners.js
-   determine the best place to put a box of dimensions (width,height) given a circle, rect or poly
-*/
-
 (function ($) {
     var u=$.mapster.utils;
 
 
-    /**
-     * Compute positions that will place a target with dimensions [width,height] outside 
-     * but near the boundaries of the elements "elements". When an imagemap is passed, the 
-     *
-     * @param  {Element|Element[]} elements An element or an array of elements (such as a jQuery object)
-     * @param  {Element} image The image to which area elements are bound, if this is an image map.
-     * @param  {Element} container The contianer in which the target must be constrained (or document, if missing)
-     * @param  {int} width The width of the target object
-     * @return {object} a structure with the x and y positions
-     */
+    
     u.areaCorners = function (elements, image, container, width, height) {
         var pos,found, minX, minY, maxX, maxY, bestMinX, bestMaxX, bestMinY, bestMaxY, curX, curY, nest, j,
            offsetx=0, 

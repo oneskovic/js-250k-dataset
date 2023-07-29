@@ -1,5 +1,3 @@
-// *** Note this function is not current in use or in core
-
 // @private
 // Si mette in ascolto sui cambiamenti della proprietà e invia un report all'esterno quando accade.
 // Nota: se la proprietà inizialmente ha già un valore diverso da undefined, viene inviato subito

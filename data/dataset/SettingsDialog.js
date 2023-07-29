@@ -11,12 +11,7 @@ define(function (require, exports) {
         SettingsManager    = require("settings/SettingsManager"),
         Strings            = brackets.getModule("strings");
 
-    /**
-     * Compiled template function.
-     * @type {Function}
-     * @param {Object} locals
-     * @return {String} html
-     */
+    
     var _renderDialogTemplate = _.template(DialogTemplate);
 
     /**

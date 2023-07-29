@@ -1,8 +1,3 @@
-/**
- * @file Manages Streaming APIs
- * @author Shinichi Tomita <shinichi.tomita@gmail.com>
- */
-
 var events     = require('events'),
     util       = require('util'),
     request    = require('request'),

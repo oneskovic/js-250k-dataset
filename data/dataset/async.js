@@ -1,84 +1,96 @@
-/*______________
-|       ______  |   U I Z E    J A V A S C R I P T    F R A M E W O R K
-|     /      /  |   ---------------------------------------------------
-|    /    O /   |    MODULE : Uize.Util.Dependencies.Async Package
-|   /    / /    |
-|  /    / /  /| |    ONLINE : http://www.uize.com
-| /____/ /__/_| | COPYRIGHT : (c)2013-2015 UIZE
-|          /___ |   LICENSE : Available under MIT License or GNU General Public License
-|_______________|             http://www.uize.com/license.html
-*/
+'use strict';
 
-/* Module Meta Data
-	type: Package
-	importance: 1
-	codeCompleteness: 100
-	docCompleteness: 100
-*/
+var DomUtil = require('../dom-util');
 
-/*?
-	Introduction
-		The =Uize.Util.Dependencies.Async= utility module provides methods for working with dependency relationships in a generic way, and where the method for obtaining direct dependencies involves an asynchronous process.
+var items = [
+    'Amsterdam',
+    'Antwerp',
+    'Athens',
+    'Barcelona',
+    'Berlin',
+    'Birmingham',
+    'Bradford',
+    'Bremen',
+    'Brussels',
+    'Bucharest',
+    'Budapest',
+    'Cologne',
+    'Copenhagen',
+    'Dortmund',
+    'Dresden',
+    'Dublin',
+    'Düsseldorf',
+    'Essen',
+    'Frankfurt',
+    'Genoa',
+    'Glasgow',
+    'Gothenburg',
+    'Hamburg',
+    'Hannover',
+    'Helsinki'
+];
 
-		*DEVELOPERS:* `Chris van Rensburg`
+function query() {
+    var timeout = 30;
+    return function(options) {
+        var limit = 10;
+        var results = (options.term ? items.filter(function(item) {
+            return item.indexOf(options.term) > -1;
+        }) : items);
 
-		While the =Uize.Util.Dependencies.Async= module is used by the =Uize.Build.ModuleInfo= build utility module to trace module dependencies, the methods of the =Uize.Util.Dependencies.Async= module are expressed in sufficiently generic terms that the module can be used for many types of items that have dependency relationships.
-*/
+        timeout -= 10;
+        setTimeout(function() {
+            options.callback({
+                results: results.slice(options.offset, options.offset + limit),
+                more: results.length > options.offset + limit
+            });
+        }, timeout);
+    };
+}
 
-Uize.module ({
-	name:'Uize.Util.Dependencies.Async',
-	required:'Uize.Flo',
-	builder:function () {
-		'use strict';
+exports.testAsync = DomUtil.createDomTest(
+    ['async', 'single', 'dropdown', 'templates'],
+    { async: true },
+    function(test, $input, $) {
+        $input.selectivity({ query: query() });
 
-		/*** General Variables ***/
-			var
-				_trueFlagValue = {},
-				_resolveDependenciesList = Uize.Util.Dependencies.resolveDependenciesList
-			;
+        $input.click();
+        $input.selectivity('search', 'am');
+        $input.selectivity('search', 'dam');
 
-		return Uize.package ({
-			traceDependencies:function (_rootDependencies,_getDirectDependencies,_excludeDependencies,_callback) {
-				var
-					_excludeDependenciesLookup = Uize.lookup (
-						_resolveDependenciesList (_excludeDependencies),
-						_trueFlagValue
-					),
-					_dependenciesNeeded = []
-				;
-				function _traceDependencies (_dependencies,_next) {
-					Uize.Flo.forEach (
-						function (_next) {_next (_dependencies.sort ())},
-						function (_next) {
-							var
-								m = this,
-								_dependency = m.value
-							;
-							m ['if'] (
-								function (_next) {_next (_excludeDependenciesLookup [_dependency] != _trueFlagValue)},
-								[
-									function (_next) {
-										_excludeDependenciesLookup [_dependency] = _trueFlagValue;
-										_getDirectDependencies (_dependency,_next);
-									},
-									function (_next) {
-										_traceDependencies (this.result,_next);
-									},
-									function (_next) {
-										_dependenciesNeeded.push (_dependency);
-										_next ();
-									}
-								]
-							) (_next);
-						}
-					) (_next);
-				}
-				_traceDependencies (
-					_resolveDependenciesList (_rootDependencies),
-					function () {_callback (_dependenciesNeeded)}
-				);
-			}
-		});
-	}
-});
+        setTimeout(function() {
+            test.equal($('.selectivity-result-item').length, 1);
+            test.equal($('.selectivity-result-item').text(), 'Amsterdam');
+        }, 5);
 
+        setTimeout(function() {
+            test.equal($('.selectivity-result-item').length, 1);
+
+            test.done();
+        }, 25);
+    }
+
+);
+exports.testWithoutAsync = DomUtil.createDomTest(
+    ['single', 'dropdown', 'templates'],
+    { async: true },
+    function(test, $input, $) {
+        $input.selectivity({ query: query() });
+
+        $input.click();
+        $input.selectivity('search', 'am');
+        $input.selectivity('search', 'dam');
+
+        setTimeout(function() {
+            test.equal($('.selectivity-result-item').length, 1);
+            test.equal($('.selectivity-result-item').text(), 'Amsterdam');
+        }, 5);
+
+        setTimeout(function() {
+            test.equal($('.selectivity-result-item').length, 10);
+
+            test.done();
+        }, 25);
+    }
+
+);

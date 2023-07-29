@@ -1,61 +1,126 @@
-/* global document */
-describe('scroll', function() {
+window.onload = function () {
+    'use strict';
 
-    before(h.setup());
+    var view, indicator, relative,
+        min, max, offset, reference, pressed, xform,
+        velocity, frame, timestamp, ticker,
+        amplitude, target, timeConstant;
 
-    it('should scroll to specific x and y position', function(done) {
-        this.client
-            .windowHandleSize({width: 100, height: 100})
-            .scroll(100, 100)
-            .execute(function() {
-                return {
-                    x: $(document).scrollLeft(),
-                    y: $(document).scrollTop(),
-                };
-            }, function(err, res) {
-                assert.ifError(err);
-                res.value.x.should.be.exactly(100);
-                res.value.y.should.be.exactly(100);
+    function ypos(e) {
+        // touch event
+        if (e.targetTouches && (e.targetTouches.length >= 1)) {
+            return e.targetTouches[0].clientY;
+        }
 
-            })
-            .call(done);
+        // mouse event
+        return e.clientY;
+    }
+
+    function scroll(y) {
+        offset = (y > max) ? max : (y < min) ? min : y;
+        view.style[xform] = 'translateY(' + (-offset) + 'px)';
+        indicator.style[xform] = 'translateY(' + (offset * relative) + 'px)';
+    }
+
+    function track() {
+        var now, elapsed, delta, v;
+
+        now = Date.now();
+        elapsed = now - timestamp;
+        timestamp = now;
+        delta = offset - frame;
+        frame = offset;
+
+        v = 1000 * delta / (1 + elapsed);
+        velocity = 0.8 * v + 0.2 * velocity;
+    }
+
+    function autoScroll() {
+        var elapsed, delta;
+
+        if (amplitude) {
+            elapsed = Date.now() - timestamp;
+            delta = -amplitude * Math.exp(-elapsed / timeConstant);
+            if (delta > 0.5 || delta < -0.5) {
+                scroll(target + delta);
+                requestAnimationFrame(autoScroll);
+            } else {
+                scroll(target);
+            }
+        }
+    }
+
+    function tap(e) {
+        pressed = true;
+        reference = ypos(e);
+
+        velocity = amplitude = 0;
+        frame = offset;
+        timestamp = Date.now();
+        clearInterval(ticker);
+        ticker = setInterval(track, 100);
+
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+    }
+
+    function drag(e) {
+        var y, delta;
+        if (pressed) {
+            y = ypos(e);
+            delta = reference - y;
+            if (delta > 2 || delta < -2) {
+                reference = y;
+                scroll(offset + delta);
+            }
+        }
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+    }
+
+    function release(e) {
+        pressed = false;
+
+        clearInterval(ticker);
+        if (velocity > 10 || velocity < -10) {
+            amplitude = 0.8 * velocity;
+            target = Math.round(offset + amplitude);
+            timestamp = Date.now();
+            requestAnimationFrame(autoScroll);
+        }
+
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+    }
+
+    view = document.getElementById('view');
+    if (typeof window.ontouchstart !== 'undefined') {
+        view.addEventListener('touchstart', tap);
+        view.addEventListener('touchmove', drag);
+        view.addEventListener('touchend', release);
+    }
+    view.addEventListener('mousedown', tap);
+    view.addEventListener('mousemove', drag);
+    view.addEventListener('mouseup', release);
+
+    max = parseInt(getComputedStyle(view).height, 10) - innerHeight;
+    offset = min = 0;
+    pressed = false;
+    timeConstant = 325; // ms
+
+    indicator = document.getElementById('indicator');
+    relative = (innerHeight - 30) / max;
+
+    xform = 'transform';
+    ['webkit', 'Moz', 'O', 'ms'].every(function (prefix) {
+        var e = prefix + 'Transform';
+        if (typeof view.style[e] !== 'undefined') {
+            xform = e;
+            return false;
+        }
+        return true;
     });
-
-    it('should scroll to specific element', function(done) {
-        this.client
-            .windowHandleSize({width: 100, height: 100})
-            .scroll('.box')
-            .execute(function() {
-                return {
-                    x: $(document).scrollLeft(),
-                    y: $(document).scrollTop(),
-                };
-            }, function(err, res) {
-                assert.ifError(err);
-                res.value.x.should.be.approximately(15, 15);
-                res.value.y.should.be.approximately(262, 40);
-
-            })
-            .call(done);
-    });
-
-    it('should scroll to specific element with offset', function(done) {
-        this.client
-            .windowHandleSize({width: 100, height: 100})
-            .scroll('.box', -10, -22)
-            .execute(function() {
-                return {
-                    x: $(document).scrollLeft(),
-                    y: $(document).scrollTop(),
-                };
-            }, function(err, res) {
-                assert.ifError(err);
-                res.value.x.should.be.approximately(5, 15);
-                res.value.y.should.be.approximately(240, 40);
-
-            })
-            .call(done);
-    });
-
-
-});
+};

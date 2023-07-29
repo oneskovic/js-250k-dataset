@@ -1,8 +1,3 @@
-/**
- * Stacked area are multi-series area charts where categories are stacked on top of each
- * other. This is typically done to emphasize the quantity while comparing multiple
- * categories.
- */
 Ext.define('KitchenSink.view.charts.area.Stacked', {
     extend: 'Ext.Panel',
     xtype: 'area-stacked',

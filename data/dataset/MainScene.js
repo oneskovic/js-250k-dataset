@@ -1,5 +1,3 @@
-// Copyright (c) 2013 David Gallardo Moreno. All rights reserved.
-
 /**
  * @fileoverview Main scene of this game
  * @author David Gallardo Moreno (portalg@gmail.com)

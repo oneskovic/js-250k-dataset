@@ -1,16 +1,4 @@
 /** 
- * This file provides various listeners which can be used to build up
- * a changing ascent based on the callbacks provided by Clarinet. It listens
- * to the low-level events from Clarinet and emits higher-level ones.
- *  
- * The building up is stateless so to track a JSON file
- * ascentManager.js is required to store the ascent state
- * between calls.
- */
-
-
-
-/** 
  * A special value to use in the path list to represent the path 'to' a root 
  * object (which doesn't really have any path). This prevents the need for 
  * special-casing detection of the root object and allows it to be treated 

@@ -1,8 +1,6 @@
 'use strict';
 
-/**
- * Benchmark dependencies
- */
+
 var microtime = require('microtime')
   , benchmark = require('benchmark')
   , yaml = require('yamlparser')

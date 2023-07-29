@@ -1,12 +1,4 @@
 /**
- * Font Controller
- * For creating a font size changer interface with minimum effort
- * Copyright (c) 2009 Hafees (http://cool-javascripts.com)
- * License: Free to use, modify, distribute as long as this header is kept :)
- *
- */
-
-/**
  * Required: jQuery 1.x library,
  * Optional: jQuery Cookie Plugin (if used, the last used font size will be saved)
  * Usage: (For more details visit

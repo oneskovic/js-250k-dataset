@@ -1,10 +1,6 @@
 jui.define("chart.brush.bargauge", [], function() {
 
-    /**
-     * @class chart.brush.bargauge 
-     *
-     * @extends chart.brush.core
-     */
+    
 	var BarGaugeBrush = function(chart, axis, brush) {
 
         /**

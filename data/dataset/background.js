@@ -1,80 +1,111 @@
-var TITLE_ON = 'Code Cola(on)',
-    TITLE_OFF = 'Code Cola(off)';
+var serviceEndpoint = 'http://10.0.1.3:8090';
+var browserState = new BrowserState(serviceEndpoint);
 
-var tabStatus = {};
-
-var toggleTabStatus = function(id){
-        if(!tabStatus[id]){
-            initTabStatus(id);
-        }
-        tabStatus[id].active = !tabStatus[id].active;
-        syncTabStatus(id);
-    },
-    syncTabStatus = function(id){
-        if(!tabStatus[id]){
-            initTabStatus(id);
-        }
-        if(!tabStatus[id].active){
-            chrome.browserAction.setTitle({"tabId": id, "title": TITLE_OFF});
-            chrome.browserAction.setIcon({"tabId": id, "path": "cc-off.png"});
-        }else{
-            chrome.browserAction.setTitle({"tabId": id, "title": TITLE_ON});
-            chrome.browserAction.setIcon({"tabId": id, "path": "cc-on.png"});
-        }
-    },
-    initTabStatus = function(id){
-        tabStatus[id] = {};
-    };
-
-chrome.tabs.onUpdated.addListener(function(tabId, info, tab){
-    if (info.status === 'complete') {
-        initTabStatus(tabId);
+// Route ports
+chrome.extension.onConnect.addListener(function(port) {
+  if (port.name.indexOf('popup:') == 0) {
+    // This should only ever come from the active tab - if there is no active
+    // tab then die
+    var tabId = parseInt(port.name.substr(port.name.indexOf(':') + 1));
+    var tabState = browserState.getTabState(tabId);
+    if (tabState) {
+      tabState.setPort(port);
     }
+  }
 });
 
-chrome.tabs.onActivated.addListener(function(tab){
-    syncTabStatus(tab.tabId);
-});
+function getWatchUrls() {
+  var urls = [];
+  // TODO: detect from supported services/etc
+  return urls;
+}
 
-//chrome.tabs.onRemoved.addListener(function(tabId, removeInfo){
-//    toggleTabStatus(tabId);
-//});
-
-chrome.browserAction.onClicked.addListener(function(tab) {
-    var id = tab.id;
-    if(tab.url.indexOf("https://chrome.google.com") == 0 || tab.url.indexOf("chrome://") == 0 || tab.url.indexOf("googleusercontent.com") == 0){
-        alert(chrome.i18n.getMessage("error_google"));
-        return;
-    }else if(tab.url.indexOf("file:///") == 0){
-        alert(chrome.i18n.getMessage("error_local"));
-        return;
-    }
-
-    chrome.browserAction.getTitle({
-        tabId: id
-    }, function(title){
-        chrome.tabs.sendMessage(id, 'browserAction');
-        if(title === TITLE_OFF && !tabStatus[id].on){
-            chrome.tabs.insertCSS(id, {file: "codecola.css"});
-            chrome.tabs.insertCSS(id, {file: "code-cola-widget/src/color/codecola-color.css"});
-            chrome.tabs.insertCSS(id, {file: "code-cola-widget/src/degree/codecola-degree.css"});
-            chrome.tabs.insertCSS(id, {file: "code-cola-widget/src/gradient/codecola-gradient.css"});
-            chrome.tabs.executeScript(id, {file: "yui3.js"});
-            chrome.tabs.executeScript(id, {file: "plugin.js"});
-            chrome.tabs.executeScript(id, {file: "code-cola-widget/src/color/codecola-color.js"});
-            chrome.tabs.executeScript(id, {file: "code-cola-widget/src/degree/codecola-degree.js"});
-            chrome.tabs.executeScript(id, {file: "code-cola-widget/src/gradient/codecola-gradient.js"});
-            chrome.tabs.executeScript(id, {file: "codecola.js"});
-            tabStatus[id].on = true;
-        }
-        toggleTabStatus(id);
+// onResponseStarted does not have tabId, so track all getfile's
+// requestId -> tabId
+var getfilesMap = {};
+chrome.experimental.webRequest.onBeforeRequest.addListener(
+    function(details) {
+      getfilesMap[details.requestId] = details.tabId;
+      return true;
+    }, {
+      urls: getWatchUrls()
     });
-});
 
-chrome.extension.onRequest.addListener(function(request, sender, sendResponse){
-    if(request == "getUrls"){
-        sendResponse({
-            "action": localStorage["codecola_save_action"]?localStorage["codecola_save_action"]:""
-        });
+function handleResponseStarted(tabId, details) {
+  // TODO: blacklist some details.url ?
+
+  // Extract relevant headers
+  var contentType;
+  for (var n = 0; n < details.responseHeaders.length; n++) {
+    var header = details.responseHeaders[n];
+    switch (header.name) {
+      case 'Content-Type':
+        contentType = header.value;
+        break;
     }
-});
+  }
+
+  var likelyVideo = false;
+  switch (contentType) {
+    case 'video/mp4':
+    case 'video/mpeg':
+    case 'video/quicktime':
+    // Need transcoding:
+    // case 'video/avi':
+    case 'video/x-flv':
+    case 'video/x-m4v':
+    // case 'video/x-msvideo':
+    // case 'video/x-ms-asf':
+    // case 'video/webm':
+      likelyVideo = true;
+      break;
+  }
+  if (!likelyVideo) {
+    // TODO: try checking more - like is application/octet-stream, etc
+  }
+
+  if (likelyVideo) {
+    window.console.log('VIDEO: ' + details.url);
+    window.console.log(details);
+
+    var tabState = browserState.getTabState(tabId);
+    tabState.addVideo(details);
+    tabState.showAction();
+  }
+}
+
+chrome.experimental.webRequest.onResponseStarted.addListener(function(details) {
+  var tabId = getfilesMap[details.requestId];
+  if (tabId === undefined) {
+    // TODO: scan all tabs in the current window to try to find which
+    // one may have made the request
+    chrome.tabs.getAllInWindow(undefined, function(tabs) {
+      for (var n = 0; n < tabs.length; n++) {
+        var tab = tabs[n];
+        if (false) {
+          handleResponseStarted(tab.id, details);
+          break;
+        }
+      }
+    });
+  } else {
+    handleResponseStarted(tabId, details);
+  }
+}, {
+  urls: getWatchUrls()
+}, ['responseHeaders']);
+
+// chrome.pageAction.onClicked.addListener(function(tab) {
+//   var device = browserState.targetDevice;
+//   if (!device) {
+//     alert('no device');
+//   }
+
+//   var tabState = browserState.getTabState(tab.id);
+//   var video = tabState.getLastVideo();
+//   if (video) {
+//     browserState.beginPlayback(tab.id, device, video);
+//   } else {
+//     alert('no video');
+//   }
+// });

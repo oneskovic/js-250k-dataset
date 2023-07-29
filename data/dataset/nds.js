@@ -1,7 +1,3 @@
-/* Translators (2009 onwards):
- *  - Slomox
- */
-
 /**
  * @requires OpenLayers/Lang.js
  */

@@ -2,28 +2,7 @@
     "use strict";
     var PriorityQueue = require('./PriorityQueue');
 
-    /**
-     * @class DelayQueue
-     * @classdesc Queue of 'Delayed' items, item can only be taken when its delay has expired
-     * The head of the queue is that Delayed item whose delay expired furthest in the past.
-     * If no delay has expired there is no head and poll() will return null.
-     * Expiration occurs when the supplied delayFn(item) returns a value less than or equal to zero.
-     * Even though unexpired items cannot be removed using take() or poll(), they are otherwise treated as normal item.
-     * For example, the size method returns the count of both expired and unexpired items.
-     * This queue does not permit null items.
-     * This queue requires a delay function while construction
-     * [Reference: DelayQueue in Oracle JDK](http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/DelayQueue.html)
-     * @augments PriorityQueue
-     * @param delayFn  {DelayQueue~userDelayFn} A user provided delay function
-     * @desc
-     * ####Example
-     * ```js
-     * var DelayQueue = require("dsjslib").DelayQueue
-     * var dq=new DelayQueue(function(task){
-     *     return task.schedule - Date.now();
-     * })
-     * ```
-     */
+    
     function DelayQueue(delayFn) {
         if (typeof delayFn !== 'function') {
             throw new Error('A delay function must be provided to construct' +

@@ -1,4 +1,3 @@
-
 var assert = require('assert')
 var weak = require('weak')
 var ref = require('../')

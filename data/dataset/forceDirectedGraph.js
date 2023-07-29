@@ -1,6 +1,3 @@
-// A model driven force directed graph.
-// Draws from http://bl.ocks.org/mbostock/4062045
-// Curran Kelleher 4/30/2014
 define(['d3', 'model'], function (d3, Model) {
   return function (div){
     var model = Model(),

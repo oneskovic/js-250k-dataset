@@ -1,9 +1,3 @@
-/*
-
-ModKit is a library for building plug-in modules for web apps.
-
-*/
-
 define([
 	'app/App',
 	'marionette',

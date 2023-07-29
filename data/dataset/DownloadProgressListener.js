@@ -1,5 +1,3 @@
-//@line 42 "/builds/slave/rel-m-rel-xr-osx64-bld/build/toolkit/mozapps/downloads/content/DownloadProgressListener.js"
-
 /**
  * DownloadProgressListener "class" is used to help update download items shown
  * in the Download Manager UI such as displaying amount transferred, transfer

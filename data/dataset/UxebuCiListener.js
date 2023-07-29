@@ -1,11 +1,7 @@
 define([
   'HtmlListener'
 ],function(HtmlListener) {
-  /**
-   * Enhance the HtmlListener a bit, to set the testsComplete flag when done, which
-   * the uxebu CI env needs to be informed when all test are done and needs to get
-   * the test results passed.
-   */
+  
   var testResults = { passed: [], failure: [] };
   var UxebuCiListener = function(){
     HtmlListener.apply(this, arguments); // Call the parent constructor.

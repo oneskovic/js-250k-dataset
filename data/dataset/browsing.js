@@ -1,8 +1,6 @@
-
-
 'use strict';
 
-/* globals define, app, config, socket, ajaxify */
+
 
 define('forum/topic/browsing', ['translator'], function(translator) {
 

@@ -1,4 +1,3 @@
-//>>built
 define({ root:
 ({
 	insertTableTitle: "Insert Table",

@@ -1,8 +1,3 @@
-
-/**
- * Module dependencies.
- */
-
 var ac = require('../');
 var term = ac();
 

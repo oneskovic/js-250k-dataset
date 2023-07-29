@@ -1,11 +1,3 @@
-/**
-* Function: MatrixDeterminant2x2
-* Description: Calculates the determinant of a 2x2 matrix.
-* Parameters:
-*	m00..m11 {4 numbers} the matrix values
-* Returns:
-*	{number} the result
-*/
 JSM.MatrixDeterminant2x2 = function (m00, m01,
 									m10, m11)
 {

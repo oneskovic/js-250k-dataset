@@ -1,4 +1,3 @@
-
 var crypto            = require('crypto')
 var logger            = require('../../util/Logger.js')
 var FieldError        = require('../../error/Errors.js').FieldError
@@ -14,12 +13,7 @@ var offline  = ConfMgr.readConf('yubico.offline')  || ''
 
 yub.init(clientId, secret)
 
-/**
- *
- * @param credentials
- * @param account
- * @param callback(err, sessionData)
- */
+
 function auth(credentials, account, callback) {
 
   authorize(credentials, account, function(err, data) {

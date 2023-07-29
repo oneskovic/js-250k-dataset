@@ -1,11 +1,7 @@
 var _ = require('lodash');
 var StringMap = require('stringmap');
 
-/**
- * @dgProcessor computeIdsProcessor
- * @description
- * Compute the id property of each doc based on the tags and other meta-data from a set of templates
- */
+
 module.exports = function computeIdsProcessor(log, aliasMap, createDocMessage) {
 
   var getIdMap, getAliasesMap;

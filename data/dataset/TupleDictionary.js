@@ -1,9 +1,6 @@
 module.exports = TupleDictionary;
 
-/**
- * @class TupleDictionary
- * @constructor
- */
+
 function TupleDictionary() {
 
     /**

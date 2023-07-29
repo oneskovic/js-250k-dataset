@@ -1,5 +1,3 @@
-//this is an angular js app and controller
-//read up on angular here: http://angularjs.org/
 var app = angular.module("App", []);
 
 //ng-enter (/public/app/ngEnter.js) is an angular directive, for more information

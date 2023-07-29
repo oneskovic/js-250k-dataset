@@ -9,7 +9,7 @@ function ColorCutQuantizer(imageData, maxColors) {
     var rawColors = colorHist.getColors();
     this._colorPopulations = colorHist.getColorPopulations();
 
-    /** @type {Color[]} */
+    
     this._colors = [];
     for (var i = 0; i < rawColors.length; i++) {
         var color = rawColors[i];

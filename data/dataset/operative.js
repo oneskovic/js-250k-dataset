@@ -1,12 +1,3 @@
-/**
- * Operative
- * ---
- * Operative is a small JS utility for seamlessly creating Web Worker scripts.
- * ---
- * @author James Padolsey http://james.padolsey.com
- * @repo http://github.com/padolsey/operative
- * @license MIT
- */
 (function() {
 
 	if (typeof window == 'undefined' && self.importScripts) {

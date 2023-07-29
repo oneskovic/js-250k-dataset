@@ -11,17 +11,7 @@ module.exports = (function(){
             fields: { type: Schema.Types.Mixed, required: true }
         });
 
-    /**
-     * A field is valid if:
-     * 1) The passed in argument must be an instance of an object
-     * 2) All of the mandatory properties are provided
-     * 3) The id property cannot have any spaces
-     * 4) The type property must be in the approved list
-     * 5) The required property must be a boolean
-     * @param key
-     * @param obj
-     * @returns {null}
-     */
+    
     function isValidField(fieldObj){
         var err,
             props = _.keys(fieldObj),

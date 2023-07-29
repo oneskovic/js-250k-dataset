@@ -1,6 +1,3 @@
-// Copyright (c) 2015, Frappe Technologies Pvt. Ltd. and Contributors
-// MIT License. See license.txt
-
 frappe.ui.IconBar = Class.extend({
 	init: function(parent, n_groups) {
 		this.parent = parent;

@@ -1,14 +1,5 @@
-/*global angular*/
 'use strict';
-/*
-When this controller starts it initializes two variables 
-in the `$scope`: `cobj` and `questionSubmitted`. 
-The former represent the new instance for the question 
-while the latter is a boolean value to check that the 
-question has been submitted succesfully.
-It also implement the function `getTags` for autocompleting 
-the tag that users can bind to the question.
-*/
+
 angular
 	.module('stack')
 	.controller('askCtrl', ['$rootScope', '$http', '$location', 'userService', 'tagsService', 'questionsService',

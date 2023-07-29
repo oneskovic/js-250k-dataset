@@ -2,10 +2,7 @@
 
     var config = {
 
-        /* List all the roles you wish to use in the app
-        * You have a max of 31 before the bit shift pushes the accompanying integer out of
-        * the memory footprint for an integer
-        */
+        
         roles :[
             'public',
             'user',

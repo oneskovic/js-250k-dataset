@@ -1,9 +1,7 @@
 jQuery(function ($) {
     "use strict";
 
-    /**
-     * Reset the message.
-     */
+    
     function resetMessage () {
         $("#result")
         .removeClass()

@@ -1,52 +1,96 @@
+Ext.define('Ext.fx.layout.card.Style', {
 
-// Module w3c/style
-// Inserts a link to the appropriate W3C style for the specification's maturity level.
-// CONFIGURATION
-//  - specStatus: the short code for the specification's maturity level or type (required)
+    extend: 'Ext.fx.layout.card.Abstract',
 
-define(
-    ["core/utils"],
-    function (utils) {
-        return {
-            run:    function (conf, doc, cb, msg) {
-                msg.pub("start", "w3c/style");
-                if (!conf.specStatus) msg.pub("error", "Configuration 'specStatus' is not set, required for w3c/style");
-                var statStyle = conf.specStatus;
-                if (statStyle === "FPWD"    ||
-                    statStyle === "LC"      ||
-                    statStyle === "WD-NOTE" ||
-                    statStyle === "LC-NOTE") statStyle = "WD";
-                if (statStyle === "FPWD-NOTE") statStyle = "WG-NOTE";
-                if (statStyle === "finding" || statStyle === "draft-finding") statStyle = "base";
-                var css = "https://";
-                if (statStyle === "unofficial") {
-                    css += "www.w3.org/StyleSheets/TR/w3c-unofficial";
+    requires: [
+        'Ext.fx.Animation'
+    ],
+
+    config: {
+        inAnimation: {
+            before: {
+                visibility: null
+            },
+            preserveEndState: false,
+            replacePrevious: true
+        },
+
+        outAnimation: {
+            preserveEndState: false,
+            replacePrevious: true
+        }
+    },
+
+    constructor: function(config) {
+        var inAnimation, outAnimation;
+
+        this.initConfig(config);
+
+        this.endAnimationCounter = 0;
+
+        inAnimation = this.getInAnimation();
+        outAnimation = this.getOutAnimation();
+
+        inAnimation.on('animationend', 'incrementEnd', this);
+        outAnimation.on('animationend', 'incrementEnd', this);
+
+
+        inAnimation.setConfig(config);
+        outAnimation.setConfig(config);
+    },
+
+    incrementEnd: function() {
+        this.endAnimationCounter++;
+
+        if (this.endAnimationCounter > 1) {
+            this.endAnimationCounter = 0;
+            this.fireEvent('animationend', this);
+        }
+    },
+
+    applyInAnimation: function(animation, inAnimation) {
+        return Ext.factory(animation, Ext.fx.Animation, inAnimation);
+    },
+
+    applyOutAnimation: function(animation, outAnimation) {
+        return Ext.factory(animation, Ext.fx.Animation, outAnimation);
+    },
+
+    updateInAnimation: function(animation) {
+        animation.setScope(this);
+    },
+
+    updateOutAnimation: function(animation) {
+        animation.setScope(this);
+    },
+
+    onActiveItemChange: function(cardLayout, newItem, oldItem, options, controller) {
+        var inAnimation = this.getInAnimation(),
+            outAnimation = this.getOutAnimation(),
+            inElement, outElement;
+
+        if (newItem && oldItem && oldItem.isPainted()) {
+            inElement = newItem.renderElement;
+            outElement = oldItem.renderElement;
+
+            inAnimation.setElement(inElement);
+            outAnimation.setElement(outElement);
+
+            outAnimation.setOnBeforeEnd(function(element, interrupted) {
+                if (interrupted || Ext.Animator.hasRunningAnimations(element)) {
+                    controller.firingArguments[1] = null;
+                    controller.firingArguments[2] = null;
                 }
-                else if (statStyle === "base") {
-                    css += "www.w3.org/StyleSheets/TR/base";
-                }
-                else if (statStyle === "CG-DRAFT" || statStyle === "CG-FINAL" ||
-                         statStyle === "BG-DRAFT" || statStyle === "BG-FINAL") {
-                    // note: normally, the ".css" is not used in W3C, but here specifically it clashes
-                    // with a PNG of the same base name. CONNEG must die.
-                    css += "www.w3.org/community/src/css/spec/" + statStyle.toLowerCase() + ".css";
-                }
-                else if (statStyle === "webspec") {
-                    css = "https://specs.webplatform.org/assets/css/kraken.css";
-                    $('<link rel="icon" href="https://specs.webplatform.org/assets/img/icon.png">', doc)
-                        .appendTo($("head"));
-                    $(doc.createElement("script"))
-                        .attr({ async: "async", src: "https://specs.webplatform.org/assets/js/kraken.js"})
-                        .appendTo($("head"))
-                        ;
-                }
-                else {
-                    css += "www.w3.org/StyleSheets/TR/W3C-" + statStyle;
-                }
-                utils.linkCSS(doc, css);
-                msg.pub("end", "w3c/style");
-                cb();
-            }
-        };
+            });
+            outAnimation.setOnEnd(function() {
+                controller.resume();
+            });
+
+            inElement.dom.style.setProperty('visibility', 'hidden', '!important');
+            newItem.show();
+
+            Ext.Animator.run([outAnimation, inAnimation]);
+            controller.pause();
+        }
     }
-);
+});

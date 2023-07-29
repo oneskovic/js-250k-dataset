@@ -3,12 +3,7 @@ if(typeof require !== 'undefined'){
 }
 
 var oTestFramework = null;
-/**
- * Sets the framework object that will be used to allow test and getModule methods in module
- * @static
- * @member Hydra
- * @param {Object} oTest
- */
+
 Hydra.setTestFramework = function ( oTest ) {
   oTestFramework = oTest;
 };

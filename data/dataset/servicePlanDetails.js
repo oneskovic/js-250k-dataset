@@ -11,12 +11,7 @@ define(function(require){
 			'common.servicePlanDetails.render': 'servicePlanDetailsRender'
 		},
 
-		/* Arguments:
-		** container: jQuery Div
-		** servicePlan: servicePlanId or servicePlan data
-		** useOwnPlans: if true, get the plan details from the account own plans, instead of its reseller's ones
-		** callback: callback executed once we rendered the number control
-		*/
+		
 		servicePlanDetailsRender: function(args) {
 			var self = this,
 				container = args.container,

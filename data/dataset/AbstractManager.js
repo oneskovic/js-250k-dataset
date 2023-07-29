@@ -1,14 +1,3 @@
-/*!
- * Ext JS Library 3.3.0
- * Copyright(c) 2006-2010 Ext JS, Inc.
- * licensing@extjs.com
- * http://www.extjs.com/license
- */
-/**
- * @class Ext.AbstractManager
- * @extends Object
- * Base Manager class - extended by ComponentMgr and PluginMgr
- */
 Ext.AbstractManager = Ext.extend(Object, {
     typeName: 'type',
     

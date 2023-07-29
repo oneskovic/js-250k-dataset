@@ -59,9 +59,7 @@ Ext.define('Meetcha.view.CustomOverlay', {
         }
     },
 
-    /*
-     * Set the title of this custom overlay
-     */
+    
     setTitle: function(title) {
         var topToolbar = this.down('#topToolbar');
         topToolbar.setTitle(title);

@@ -1,5 +1,3 @@
-// Load dependencies when run with Node (in browser they are expected to
-// already be included)
 if (typeof(require) == 'function') {
   var GridList = require('../src/gridList.js'),
       fixtures = require('./fixtures.js');

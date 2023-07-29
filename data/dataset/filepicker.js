@@ -1,6 +1,3 @@
-/**
- * @fileOverview 错误信息
- */
 define([
     '../base',
     '../runtime/client',

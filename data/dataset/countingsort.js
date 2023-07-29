@@ -3,13 +3,7 @@
 
   var countingSort = (function () {
 
-    /**
-     * Gets the count of the elements into the input array.
-     *
-     * @private
-     * @param {Array} array The input array.
-     * @return {Array} The count of each element from the input array.
-     */
+    
     function getCount(array) {
       var count = [];
       var current;

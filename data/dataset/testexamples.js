@@ -1,6 +1,3 @@
-/**
- * Created by gcannata on 30/08/2014.
- */
     //to build: jacob - t basictokens.jacoblex -l ./examples/mylexer.js -g expression.jacobgram -p ./examples/expint.js
 var chai = chai || require('chai');
 var expect = chai.expect;

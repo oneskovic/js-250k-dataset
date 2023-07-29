@@ -1,20 +1,3 @@
-/*
----
-
-name: Jx.Plugin.Form.InlineErrors
-
-description: Plugin to Form.Panel to display error using a Jx.Notifier
-
-license: MIT-style license.
-
-requires:
- - Jx.Form
- - Jx.Plugin.Form
-
-provides: [Jx.Plugin.Form.InlineErrors]
-
-...
- */
 // $Id$
 /**
  * Class: Jx.Plugin.Form.InlineErrors

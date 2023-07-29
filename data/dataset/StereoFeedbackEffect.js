@@ -3,12 +3,7 @@ function(Tone){
 
 	"use strict";
 
-	/**
-	 *  @class A stereo feedback effect where the feedback is on the same channel
-	 *
-	 *	@constructor
-	 *	@extends {Tone.FeedbackEffect}
-	 */
+	
 	Tone.StereoFeedbackEffect = function(){
 
 		var options = this.optionsObject(arguments, ["feedback"], Tone.FeedbackEffect.defaults);

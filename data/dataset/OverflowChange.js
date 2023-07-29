@@ -1,6 +1,3 @@
-/**
- * @private
- */
 Ext.define('Ext.util.sizemonitor.OverflowChange', {
 
     extend: 'Ext.util.sizemonitor.Abstract',

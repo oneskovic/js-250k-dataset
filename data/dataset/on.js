@@ -1,5 +1,3 @@
-/** @license MIT License (c) copyright B Cavalier & J Hann */
-
 /**
  * wire/dojo/on plugin
  * wire plugin that provides an "on" facet that uses dojo/on (dojo 1.7

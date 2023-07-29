@@ -4,12 +4,7 @@ var BorderPalette = require('borderpalette'),
     Mover = require('./mover'),
     Utils = require('burner').Utils;
 
-/**
- * Creates a new Stimulus.
- *
- * @constructor
- * @extends Mover
- */
+
 function Stimulus() {
   Mover.call(this);
 }

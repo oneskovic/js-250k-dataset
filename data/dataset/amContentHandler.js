@@ -1,7 +1,3 @@
-/*
-//@line 38 "/builds/slave/rel-m-rel-xr-osx64-bld/build/toolkit/mozapps/extensions/amContentHandler.js"
-*/
-
 "use strict";
 
 const Cc = Components.classes;
@@ -16,16 +12,7 @@ function amContentHandler() {
 }
 
 amContentHandler.prototype = {
-  /**
-   * Handles a new request for an application/x-xpinstall file.
-   *
-   * @param  aMimetype
-   *         The mimetype of the file
-   * @param  aContext
-   *         The context passed to nsIChannel.asyncOpen
-   * @param  aRequest
-   *         The nsIRequest dealing with the content
-   */
+  
   handleContent: function XCH_handleContent(aMimetype, aContext, aRequest) {
     if (aMimetype != XPI_CONTENT_TYPE)
       throw Cr.NS_ERROR_WONT_HANDLE_CONTENT;

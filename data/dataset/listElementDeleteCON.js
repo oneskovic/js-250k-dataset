@@ -1,4 +1,3 @@
-// Garbage collection of lists
 (function ($) {
   var jsav = new JSAV('listElementDeleteCON');
   // Relative offsets

@@ -1,70 +1,142 @@
-/**
- * (C) Copyright 2008 David Glasser
- * (C) Copyright 2008 Will Farrington
- * (C) Copyright 2008 Jeremy Maitin-Shepard
- * (C) Copyright 2009-2010 John J. Foerch
- *
- * Use, modification, and distribution are subject to the terms specified in the
- * COPYING file.
-**/
+var Gmail = {
+  // Return the URL for gmail. Currently, only supports the
+  // default gmail account
+  getUrl: function() {
+    var url = "https://mail.google.com/mail/";
+    return url;
+  },
 
-require("content-buffer.js");
+  // Get the RSS feed URL for Gmail
+  getFeedUrl: function(label) {
+    // "zx" is a Gmail query parameter that is expected to contain a random
+    // string and may be ignored/stripped.
+    if (label) {
+      return Gmail.getUrl() + "feed/atom/" + label;
+    } else {
+      return Gmail.getUrl() + "feed/atom/";
+    }
+  },
 
-define_keymap("gmail_keymap", $display_name = "gmail");
+  // Not really sure what this is yet.
+  // Blatantly copied from the Gmail extension for Chrome
+  NSResolver: function (prefix) {
+    return 'http://purl.org/atom/ns#';
+  },
 
-// Jumping
-define_key(gmail_keymap, "g", null, $fallthrough);
-define_key(gmail_keymap, "i", null, $fallthrough);
-define_key(gmail_keymap, "t", null, $fallthrough);
-define_key(gmail_keymap, "d", null, $fallthrough);
-define_key(gmail_keymap, "a", null, $fallthrough);
-define_key(gmail_keymap, "b", null, $fallthrough);
+  // Get the unread emails for the specified project
+  get: function(project, callback) {
+    var label = Gmail.getLabel(project.apps["gmail"]);
+    Gmail.getEmailForLabel(label, function(labelEmails) {
+      Gmail.getEmailFromPeople(project.people, function(peopleEmails) {
+        if (peopleEmails) {
+          labelEmails.push.apply(labelEmails, peopleEmails);
+        }
 
-// Threadlist
-define_key(gmail_keymap, "*", null, $fallthrough);
+        var emails = [];
+        var length = labelEmails.length;
+        for (var i = 0; i < length; i++) {
+          var j = 0;
+          while (j < i) {
+            if (labelEmails[i].title === labelEmails[j].title) {
+              break;
+            }
+            j++;
+          }
 
-// Navigation
-define_key(gmail_keymap, "u", null, $fallthrough);
-define_key(gmail_keymap, "j", null, $fallthrough);
-define_key(gmail_keymap, "k", null, $fallthrough);
-define_key(gmail_keymap, "o", null, $fallthrough);
-define_key(gmail_keymap, "n", null, $fallthrough);
-define_key(gmail_keymap, "p", null, $fallthrough);
+          if (j >= i) {
+            emails.push(labelEmails[i]);
+          }
+        }
 
-// Application
-define_key(gmail_keymap, "c", null, $fallthrough);
-define_key(gmail_keymap, "C", null, $fallthrough);
-define_key(gmail_keymap, "/", null, $fallthrough);
-define_key(gmail_keymap, "q", null, $fallthrough);
-define_key(gmail_keymap, "?", null, $fallthrough);
+        callback(emails);
+      });
+    });
+  },
 
-// Actions
-define_key(gmail_keymap, "s", null, $fallthrough);
-define_key(gmail_keymap, "e", null, $fallthrough);
-define_key(gmail_keymap, "x", null, $fallthrough);
-define_key(gmail_keymap, "y", null, $fallthrough);
-define_key(gmail_keymap, "!", null, $fallthrough);
-define_key(gmail_keymap, "m", null, $fallthrough);
-define_key(gmail_keymap, "#", null, $fallthrough);
-define_key(gmail_keymap, "r", null, $fallthrough);
-define_key(gmail_keymap, "f", null, $fallthrough);
-define_key(gmail_keymap, "N", null, $fallthrough);
-define_key(gmail_keymap, ".", null, $fallthrough);
-define_key(gmail_keymap, "I", null, $fallthrough);
-define_key(gmail_keymap, "U", null, $fallthrough);
-define_key(gmail_keymap, "]", null, $fallthrough);
-define_key(gmail_keymap, "[", null, $fallthrough);
-define_key(gmail_keymap, "l", null, $fallthrough);
-define_key(gmail_keymap, "return", null, $fallthrough);
-define_key(gmail_keymap, "tab", null, $fallthrough);
+  // Get the Gmail label from the specified URL. If the url does not
+  // point to a label, return null
+  getLabel: function(url) {
+    if (!url) {
+      return null;
+    }
 
+    if (url.indexOf("#label") != -1) {
+      return url.substring(url.indexOf("#label") + 7, url.length);
+    } else {
+      return null;
+    }
+  },
 
-define_keymaps_page_mode("gmail-mode",
-    build_url_regexp($domain = "mail.google",
-                     $path = new RegExp('(?!support)')),
-    { normal: gmail_keymap },
-    $display_name = "GMail");
+  // Get the unread email for the specified label
+  getEmailForLabel: function(label, callback) {
+    if (!label) {
+      callback([]);
+      return;
+    }
 
-page_mode_activate(gmail_mode);
+    Gmail.sendRequest(Gmail.getFeedUrl(label), function(response) {
+      callback(Gmail.parseResponse(response));
+    });
+  },
 
-provide("gmail");
+  // Get the unread emails sent by the specified people
+  getEmailFromPeople: function(people, callback) {
+    if (!people) {
+      callback([]);
+      return;
+    }
+
+    Gmail.sendRequest(Gmail.getFeedUrl(null), function(response) {
+      callback(Gmail.parseResponse(response, _.pluck(people, 'email')));
+    });
+  },
+
+  // Send request to fetch the email
+  sendRequest: function(url, callback) {
+    var xhr = new XMLHttpRequest();
+    try {
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState != 4) {
+          return;
+        }
+
+        if (xhr.responseXML) {
+          callback(xhr.responseXML);
+        }
+      };
+
+      xhr.open("GET", url, true);
+      xhr.send(null);
+    } catch(e) {
+      callback([]);
+      console.error("error!");
+    }
+  },
+
+  // Parse the returned response
+  parseResponse: function(xmlDoc, emails) {
+    if (!xmlDoc) {
+      return [];
+    }
+
+    var entriesSet = xmlDoc.evaluate("/gmail:feed/gmail:entry", xmlDoc, Gmail.NSResolver, XPathResult.ANY_TYPE, null);
+    var entries = [];
+    var entry;
+
+    while ((entry = entriesSet.iterateNext())) {
+      var authorEmail = entry.childNodes[13].childNodes[3].textContent;
+      if (!emails || emails.indexOf(authorEmail) != -1) {
+        entries.push({
+          title: entry.childNodes[1].textContent,
+          summary: entry.childNodes[3].textContent,
+          url: entry.childNodes[5].getAttribute('href'),
+          authorName: entry.childNodes[13].childNodes[1].textContent,
+          authorEmail: authorEmail,
+          modified: moment(entry.childNodes[7].textContent, "YYYY-MM-DDThh:mm:ssZ").fromNow()
+        });
+      }
+    }
+
+    return entries;
+  }
+}

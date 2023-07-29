@@ -1,10 +1,3 @@
-// The Great Computer Language Shootout
-// http://shootout.alioth.debian.org/
-//
-// contributed by David Hedbor
-// modified by Sjoerd Visscher
-
-
 function Toggle(start_state) {
    this.state = start_state;
 }

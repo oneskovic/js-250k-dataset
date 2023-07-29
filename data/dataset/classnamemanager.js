@@ -1,21 +1,21 @@
-YUI.add('classnamemanager', function (Y, NAME) {
+YUI.add('classnamemanager', function(Y) {
 
 /**
-* Contains a singleton (ClassNameManager) that enables easy creation and caching of
+* Contains a singleton (ClassNameManager) that enables easy creation and caching of 
 * prefixed class names.
 * @module classnamemanager
 */
 
 /**
- * A singleton class providing:
- *
+ * A singleton class providing: 
+ * 
  * <ul>
  *    <li>Easy creation of prefixed class names</li>
  *    <li>Caching of previously created class names for improved performance.</li>
  * </ul>
- *
+ * 
  * @class ClassNameManager
- * @static
+ * @static 
  */
 
 // String constants
@@ -28,18 +28,18 @@ var CLASS_NAME_PREFIX = 'classNamePrefix',
 /**
  * Configuration property indicating the prefix for all CSS class names in this YUI instance.
  *
- * @property classNamePrefix
+ * @property Y.config.classNamePrefix
  * @type {String}
  * @default "yui"
  * @static
  */
-CONFIG[CLASS_NAME_PREFIX] = CONFIG[CLASS_NAME_PREFIX] || 'yui3';
+CONFIG[CLASS_NAME_PREFIX] = CONFIG[CLASS_NAME_PREFIX] || 'yui';
 
 /**
  * Configuration property indicating the delimiter used to compose all CSS class names in
  * this YUI instance.
  *
- * @property classNameDelimiter
+ * @property Y.config.classNameDelimiter
  * @type {String}
  * @default "-"
  * @static
@@ -54,26 +54,22 @@ Y.ClassNameManager = function () {
 	return {
 
 		/**
-		 * Returns a class name prefixed with the value of the
+		 * Returns a class name prefixed with the the value of the 
 		 * <code>Y.config.classNamePrefix</code> attribute + the provided strings.
-		 * Uses the <code>Y.config.classNameDelimiter</code> attribute to delimit the
+		 * Uses the <code>Y.config.classNameDelimiter</code> attribute to delimit the 
 		 * provided strings. E.g. Y.ClassNameManager.getClassName('foo','bar'); // yui-foo-bar
-		 *
+		 * 
 		 * @method getClassName
-		 * @param {String} [classnameSection*] one or more classname sections to be joined
-		 * @param {Boolean} skipPrefix If set to true, the classname will not be prefixed with the default Y.config.classNameDelimiter value.
+		 * @param {String}+ one or more classname bits to be joined and prefixed
 		 */
-		getClassName: Y.cached(function () {
+		getClassName: Y.cached(function (c, x) {
 
-            var args = Y.Array(arguments);
+			var sClass = sPrefix + sDelimiter + 
+                   // ((x) ? Y.Array(arguments, 0, true).join(sDelimiter) : c);
+                   ((x) ? Array.prototype.join.call(arguments, sDelimiter) : c);
 
-            if (args[args.length-1] !== true) {
-                args.unshift(sPrefix);
-            } else {
-                args.pop();
-            }
+			return sClass.replace(/\s/g, '');
 
-			return args.join(sDelimiter);
 		})
 
 	};
@@ -81,4 +77,4 @@ Y.ClassNameManager = function () {
 }();
 
 
-}, '@VERSION@', {"requires": ["yui-base"]});
+}, '3.0.0' );

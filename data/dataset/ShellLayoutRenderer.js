@@ -1,7 +1,3 @@
-/*!
- * ${copyright}
- */
-
 // Provides default renderer for control sap.ui.unified.ShellLayout
 sap.ui.define(['jquery.sap.global'],
 	function(jQuery) {

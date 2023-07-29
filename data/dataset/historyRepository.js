@@ -1,4 +1,3 @@
-/*jslint node: true, plusplus: true, nomen: true, vars: true */
 "use strict";
 
 var Util = require('util');

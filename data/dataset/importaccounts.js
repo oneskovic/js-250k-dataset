@@ -1,7 +1,3 @@
-// This file is part of InfiniteSky.
-// Copyright (c) InfiniteSky Dev Teams - Licensed under GNU GPL
-// For more information, see LICENCE in the main folder
-
 // This file is to be used by server owners to import accounts.
 /////////////////////////////////////////////////////////////
 // Command: importaccounts

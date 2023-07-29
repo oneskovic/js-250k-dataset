@@ -21,9 +21,7 @@
 
 	};
 
-	/**
-	 * @param particle
-	 */
+	
 	PixiRender.prototype.onParticleCreated = function ( particle ) {
 		if ( particle.target ) {
 			particle.target = new PIXI.Sprite( particle.target );
@@ -46,9 +44,7 @@
 		}
 	};
 
-	/**
-	 * @param particle
-	 */
+	
 	PixiRender.prototype.onParticleUpdate = function ( particle ) {
 		if ( particle.target ) {
 			particle.target.position.x = particle.p.x;
@@ -61,9 +57,7 @@
 		}
 	};
 
-	/**
-	 * @param particle
-	 */
+	
 	PixiRender.prototype.onParticleDead = function ( particle ) {
 		if ( particle.target ) {
 			this.element.removeChild( particle.target );

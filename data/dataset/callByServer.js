@@ -1,13 +1,3 @@
-/*
- * Tangram
- * Copyright 2009 Baidu Inc. All rights reserved.
- *
- * path: baidu/sio/callByServer.js
- * author: erik
- * version: 1.1.0
- * date: 2009/12/16
- */
-
 ///import baidu.sio;
 ///import baidu.lang.isFunction;
 ///import baidu.sio._removeScriptTag;

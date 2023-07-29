@@ -1,4 +1,3 @@
-// @namespace
 Ext.namespace('Ozone.marketplace');
 
 // Set up a model to use in our Store

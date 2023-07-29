@@ -1,5 +1,3 @@
-//>>built
-// wrapped by build app
 define("dojox/drawing/stencil/Line", ["dojo","dijit","dojox"], function(dojo,dijit,dojox){
 dojo.provide("dojox.drawing.stencil.Line");
 

@@ -1,7 +1,3 @@
-/**
- * GRAPPELLI UTILS
- * functions needed for Grappelli
- */
  
 var django = {
     "jQuery": jQuery.noConflict(true)

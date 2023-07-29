@@ -1,6 +1,3 @@
-/*
-  TODO: move these states into global statechart once support for adding states after statechart init
-*/
 Workr.StudioStatechart = Ki.Statechart.create({
   trace: NO,
 

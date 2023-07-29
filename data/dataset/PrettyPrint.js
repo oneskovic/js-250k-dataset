@@ -1,7 +1,3 @@
-/*
- * Pretty Print - JavaScript Object Log
- */
-
 'use strict';
 
 var PrettyPrint = {

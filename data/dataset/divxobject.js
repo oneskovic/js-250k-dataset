@@ -1,17 +1,3 @@
-/*
- * DivXObject embed based on qtobject.js
- *
- * Embeds a DivX web player to the page
- *
- * Usage:
- *
- *	d = new DivXObject("path/to/mov.divx", "movid", "width", "height");
- *	d.addParam("autoplay", "true");			// optional
- *	d.addParam("controller", "false");		// optional
- *	d.addParam("loop", "false");			// optional
- *	d.write(id);
- */
-
 DivXObject = function(mov, id, w, h) {
 	this.mov = mov;
 	this.id = id;

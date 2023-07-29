@@ -9,10 +9,7 @@ var spellcheck = require('nodehun-sentences');
 module.exports = Proofreader;
 
 function Proofreader() {
-  /**
-   * @type nodehun
-   * @private
-   */
+  
   this._dictionary = null;
   this._whitelist = '';
   this._blacklist = '';

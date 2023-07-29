@@ -1,4 +1,4 @@
-(function($) {
+!function($) {
 $.fn.toc = function(options) {
   var self = this;
   var opts = $.extend({}, jQuery.fn.toc.defaults, options);
@@ -6,17 +6,35 @@ $.fn.toc = function(options) {
   var container = $(opts.container);
   var headings = $(opts.selectors, container);
   var headingOffsets = [];
-  var activeClassName = opts.activeClass(opts.prefix);
+  var activeClassName = opts.prefix+'-active';
 
-  var scrollTo = function(e, callback) {
+  var findScrollableElement = function(els) {
+    for (var i = 0, argLength = arguments.length; i < argLength; i++) {
+      var el = arguments[i],
+          $scrollElement = $(el);
+      if ($scrollElement.scrollTop() > 0) {
+        return $scrollElement;
+      } else {
+        $scrollElement.scrollTop(1);
+        var isScrollable = $scrollElement.scrollTop() > 0;
+        $scrollElement.scrollTop(0);
+        if (isScrollable) {
+          return $scrollElement;
+        }
+      }
+    }
+    return [];
+  };
+  var scrollable = findScrollableElement(opts.container, 'body', 'html');
+
+  var scrollTo = function(e) {
     if (opts.smoothScrolling) {
       e.preventDefault();
       var elScrollTo = $(e.target).attr('href');
       var $el = $(elScrollTo);
-
-      $('body,html').animate({ scrollTop: $el.offset().top + opts.scrollToOffset }, 400, 'swing', function() {
+      
+      scrollable.animate({ scrollTop: $el.offset().top }, 400, 'swing', function() {
         location.hash = elScrollTo;
-        callback();
       });
     }
     $('li', self).removeClass(activeClassName);
@@ -30,20 +48,14 @@ $.fn.toc = function(options) {
       clearTimeout(timeout);
     }
     timeout = setTimeout(function() {
-      var top = $(window).scrollTop(),
-        highlighted, closest = Number.MAX_VALUE, index = 0;
-
+      var top = $(window).scrollTop();
       for (var i = 0, c = headingOffsets.length; i < c; i++) {
-        var currentClosest = Math.abs(headingOffsets[i] - top);
-        if (currentClosest < closest) {
-          index = i;
-          closest = currentClosest;
+        if (headingOffsets[i] >= top) {
+          $('li', self).removeClass(activeClassName);
+          $('li:eq('+(i-1)+')', self).addClass(activeClassName);
+          break;
         }
       }
-
-      $('li', self).removeClass(activeClassName);
-      highlighted = $('li:eq('+ index +')', self).addClass(activeClassName);
-      opts.onHighlight(highlighted);
     }, 50);
   };
   if (opts.highlightOnScroll) {
@@ -53,33 +65,30 @@ $.fn.toc = function(options) {
 
   return this.each(function() {
     //build TOC
-    var el = $(this);
-    var ul = $(opts.listType);
+    var ul = $('<ul/>');
     headings.each(function(i, heading) {
       var $h = $(heading);
       headingOffsets.push($h.offset().top - opts.highlightOffset);
 
       //add anchor
-      var anchor = $('<span/>').attr('id', opts.anchorName(i, heading, opts.prefix)).insertBefore($h);
-
+      var anchorName = opts.anchorName(i, heading, opts.prefix);
+      var anchor = $([]);
+      if (!document.getElementById(anchorName)) {
+        anchor = $('<span/>').attr('id', opts.anchorName(i, heading, opts.prefix)).insertBefore($h);
+      }
       //build TOC item
       var a = $('<a/>')
-        .text(opts.headerText(i, heading, $h))
-        .attr('href', '#' + opts.anchorName(i, heading, opts.prefix))
-        .bind('click', function(e) {
-          $(window).unbind('scroll', highlightOnScroll);
-          scrollTo(e, function() {
-            $(window).bind('scroll', highlightOnScroll);
-          });
-          el.trigger('selected', $(this).attr('href'));
-        });
+      .text($h.text())
+      .attr('href', '#' + anchorName)
+      .bind('click', scrollTo);
 
       var li = $('<li/>')
-        .addClass(opts.itemClass(i, heading, $h, opts.prefix))
-        .append(a);
+      .addClass(opts.prefix+'-'+$h[0].tagName.toLowerCase())
+      .append(a);
 
       ul.append(li);
     });
+    var el = $(this);
     el.html(ul);
   });
 };
@@ -87,27 +96,14 @@ $.fn.toc = function(options) {
 
 jQuery.fn.toc.defaults = {
   container: 'body',
-  listType: '<ul/>',
   selectors: 'h1,h2,h3',
   smoothScrolling: true,
-  scrollToOffset: 0,
-  prefix: 'toc',
-  onHighlight: function() {},
+  prefix: '',
   highlightOnScroll: true,
   highlightOffset: 100,
   anchorName: function(i, heading, prefix) {
     return prefix+i;
-  },
-  headerText: function(i, heading, $heading) {
-    return $heading.text();
-  },
-  itemClass: function(i, heading, $heading, prefix) {
-    return prefix + '-' + $heading[0].tagName.toLowerCase();
-  },
-  activeClass: function(prefix) {
-    return prefix + '-active';
-  }
-
+  } 
 };
 
-})(jQuery);
+}(jQuery);

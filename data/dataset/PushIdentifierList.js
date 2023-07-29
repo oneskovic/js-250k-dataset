@@ -2,11 +2,7 @@
 
 tutao.provide('tutao.entity.sys.PushIdentifierList');
 
-/**
- * @constructor
- * @param {Object} parent The parent entity of this aggregate.
- * @param {Object=} data The json data to store in this entity.
- */
+
 tutao.entity.sys.PushIdentifierList = function(parent, data) {
   if (data) {
     this.updateData(parent, data);

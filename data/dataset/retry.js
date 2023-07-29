@@ -1,4 +1,3 @@
-/** @module policies/retry */
 /**
  * Base and default RetryPolicy.
  * Determines what to do when the drivers runs into an specific Cassandra exception

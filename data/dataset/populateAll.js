@@ -1,4 +1,3 @@
-/*jshint maxdepth:10 */
 'use strict';
 
 var db = require('../../db'),

@@ -1,7 +1,3 @@
-/**
- * Read plain-text Krusovice show description;
- */
-
 define(["jquery"], function($) {
 
     "use strict";

@@ -1,7 +1,3 @@
-/*!
- * @depends ../core/AudioletNode.js
- */
-
 /**
  * Square wave oscillator
  *

@@ -1,6 +1,3 @@
-/**
-	@constructor
-*/
 JSDOC.JsPlate = function(templateFile) {
 	if (templateFile) this.template = IO.readFile(templateFile);
 	

@@ -1,13 +1,3 @@
-/**
- * @fileoverview Example of node.js script that references the standalone
- * distribution of the Woodman library.
- *
- * This method should only really be used for debugging purpose of the Woodman
- * library. Using a compiled version of Woodman is preferred.
- *
- * Copyright (c) 2013 Joshfire
- * MIT license (see LICENSE file)
- */
 /*global __dirname*/
 
 var woodman = require(__dirname + '/../../lib/woodman');

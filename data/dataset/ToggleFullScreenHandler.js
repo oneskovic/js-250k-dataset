@@ -1,7 +1,3 @@
-/*!
- * @copyright@
- */
-
 // Provides a simple search feature
 sap.ui.define(['jquery.sap.global'],
 	function(jQuery) {

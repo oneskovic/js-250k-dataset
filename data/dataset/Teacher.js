@@ -30,7 +30,7 @@ dojo.declare("demo.Teacher", [dijit._Widget, dijit._Templated, demo._TeacherBeha
 		this.actions = new dojox.timing.Sequence({});
 	},
 	
-	frown: function(/* Boolean */on){
+	frown: function(on){
 		var n = this.innerNode;
 		dojo[(on ? "addClass" : "removeClass")](n,"teacherBeingAngry");
 	},

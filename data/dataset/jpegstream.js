@@ -1,10 +1,3 @@
-
-/*!
- * Canvas - JPEGStream
- * Copyright (c) 2010 LearnBoost <tj@learnboost.com>
- * MIT Licensed
- */
-
 /**
  * Module dependencies.
  */

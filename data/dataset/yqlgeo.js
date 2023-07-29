@@ -1,10 +1,3 @@
-/*
-  YQL Geo library by Christian Heilmann
-  Homepage: http://isithackday.com/geo/yql-geo-library
-  Copyright (c)2010 Christian Heilmann
-  Code licensed under the BSD License:
-  http://wait-till-i.com/license.txt
-*/
 var yqlgeo = function(){
   var callback;
   function get(){

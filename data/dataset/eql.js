@@ -1,6 +1,3 @@
-// This is (almost) directly from Node.js assert
-// https://github.com/joyent/node/blob/f8c335d0caf47f16d31413f89aa28eda3878e3aa/lib/assert.js
-
 module.exports = _deepEqual;
 
 var getEnumerableProperties = require('./getEnumerableProperties');

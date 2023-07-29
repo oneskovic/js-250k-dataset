@@ -1,20 +1,10 @@
 'use strict';
 
-/**
- * @module br/util/ArrayUtility
- */
+
 
 var Errors = require('br/Errors');
 
-/**
- * This is a static class that never needs to be instantiated.
- * 
- * @class
- * @alias module:br/util/ArrayUtility
- * 
- * @classdesc
- * Utility class that provides methods for array manipulation.
- */
+
 var ArrayUtility = function() {
 };
 

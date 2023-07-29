@@ -1,7 +1,6 @@
-
 // -- tlrobinson Tom Robinson
 
-var Hash = require("./hash").Hash;
+var Hash = require("hash").Hash;
 
 // HashP : Case Preserving hash, used for headers
 

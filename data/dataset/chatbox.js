@@ -1,4 +1,3 @@
-// Functions for OpenSlides chatbox
 $(function() {
     // Chatbox is resizable on two sides (north and west) and
     // one corner (nortwest)

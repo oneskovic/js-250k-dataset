@@ -39,12 +39,7 @@ editAreaLoader.load_syntax["cpp"] = {
 			,'modifiers' : 'g'
 			,'execute' : 'before'
 		}
-/*		,'precompilerstring' : {
-			'search' : '(#[\t ]*include[\t ]*)([^\r\n]*)([^\r\n]*[\r\n])'
-			,'class' : 'precompilerstring'
-			,'modifiers' : 'g'
-			,'execute' : 'before'
-		}*/
+
 	}
 	,'STYLES' : {
 		'COMMENTS': 'color: #AAAAAA;'

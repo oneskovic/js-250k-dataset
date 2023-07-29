@@ -1,4 +1,3 @@
-/****** INIT Effects Stroke Parser ******/
 (function(){
     var ob = {};
     var registeredElements = [];

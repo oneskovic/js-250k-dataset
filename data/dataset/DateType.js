@@ -1,7 +1,3 @@
-/*!
- * Module dependencies.
- */
-
 var util = require('util'),
 	moment = require('moment'),
 	super_ = require('../Type');

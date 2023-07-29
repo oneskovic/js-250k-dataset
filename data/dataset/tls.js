@@ -1,97 +1,132 @@
-// (A) dnode.listen(tls.createServer(options),cb)
-// (B) dnode.listen(port,options,cb)
-// (C) dnode.connect(tls.connect(port,options),cb)
-// (D) dnode.connect(port,options,cb)
-//
-// (A) and (C) are examples for using servers/streams
-// (B) and (D) are examples for using dnode to create server and client
+/**
+ * @fileoverview Definitions for node's tls module. Depends on the stream module.
+ * @see http://nodejs.org/api/tls.html
+ * @see https://github.com/joyent/node/blob/master/lib/tls.js
+ */
 
-var test = require('tap').test;
-var dnode = require('../');
-var tls = require('tls');
-var fs = require('fs');
-var ports = [3001,3002];
-var keyA  = fs.readFileSync(__dirname+'/keys/agent1-key.pem');
-var certA = fs.readFileSync(__dirname+'/keys/agent1-cert.pem');
-var keyB  = fs.readFileSync(__dirname+'/keys/agent1-key.pem');
-var certB = fs.readFileSync(__dirname+'/keys/agent1-cert.pem');
-var keyC  = fs.readFileSync(__dirname+'/keys/agent2-key.pem');
-var certC = fs.readFileSync(__dirname+'/keys/agent2-cert.pem');
-var keyD  = fs.readFileSync(__dirname+'/keys/agent2-key.pem');
-var certD = fs.readFileSync(__dirname+'/keys/agent2-cert.pem');
-var optionsA = { key:keyA, cert:certA, ca:[certC,certD]
-               , requestCert:true, rejectUnauthorized:true };
-var optionsB = { key:keyB, cert:certB, ca:[certC,certD]
-               , requestCert:true, rejectUnauthorized:true };
-var optionsC = { key:keyC, cert:certC };
-var optionsD = { key:keyD, cert:certD };
-var A = dnode({name:function(cb){cb('A')}});
-var B = dnode({name:function(cb){cb('B')}});
-var C = dnode({name:function(cb){cb('C')}});
-var D = dnode({name:function(cb){cb('D')}});
+var crypto = require('crypto');
+var events = require('events');
+var net = require('net');
+var stream = require('stream');
 
-test('tls', function (t) {
-    t.plan(4);
-    
-    var AC = setTimeout(function () { t.fail(); }, 500);
-    var AD = setTimeout(function () { t.fail(); }, 500);
-    var BC = setTimeout(function () { t.fail(); }, 500);
-    var BD = setTimeout(function () { t.fail(); }, 500);
-    var CA = setTimeout(function () { t.fail(); }, 500);
-    var CB = setTimeout(function () { t.fail(); }, 500);
-    var DA = setTimeout(function () { t.fail(); }, 500);
-    var DB = setTimeout(function () { t.fail(); }, 500);
+/**
+ * @const
+ */
+var tls = {};
 
-    var tlsServer = tls.createServer(optionsA);
+/**
+ * @constructor
+ */
+tls.CreateOptions = function () {};
 
-    A.listen(tlsServer, function (client, con) {
-        client.name(function(data){
-            if (data == 'C') clearTimeout(CA);
-            if (data == 'D') clearTimeout(DA);
-        });
-    });
-    tlsServer.listen(ports[0], function () {
-        var tlsStream = tls.connect(ports[0], optionsC, function () {
-            C.connect(tlsStream, function(remote, con){
-                remote.name(function (data) {
-                  t.equal(data,'A');
-                  con.end();
-                });
-            });
-        });
-        D.connect(ports[0], optionsD, function (remote, con) {
-            remote.name(function (data) {
-              t.equal(data,'A');
-              con.end();
-            });
-        });
-    });
+/** @type {boolean} */
+tls.CreateOptions.prototype.honorCipherOrder;
 
-    B.listen(ports[1], optionsB, function (client, con) {
-        client.name(function(data){
-            if (data == 'C') clearTimeout(CB);
-            if (data == 'D') clearTimeout(DB);
-        })
-    }).on('ready',function(){
-        var tlsStream = tls.connect(ports[1], optionsC, function () {
-            C.connect(tlsStream, function(remote, con){
-                remote.name(function (data) {
-                  t.equal(data,'B');
-                  con.end();
-                });
-            });
-        });
-        D.connect(ports[1], optionsD, function (remote, con) {
-            remote.name(function (data) {
-              t.equal(data,'B');
-              con.end();
-            });
-        });
-    });
+/** @type {boolean} */
+tls.CreateOptions.prototype.requestCert;
 
-    setTimeout(function () {
-        tlsServer.close();
-        B.close();
-        t.end();
-    }, 500);
-});
+/** @type {boolean} */
+tls.CreateOptions.prototype.rejectUnauthorized;
+
+/** @type {Array|Buffer} */
+tls.CreateOptions.prototype.NPNProtocols;
+
+/** @type {function(string)} */
+tls.CreateOptions.prototype.SNICallback;
+
+/** @type {string} */
+tls.CreateOptions.prototype.sessionIdContext;
+
+/**
+ *
+ * @param {tls.CreateOptions} options
+ * @param {function(...)=} secureConnectionListener
+ * @return {tls.Server}
+ */
+tls.createServer;
+
+/**
+ * @typedef {{host: string, port: number, socket: *, pfx: (string|Buffer), key: (string|Buffer), passphrase: string, cert: (string|Buffer), ca: Array.<string>, rejectUnauthorized: boolean, NPNProtocols: Array.<string|Buffer>, servername: string}}
+ */
+tls.ConnectOptions;
+
+/**
+ *
+ * @param {number|tls.ConnectOptions} port
+ * @param {(string|tls.ConnectOptions|function(...))=} host
+ * @param {(tls.ConnectOptions|function(...))=} options
+ * @param {function(...)=} callback
+ * @return {void}
+ */
+tls.connect = function(port, host, options, callback) {};
+
+/**
+ * @param {crypto.Credentials=} credentials
+ * @param {boolean=} isServer
+ * @param {boolean=} requestCert
+ * @param {boolean=} rejectUnauthorized
+ * @return {tls.SecurePair}
+ */
+tls.createSecurePair;
+
+/**
+ * @constructor
+ * @extends events.EventEmitter
+ */
+tls.SecurePair = function() {};
+
+/**
+ * @constructor
+ * @extends net.Server
+ */
+tls.Server = function() {};
+
+/**
+ * @param {string} hostname
+ * @param {string|Buffer} credentials
+ * @return {void}
+ */
+tls.Server.prototype.addContext = function(hostname, credentials) {};
+
+/**
+ * @constructor
+ * @extends stream.Duplex
+ */
+tls.CleartextStream = function() {};
+
+/**
+ * @type {boolean}
+ */
+tls.CleartextStream.prototype.authorized;
+
+/**
+ * @type {?string}
+ */
+tls.CleartextStream.prototype.authorizationError;
+
+/**
+ * @return {Object.<string,(string|Object.<string,string>)>}
+ */
+tls.CleartextStream.prototype.getPeerCertificate;
+
+/**
+ * @return {{name: string, version: string}}
+ */
+tls.CleartextStream.prototype.getCipher;
+
+/**
+ * @return {{port: number, family: string, address: string}}
+ */
+tls.CleartextStream.prototype.address;
+
+/**
+ * @type {string}
+ */
+tls.CleartextStream.prototype.remoteAddress;
+
+/**
+ * @type {number}
+ */
+tls.CleartextStream.prototype.remotePort;
+
+module.exports = tls;

@@ -1,13 +1,4 @@
 /**
-* A simple barrier point coordination class for node.js
-*
-* See http://www.ioexception.de/2010/07/05/barrier-points-in-node-js/ for more details.
-*
-* @author Benjamin Erb | http://www.benjamin-erb.de
-*
-*/
-
-/**
 * @class
 *
 * Creates a new barrier for the given amount of parties.

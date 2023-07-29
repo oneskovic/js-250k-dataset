@@ -1,5 +1,3 @@
-/* jshint browser:true, jquery:true */
-
 var d3 = require("d3")
 var fs = require("fs")
 var Handlebars = require("handlebars")

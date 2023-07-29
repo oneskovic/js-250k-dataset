@@ -1,4 +1,3 @@
-// UI kind responsible for creating test component, running tests, receiving & displaying test results.
 enyo.kind({
 	name: "enyo.TestReporter",
 	kind: enyo.Control,

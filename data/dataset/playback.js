@@ -1,6 +1,3 @@
-// 
-//  playback.js: cue up notes to play
-//  
 /*
     Copyright 2013 Google Inc
 

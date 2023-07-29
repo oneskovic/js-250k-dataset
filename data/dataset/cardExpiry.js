@@ -1,4 +1,3 @@
-/*global angular: false */
 angular.module('payment.cardExpiry', ['payment.service', 'payment.restrictNumeric'])
     .directive('cardExpiryInput', ['payment', function (payment) {
         'use strict';

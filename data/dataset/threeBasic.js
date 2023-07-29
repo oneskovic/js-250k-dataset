@@ -1,5 +1,3 @@
-// Some helper methods for the examples
-
 var scene, camera, renderer;
 
 var raycaster = new THREE.Raycaster();

@@ -1,7 +1,3 @@
-/**
- * The ElementMonitor class is a helper class that keeps count of adds and removes of
- * SVG/VMLElements and that their destroy method is called. This is to avoid memory leaks.
- */
 function ElementMonitor(elementClass) {
 	var that = this;
 	this.KEY = 'elmt-id';

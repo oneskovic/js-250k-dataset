@@ -8,13 +8,7 @@ define([
     ) {
         'use strict';
 
-        /**
-        *   The SaveAsFileDialog class hides some of the Node-Webkit file
-        *   dialog nastiness.
-        *
-        *   @class 
-        *   @constructor
-        */
+        
         var SaveAsFileDialog = function() {
         };
 

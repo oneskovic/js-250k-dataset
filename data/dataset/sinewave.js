@@ -1,10 +1,3 @@
-/*
-   Sine Wave Generator for Web Audio API.
-   Currently works on Chrome.
-
-   Mohit Cheppudira - http://0xfe.blogspot.com
-*/
-
 /* Create a generator for the given AudioContext. */
 SineWave = function(context) {
   this.x = 0;

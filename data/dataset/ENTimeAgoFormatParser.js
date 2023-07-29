@@ -1,8 +1,3 @@
-/*
-
-
-*/
-
 var moment = require('moment');
 var Parser = require('../parser').Parser;
 var ParsedResult = require('../../result').ParsedResult;
@@ -41,10 +36,7 @@ exports.Parser = function ENTimeAgoFormatParser(){
             result.start.assign('month', date.month() + 1);
             result.start.assign('year', date.year());
             return result;
-        }
-
-
-        if (match[3].match(/hour/)) {
+        }        if (match[3].match(/hour/)) {
 
             date.add(-num, 'hour');
 

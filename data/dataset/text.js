@@ -1,70 +1,57 @@
-define(function( require ) {
-	var _createXHR = function() {
-			return new XMLHttpRequest();
-		},
-		_contentHandlers = {
-			
-		};
+var expect = require('../unexpected-with-plugins'),
+    passError = require('passerror'),
+    AssetGraph = require('../../lib');
 
-	if ( typeof XMLHttpRequest === 'undefined' ) {
-		var progids = [
-				'Msxml2.XMLHTTP',
-				'Microsoft.XMLHTTP',
-				'Msxml2.XMLHTTP.4.0'
-			],
-			i = 0, progid;
+describe('assets/Text', function () {
+    describe('#text', function () {
+        it('should get text of Text asset with rawSrc property', function () {
+            expect(new AssetGraph.Text({rawSrc: new Buffer('Hello, world!\u263a')}).text, 'to equal', 'Hello, world!\u263a');
+        });
 
-		for ( ; i < 3; ) {
-			try{
-				progid = progids[i++];
-				if ( new ActiveXObject(progid) ) {
-					break;
-				}
-			} catch(e) {}
-		}
-		_createXHR = function() {
-			return new ActiveXObject( progid );
-		};
-	}
+        it('should get text of AssetGraph.Text with rawSrcProxy', function (done) {
+            var asset = new AssetGraph.Text({
+                rawSrcProxy: function (cb) {
+                    process.nextTick(function () {
+                        cb(null, new Buffer('Hello, world!\u263a'));
+                    });
+                }
+            });
+            asset.load(passError(done, function () {
+                expect(asset.text, 'to equal', 'Hello, world!\u263a');
+                done();
+            }));
+        });
 
-	function request( args ) {
-		var xhr = _createXHR();
+        it('should get text of AssetGraph.Text with text property', function () {
+            expect(new AssetGraph.Text({text: 'Hello, world!\u263a'}).text, 'to equal', 'Hello, world!\u263a');
+        });
+    });
 
-		if ( !xhr ) {
-			throw 'XMLHttpRequest is not supported';
-		}
+    describe('#rawSrc', function () {
+        it('should get rawSrc of AssetGraph.Text with rawSrc property', function () {
+            expect(new AssetGraph.Text({
+                rawSrc: new Buffer('Hello, world!\u263a', 'utf-8')
+            }).rawSrc, 'to equal', new Buffer('Hello, world!\u263a', 'utf-8'));
+        });
 
-		xhr.open( args.method, args.url, !!args.sync );
-		try {
-            netscape.security.PrivilegeManager.enablePrivilege("UniversalBrowserRead")
-        } catch(e) {}
-		xhr.onreadystatechange = _ioWatch( xhr, args.complete );
-		xhr.send();
-		//xhr.send( args.data || null );
-		xhr = null;
-	}
+        it('should get rawSrc of AssetGraph.Text with rawSrcProxy', function (done) {
+            var asset = new AssetGraph.Text({
+                rawSrcProxy: function (cb) {
+                    process.nextTick(function () {
+                        cb(null, new Buffer('Hello, world!\u263a', 'utf-8'));
+                    });
+                }
+            });
+            asset.load(passError(done, function () {
+                expect(asset.rawSrc, 'to equal', new Buffer('Hello, world!\u263a', 'utf-8'));
+                done();
+            }));
+        });
 
-	function _ioWatch( xhr, callback ) {
-		return function() {
-			if ( xhr.readyState === 4 ) {
-				if ( !xhr.status || (!!xhr.status &&
-					xhr.status >= 200 && xhr.status < 300) ) {
-					callback( xhr.responseText );
-				}
-			}
-		};
-	}
-
-	return {
-		load: function( uri, callback ) {
-			request({
-				url: uri.id,
-				method: 'get',
-				complete: function( content ) {
-					define( uri.id, [], content );
-					callback( uri );
-				}
-			});
-		}
-	}
+        it('should get rawSrc of AssetGraph.Text with text property', function () {
+            expect(new AssetGraph.Text({
+                text: 'Hello, world!\u263a'
+            }).rawSrc, 'to equal', new Buffer('Hello, world!\u263a', 'utf-8'));
+        });
+    });
 });

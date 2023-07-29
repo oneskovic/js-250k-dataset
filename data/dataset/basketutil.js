@@ -1,9 +1,3 @@
-/*
- * Copyright 2013 Elad Elrom, All Rights Reserved.
- * Code licensed under the BSD License:
- * @author Elad Elrom <elad.ny...gmail.com>
- */
-
 var log = function logmsg(message) {
   "use strict";
   if (global.isdebugmode) {

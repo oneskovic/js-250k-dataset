@@ -1,63 +1,59 @@
-/*
- * client/js/auth/controllers/register.js
- */
+var parseUrl = require('url').parse;
+var request = require('request');
+var createError = require('./util/createError');
 
-'use strict';
+function register(name, url, callback) {
+    var config = this._config;
+    var requestUrl = config.registry.register + '/packages';
+    var remote = parseUrl(requestUrl);
+    var headers = {};
 
-var _ = require('lodash');
-
-var _o;
-
-function register(formMeta) {
-  var errField,
-      fields;
-
-  if (formMeta.$invalid) {
-    _o.$scope.showError = true;
-    fields = ['username', 'password', 'passwordRepeat', 'firstName'];
-    errField = _.find(fields, function (field) {
-      return formMeta[field].$invalid;
-    });
-    _o.$scope.focus[errField] = true;
-    return;
-  }
-
-  _o.layout.startSpinner();
-  _o.auth.register(_o.$scope.formData).then(
-    function () {
-      _o.$scope.showError = false;
-      _o.alert.clearMessages();
-    },
-    function (res) {
-      if (res.data.error && res.data.error.message) {
-        _o.$scope.showError = true;
-        _o.alert.setMessages('danger', res.data.error.message);
-      } else {
-        throw new Error('Failed to register.');
-      }
+    if (config.userAgent) {
+        headers['User-Agent'] = config.userAgent;
     }
-  ).finally(_o.layout.stopSpinner);
+
+    if (config.accessToken) {
+        requestUrl += '?access_token=' + config.accessToken;
+    }
+
+    request.post({
+        url: requestUrl,
+        proxy: remote.protocol === 'https:' ? config.httpsProxy : config.proxy,
+        headers: headers,
+        ca: config.ca.register,
+        strictSSL: config.strictSsl,
+        timeout: config.timeout,
+        json: true,
+        form: {
+            name: name,
+            url: url
+        }
+    }, function (err, response) {
+        // If there was an internal error (e.g. timeout)
+        if (err) {
+            return callback(createError('Request to ' + requestUrl + ' failed: ' + err.message, err.code));
+        }
+
+        // Duplicate
+        if (response.statusCode === 403) {
+            return callback(createError('Duplicate package', 'EDUPLICATE'));
+        }
+
+        // Invalid format
+        if (response.statusCode === 400) {
+            return callback(createError('Invalid URL format', 'EINVFORMAT'));
+        }
+
+        // Everything other than 201 is unknown
+        if (response.statusCode !== 201) {
+            return callback(createError('Unknown error: ' + response.statusCode + ' - ' + response.body, 'EUNKNOWN'));
+        }
+
+        callback(null, {
+            name: name,
+            url: url
+        });
+    });
 }
 
-exports = module.exports = function (ngModule) {
-  ngModule.controller('RegisterCtrl', function ($scope, alert, auth, layout) {
-    _o = {
-      $scope: $scope,
-      alert: alert,
-      auth: auth,
-      layout: layout
-    };
-
-    _.assign($scope, {
-      focus: {
-        username: true
-      },
-      formData: {},
-      loginFacebook: auth.loginFacebook,
-      loginGoogle: auth.loginGoogle,
-      loginTwitter: auth.loginTwitter,
-      register: register,
-      showError: false
-    });
-  });
-};
+module.exports = register;

@@ -1,7 +1,3 @@
-/**
- * @author Bjorn Sandvik / http://thematicmapping.org/
- */
-
 THREE.WcsTerrainLoader = function ( manager ) {
 
 	this.manager = ( manager !== undefined ) ? manager : THREE.DefaultLoadingManager;

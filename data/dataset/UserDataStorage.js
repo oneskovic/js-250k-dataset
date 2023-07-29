@@ -1,9 +1,3 @@
-/**
- * UserDataAdaptor
- * ===================
- * UserData implementation for Lawnchair for older IE browsers.
- *
- */
 var UserDataAdaptor = function(options) {
     for (var i in LawnchairAdaptorHelpers) {
         this[i] = LawnchairAdaptorHelpers[i];

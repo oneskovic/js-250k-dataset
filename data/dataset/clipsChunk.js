@@ -1,6 +1,3 @@
-/**
- * Create display state chunk type for draw and pick render of user clipping planes
- */
 SceneJS_ChunkFactory.createChunkType({
 
     type: "clips",

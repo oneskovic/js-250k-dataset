@@ -1,84 +1,53 @@
-/*
- * Copyright 2015 Google Inc. All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
- */
+(function(Proton, undefined) {
+	//can use Collision(emitter,true,function(){}) or Collision();
+	function Collision(emitter, mass, callback, life, easing) {
+		Collision._super_.call(this, life, easing);
+		this.reset(emitter, mass, callback);
+		this.name = "Collision";
+	}
 
-goog.provide('app.Collision');
 
-goog.require('Constants');
-goog.require('app.Entity');
-goog.require('app.shared.pools');
+	Proton.Util.inherits(Collision, Proton.Behaviour);
+	Collision.prototype.reset = function(emitter, mass, callback, life, easing) {
+		this.emitter = Proton.Util.initValue(emitter, null);
+		this.mass = Proton.Util.initValue(mass, true);
+		this.callback = Proton.Util.initValue(callback, null);
+		this.collisionPool = [];
+		this.delta = new Proton.Vector2D();
+		if (life)
+			Collision._super_.prototype.reset.call(this, life, easing);
+	}
 
-/**
- * Creates a collision cloud.
- * @constructor
- * @param {Game} game The current game object.
- */
-app.Collision = function(game) {
-  app.Entity.call(this);
+	Collision.prototype.applyBehaviour = function(particle, time, index) {
+		var newPool = this.emitter ? this.emitter.particles.slice(index) : this.pool.slice(index);
+		var otherParticle;
+		var lengthSq;
+		var overlap;
+		var averageMass1, averageMass2;
+		var length = newPool.length;
+		for (var i = 0; i < length; i++) {
+			otherParticle = newPool[i];
+			if (otherParticle !== particle) {
+				this.delta.copy(otherParticle.p);
+				this.delta.sub(particle.p);
+				lengthSq = this.delta.lengthSq();
+				distance = particle.radius + otherParticle.radius;
 
-  this.game = game;
-  this.elem = $('<div class="collision hidden" />');
-  this.animationElem = $('<div class="hit-cloud" />');
-  this.animationElem.appendTo(this.elem);
+				if (lengthSq <= distance * distance) {
+					overlap = distance - Math.sqrt(lengthSq);
+					overlap += 0.5;
+					totalMass = particle.mass + otherParticle.mass;
+					averageMass1 = this.mass ? otherParticle.mass / totalMass : 0.5;
+					averageMass2 = this.mass ? particle.mass / totalMass : 0.5;
+					particle.p.add(this.delta.clone().normalize().multiplyScalar(overlap * -averageMass1));
+					otherParticle.p.add(this.delta.normalize().multiplyScalar(overlap * averageMass2));
+					if (this.callback)
+						this.callback(particle, otherParticle);
+				}
+			}
+		}
+	};
 
-  game.collisionsElem.append(this.elem);
-};
+	Proton.Collision = Collision;
+})(Proton);
 
-/**
- * Inherit from entity.
- */
-app.Collision.prototype = Object.create(app.Entity.prototype);
-
-app.shared.pools.mixin(app.Collision);
-
-/**
- * Resets the collision for reuse.
- * @param {number} x screen position.
- * @param {number} y screen position.
- */
-app.Collision.prototype.onInit = function(x, y) {
-  var self = this;
-  this.elem.removeClass('hidden');
-  this.setPos(x + 5, y + 2);
-  this.elem.css('transform', 'translate3d(' + this.x + 'em, ' + this.y + 'em, 0)');
-  this.animationElem.addClass('active');
-  this.animationElem.off();
-  this.animationElem.one('animationend webkitAnimationEnd MSAnimationEnd oAnimationEnd', function() {
-    self.animationElem.removeClass('active');
-    self.remove();
-  });
-
-  this.dead = false;
-};
-
-/**
- * Remove present from pool.
- */
-app.Collision.prototype.remove = function() {
-  app.Collision.push(this);
-};
-
-/**
- * Remove the present from the dom and game loop.
- */
-app.Collision.prototype.onDispose = function() {
-  this.elem.addClass('hidden');
-  this.dead = true;
-};
-
-/**
- * Virtual method to update collision for new frame.
- */
-app.Collision.prototype.onFrame = function() {};

@@ -1,28 +1,4 @@
-﻿/*
-* WorkerConsole.js:
-* 
-* Include this script in your web pages in order to give your worker threads
-* a working console.log() function. This file is also loaded by all 
-* workers you create in order to define the log() function. It is one 
-* file used in two distinct ways.
-* 
-* This does not work in Firefox, since FF4 does not support MessageChannel.
-*
-* It appears to work in Chrome, but has not been tested in other browsers.
-* Note that Workers don't work in Chrome if you're using the file:// 
-* protocol, so in order to try this out you have to be running a server.
-* 
-* It does not work for workers nested within other workers, but it could
-* probably be made to work in that case.
-* 
-* It has only been tested with very simple directory structures.  
-* WorkerConsole.js probably needs to be in the same directory as the 
-* HTML file that includes it. There are likely to be path issues 
-* for more complicated directory structures.
-* 
-* Copyright 2011 by David Flanagan
-* http://creativecommons.org/licenses/by-nc-sa/3.0/
-*/
+﻿
 if (this.console && this.console.log) {
     /* 
     * If there is already a console.log() function defined, then wrap the

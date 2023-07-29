@@ -1,10 +1,4 @@
 /**
- * @copyright  2011 geOps
- * @license    https://github.com/geops/ole/blob/master/license.txt
- * @link       https://github.com/geops/ole
- */
-
-/**
  * Class: OpenLayers.Editor.Control.CleanFeature
  * The Clean Feature control converts all selected features from a given layer 
  *     to a multipolygon and sends it as GeoJSON named "geo" to a server.

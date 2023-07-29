@@ -1,11 +1,3 @@
-/*
- * Ext JS Library 0.30
- * Copyright(c) 2006-2009, Ext JS, LLC.
- * licensing@extjs.com
- * 
- * http://extjs.com/license
- */
-
 Ext.tree.LocalTreeLoader = Ext.extend(Ext.tree.TreeLoader, {
     requestData : function(node, callback){
         if(this.fireEvent("beforeload", this, node, callback) !== false){

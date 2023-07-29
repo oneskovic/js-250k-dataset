@@ -1,13 +1,4 @@
- /**
- * Based on Scaler.as originally written in as3.
- * Copyright (c) the Funnel development team
- * http://www.funnel.cc
- *
- * Ported to JavaScript by Jeff Hoefs
- * Copyright (c) 2011-2012 Jeff Hoefs <soundanalogous@gmail.com>
- *
- * Released under the MIT license. See LICENSE file for details.
- */
+ 
 
 JSUTILS.namespace('BO.filters.Scaler');
 

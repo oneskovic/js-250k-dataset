@@ -1,5 +1,3 @@
-/* jasmine specs for Interpreter.js -> Thread go here */
-
 describe('Thread', function() {
     var thread;
 

@@ -1,5 +1,3 @@
-// refactored from http://wurstcaptures.untergrund.net/music/magic.js
-
 String.prototype.toCharCodes = function() {
     var count = this.length;
     if (count == 1) {

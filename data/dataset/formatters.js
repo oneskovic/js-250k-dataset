@@ -6,10 +6,7 @@
 
   module.service('formatters', function() {
 
-    /**
-     * Generic function to transform between units.
-     * Adapted from: https://gist.github.com/thomseddon/3511330
-     */
+    
     var transform = function(input, precision, units, multiplier) {
         input = parseFloat(input);
         if (isNaN(input) || !isFinite(input)) {

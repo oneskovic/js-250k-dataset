@@ -1,37 +1,3 @@
-/**
- * @ngdoc service
- * @name $ionicBackdrop
- * @module ionic
- * @description
- * Shows and hides a backdrop over the UI.  Appears behind popups, loading,
- * and other overlays.
- *
- * Often, multiple UI components require a backdrop, but only one backdrop is
- * ever needed in the DOM at a time.
- *
- * Therefore, each component that requires the backdrop to be shown calls
- * `$ionicBackdrop.retain()` when it wants the backdrop, then `$ionicBackdrop.release()`
- * when it is done with the backdrop.
- *
- * For each time `retain` is called, the backdrop will be shown until `release` is called.
- *
- * For example, if `retain` is called three times, the backdrop will be shown until `release`
- * is called three times.
- *
- * @usage
- *
- * ```js
- * function MyController($scope, $ionicBackdrop, $timeout) {
- *   //Show a backdrop for one second
- *   $scope.action = function() {
- *     $ionicBackdrop.retain();
- *     $timeout(function() {
- *       $ionicBackdrop.release();
- *     }, 1000);
- *   };
- * }
- * ```
- */
 IonicModule
 .factory('$ionicBackdrop', [
   '$document', '$timeout',

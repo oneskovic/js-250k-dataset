@@ -1,7 +1,3 @@
-// moment.js locale configuration
-// locale : Morocco Central Atlas Tamaziɣt (tzm)
-// author : Abdel Said : https://github.com/abdelsaid
-
 (function (factory) {
     if (typeof define === 'function' && define.amd) {
         define(['moment'], factory); // AMD

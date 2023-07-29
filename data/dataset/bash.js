@@ -1,8 +1,3 @@
-/*
-Language: Bash
-Author: vah <vahtenberg@gmail.com>
-Category: common
-*/
 module.exports = function(hljs){
 hljs.LANGUAGES.bash = function(){
   var BASH_LITERAL = {'true' : 1, 'false' : 1};

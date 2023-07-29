@@ -1,4 +1,3 @@
-//>>built
 define("dojox/charting/themes/Tufte", ["../Theme", "dojo/_base/Color", "./common"], function(Theme, Color){
 	/*
 		A charting theme based on the principles championed by

@@ -1,8 +1,6 @@
 var GridLayout = Backbone.Model.extend({
 	
-	/**
-	 * @memberOf GridLayout
-	 */
+	
 	findFreeSpace: function(wd, ht){
 		var numRows = Math.ceil( ht/this.get("cellSize") ), numCols = Math.ceil( wd/this.get("cellSize") );
 		var grid = this.get("grid"), plot = this.get("plot");

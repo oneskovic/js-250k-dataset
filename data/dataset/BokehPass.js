@@ -1,8 +1,3 @@
-/**
- * Depth-of-field post-process with bokeh shader
- */
-
-
 THREE.BokehPass = function ( scene, camera, params ) {
 
 	this.scene = scene;

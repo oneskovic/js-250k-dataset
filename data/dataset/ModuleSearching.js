@@ -1,8 +1,3 @@
-/*
- * Keyword search for command module panel. 
- * Words in query are searched as separated queries. You can search for exact matching using double qoutes arround query
- */
-
 function search_module(module_tree, query_string) {
   if ( query_string.search(/\w/) == -1 )
     return tree_array;

@@ -1,9 +1,3 @@
-/*
-TODO
-- add referral check
-- reset password w/o signing up
-*/
-
 describe('E2E: Account Initalization', function() {
 	//var user = 'test@angualario.com',
 	//	pass = '12!@ASqwerty';

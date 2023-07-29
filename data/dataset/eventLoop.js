@@ -1,5 +1,3 @@
-// Test inspired by ./nstimer.js, but using node-friendly deconstructed event loop
-
 var $ = require('../')
   , assert = require('assert')
   , util = require('util')

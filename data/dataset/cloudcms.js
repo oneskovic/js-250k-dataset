@@ -3,9 +3,7 @@
     var Alpaca = $.alpaca;
 
     Alpaca.CloudCmsConnector = Alpaca.Connector.extend(
-    /**
-     * @lends Alpaca.CloudCmsConnector.prototype
-     */
+    
     {
         /**
          * Makes initial connections to data source.

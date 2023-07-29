@@ -1,4 +1,3 @@
-
 (function () {
   'use strict';
 
@@ -7,12 +6,7 @@
       mkdirSyncOrig = fs.mkdirSync,
       osSep = process.platform === 'win32' ? '\\' : '/';
 
-  /**
-  * Offers functionality similar to mkdir -p
-  *
-  * Asynchronous operation. No arguments other than a possible exception
-  * are given to the completion callback.
-  */
+  
   function mkdir_p (path, mode, callback, position) {
     var parts = require('path').normalize(path).split(osSep);
 

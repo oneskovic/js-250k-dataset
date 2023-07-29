@@ -1,4 +1,4 @@
-﻿/*globals describe, it, beforeEach, afterEach */
+﻿
 
 var path = require("path"),
     should = require("should"),

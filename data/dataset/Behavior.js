@@ -1,4 +1,3 @@
-/** @module waf-core/behavior */
 WAF.define('waf-core/behavior', function() {
     "use strict";
     /** @namespace Behavior */

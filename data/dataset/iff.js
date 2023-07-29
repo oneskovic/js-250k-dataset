@@ -1,13 +1,3 @@
-/*
-
-Interchange File Format library
-===============================
-
-Copyright (c) 2008-2011 The Parchment Contributors
-BSD licenced
-http://code.google.com/p/parchment
-
-*/
 (function(){
 
 // Get a 32 bit number from a byte array, and vice versa

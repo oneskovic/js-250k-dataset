@@ -1,6 +1,3 @@
-/**
- * Module dependencies.
- */
 var AuthorizationError = require('../errors/authorizationerror')
   , ForbiddenError = require('../errors/forbiddenerror');
 

@@ -1,7 +1,3 @@
-/*
- Collection Methods
-*/
-
 MooModel.CollectionMethods = {
   collection: [],
   add: function(object){

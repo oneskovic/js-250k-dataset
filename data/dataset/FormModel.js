@@ -1,8 +1,6 @@
 define(['jquery', 'underscore', 'backbone'], function($, _, Backbone) {
 
-    /**
-     * Main model for homepage layout representing a form
-     */
+    
     var Form = Backbone.Model.extend({
 
         /**

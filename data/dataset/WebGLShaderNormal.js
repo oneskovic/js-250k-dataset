@@ -1,5 +1,3 @@
-//--- Texture Vertex Shader ---
-
 THREE.WebGLShaderDefinitions.normalVertex = (function() {
 	
 	return [

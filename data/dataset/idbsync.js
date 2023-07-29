@@ -31,7 +31,7 @@ var methods = {
 
 var noop = function(){};
 
-/*jshint -W074*/
+
 module.exports = function(method, model, options) {
   var deferred = new $.Deferred(),
       db = model.indexedDB || model.collection.indexedDB,

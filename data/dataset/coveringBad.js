@@ -1,10 +1,3 @@
-/*
- *  Project     : Covering Bad
- *  Description : A simple jQuery Plugin for cover an item by another item with dragging ability.
- *  Author      : Mojtaba Seyedi
- *  License     : MIT  http://seyedi.mit-license.org
-*/
-
 (function($) {
 
 $.fn.coveringBad = function(options) {

@@ -1,6 +1,4 @@
-/** This facet is designed for bundling multiple requests in a single request. This is 
- * based on the JSGI object structure.
- */ 
+ 
 
 var Facet = require("perstore/facet").Facet,
 	directApp = require("../pintura").directApp,

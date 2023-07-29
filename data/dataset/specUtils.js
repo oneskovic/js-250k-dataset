@@ -12,15 +12,7 @@ var parseSpecData = new parseData({
 });
 
 
-/**
- * Parse clean path to spec from URL
- *
- * @param {String} urlPath - raw url ("/base/spec/index.src"
- *
- * @returns {Object} output
- * @returns {String} output.ext - file extension, if exists
- * @returns {String} output.pathToSpec - path to Spec
- */
+
 module.exports.parseSpecUrlPath = function(urlPath){
     // TODO: add any type of url parsing, including parameters
 

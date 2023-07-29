@@ -1,16 +1,6 @@
 'use strict';
 
-/**
- * @ngdoc overview
- * @name ExpertsInside.SharePoint.Core
- *
- * @description
- *
- * # ExpertsInside.SharePoint.Core
- *
- * The ExpertsInside.SharePoint.Core module contains utility services
- * used by the other modules.
- */
+
 angular.module('ExpertsInside.SharePoint.Core', ['ng'])
   .run(function($window, $log) {
     if (angular.isUndefined($window.ShareCoffee)) {

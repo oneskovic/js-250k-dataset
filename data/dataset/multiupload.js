@@ -1,10 +1,3 @@
-/**
- * 
- * If this file is beeing included into a project, inputs with attributes type=file & multiple=multiple will be changed into a fancy multiupload script.
- *  
- */
-
-
 // wait until ready
 window.addEvent('domready', function(){
 	

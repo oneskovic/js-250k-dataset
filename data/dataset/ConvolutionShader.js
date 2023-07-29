@@ -1,11 +1,3 @@
-/**
- * @author alteredq / http://alteredqualia.com/
- *
- * Convolution shader
- * ported from o3d sample to WebGL / GLSL
- * http://o3d.googlecode.com/svn/trunk/samples/convolution.html
- */
-
 THREE.ConvolutionShader = {
 
 	defines: {

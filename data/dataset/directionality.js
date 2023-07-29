@@ -1,7 +1,3 @@
-///import core
-///commands 输入的方向
-///commandsName  DirectionalityLtr,DirectionalityRtl
-///commandsTitle  从左向右输入,从右向左输入
 /**
  * 输入的方向
  * @function

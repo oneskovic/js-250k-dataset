@@ -2,7 +2,7 @@ var setStyle = function(elem, value) {
 	if('object' === typeof value) {
 		for(var cssName in value) if(value.hasOwnProperty(cssName)) {
 			try { elem.style[cssName] = value[cssName]; }
-			catch(e) { /* ignore, unsupported CSS property. */ }
+			catch(e) {  }
 		}
 	} else if ('undefined' !== typeof elem.style.cssText) {
 		elem.style.cssText = value;

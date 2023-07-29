@@ -1,6 +1,3 @@
-/**
- * Demonstrates path drawing and smoothing.
- */
 Ext.define('KitchenSink.view.FreeDrawComponent', function () {
 
     function smoothList(points) {

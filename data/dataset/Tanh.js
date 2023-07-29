@@ -1,8 +1,4 @@
 /**
- * @depends ../core/AudioletNode.js
- */
-
-/**
  * Hyperbolic tangent of values.  Works nicely as a distortion function.
  *
  * **Inputs**

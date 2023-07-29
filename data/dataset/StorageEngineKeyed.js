@@ -1,13 +1,7 @@
 (function() {
 var Util = YAHOO.util;
 
-	/**
-	 * The StorageEngineKeyed class implements the interface necessary for managing keys.
-	 * @namespace YAHOO.util
-	 * @class StorageEngineKeyed
-	 * @constructor
-	 * @extend YAHOO.util.Storage
-	 */
+	
 	Util.StorageEngineKeyed = function() {
 		Util.StorageEngineKeyed.superclass.constructor.apply(this, arguments);
 		this._keys = [];

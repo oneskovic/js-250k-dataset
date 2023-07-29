@@ -1,11 +1,6 @@
 tabulator.panes = {};
 
-/*  PANES
-**
-**     Panes are regions of the outline view in which a particular subject is
-** displayed in a particular way.  They are like views but views are for query results.
-** subject panes are currently stacked vertically.
-*/
+
 tabulator.panes.list = [];
 tabulator.panes.paneForIcon = []
 tabulator.panes.paneForPredicate = []

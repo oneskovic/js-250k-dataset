@@ -1,4 +1,3 @@
-/* globals isEqual */
 "use strict";
 
 var fs = require("fs");

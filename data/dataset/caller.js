@@ -1,14 +1,3 @@
-// functionally abstracting the calls
-// to the function. this will net us
-// better gains when looping through
-// multiple namespaces and simplifies
-// logic for calling the event.
-// 
-// this is slower than event-emitter,
-// but ee doesn't have to worry about
-// namespaces, so they can do it a
-// little differently
-
 var apply = function(args) {
     return function(fn) {
         return fn.apply(null, args);

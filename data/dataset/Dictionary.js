@@ -1,112 +1,91 @@
-dojo.provide("dojox.collections.Dictionary");
-dojo.require("dojox.collections._base");
+define([
+    'brejep/class'
+], function (Class) {
+    'use strict';
 
-dojox.collections.Dictionary=function(/* dojox.collections.Dictionary? */dictionary){
-	//	summary
-	//	Returns an object of type dojox.collections.Dictionary
-	var items={};
-	this.count=0;
+    var Dictionary = Class.extend({
+        VERSION: '0.1.0',
+        keys: null,
+        values: null,
 
-	//	comparator for property addition and access.
-	var testObject={};
+        constructor: function () {
+            this.keys = [];
+            this.values = [];
+            return this;
+        },
 
-	this.add=function(/* string */k, /* object */v){
-		//	summary
-		//	Add a new item to the Dictionary.
-		var b=(k in items);
-		items[k]=new dojox.collections.DictionaryEntry(k,v);
-		if(!b){
-			this.count++;
-		}
-	};
-	this.clear=function(){
-		//	summary
-		//	Clears the internal dictionary.
-		items={};
-		this.count=0;
-	};
-	this.clone=function(){
-		//	summary
-		//	Returns a new instance of dojox.collections.Dictionary; note the the dictionary is a clone but items might not be.
-		return new dojox.collections.Dictionary(this);	//	dojox.collections.Dictionary
-	};
-	this.contains=this.containsKey=function(/* string */k){
-		//	summary
-		//	Check to see if the dictionary has an entry at key "k".
-		if(testObject[k]){
-			return false;			// bool
-		}
-		return (items[k]!=null);	//	bool
-	};
-	this.containsValue=function(/* object */v){
-		//	summary
-		//	Check to see if the dictionary has an entry with value "v".
-		var e=this.getIterator();
-		while(e.get()){
-			if(e.element.value==v){
-				return true;	//	bool
-			}
-		}
-		return false;	//	bool
-	};
-	this.entry=function(/* string */k){
-		//	summary
-		//	Accessor method; similar to dojox.collections.Dictionary.item but returns the actual Entry object.
-		return items[k];	//	dojox.collections.DictionaryEntry
-	};
-	this.forEach=function(/* function */ fn, /* object? */ scope){
-		//	summary
-		//	functional iterator, following the mozilla spec.
-		var a=[];	//	Create an indexing array
-		for(var p in items) {
-			if(!testObject[p]){
-				a.push(items[p]);	//	fill it up
-			}
-		}
-		dojo.forEach(a, fn, scope);
-	};
-	this.getKeyList=function(){
-		//	summary
-		//	Returns an array of the keys in the dictionary.
-		return (this.getIterator()).map(function(entry){ 
-			return entry.key; 
-		});	//	array
-	};
-	this.getValueList=function(){
-		//	summary
-		//	Returns an array of the values in the dictionary.
-		return (this.getIterator()).map(function(entry){ 
-			return entry.value; 
-		});	//	array
-	};
-	this.item=function(/* string */k){
-		//	summary
-		//	Accessor method.
-		if(k in items){
-			return items[k].valueOf();	//	object
-		}
-		return undefined;	//	object
-	};
-	this.getIterator=function(){
-		//	summary
-		//	Gets a dojox.collections.DictionaryIterator for iteration purposes.
-		return new dojox.collections.DictionaryIterator(items);	//	dojox.collections.DictionaryIterator
-	};
-	this.remove=function(/* string */k){
-		//	summary
-		//	Removes the item at k from the internal collection.
-		if(k in items && !testObject[k]){
-			delete items[k];
-			this.count--;
-			return true;	//	bool
-		}
-		return false;	//	bool
-	};
+        add: function (key, value) {
+            var keyIndex = this.getIndex(key);
+            if(keyIndex >= 0) {
+                this.values[keyIndex] = value;
+            } else {
+                this.keys.push(key);
+                this.values.push(value);
+            }
+        },
 
-	if (dictionary){
-		var e=dictionary.getIterator();
-		while(e.get()) {
-			 this.add(e.element.key, e.element.value);
-		}
-	}
-};
+        remove: function (key) {
+            var keyIndex = this.getIndex(key);
+            if(keyIndex >= 0) {
+                this.keys.splice(keyIndex, 1);
+                this.values.splice(keyIndex, 1);
+            } else {
+                throw 'Key does not exist';
+            }
+        },
+
+        retrieve: function (key) {
+            var value = null;
+            var keyIndex = this.getIndex(key);
+            if(keyIndex >= 0) {
+                value = this.values[ keyIndex ];
+            }
+            return value;
+        },
+
+        getIndex: function (testKey) {
+            var i = 0,
+                len = this.keys.length,
+                key;
+            for(; i<len; ++i){
+                key = this.keys[i];
+                if(key == testKey) {
+                    return i;
+                }
+            }
+            return -1;
+        },
+
+        has: function (testKey) {
+            var i = 0,
+                len = this.keys.length,
+                key;
+            for(; i<len; ++i){
+                key = this.keys[i];
+                if(key == testKey) {
+                    return true;
+                }
+            }
+            return false;
+        },
+
+        forEach: function (action) {
+            var i = 0,
+                len = this.keys.length,
+                key,
+                value;
+
+            for(; i<len; ++i) {
+                key = this.keys[i];
+                value = this.values[i];
+                var breakHere = action(key, value);
+                if (breakHere === 'return') {
+                    return false;
+                }
+            }
+            return true;
+        }
+    });
+
+    return Dictionary;
+});

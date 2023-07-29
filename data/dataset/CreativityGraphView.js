@@ -1,5 +1,3 @@
-// CreativityGraphView.js
-// -------
 define(["jquery", "backbone", "handlebars",
         "./BaseView", "arbor", "../utils/Renderer",
         "models/GenericModel", "text!templates/creativity_graph.hbr"

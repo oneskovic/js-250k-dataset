@@ -1,14 +1,3 @@
-/**
- * Extends sinon.FakeXMLHttpRequest with upload functionality.
- * Property `upload` to FakeXMLHttpRequest added. It works with the following events:
- *  "loadstart", "progress", "abort", "error", "load", "loadend"
- * Events are instance of FakeXMLHttpRequestProgressEvent and has following properties:
- *  loaded - loaded request size.
- *  total - total request size.
- *  lengthComputable - boolean indicates if loaded and total attributes were computed.
- * Helper method `progress`, such as `sinon.FakeXMLHttpRequest.respond(200...)`, was added.
- *
- */
 (function() {
   function FakeXMLHttpRequestUpload() {
     var xhr = this;

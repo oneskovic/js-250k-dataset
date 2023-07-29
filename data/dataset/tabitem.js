@@ -1,8 +1,3 @@
-/**
- * @fileOverview 
- * @ignore
- */
-
 define('bui/tab/tabitem',['bui/common'],function (require) {
   
 

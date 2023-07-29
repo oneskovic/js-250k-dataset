@@ -1,16 +1,3 @@
-//
-// simple testing interface
-// written by Einar Lielmanis, einar@jsbeautifier.org
-//
-// usage:
-//
-// var t = new SanityTest(function (x) { return x; }, 'my function');
-// t.expect('input', 'output');
-// t.expect('a', 'a');
-// output_somewhere(t.results()); // good for <pre>, html safe-ish
-// alert(t.results_raw());        // html unescaped
-
-
 function SanityTest (func, name_of_test) {
 
     var test_func = func || function (x) {

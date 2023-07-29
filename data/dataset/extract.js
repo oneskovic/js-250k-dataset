@@ -1,10 +1,5 @@
 "use strict"
-/**
- * @class  Finder command "extract"
- * Extract files from archive
- *
- * @author Dmitry (dio) Levashov
- **/
+
 Finder.prototype.commands.extract = function() {
 	var self    = this,
 		fm      = self.fm,

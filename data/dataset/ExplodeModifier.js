@@ -1,10 +1,3 @@
-/**
- * Make all faces use unique vertices
- * so that each face can be separated from others
- *
- * @author alteredq / http://alteredqualia.com/
- */
-
 THREE.ExplodeModifier = function () {
 
 };

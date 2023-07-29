@@ -1,4 +1,3 @@
-/* df.js */
 /**
  * A plugin for monitoring disk size in %.
  */

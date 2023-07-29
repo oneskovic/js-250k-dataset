@@ -1,5 +1,3 @@
-// TODO: Option to enable encryption that uses filter pouch
-
 'use strict';
 
 var YngUtils = require('../yng-utils'), PouchyngCommonFactory = require('./pouchyng-common');

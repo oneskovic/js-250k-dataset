@@ -75,9 +75,7 @@ for (var k in methodsToProvide) {
 }
 
 function getCreateFn(server) {
-    /**
-     * Create a new CasperJS instance
-     */
+    
     return function create (options) {
         options = options || {};
 

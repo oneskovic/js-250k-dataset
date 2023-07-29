@@ -4,11 +4,7 @@ goog.require('USE_TYPEDARRAY');
 
 goog.scope(function() {
 
-/**
- * build huffman table from length list.
- * @param {!(Array.<number>|Uint8Array)} lengths length list.
- * @return {!Array} huffman table.
- */
+
 Zlib.Huffman.buildHuffmanTable = function(lengths) {
   /** @type {number} length list size. */
   var listSize = lengths.length;

@@ -1,73 +1,51 @@
-/*!
- * Ext JS Library 3.3.0
- * Copyright(c) 2006-2010 Ext JS, Inc.
- * licensing@extjs.com
- * http://www.extjs.com/license
- */
+var _ = require('lodash');
+
 /**
- * @class Ext.list.Sorter
- * @extends Ext.util.Observable
- * <p>Supporting Class for Ext.list.ListView</p>
- * @constructor
- * @param {Object} config
+ * Sort `data` (tuples) using `sortCriteria` (comparator)
+ *
+ * Based on method described here:
+ * http://stackoverflow.com/a/4760279/909625
+ *
+ * @param  { Object[] } data         [tuples]
+ * @param  { Object }   sortCriteria [mongo-style comparator object]
+ * @return { Object[] }
  */
-Ext.list.Sorter = Ext.extend(Ext.util.Observable, {
-    /**
-     * @cfg {Array} sortClasses
-     * The CSS classes applied to a header when it is sorted. (defaults to <tt>["sort-asc", "sort-desc"]</tt>)
-     */
-    sortClasses : ["sort-asc", "sort-desc"],
 
-    constructor: function(config){
-        Ext.apply(this, config);
-        Ext.list.Sorter.superclass.constructor.call(this);
-    },
+module.exports = function sortData(data, sortCriteria) {
 
-    init : function(listView){
-        this.view = listView;
-        listView.on('render', this.initEvents, this);
-    },
-
-    initEvents : function(view){
-        view.mon(view.innerHd, 'click', this.onHdClick, this);
-        view.innerHd.setStyle('cursor', 'pointer');
-        view.mon(view.store, 'datachanged', this.updateSortState, this);
-        this.updateSortState.defer(10, this, [view.store]);
-    },
-
-    updateSortState : function(store){
-        var state = store.getSortState();
-        if(!state){
-            return;
-        }
-        this.sortState = state;
-        var cs = this.view.columns, sortColumn = -1;
-        for(var i = 0, len = cs.length; i < len; i++){
-            if(cs[i].dataIndex == state.field){
-                sortColumn = i;
-                break;
-            }
-        }
-        if(sortColumn != -1){
-            var sortDir = state.direction;
-            this.updateSortIcon(sortColumn, sortDir);
-        }
-    },
-
-    updateSortIcon : function(col, dir){
-        var sc = this.sortClasses;
-        var hds = this.view.innerHd.select('em').removeClass(sc);
-        hds.item(col).addClass(sc[dir == "DESC" ? 1 : 0]);
-    },
-
-    onHdClick : function(e){
-        var hd = e.getTarget('em', 3);
-        if(hd && !this.view.disableHeaders){
-            var index = this.view.findHeaderIndex(hd);
-            this.view.store.sort(this.view.columns[index].dataIndex);
-        }
+  function dynamicSort(property) {
+    var sortOrder = 1;
+    if(property[0] === '-') {
+      sortOrder = -1;
+      property = property.substr(1);
     }
-});
 
-// Backwards compatibility alias
-Ext.ListView.Sorter = Ext.list.Sorter;
+    return function (a,b) {
+      var result = (a[property] < b[property]) ? -1 : (a[property] > b[property]) ? 1 : 0;
+      return result * sortOrder;
+    };
+  }
+
+  function dynamicSortMultiple() {
+    var props = arguments;
+    return function (obj1, obj2) {
+      var i = 0, result = 0, numberOfProperties = props.length;
+
+      while(result === 0 && i < numberOfProperties) {
+        result = dynamicSort(props[i])(obj1, obj2);
+        i++;
+      }
+      return result;
+    };
+  }
+
+  // build sort criteria in the format ['firstName', '-lastName']
+  var sortArray = [];
+  _.each(_.keys(sortCriteria), function(key) {
+    if(sortCriteria[key] === -1) sortArray.push('-' + key);
+    else sortArray.push(key);
+  });
+
+  data.sort(dynamicSortMultiple.apply(null, sortArray));
+  return data;
+};

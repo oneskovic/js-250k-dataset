@@ -1,4 +1,3 @@
-
 var objArgs = WScript.Arguments;
 for (i = 0; i < objArgs.length; i++)
 {

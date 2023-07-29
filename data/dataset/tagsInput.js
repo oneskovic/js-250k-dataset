@@ -3,9 +3,7 @@
 
     var module = angular.module('ngx.ui.tagsInput', ['ngx.config', 'ngx.loader']);
 
-    /**
-     * Tags input
-     */
+    
     module.directive('ngxTagsInput', ['$http', '$filter', '$timeout', 'ngxConfig', 'ngxLoader', function($http, $filter, $timeout, ngxConfig, ngxLoader) {
         var deps = [
             ngxConfig.libsPath + 'jquery.tagsinput/jquery.tagsinput.js',

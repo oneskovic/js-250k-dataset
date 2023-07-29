@@ -1,5 +1,3 @@
-//     @@@@ Note only works with extension
-
 // isExtension=true;
 
 if ((typeof lb) == "undefined") {

@@ -1,9 +1,4 @@
 /*
- * Copyright (C) 2012-2014 by Coriolis Technologies Pvt Ltd.
- * This program is free software - see the file COPYING for license details.
- */
-
-/*
  * Media UIs provide display and edit functionality for blobs with a
  * given mime type.
  *

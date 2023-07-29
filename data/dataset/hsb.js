@@ -1,7 +1,3 @@
-/* Translators (2009 onwards):
- *  - Michawiki
- */
-
 /**
  * @requires OpenLayers/Lang.js
  */

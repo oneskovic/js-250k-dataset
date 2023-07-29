@@ -1,7 +1,3 @@
-/*
-	基本测试，autorouter 例子
-	测试response，tploption，session的_csrf功能
-*/
 var should = require('should');
 var path = require('path');
 var testconf = require('./testconf.js');

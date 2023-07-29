@@ -1,4 +1,3 @@
-/*jslint node: true */
 'use strict';
 
 exports.retrieve = function(req, res) {

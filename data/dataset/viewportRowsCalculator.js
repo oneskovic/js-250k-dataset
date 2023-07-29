@@ -1,23 +1,3 @@
-/**
- * Viewport calculator constructor. Calculates indexes of rows to render OR rows that are visible.
- * To redo the calculation, you need to create a new calculator.
- *
- * Object properties:
- *   this.scrollOffset - position of vertical scroll (in px)
- *   this.startRow - index of the first rendered/visible row (can be overwritten using overrideFn)
- *   this.startPosition - position of the first rendered/visible row (in px)
- *   this.endRow - index of the last rendered/visible row (can be overwritten using overrideFn)
- *   this.count - number of rendered/visible rows
- *
- * @param height - height of the viewport
- * @param scrollOffset - current vertical scroll position of the viewport
- * @param totalRows - total number of rows
- * @param rowHeightFn - function that returns the height of the row at a given index (in px)
- * @param overrideFn - function that changes calculated this.startRow, this.endRow (used by mergeCells.js plugin)
- * @param onlyFullyVisible {bool} - if TRUE, only startRow and endRow will be indexes of rows that are FULLY in viewport
- * @constructor
- * @private
- */
 function WalkontableViewportRowsCalculator(height, scrollOffset, totalRows, rowHeightFn, overrideFn, onlyFullyVisible) {
   this.scrollOffset = scrollOffset;
   this.startRow = null;

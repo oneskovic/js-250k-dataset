@@ -1,7 +1,3 @@
-/*!
- * ${copyright}
- */
-
 sap.ui.define(['jquery.sap.global', 'sap/ui/core/ValueStateSupport'],
 	function(jQuery, ValueStateSupport) {
 	"use strict";

@@ -18,14 +18,7 @@ define([
     ) {
         'use strict';
 
-        /**
-        *   This class updates the mesh associated with entities which have a
-        *   Quad component.
-        *
-        *   @class 
-        *   @param {context}
-        *   @constructor
-        */
+        
         var QuadController = function(context) {
             Controller.call(this, context);
 

@@ -1,146 +1,138 @@
-/**
- * ZRECore.js - A REST-ful set of commerce related data models.
- * @author ZRECommerce
- * @license GPL v3 or higher.
+'use strict';
+
+var React = require('react');
+var async = require('async');
+var debug = require('debug')('BrewUI:app');
+
+var Context = require('./lib/Context');
+var Application = React.createFactory(require('./components/Application.jsx'));
+var routes = require('./config/routes');
+
+var readBrewAction = require('./actions/brew/readBrew');
+var findBrewLogAction = require('./actions/logs/findBrew');
+var findOneBrewLogAction = require('./actions/logs/findOneBrew');
+
+// Register stores
+Context.registerStore(require('./stores/ApplicationStore'));
+Context.registerStore(require('./stores/BrewStore'));
+Context.registerStore(require('./stores/BrewerStore'));
+Context.registerStore(require('./stores/LogStore'));
+
+
+/*
+ * App
+ *
+ * @constructor App
+ * @param {Object} initialState
+ *
  */
+function App(options) {
+  options = options || {};
 
-/**
- * Module dependencies.
- */
-var port = 8080;
-var useSSL = false;
-var sslCertificatePath = '';
-var sslKeyPath = '';
-var sslCaPath = '';
-var databaseHost = 'localhost';
-var databaseName = 'zrecore';
-var authorizationRequired = false; // Set to false while you add your first User, then set back to true and restart the app.
+  var initialState = options.initialState;
+  var fetcher = options.fetcher;
 
-var http = require('http')
-  , path = require('path')
-  , fs = require('fs')
-  , restify = require('restify')
-  , _ = require('underscore');
+  debug('Creating context');
+  this.context = new Context({
+    routes: routes,
+    fetcher: fetcher
+  });
 
-var ZRECORE_DIR = __dirname;
-var crud = require(ZRECORE_DIR + '/lib/crud.js');
-
-// Load config if found
-try {
-    // Found. Load them.
-    var config = require(ZRECORE_DIR + '/_config.js')
-    if (!_.isUndefined(config.port)) port = config.port;
-    if (!_.isUndefined(config.useSSL)) useSSL = config.useSSL;
-    if (!_.isUndefined(config.sslCertificatePath)) sslCertificatePath = config.sslCertificatePath;
-    if (!_.isUndefined(config.sslKeyPath)) sslKeyPath = config.sslKeyPath;
-    if (!_.isUndefined(config.sslCaPath)) sslCaPath = config.sslCaPath;
-    if (!_.isUndefined(config.databaseHost)) databaseHost = config.databaseHost;
-    if (!_.isUndefined(config.databaseName)) databaseName = config.databaseName;
-    if (!_.isUndefined(config.authorizationRequired)) authorizationRequired = config.authorizationRequired;
-
-    console.log('Loaded config.');
-
-} catch (e) {
-    // Not found. Continue
+  if (initialState) {
+    debug('rehydrating context');
+    this.context.rehydrate(initialState);
+  }
 }
 
 
-var server;
-// ...Do we want to enable SSL support?
-if ( useSSL == true) {
-    server = restify.createServer({
-        certificate: fs.readFileSync(sslCertificatePath),
-        key: fs.readFileSync(sslKeyPath),
-        ca: fs.readFileSync(sslCaPath),
-        requestCert: true,
-        rejectUnauthorized: true
-    });
-} else {
-    server = restify.createServer({
-
-    });
-}
-// ...Set up our connection to the database.
-var mongoose = require("mongoose");
-mongoose.connect('mongodb://' + databaseHost + '/' + databaseName);
-
-try {
-    console.log( 'Try to fix mquery issue' );
-
-    delete mongoose.__proto__.mquery.permissions.count;
-    console.log( 'mquery fix applied to this instance' );
-} catch (ex) {
-    console.log( 'Cannot fix count with sort issue from mquery');
-}
-
-/**
- * Set up our REST controllers.
+/*
+ * Initialise
+ *
+ * @method init
+ * @return {Promise}
  */
+App.prototype.init = function () {
+  var _this = this;
 
-// ...Enforce API authentication
-server.use(restify.fullResponse());
-server.use(restify.bodyParser());
-server.use(restify.queryParser());
+  debug('Initialise application');
 
-if (authorizationRequired) {
-server.pre(function (req, res, next) {
-    var api_user = req.header('API-USER');
-    var api_key = req.header('API-KEY');
-    var api_version = req.header('API-VERSION');
+  return new Promise(function (resolve, reject) {
+    var actionContext = _this.context.getActionContext();
 
-    if ( _.isUndefined( api_user ) || _.isUndefined(api_key) ) {
+    // Load store data
+    async.parallel({
 
-        res.send(401, '401 Access Denied');
-    } else {
+      // Load brew
+      brew: function loadBrew(cb) {
+        actionContext.executeAction(readBrewAction, {}, cb);
+      },
 
-        // ...Attempt to look it up.
-        var User = require('./models/User.js');
+      // Load log
+      log: function loadLog (logCb) {
+        var LogStore = actionContext.getStore('LogStore');
 
-        var authUser = User.findOne({"handle": api_user}, function (err, doc) {
-            if (err) {
-                console.error(err.toString());
-                res.send(500, 'Internal server error.');
-            } else {
-                if (doc) {
+        // Do not get logs when it's already loaded
+        if(LogStore.brewLogs.length) {
+          return logCb();
+        }
 
-                    doc.comparePassword(api_key, function (err, isMatch) {
-                        if (err || !isMatch) {
-                           res.send(401, '401 Access Denied');
-                        } else {
-                            // OK! ...Just continue execution.
-                            next();
-                        }
-                    });
-                } else {
-                    // User not found
-                    res.send(401, '401 Access Denied');
-                }
+        async.waterfall([
+
+          // Find brew logs
+          function findLogs(cb) {
+            actionContext.executeAction(findBrewLogAction, {}, cb);
+          },
+
+          // Find selected brew
+          function findOneLog(brews, cb) {
+            if(!brews.length) {
+              return cb();
             }
-        });
-    }
 
-});
-}
+            actionContext.executeAction(findOneBrewLogAction, { id: brews[0]._id }, cb);
+          }
 
-var routeFiles = fs.readdirSync( ZRECORE_DIR + '/routes');
-var route = '';
-var models = [];
+        ], logCb);
+      }
+    }, function (err) {
+      if(err) {
+        return reject(err);
+      }
 
-for (var r = 0; r < routeFiles.length; r++) {
-    route = path.basename(routeFiles[r], '.js');
-    if (route != '') models.push(route);
-}
-var model = null;
-for (var i = 0; i < models.length; i++) {
-    console.log('...Routing ' + models[i]);
-    model = require('./routes/' + models[i]);
-    crud.setUpServer(server, '/' + models[i], model);
-}
+      resolve();
+    });
+  });
+};
 
-/**
- * Ok! Let's start the show.
+
+/*
+ * Get component
+ *
+ * @method getComponent
+ * @return {Object}
  */
+App.prototype.getComponent = function () {
+  debug('Creating Application component');
 
-server.listen(port, function () {
-    console.log('Server is running on port ' + port);
-});
+  // Ignore because JSX
+  var appComponent = Application({                      // jshint ignore:line
+    context: this.context.getComponentContext()
+  });
+
+  debug('Rendering Application component');
+
+  return appComponent;
+};
+
+
+/*
+ * Get context
+ *
+ * @method getContext
+ * @return {Object}
+ */
+App.prototype.getActionContext = function () {
+  return this.context.getActionContext();
+};
+
+module.exports = App;

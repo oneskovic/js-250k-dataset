@@ -1,4 +1,3 @@
-//>>built
 define(
 "dojo/cldr/nls/he/islamic", //begin v1.x content
 {

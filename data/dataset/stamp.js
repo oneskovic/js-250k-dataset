@@ -1,98 +1,141 @@
-dojo.provide("tests.date.stamp");
+if(!dojo._hasResource["dojo.date.stamp"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
+dojo._hasResource["dojo.date.stamp"] = true;
+dojo.provide("dojo.date.stamp");
 
-dojo.require("dojo.date.stamp");
+// Methods to convert dates to or from a wire (string) format using well-known conventions
 
-tests.register("tests.date.stamp", 
-	[
-function test_date_iso(t){
-	var rfc  = "2005-06-29T08:05:00-07:00";
-	var date = dojo.date.stamp.fromISOString(rfc);
-	t.is(2005,date.getFullYear());
-	t.is(5,date.getMonth());
-	t.is(29,date.getUTCDate());
-	t.is(15,date.getUTCHours());
-	t.is(5,date.getUTCMinutes());
-	t.is(0,date.getSeconds());
+dojo.date.stamp.fromISOString = function(/*String*/formattedString, /*Number?*/defaultTime){
+	//	summary:
+	//		Returns a Date object given a string formatted according to a subset of the ISO-8601 standard.
+	//
+	//	description:
+	//		Accepts a string formatted according to a profile of ISO8601 as defined by
+	//		[RFC3339](http://www.ietf.org/rfc/rfc3339.txt), except that partial input is allowed.
+	//		Can also process dates as specified [by the W3C](http://www.w3.org/TR/NOTE-datetime)
+	//		The following combinations are valid:
+	//
+	//			* dates only
+	//			|	* yyyy
+	//			|	* yyyy-MM
+	//			|	* yyyy-MM-dd
+	// 			* times only, with an optional time zone appended
+	//			|	* THH:mm
+	//			|	* THH:mm:ss
+	//			|	* THH:mm:ss.SSS
+	// 			* and "datetimes" which could be any combination of the above
+	//
+	//		timezones may be specified as Z (for UTC) or +/- followed by a time expression HH:mm
+	//		Assumes the local time zone if not specified.  Does not validate.  Improperly formatted
+	//		input may return null.  Arguments which are out of bounds will be handled
+	// 		by the Date constructor (e.g. January 32nd typically gets resolved to February 1st)
+	//		Only years between 100 and 9999 are supported.
+	//
+  	//	formattedString:
+	//		A string such as 2005-06-30T08:05:00-07:00 or 2005-06-30 or T08:05:00
+	//
+	//	defaultTime:
+	//		Used for defaults for fields omitted in the formattedString.
+	//		Uses 1970-01-01T00:00:00.0Z by default.
 
-	rfc  = "2004-02-29";
-	date = dojo.date.stamp.fromISOString(rfc);
-	t.is(2004,date.getFullYear());
-	t.is(1,date.getMonth());
-	t.is(29,date.getDate());
-
-	rfc  = "2004-01";
-	date = dojo.date.stamp.fromISOString(rfc);
-	t.is(2004,date.getFullYear());
-	t.is(0,date.getMonth());
-	t.is(1,date.getDate());
-
-	// No TZ info means local time
-	rfc  = "2004-02-29T01:23:45";
-	date = dojo.date.stamp.fromISOString(rfc);
-	t.is(2004,date.getFullYear());
-	t.is(1,date.getMonth());
-	t.is(29,date.getDate());
-	t.is(1,date.getHours());
-
-	date = new Date(2005,5,29,8,5,0);
-	rfc = dojo.date.stamp.toISOString(date);
-	//truncate for comparison
-	t.is("2005-06",rfc.substring(0,7));
-
-	date = new Date(101,0,2);
-	date.setFullYear(101);
-	rfc = dojo.date.stamp.toISOString(date);
-	//truncate for comparison
-	t.is("0101-01",rfc.substring(0,7));
-
-	rfc  = "0101-01-01";
-	date = dojo.date.stamp.fromISOString(rfc);
-	t.is(101,date.getFullYear());
-	t.is(0,date.getMonth());
-	t.is(1,date.getDate());
-
-	rfc = "0001-01T00:00:00";
-	date = dojo.date.stamp.fromISOString(rfc);
-	t.is(1,date.getFullYear());
-
-	date = dojo.date.stamp.fromISOString("T18:46:39");
-	t.is(18, date.getHours());
-	t.is(46, date.getMinutes());
-	t.is(39, date.getSeconds());
-},
-
-function test_date_iso_tz(t){
-
-	//23:59:59.9942 or 235959.9942
-//	var date = dojo.date.stamp.fromISOString("T18:46:39.9942");
-//	t.is(18, date.getHours());
-//	t.is(46, date.getMinutes());
-//	t.is(39, date.getSeconds());
-//	t.is(994, date.getMilliseconds());
-	
-	//1995-02-04 24:00 = 1995-02-05 00:00
-
-	//timezone tests
-	var offset = new Date().getTimezoneOffset()/60;
-	date = dojo.date.stamp.fromISOString("T18:46:39+07:00");
-	t.is(11, date.getUTCHours());
-
-	date = dojo.date.stamp.fromISOString("T18:46:39+00:00");
-	t.is(18, date.getUTCHours());
-
-	date = dojo.date.stamp.fromISOString("T18:46:39Z");
-	t.is(18, date.getUTCHours());
-
-	date = dojo.date.stamp.fromISOString("T16:46:39-07:00");
-	t.is(23, date.getUTCHours());
-	
-	date = dojo.date.stamp.fromISOString("T00:00:00Z", new Date(2010,3,1));
-	t.is(0, date.getUTCHours());
-	t.is(2010, date.getFullYear());
-	
-	//+hh:mm, +hhmm, or +hh
-	
-	//-hh:mm, -hhmm, or -hh
+	if(!dojo.date.stamp._isoRegExp){
+		dojo.date.stamp._isoRegExp =
+//TODO: could be more restrictive and check for 00-59, etc.
+			/^(?:(\d{4})(?:-(\d{2})(?:-(\d{2}))?)?)?(?:T(\d{2}):(\d{2})(?::(\d{2})(.\d+)?)?((?:[+-](\d{2}):(\d{2}))|Z)?)?$/;
 	}
-	]
-);
+
+	var match = dojo.date.stamp._isoRegExp.exec(formattedString);
+	var result = null;
+
+	if(match){
+		match.shift();
+		if(match[1]){match[1]--;} // Javascript Date months are 0-based
+		if(match[6]){match[6] *= 1000;} // Javascript Date expects fractional seconds as milliseconds
+
+		if(defaultTime){
+			// mix in defaultTime.  Relatively expensive, so use || operators for the fast path of defaultTime === 0
+			defaultTime = new Date(defaultTime);
+			dojo.map(["FullYear", "Month", "Date", "Hours", "Minutes", "Seconds", "Milliseconds"], function(prop){
+				return defaultTime["get" + prop]();
+			}).forEach(function(value, index){
+				if(match[index] === undefined){
+					match[index] = value;
+				}
+			});
+		}
+		result = new Date(match[0]||1970, match[1]||0, match[2]||1, match[3]||0, match[4]||0, match[5]||0, match[6]||0);
+//		result.setFullYear(match[0]||1970); // for year < 100
+
+		var offset = 0;
+		var zoneSign = match[7] && match[7].charAt(0);
+		if(zoneSign != 'Z'){
+			offset = ((match[8] || 0) * 60) + (Number(match[9]) || 0);
+			if(zoneSign != '-'){ offset *= -1; }
+		}
+		if(zoneSign){
+			offset -= result.getTimezoneOffset();
+		}
+		if(offset){
+			result.setTime(result.getTime() + offset * 60000);
+		}
+	}
+
+	return result; // Date or null
+}
+
+/*=====
+	dojo.date.stamp.__Options = function(){
+		//	selector: String
+		//		"date" or "time" for partial formatting of the Date object.
+		//		Both date and time will be formatted by default.
+		//	zulu: Boolean
+		//		if true, UTC/GMT is used for a timezone
+		//	milliseconds: Boolean
+		//		if true, output milliseconds
+		this.selector = selector;
+		this.zulu = zulu;
+		this.milliseconds = milliseconds;
+	}
+=====*/
+
+dojo.date.stamp.toISOString = function(/*Date*/dateObject, /*dojo.date.stamp.__Options?*/options){
+	//	summary:
+	//		Format a Date object as a string according a subset of the ISO-8601 standard
+	//
+	//	description:
+	//		When options.selector is omitted, output follows [RFC3339](http://www.ietf.org/rfc/rfc3339.txt)
+	//		The local time zone is included as an offset from GMT, except when selector=='time' (time without a date)
+	//		Does not check bounds.  Only years between 100 and 9999 are supported.
+	//
+	//	dateObject:
+	//		A Date object
+
+	var _ = function(n){ return (n < 10) ? "0" + n : n; };
+	options = options || {};
+	var formattedDate = [];
+	var getter = options.zulu ? "getUTC" : "get";
+	var date = "";
+	if(options.selector != "time"){
+		var year = dateObject[getter+"FullYear"]();
+		date = ["0000".substr((year+"").length)+year, _(dateObject[getter+"Month"]()+1), _(dateObject[getter+"Date"]())].join('-');
+	}
+	formattedDate.push(date);
+	if(options.selector != "date"){
+		var time = [_(dateObject[getter+"Hours"]()), _(dateObject[getter+"Minutes"]()), _(dateObject[getter+"Seconds"]())].join(':');
+		var millis = dateObject[getter+"Milliseconds"]();
+		if(options.milliseconds){
+			time += "."+ (millis < 100 ? "0" : "") + _(millis);
+		}
+		if(options.zulu){
+			time += "Z";
+		}else if(options.selector != "time"){
+			var timezoneOffset = dateObject.getTimezoneOffset();
+			var absOffset = Math.abs(timezoneOffset);
+			time += (timezoneOffset > 0 ? "-" : "+") + 
+				_(Math.floor(absOffset/60)) + ":" + _(absOffset%60);
+		}
+		formattedDate.push(time);
+	}
+	return formattedDate.join('T'); // String
+}
+
+}

@@ -1,11 +1,3 @@
-/*
- * AnimationLoader is a part of FlashJS engine
- *
- * http://flashjs.com
- *
- * Copyright (c) 2011 - 2013 pixelsresearch.com,
- */
-
 (function (w) {
     var AnimationLoader = function (URL, options, callback, errorCallback, context) {
 

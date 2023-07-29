@@ -12,9 +12,7 @@ var _classCallCheck = function (instance, Constructor) { if (!(instance instance
 
 var BasicProvider = _interopRequire(require("./basicprovider"));
 
-/**
- * Static Provider
- */
+
 var StaticProvider = (function (BasicProvider) {
   function StaticProvider(container, id, resource) {
     var options = arguments[3] === undefined ? {} : arguments[3];

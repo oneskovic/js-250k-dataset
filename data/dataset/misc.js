@@ -1,141 +1,76 @@
-function cloneObject(what) {
-  for (i in what) {
-    this[i] = what[i];
-  }
+if(!dojo._hasResource["dojox.dtl.tag.misc"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
+dojo._hasResource["dojox.dtl.tag.misc"] = true;
+dojo.provide("dojox.dtl.tag.misc");
+
+dojo.require("dojox.dtl._base");
+
+dojox.dtl.tag.misc.commentNode = new function(){
+	this.render = this.unrender = function(context, buffer){ return buffer; };
+	this.clone = function(){ return this; };
+	this.toString = function(){ return "dojox.dtl.tag.misc.CommentNode"; };
 }
 
-function runInFirefox(path) {
-  var windowManager          = Components.classes['@mozilla.org/appshell/window-mediator;1'].getService();
-  var windowManagerInterface = windowManager.QueryInterface(Components.interfaces.nsIWindowMediator);
-  var win                    = windowManagerInterface.getMostRecentWindow("navigator:browser");
+dojox.dtl.tag.misc.DebugNode = function(TextNode){
+	this._TextNode = TextNode;
+}
+dojo.extend(dojox.dtl.tag.misc.DebugNode, {
+	render: function(context, buffer){
+		var keys = context.getKeys();
+		var debug = "";
+		for(var i = 0, key; key = keys[i]; i++){
+			console.debug("DEBUG", key, ":", context[key]);
+			debug += key + ": " + dojo.toJson(context[key]) + "\n\n";
+		}
+		return new this._TextNode(debug).render(context, buffer, this);
+	},
+	unrender: function(context, buffer){
+		return buffer;
+	},
+	clone: function(buffer){
+		return new this.constructor(this._TextNode);
+	},
+	toString: function(){ return "dojox.dtl.tag.misc.DebugNode"; }
+});
 
-  if (win) {
-    var theTab               = win.gBrowser.addTab(path);
-    win.gBrowser.selectedTab = theTab;
-    return;
-  }
+dojox.dtl.tag.misc.FilterNode = function(varnode, nodelist){
+	this._varnode = varnode;
+	this._nodelist = nodelist;
+}
+dojo.extend(dojox.dtl.tag.misc.FilterNode, {
+	render: function(context, buffer){
+		// Doing this in HTML requires a different buffer with a fake root node
+		var output = this._nodelist.render(context, new dojox.string.Builder());
+		context.update({ "var": output.toString() });
+		var filtered = this._varnode.render(context, buffer);
+		context.pop();
+		return buffer;
+	},
+	unrender: function(context, buffer){
+		return buffer;
+	},
+	clone: function(buffer){
+		return new this.constructor(this._expression, this._nodelist.clone(buffer));
+	}
+});
 
-  try {    // this is used if FireSSH is running as a standalone and there are no browsers open; much more complicated, not very pretty
-    var firefoxInstallPath = Components.classes["@mozilla.org/file/directory_service;1"].createInstance(Components.interfaces.nsIProperties)
-                                       .get("CurProcD", Components.interfaces.nsILocalFile);
-    var firefox            = localFile.init(firefoxInstallPath.path + "\\" + "firefox.exe");
-
-    if (!firefox.exists()) {                                 // try linux
-      firefox.initWithPath(firefoxInstallPath.path + "/" + "firefox");
-      if (!firefox.exists()) {                               // try os x
-        firefox.initWithPath(firefoxInstallPath.path + "/" + "firefox-bin");
-      }
-    }
-
-    var process = Components.classes['@mozilla.org/process/util;1'].createInstance(Components.interfaces.nsIProcess);
-    process.init(firefox);
-    var arguments = new Array(path);
-    process.run(false, arguments, arguments.length, {});
-  } catch (ex) {
-    debug(ex);
-  }
+dojox.dtl.tag.misc.comment = function(parser, text){
+	// summary: Ignore everything between {% comment %} and {% endcomment %}
+	parser.skipPast("endcomment");
+	return dojox.dtl.tag.misc.commentNode;
 }
 
-function tipJar() {
-  if (!gDonated) {
-    gPrefs.setBoolPref("donated", true);
-    runInFirefox("http://firessh.net/donate.html");
-  }
+dojox.dtl.tag.misc.debug = function(parser, text){
+	// summary: Output the current context, maybe add more stuff later.
+	return new dojox.dtl.tag.misc.DebugNode(parser.getTextNode());
 }
 
-
-function setCharAt(str, index, ch) {                         // how annoying
-  return str.substr(0, index) + ch + str.substr(index + 1);
+dojox.dtl.tag.misc.filter = function(parser, text){
+	// summary: Filter the contents of the blog through variable filters.
+	var parts = text.split(" ", 2);
+	var varnode = new (parser.getVarNode())("var|" + parts[1]);
+	var nodelist = parser.parse(["endfilter"]);
+	parser.next();
+	return new dojox.dtl.tag.misc.FilterNode(varnode, nodelist);
 }
 
-// thanks to David Huynh
-// http://mozilla-firefox-extension-dev.blogspot.com/2004/11/passing-objects-between-javascript.html
-function wrapperClass(obj) {
-  this.wrappedJSObject = this;
-  this.obj             = obj;
-}
-
-wrapperClass.prototype = {
-  QueryInterface : function(iid) {
-    if (iid.equals(Components.interfaces.nsISupports)) {
-      return this;
-    }
-
-    throw Components.results.NS_ERROR_NO_INTERFACE;
-  }
-}
-
-function getPlatform() {
-  var platform = navigator.platform.toLowerCase();
-
-  if (platform.indexOf('linux') != -1) {
-    return 'linux';
-  }
-
-  if (platform.indexOf('mac') != -1) {
-    return 'mac';
-  }
-
-  if (platform.indexOf('win') != -1) {
-    return 'windows';
-  }
-
-  return 'other';
-}
-
-function testAccelKey(event) {
-  if (getPlatform() == 'mac') {
-    return event.metaKey;
-  }
-
-  return event.ctrlKey;
-}
-
-function parseArguments(args) {
-  args = args.split('?');
-  if (args.length < 2) {
-    return {};
-  }
-  args = args[1].split('&');
-  
-  var parsedArgs = {};
-  for (var x = 0; x < args.length; ++x) {
-    var split = args[x].split('=');
-    parsedArgs[split[0]] = decodeURIComponent(split[1]);
-  }
-
-  return parsedArgs;
-}
-
-function getArgument(args, field) {
-  var parsedArgs = parseArguments(args);
-  return parsedArgs[field] || '';
-}
-
-function generateArgs(args) {
-  if (!args) {
-    return '';
-  }
-
-  var queryString = '';
-  for (var key in args) {
-    queryString += (!queryString.length ? '?' : '&') + key + '=' + encodeURIComponent(args[key]);
-  }
-
-  return queryString;
-}
-
-// Converts objects stored in toSource format to JSON format.
-// Not for general purpose usage - this works in FireFTP's case.
-// Does not check for example if
-// , <string>:
-// exists between quotes, i.e. a property value.
-function jsonParseWithToSourceConversion(toSource) {
-  try {
-    return JSON.parse(toSource);
-  } catch(ex) {
-    // As Borat would say: This is totally awesome. NOT.
-    toSource = unescape(toSource.replace(/[^\\]\\x/g, '%'));
-    return JSON.parse(toSource.replace(/({|, )(\w+?):/g, '$1"$2":'));
-  }
 }

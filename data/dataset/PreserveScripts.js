@@ -1,11 +1,3 @@
-/*------------------------------------------*\
-PreserveScripts for Xinha
-____________________
-Replace blocks of of PHP or JavaScript with icons in the editor, this way making it possible to edit sourcecode containing PHP, 
-and preventing Javascript from being accidentally deleted because it's normally invisible
-
-\*------------------------------------------*/
-
 function PreserveScripts(editor) {
 	this.editor = editor;
 }

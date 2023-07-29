@@ -1,10 +1,3 @@
-/*******
-Usage: fitIt(<selector>)
-       fitIt('[src*="youtube.com"]');
-
-       All elements that match the selector will be made responsive and full width with it's container -- including any asynchronously loaded nodes.
-********/
-
 (function () {
     'use strict';
     var fitSelectors = [],

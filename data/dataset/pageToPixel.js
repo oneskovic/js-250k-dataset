@@ -1,6 +1,3 @@
-/**
- * This module contains a helper function to covert page coordinates to pixel coordinates
- */
 var cornerstone = (function (cornerstone) {
 
     "use strict";

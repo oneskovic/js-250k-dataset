@@ -1,11 +1,6 @@
 jui.define("chart.widget.vscroll", [ "util.base" ], function (_) {
 
-    /**
-     * @class chart.widget.vscroll
-     * @extends chart.widget.core
-     * @alias ScrollWidget
-     * @requires util.base
-     */
+    
     var VScrollWidget = function(chart, axis, widget) {
         var self = this;
         var thumbHeight = 0,

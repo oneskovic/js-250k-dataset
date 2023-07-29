@@ -2,16 +2,7 @@
 
    var Event = YAHOO.util.Event, lang = YAHOO.lang;
 
-/**
- * A field limited to number inputs (floating)
- * @class inputEx.TimeIntervalField
- * @extends inputEx.CombineField
- * @constructor
- * @param {Object} options Added options
- * <ul>
- *    <li>unit: inputEx.TimeIntervalField.units.MYUNIT (SECOND,MINUTE,HOUR,DAY,MONTH,YEAR)</li>
- * </ul>
- */
+
 inputEx.TimeIntervalField = function(options) {
    inputEx.TimeIntervalField.superclass.constructor.call(this,options);
 };

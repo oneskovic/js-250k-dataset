@@ -1,13 +1,3 @@
-/*
----
-name: dbslayer.js
-
-description: Interface to DBSlayer for Node.JS
-
-author: [Guillermo Rauch](http://devthought.com)
-...
-*/
-
 var sys = require('sys'),
     http = require('http'),
     

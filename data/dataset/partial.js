@@ -2,7 +2,7 @@ var baseSlice = require('../internal/baseSlice'),
     createWrapper = require('../internal/createWrapper'),
     replaceHolders = require('../internal/replaceHolders');
 
-/** Used to compose bitmasks for wrapper metadata. */
+
 var PARTIAL_FLAG = 32;
 
 /**

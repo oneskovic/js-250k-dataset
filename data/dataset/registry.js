@@ -1,11 +1,3 @@
-/*
- * Ext JS Library 2.2.1
- * Copyright(c) 2006-2009, Ext JS, LLC.
- * licensing@extjs.com
- * 
- * http://extjs.com/license
- */
-
 /**
  * @class Ext.dd.Registry
  * Provides easy access to all drag drop components that are registered on a page.  Items can be retrieved either

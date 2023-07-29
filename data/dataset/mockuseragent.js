@@ -1,28 +1,16 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 /**
  * @fileoverview MockUserAgent overrides goog.userAgent.getUserAgentString()
  *     depending on a specified configuration.
  *
-*
  */
 
 goog.provide('goog.testing.MockUserAgent');
 
 goog.require('goog.Disposable');
+goog.require('goog.labs.userAgent.util');
+goog.require('goog.testing.PropertyReplacer');
 goog.require('goog.userAgent');
+
 
 
 /**
@@ -30,9 +18,17 @@ goog.require('goog.userAgent');
  *
  * @extends {goog.Disposable}
  * @constructor
+ * @final
  */
 goog.testing.MockUserAgent = function() {
   goog.Disposable.call(this);
+
+  /**
+   * Property replacer used to mock out User-Agent functions.
+   * @type {!goog.testing.PropertyReplacer}
+   * @private
+   */
+  this.propertyReplacer_ = new goog.testing.PropertyReplacer();
 
   /**
    * The userAgent string used by goog.userAgent.
@@ -42,25 +38,11 @@ goog.testing.MockUserAgent = function() {
   this.userAgent_ = goog.userAgent.getUserAgentString();
 
   /**
-   * The original goog.userAgent.getUserAgentString function.
-   * @type {function():?string}
-   * @private
-   */
-  this.originalUserAgentFunction_ = goog.userAgent.getUserAgentString;
-
-  /**
    * The navigator object used by goog.userAgent
    * @type {Object}
    * @private
    */
   this.navigator_ = goog.userAgent.getNavigator();
-
-  /**
-   * The original goog.userAgent.getNavigator function
-   * @type {function():Object}
-   * @private
-   */
-  this.originalNavigatorFunction_ = goog.userAgent.getNavigator;
 };
 goog.inherits(goog.testing.MockUserAgent, goog.Disposable);
 
@@ -78,9 +60,17 @@ goog.testing.MockUserAgent.prototype.installed_;
  */
 goog.testing.MockUserAgent.prototype.install = function() {
   if (!this.installed_) {
-    goog.userAgent.getUserAgentString =
-        goog.bind(this.getUserAgentString, this);
-    goog.userAgent.getNavigator = goog.bind(this.getNavigator, this);
+    // Stub out user agent functions.
+    this.propertyReplacer_.set(goog.userAgent, 'getUserAgentString',
+                               goog.bind(this.getUserAgentString, this));
+
+    this.propertyReplacer_.set(goog.labs.userAgent.util, 'getUserAgent',
+                               goog.bind(this.getUserAgentString, this));
+
+    // Stub out navigator functions.
+    this.propertyReplacer_.set(goog.userAgent, 'getNavigator',
+                               goog.bind(this.getNavigator, this));
+
     this.installed_ = true;
   }
 };
@@ -123,21 +113,17 @@ goog.testing.MockUserAgent.prototype.setNavigator = function(navigator) {
  */
 goog.testing.MockUserAgent.prototype.uninstall = function() {
   if (this.installed_) {
-    goog.userAgent.getUserAgentString = this.originalUserAgentFunction_;
-    goog.userAgent.getNavigator = this.originalNavigatorFunction_;
+    this.propertyReplacer_.reset();
     this.installed_ = false;
   }
+
 };
 
 
-/**
- * Disposes of the MockUserAgent.
- */
+/** @override */
 goog.testing.MockUserAgent.prototype.disposeInternal = function() {
   this.uninstall();
-  delete this.userAgent_;
-  delete this.originalUserAgentFunction_;
+  delete this.propertyReplacer_;
   delete this.navigator_;
-  delete this.originalNavigatorFunction_;
-  goog.testing.MockUserAgent.superClass_.disposeInternal.call(this);
+  goog.testing.MockUserAgent.base(this, 'disposeInternal');
 };

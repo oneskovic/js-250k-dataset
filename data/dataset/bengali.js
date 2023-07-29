@@ -1,13 +1,3 @@
-/* Scandinavian keyboard layouts
- * contains layout: 'bengali-qwerty-1' & 'bengali-qwerty-2'
- *
- * To use:
- *  Point to this js file into your page header: <script src="layouts/bengali.js" type="text/javascript"></script>
- *  Initialize the keyboard using: $('input').keyboard({ layout: 'bengali-qwerty-1' });
- *
- * license for this file: WTFPL, unless the source layout site has a problem with me using them as a reference
- */
-
 /* based on http://ascii-table.com/keyboard.php/480 & http://www.gate2home.com/?language=bn&sec=2 */
 jQuery.keyboard.layouts['bengali-qwerty-1'] = {
 	'name' : 'bengali-qwerty-1',

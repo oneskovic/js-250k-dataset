@@ -9,33 +9,7 @@ module.exports = function (math) {
       array = util.array,
       string = util.string;
 
-  /**
-   * Calculate the trace of a matrix: the sum of the elements on the main
-   * diagonal of a square matrix.
-   *
-   * Syntax:
-   *
-   *    math.trace(x)
-   *
-   * Examples:
-   *
-   *    math.trace([[1, 2], [3, 4]]); // returns 5
-   *
-   *    var A = [
-   *      [1, 2, 3],
-   *      [-1, 2, 3],
-   *      [2, 0, 3]
-   *    ]
-   *    math.trace(A); // returns 6
-   *
-   * See also:
-   *
-   *    diag
-   *
-   * @param {Array | Matrix} x  A matrix
-   *
-   * @return {Number} The trace of `x`
-   */
+  
   math.trace = function trace (x) {
     if (arguments.length != 1) {
       throw new math.error.ArgumentsError('trace', arguments.length, 1);

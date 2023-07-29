@@ -12,15 +12,8 @@ exports.AssetManager = function () {
             , 'jquery.fileupload-ui.css']
 
         , assetManagerGroups = {
-            /*'js':{
-             'route':/\/static\/js\/main.js/, 'path':'./public/js/', 'dataType':'javascript',
-             'files':clientJSLoadOrder, debug:true
-
-             },*/
-            /*'css':{
-             'route':/\/static\/css\/main.css/, 'path':'./public/css/', 'dataType':'css',
-             'files':clientCSSLoadOrder, debug:true
-             }*/
+            
+            
         }
 
         , assetManagerGroupsProd = {

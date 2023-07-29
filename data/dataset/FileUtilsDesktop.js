@@ -17,15 +17,7 @@
       $chooser.trigger('click');
     },
 
-    /**
-     *
-     * @param content
-     * @param defaultFileName - file name to pre-populate the dialog
-     * @param extension - if supplied, the selected extension will guaranteed to be on the filename -
-     * NOTE: there is a possible danger here... If the extension is added to a fileName, but there
-     * is already another file of the same name *with* the extension, it will get overwritten.
-     * @param callback
-     */
+    
     saveAs: function (content, defaultFileName, extension, callback) {
       // NodeWebkit has no js api for opening the save dialog.
       // Instead, it adds two new attributes to the anchor tag: nwdirectory and nwsaveas

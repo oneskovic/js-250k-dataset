@@ -2,12 +2,7 @@
 
 var _fontFaces = {};
 
-/**
- * @param {String} family The CSS font-family value
- * @param {String} url The remote URL for the font file
- * @param {Object} attributes Font attributes supported: style, weight
- * @return {Object}
- */
+
 function FontFace (family, url, attributes) {
   var fontFace;
   var fontId;

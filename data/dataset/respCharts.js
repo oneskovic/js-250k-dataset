@@ -1,4 +1,3 @@
-/*global chartObj: false, Chart: false */
 (function ($) {
   $.respCharts = function(chartObj) {
     try {

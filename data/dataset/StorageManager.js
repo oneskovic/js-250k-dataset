@@ -33,9 +33,7 @@ StorageManager.prototype = {
 
     storageType: null,
 
-    /**
-     *
-     */
+    
     getFromStorage: function getFromStorage(key, callback) {
 
         this.hasChromeLastError();
@@ -64,18 +62,14 @@ StorageManager.prototype = {
 
     },
 
-    /**
-     *
-     */
+    
     hasChromeLastError: function hasChromeLastError() {
         if (chrome.runtime.lastError) {
             console.warn(chrome.runtime.lastError.message);
         }
     },
 
-    /**
-     *
-     */
+    
     setToStorage: function setToStorage(key, value, callback) {
 
         this.hasChromeLastError();
@@ -109,9 +103,7 @@ StorageManager.prototype = {
         }
     },
 
-    /**
-     *
-     */
+    
     printStorage: function printStorage() {
         if (this.storageType == 'sync') {
             chrome.storage.sync.get(null, function(data) {

@@ -1,16 +1,3 @@
-/**
- * ExcellentExport.
- * A client side Javascript export to Excel.
- *
- * @author: Jordi Burgos (jordiburgos@gmail.com)
- *
- * Based on:
- * https://gist.github.com/insin/1031969
- * http://jsfiddle.net/insin/cmewv/
- *
- * CSV: http://en.wikipedia.org/wiki/Comma-separated_values
- */
-
 /*
  * Base64 encoder/decoder from: http://jsperf.com/base64-optimized
  */

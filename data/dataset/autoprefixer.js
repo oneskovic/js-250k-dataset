@@ -1,18 +1,3 @@
-/**
- *  class Autoprefixer
- *
- *  Post processor that runs autoprefixer for css. You will need `autoprefixer`
- *  Node module installed:
- *
- *      npm install autoprefixer
- *
- *
- *  ##### SUBCLASS OF
- *
- *  [[Template]]
- **/
-
-
 'use strict';
 
 

@@ -1,134 +1,128 @@
-Referee.Board = function () {
-    this.board = [[' ', ' ', ' '], [' ', ' ', ' '], [' ', ' ', ' ']];
+goog.provide("jam.Board");
+goog.provide("jam.AddPointResult");
+
+goog.require("hydra.array");
+goog.require("hydra.math");
+goog.require("hydra.EventDispatcher");
+
+goog.require("jam.BoardEvent");
+
+/**
+ * @enum {number}
+ */
+jam.AddPointResult = {
+    ADDED: 0,
+    ALREADY_ADDED: 1,
+    INVALID: 2
 };
 
-Referee.Board.prototype = {
-    validMove: function (side, col, row) {
-        var curSide = this.currentSide();
-        if (side !== curSide) {
-            return false;
-        }
+/**
+ * @constructor
+ * @extends {hydra.EventDispatcher}
+ */
+jam.Board = function () {
+    goog.base(this);
+}
+goog.inherits(jam.Board, hydra.EventDispatcher);
 
-        var coords = this.moveToCoords(col, row);
-        if (this.board[coords.row][coords.col] !== ' ') {
-            return false;
-        }
+/**
+ * @const
+ * @type {number}
+ */
+jam.Board.WIDTH = 8;
 
-        return true;
-    },
+/**
+ * @const
+ * @type {number}
+ */
+jam.Board.HEIGHT = 9;
 
-    move: function (side, col, row) {
-        if (this.validMove(side, col, row)) {
-            var coords = this.moveToCoords(col, row);
-            this.board[coords.row][coords.col] = side;
-        } else {
-            throw {
-                name: "BoardError",
-                message: "Move invalid"
-            };
-        }
-    },
+/**
+ * @const
+ * @type {number}
+ */
+jam.Board.TILE_TYPES = 3;
 
-    moveToCoords: function (col, row) {
-        var map = {'a': 0, 'b': 1, 'c': 2, '1': 0, '2': 1, '3': 2};
-        var coords = {row: null, col: null};
-        coords.col = map[col];
-        coords.row = map[row];
-        return coords;
-    },
+/**
+ * @const
+ * @type {number}
+ */
+jam.Board.MAX_TIME = 2*60*1000;
 
-    currentSide: function () {
-        var r, c;
-        var x = 0, o = 0;
+jam.Board.prototype.startGame = function () {
+    this.pathMap = {};
+    /** @type Array.<number> */
+    this.pathList = [];
 
-        for (r = 0; r < 3; r++) {
-            for (c = 0; c < 3; c++) {
-                if (this.board[r][c] === 'x') {
-                    x += 1;
-                } else if (this.board[r][c] === 'o') {
-                    o += 1;
+    this.blocks = [];
+    for (var ii = 0; ii < jam.Board.WIDTH*jam.Board.HEIGHT; ++ii) {
+        this.blocks[ii] = hydra.math.randomInt(1, jam.Board.TILE_TYPES+1);
+    }
+
+    this.playing = true;
+    this.score = 0;
+    this.elapsed = 0;
+
+    this.dispatchEvent(jam.BoardEvent.GAME_STARTED);
+    this.dispatchEvent(jam.BoardEvent.SCORE_CHANGED);
+}
+
+jam.Board.prototype.randomBlock = function () {
+    var level = hydra.math.toInt(this.score/10000);
+    if (hydra.math.random() < hydra.math.min(0.3, 0.1*(level+1))) {
+        return 0;
+    } else {
+        return hydra.math.randomInt(1, jam.Board.TILE_TYPES);
+    }
+}
+
+jam.Board.prototype.submitPath = function () {
+    if (this.pathList.length > 1) {
+        this.dispatchEvent(jam.BoardEvent.PATH_CLEARED);
+
+        var delta = 50*hydra.math.toInt(Math.pow(this.pathList.length, 1.6));
+        this.score += delta;
+
+        this.dispatchEvent(jam.BoardEvent.SCORE_CHANGED, delta);
+    } else {
+        this.dispatchEvent(jam.BoardEvent.PATH_CANCELED);
+    }
+    this.pathMap = {};
+    this.pathList.length = 0;
+}
+
+/**
+ * @param {number} p
+ */
+jam.Board.prototype.addPoint = function (p) {
+    if (p in this.pathMap) {
+        return jam.AddPointResult.ALREADY_ADDED;
+    } else {
+        var result = jam.AddPointResult.INVALID;
+        if (this.pathList.length) {
+            var lastP = this.pathList[this.pathList.length-1];
+            if (p == lastP+1 || p == lastP-1 || p == lastP+jam.Board.WIDTH || p == lastP-jam.Board.WIDTH) {
+                if (this.blocks[lastP] == this.blocks[p]) {
+                    result = jam.AddPointResult.ADDED;
                 }
             }
-        }
-        
-        if (x === o) {
-            return 'x';
+        } else if (this.blocks[p] != 0) {
+            result = jam.AddPointResult.ADDED;
         }
 
-        return 'o';
-    },
-
-    gameOver: function () {
-        var r, c;
-        
-        // check for row wins
-        for (r = 0; r < 3; r++) {
-            if (this.board[r][0] === 'x' &&
-                this.board[r][1] === 'x' &&
-                this.board[r][2] === 'x') {
-                return 'x';
-            } else if (this.board[r][0] === 'o' &&
-                       this.board[r][1] === 'o' &&
-                       this.board[r][2] === 'o') {
-                return 'o';
-            }
+        if (result == jam.AddPointResult.ADDED) {
+            this.pathMap[p] = true;
+            hydra.array.push(this.pathList, p);
         }
-
-        // check for column wins
-        for (c = 0; c < 3; c++) {
-            if (this.board[0][c] === 'x' &&
-                this.board[1][c] === 'x' &&
-                this.board[2][c] === 'x') {
-                return 'x';
-            } else if (this.board[0][c] === 'o' &&
-                       this.board[1][c] === 'o' &&
-                       this.board[2][c] === 'o') {
-                return 'o';
-            }
-        }
-
-        // check for diagonal wins
-        if (this.board[0][0] === 'x' &&
-            this.board[1][1] === 'x' &&
-            this.board[2][2] === 'x') {
-            return 'x';
-        } else if (this.board[0][0] === 'o' &&
-                   this.board[1][1] === 'o' &&
-                   this.board[2][2] === 'o') {
-            return 'o';
-        } else if (this.board[0][2] === 'x' &&
-                   this.board[1][1] === 'x' &&
-                   this.board[2][0] === 'x') {
-            return 'x';
-        } else if (this.board[0][2] === 'o' &&
-                   this.board[1][1] === 'o' &&
-                   this.board[2][0] === 'o') {
-            return 'o';
-        }
-
-        // check for a tie
-        var tie = true;
-        for (r = 0; r < 3; r++) {
-            if (this.board[r].indexOf(' ') >= 0) {
-                tie = false;
-                break;
-            }
-        }
-
-        if (tie) {
-            return "=";
-        }
-
-        return false;
-    },
-
-    toString: function () {
-        var r, s = '';
-
-        for (r = 0; r < 3; r++) {
-            s += this.board[r].join('');
-        }
-
-        return s;
+        return result;
     }
-};
+}
+
+jam.Board.prototype.getBlockAt = function (x, y) {
+    return this.blocks[y*jam.Board.WIDTH+x];
+}
+
+jam.Board.prototype.endGame = function () {
+    this.playing = false;
+    this.dispatchEvent(jam.BoardEvent.GAME_OVER);
+}

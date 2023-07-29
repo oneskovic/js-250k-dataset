@@ -1,11 +1,3 @@
-/**
- * @private
- * Garbage collector for Ext.dom.Element instances.  Automatically cleans up Elements
- * that are no longer in the dom, but were not properly destroyed using
- * {@link Ext.dom.Element#destroy destroy()}.  Recommended practice is for Components to
- * clean up their own elements, but the GarbageCollector runs on regularly scheduled
- * intervals to attempt to clean up orphaned Elements that may have slipped through the cracks.
- */
 Ext.define('Ext.dom.GarbageCollector', {
     singleton: true,
 

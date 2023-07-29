@@ -1,10 +1,3 @@
-/* 
-* @author Niklas von Hertzen <niklas at hertzen.com>
-* @created 3.1.2012 
-* @website http://hertzen.com
- */
-
-
 GTA.MissionAction = function () {
   
 };

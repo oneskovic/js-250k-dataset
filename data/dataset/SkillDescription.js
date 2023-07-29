@@ -1,12 +1,3 @@
-/**
- * UI/Components/SkillDescription/SkillDescription.js
- *
- * Skill Information
- *
- * This file is part of ROBrowser, Ragnarok Online in the Web Browser (http://www.robrowser.com/).
- *
- * @author Vincent Thibault
- */
 define(function(require)
 {
 	'use strict';

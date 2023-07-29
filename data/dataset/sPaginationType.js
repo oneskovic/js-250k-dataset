@@ -1,4 +1,3 @@
-// DATA_TEMPLATE: dom_data
 oTest.fnStart( "sPaginationType" );
 
 $(document).ready( function () {

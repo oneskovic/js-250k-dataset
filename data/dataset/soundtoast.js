@@ -1,4 +1,3 @@
-/* global module */
 'use strict';
 
 function SoundToast(client) {

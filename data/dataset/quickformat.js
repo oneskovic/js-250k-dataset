@@ -1,12 +1,3 @@
-/*******************************************************************************
-* KindEditor - WYSIWYG HTML Editor for Internet
-* Copyright (C) 2006-2011 kindsoft.net
-*
-* @author Roddy <luolonghao@gmail.com>
-* @site http://www.kindsoft.net/
-* @licence http://www.kindsoft.net/license.php
-*******************************************************************************/
-
 KindEditor.plugin('quickformat', function(K) {
 	var self = this, name = 'quickformat',
 		blockMap = K.toMap('blockquote,center,div,h1,h2,h3,h4,h5,h6,p');

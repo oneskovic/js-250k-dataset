@@ -1,113 +1,123 @@
-google.load("swfobject", "2.1");
-/*
- * Chromeless player has no controls.
- */
+// If gliEmbedDebug == true, split files will be used, otherwise the cat'ed scripts will be inserted
 
+(function () {
 
-// Object with official youTube states. 
-var ytStates = {'unstarted':-1, 'ended':0, 'playing':1, 'paused':2, 'buffering':3, 'videocued':5};
-var ytCurState = -2;
-var startCall = false;
+    var pathRoot = "";
 
-// Update a particular HTML element with a new value
-function updateHTML(elmId, value) {
-  document.getElementById(elmId).innerHTML = value;
-}
+    var useDebug = window["gliEmbedDebug"];
 
-// This function is called when an error is thrown by the player
-function onPlayerError(errorCode) {
-  console.log("An error occured of type: " + errorCode);
-}
+    // Find self in the <script> tags
+    var scripts = document.getElementsByTagName("script");
+    for (var n = 0; n < scripts.length; n++) {
+        var scriptTag = scripts[n];
+        var src = scriptTag.src.toLowerCase();
+        if (/core\/embed.js$/.test(src)) {
+            // Found ourself - strip our name and set the root
+            var index = src.lastIndexOf("embed.js");
+            pathRoot = scriptTag.src.substring(0, index);
+            break;
+        }
+    }
 
-// This function is called when the player changes state
-// We have to trigger our message playback based on these state changes,
-// since there are always slight buffering delays when changing yT state.
-function onPlayerStateChange(newState) {
-  
-  handleYtPlayerStateChange(newState);
-  
-}
+    function insertHeaderNode(node) {
+        var targets = [document.body, document.head, document.documentElement];
+        for (var n = 0; n < targets.length; n++) {
+            var target = targets[n];
+            if (target) {
+                if (target.firstElementChild) {
+                    target.insertBefore(node, target.firstElementChild);
+                } else {
+                    target.appendChild(node);
+                }
+                break;
+            }
+        }
+    };
 
-    
-// Display information about the current state of the player
-function updatePlayerInfo() {
-  // Also check that at least one function exists since when IE unloads the
-  // page, it will destroy the SWF before clearing the interval.
-  if(ytplayer && ytplayer.getDuration) {
-    /*
-    updateHTML("videoDuration", ytplayer.getDuration());
-    updateHTML("videoCurrentTime", ytplayer.getCurrentTime());
-    updateHTML("bytesTotal", ytplayer.getVideoBytesTotal());
-    updateHTML("startBytes", ytplayer.getVideoStartBytes());
-    updateHTML("bytesLoaded", ytplayer.getVideoBytesLoaded());
-    */
-  }
-}
+    function insertStylesheet(url) {
+        var link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = url;
+        insertHeaderNode(link);
+        return link;
+    };
 
-function playVideo() {
-  if (ytplayer) {
-    ytplayer.playVideo();
-    $('#pauseButton').show();
-    $('#playButton').hide();
-  } else startCall = true;
-}
+    function insertScript(url) {
+        var script = document.createElement("script");
+        script.type = "text/javascript";
+        script.src = url;
+        insertHeaderNode(script);
+        return script;
+    };
 
-function pauseVideo() {
-  if (ytplayer) {
-    ytplayer.pauseVideo();
-    $('#playButton').show();
-    $('#pauseButton').hide();
-  }
-}
+    if (useDebug) {
+        // Fall through below and use the loader to get things
+    } else {
+        var jsurl = pathRoot + "lib/gli.all.js";
+        var cssurl = pathRoot + "lib/gli.all.css";
 
-function muteVideo() {
-  if(ytplayer) {
-    ytplayer.mute();
-    $('#unmuteButton').show(); 
-    $('#muteButton').hide(); 
-  }
-}
+        window.gliCssUrl = cssurl;
 
-function unMuteVideo() {
-  if(ytplayer) {
-    ytplayer.unMute();
-    $('#muteButton').show();
-    $('#unmuteButton').hide(); 
-  }
-}
+        insertStylesheet(cssurl);
+        insertScript(jsurl);
+    }
 
+    // Always load the loader
+    if (useDebug) {
+        var script = insertScript(pathRoot + "loader.js");
+        function scriptLoaded() {
+            gliloader.pathRoot = pathRoot;
+            if (useDebug) {
+                // In debug mode load all the scripts
+                gliloader.load(["host", "replay", "ui"]);
+            }
+        };
+        script.onreadystatechange = function () {
+            if (("loaded" === script.readyState || "complete" === script.readyState) && !script.loadCalled) {
+                this.loadCalled = true;
+                scriptLoaded();
+            }
+        };
+        script.onload = function () {
+            if (!script.loadCalled) {
+                this.loadCalled = true;
+                scriptLoaded();
+            }
+        };
+    }
 
-// This function is automatically called by the player once it loads
-function onYouTubePlayerReady(playerId) {
-  console.log("ytplayer READY");
-  ytplayer = document.getElementById("ytplayer");
-  // This causes the updatePlayerInfo function to be called every 250ms to
-  // get fresh data from the player
-  setInterval(updatePlayerInfo, 250);
-  updatePlayerInfo();
-  ytplayer.addEventListener("onStateChange", "onPlayerStateChange");
-  ytplayer.addEventListener("onError", "onPlayerError");
-  ytplayer.height= 0;
-  ytplayer.width= 0;
-  ytPlayerLoaded = true;
-  if (startCall) playVideo();
-}
+    // Hook canvas.getContext
+    var originalGetContext = HTMLCanvasElement.prototype.getContext;
+    if (!HTMLCanvasElement.prototype.getContextRaw) {
+        HTMLCanvasElement.prototype.getContextRaw = originalGetContext;
+    }
+    HTMLCanvasElement.prototype.getContext = function () {
+        var ignoreCanvas = this.internalInspectorSurface;
+        if (ignoreCanvas) {
+            return originalGetContext.apply(this, arguments);
+        }
+        
+        var contextNames = ["moz-webgl", "webkit-3d", "experimental-webgl", "webgl"];
+        var requestingWebGL = contextNames.indexOf(arguments[0]) != -1;
 
-// The "main method" of this sample. Called when someone clicks "Run".
-function loadPlayer() {
-  //console.log("LOAD PLAYER");
-  // Lets Flash from another domain call JavaScript
-  var params = { allowScriptAccess: "always" };
-  // The element id of the Flash embed
-  var atts = { id: "ytplayer" };
-  // All of the magic handled by SWFObject (http://code.google.com/p/swfobject/)
-  
-  swfobject.embedSWF("http://www.youtube.com/apiplayer?" +
-                     "version=3&enablejsapi=1&playerapiid=ytplayer", 
-                     "videoDiv", "480", "295", "9", null, null, params, atts);
-                     //   "videoDiv", "0", "0", "9", null, null, params, atts);
-}
-function _run() {
-  loadPlayer();
-}
-google.setOnLoadCallback(_run);
+        if (requestingWebGL) {
+            // Page is requesting a WebGL context!
+            // TODO: something
+        }
+
+        var result = originalGetContext.apply(this, arguments);
+        if (result == null) {
+            return null;
+        }
+
+        if (requestingWebGL) {
+            // TODO: pull options from somewhere?
+            result = gli.host.inspectContext(this, result);
+            var hostUI = new gli.host.HostUI(result);
+            result.hostUI = hostUI; // just so we can access it later for debugging
+        }
+
+        return result;
+    };
+
+})();

@@ -1,4 +1,3 @@
-// Second testPropagatedFunArgs test -- this is a crash-test.
 (function () {
   var escapee;
 

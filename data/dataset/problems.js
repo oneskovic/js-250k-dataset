@@ -1,7 +1,3 @@
-/*
- * Parser for the C32 problems section
- */
-
 Parsers.C32.problems = function (c32) {
   
   var parseDate = Documents.parseDate;

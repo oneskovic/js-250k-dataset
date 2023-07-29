@@ -1,19 +1,6 @@
 'use strict';
 
-/**
- * Handles sending out metrics, since final states are distributed across cards
- * and their interior actions. Need something to coordinate the completion of
- * certain states to know when to emit the right events. Used right now for:
- * https://developer.mozilla.org/en-US/Apps/Build/Performance/Firefox_OS_app_responsiveness_guidelines
- *
- * Events tracked:
- *
- * apiDone: triggered when app knows data is flowing back and forth from the
- * worker.
- *
- * contentDone: when a card's content is completely available. This includes
- * any parts that were needed
- */
+
 define(function(require) {
   var evt = require('evt'),
       apiDone = false,

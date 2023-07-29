@@ -1,7 +1,3 @@
-/**
- * Internal helper functions common to parsing byte arrays of any type
- */
-
 var dicomParser = (function (dicomParser)
 {
     "use strict";

@@ -1,8 +1,3 @@
-/**
- * @fileOverview 拥有多个面板的容器
- * @ignore
- */
-
 define('bui/tab/panels',function (require) {
   
   /**

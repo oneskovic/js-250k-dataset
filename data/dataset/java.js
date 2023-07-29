@@ -1,8 +1,3 @@
-/*
-Language: Java
-Author: Vsevolod Solovyov <vsevolod.solovyov@gmail.com>
-*/
-
 hljs.LANGUAGES.java  = {
   defaultMode: {
     keywords: {

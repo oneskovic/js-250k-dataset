@@ -1,6 +1,3 @@
-/**
- * Wrapper around ThreeBox camera to allow attribute animations.
- */
 MathBox.CameraProxy = function (world, options) {
 
   // avoid atan2 singularity

@@ -10,14 +10,7 @@ ig.module(
 
         var _c = ig.CONFIG;
 
-        /**
-         * Instagib entity that looks like lava or boiling liquid.
-         * <span class="alert"><strong>IMPORTANT:</strong> this entity has a defined animation sheet, and is resizeable and textured!!</span>
-         * @class
-         * @extends ig.EntityPainInstagib
-         * @memberof ig
-         * @author Collin Hover - collinhover.com
-         **/
+        
         ig.EntityLava = ig.global.EntityLava = ig.EntityPainInstagib.extend( /**@lends ig.EntityLava.prototype */ {
 
             // editor properties

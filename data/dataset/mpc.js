@@ -1,7 +1,3 @@
-/**
- * SoundManager 2: MPC (Drum Machine) demo
- */
-
 var MPC = function() {
   var self = this;
   this.idPrefix = 'btn-'; // HTML ID prefix

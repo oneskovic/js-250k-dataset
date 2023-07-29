@@ -1,61 +1,56 @@
-// App.ProcessDetails = Backbone.View.extend({
-//   defaults: {
-//     args: null
-//   },
+define([
+	"ember",
+	"text!templates/modals/layouts/default.html.hbs",
+	"text!templates/modals/default.html.hbs"
+], function( Ember, layout, template ) {
 
-//   url: function() {
-//     return '/addProcess';
-//   }
-// })
+	var get = Ember.get;
 
-App.ModalView = Backbone.View.extend({
-  tmpl: $('#modal-template').html(),
+	return Ember.View.extend({
+		defaultLayout: Ember.HTMLBars.compile( layout ),
+		defaultTemplate: Ember.HTMLBars.compile( template ),
+		template: null,
 
-  events: {
-    "click .closeProcess" :   "close",
-    "click .addProcess"   :   "addProcess"
-  },
+		tagName: "section",
+		classNames: [ "mymodal" ],
+		classNameBindings: [ "_isVisible:shown" ],
 
-  initialize: function() {
-    this.model = new Backbone.Model();
-    this.model.bind('destroy', this.remove, this);
-  },
+		_isVisible: false,
 
-  render: function() {
-    $(this.el).html(Mustache.to_html(this.tmpl, this.model.toJSON()));
-    return this;
-  },
+		head: function() {
+			return get( this, "context.modalHead" )
+			    || get( this, "context.head" );
+		}.property( "context.modalHead", "context.head" ),
 
-  show: function() {
-    $(document.body).append(this.render().el);
-    $('#process-args-input').focus();
-  },
+		body: function() {
+			return get( this, "context.modalBody" )
+			    || get( this, "context.body" );
+		}.property( "context.modalBody", "context.body" ),
 
-  close: function() {
-    this.remove();
-  },
 
-  addProcess: function(){
-    if ($('#process-args-input').val()) {
-      var request = $.ajax({
-          url: "/addProcess",
-          type: "post",
-          data: {'args': encodeURIComponent($('#process-args-input').val())}
-      });
-      
-      request.success(function (response, textStatus, jqXHR){
-          var timingForRefresh = setTimeout(function() {
-              $('.refresh').trigger('click');
-              clearTimeout(timingForRefresh);
-          }, 3000);
-      });
+		_willInsertElement: function() {
+			this.set( "_isVisible", false );
+		}.on( "willInsertElement" ),
 
-      request.error(function (jqXHR, textStatus, errorThrown){
-          console.error(
-              "The following error occured: " +
-              textStatus, errorThrown
-          );
-      });
-    }; this.remove();
-  }
+		_didInsertElement: function() {
+			Ember.run.next( this, function() {
+				// add another 20ms delay
+				Ember.run.later( this, this.set, "_isVisible", true, 20 );
+			});
+		}.on( "didInsertElement" ),
+
+		/*
+		 * This will be called synchronously.
+		 * Ember doesn't support animations right now.
+		 * So we need to use an ugly hack :(
+		 */
+		willDestroyElement: function() {
+			var $this = this.$(),
+			    $clone = $this.clone();
+			$this.parent().append( $clone );
+			$clone.one( "webkitTransitionEnd", function() { $clone.remove(); });
+			Ember.run.next( $clone, $clone.removeClass, "shown" );
+		}
+	});
+
 });

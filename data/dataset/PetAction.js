@@ -1,13 +1,3 @@
-/**
- * DB/Pets/PetActions.js
- *
- * Pet .ACT file
- *
- * This file is part of ROBrowser, Ragnarok Online in the Web Browser (http://www.robrowser.com/).
- *
- * @author Vincent Thibault
- */
-
 define(function()
 {
 	"use strict";

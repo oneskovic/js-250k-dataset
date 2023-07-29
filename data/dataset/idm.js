@@ -1,5 +1,3 @@
-//The identification manager.
-
 Irenic.IDM = function(args)
 {
     var idm = this;

@@ -2,11 +2,7 @@ require('./ExtraNumber');
 require('./ExtraDate');
 var util = require('util');
 
-/** 
 
-Actually it's a printf substitute with support for prices and unixtimes. Contains two functions. 
-
-*/
 
 function ExtraLog() {}
 

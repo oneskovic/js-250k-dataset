@@ -2,10 +2,7 @@ const ecdsa = require('secp256k1');
 const bignum = require('bignum');
 const utils = require('ethereumjs-util');
 
-/**
- * @method verifySignature
- * @return {Boolean}
- */
+
 exports.txVerifySignature = function() {
   var msgHash = this.hash(false);
   var sig = Buffer.concat([utils.pad(this.r, 32), utils.pad(this.s, 32)], 64);

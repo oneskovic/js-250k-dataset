@@ -3,16 +3,7 @@ var models = require('../models').models;
 var Q = require('q');
 var Hashes = require('jshashes');
 
-/**
- * Get the document hash
- *
- * If no projectId is passed, the projectId is queried in the database
- *
- * @param <String> (Document Path '/path/to/file')
- * @param <Number> (projectId)
- * @param <String> (projectName)
- * @return <Promise> -> <String> (documentHash)
- */
+
 var getDocumentHash = function (projectNameOrId, filePath) {
   if (typeof filePath !== 'string') throw new Error('Document Path is Not A String');
   return new Q()

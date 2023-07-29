@@ -1,8 +1,3 @@
-/**
- * A module for retrieving information about Specials from Foursquare.
- * @param {Object} config A valid configuration.
- * @module node-foursquare/Specials
- */
 module.exports = function(config){
   var core = require("./core")(config),
     log4js = require("log4js");

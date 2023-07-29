@@ -1,4 +1,3 @@
-/*global ODSA */
 "use strict";
 // Heapbuild analysis proof slideshow
 $(document).ready(function () {

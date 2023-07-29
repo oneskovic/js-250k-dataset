@@ -1,9 +1,3 @@
-/**
- * @fileoverview 
- * '행,열 삽입' Icon Source,
- * Class Trex.Tool.Insert configuration을 포함    
- *     
- */
 TrexConfig.addTool(
 	"insertcells",
 	{

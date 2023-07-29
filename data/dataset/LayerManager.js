@@ -1,12 +1,4 @@
 /**
- * Copyright (c) 2008-2011 The Open Planning Project
- * 
- * Published under the GPL license.
- * See https://github.com/opengeo/gxp/raw/master/license.txt for the full text
- * of the license.
- */
-
-/**
  * @require plugins/LayerTree.js
  * @require GeoExt/plugins/TreeNodeComponent.js
  * @require GeoExt/widgets/WMSLegend.js

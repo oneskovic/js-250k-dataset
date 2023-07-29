@@ -1,5 +1,3 @@
-// Megavideo killer (2011-09-16)
-
 addKiller("Megavideo", {
 
 "canKill": function(data) {

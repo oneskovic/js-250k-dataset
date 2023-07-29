@@ -1,6 +1,3 @@
-/** 
- * Automatic mirror resolver for KickassTorrent by utilizing unlocktorrent.com
- */
 DuckieTV.provider('KickassMirrorResolver', function() {
 
     // Individual mirror resolvers can be added here

@@ -1,100 +1,54 @@
-"use strict";
+// require statements go here
 
-function isDirectoryIndex(resource, options)
+/* ========================================================================================================
+ * 
+ * Private Members Declaration (no methods)
+ * 
+ * ===================================================================================================== */
+
+// code
+
+/* ========================================================================================================
+ * 
+ * Public Members Declaration (no methods)
+ * 
+ * ===================================================================================================== */
+
+// code
+
+/* ========================================================================================================
+ * 
+ * Public Methods - Keep in alphabetical order
+ * 
+ * ===================================================================================================== */
+
+module.exports = function (neo4j)
 {
-	var verdict = false;
-	
-	options.directoryIndexes.every( function(index)
+	function Path (obj)
 	{
-		if (index == resource)
-		{
-			verdict = true;
-			return false;
-		}
+		this.length = obj.length;
+		this.start = neo4j.Utils.parseId(obj.start);
+		this.end = neo4j.Utils.parseId(obj.end);
 		
-		return true;
-	});
-	
-	return verdict;
-}
-
-
-
-function parsePath(urlObj, options)
-{
-	var path = urlObj.path.absolute.string;
-	
-	if (path)
-	{
-		var lastSlash = path.lastIndexOf("/");
-		
-		if (lastSlash > -1)
-		{
-			if (++lastSlash < path.length)
-			{
-				var resource = path.substr(lastSlash);
-				
-				if (resource!="." && resource!="..")
-				{
-					urlObj.resource = resource;
-					path = path.substr(0, lastSlash);
-				}
-				else
-				{
-					path += "/";
-				}
-			}
-			
-			urlObj.path.absolute.string = path;
-			urlObj.path.absolute.array = splitPath(path);
-		}
-		else if (path=="." || path=="..")
-		{
-			// "..?var", "..#anchor", etc ... not "..index.html"
-			path += "/";
-			
-			urlObj.path.absolute.string = path;
-			urlObj.path.absolute.array = splitPath(path);
-		}
-		else
-		{
-			// Resource-only
-			urlObj.resource = path;
-			urlObj.path.absolute.string = null;
-		}
-		
-		urlObj.extra.resourceIsIndex = isDirectoryIndex(urlObj.resource, options);
+		Object.freeze(obj);
+		Object.defineProperty(this, '_obj', { value: obj, enumerable: false, writable: false });
 	}
-	// Else: query/hash-only or empty
-}
+	
+	return Path;
+};
 
+/* ========================================================================================================
+ * 
+ * Private Methods - Keep in alphabetical order
+ * 
+ * ===================================================================================================== */
 
+// code
 
-function splitPath(path)
-{
-	// TWEAK :: condition only for speed optimization
-	if (path != "/")
-	{
-		var cleaned = [];
-		
-		path.split("/").forEach( function(dir)
-		{
-			// Cleanup -- splitting "/dir/" becomes ["","dir",""]
-			if (dir != "")
-			{
-				cleaned.push(dir);
-			}
-		});
-		
-		return cleaned;
-	}
-	else
-	{
-		// Faster to skip the above block and just create an array
-		return [];
-	}
-}
+/* ========================================================================================================
+ * 
+ * Initialization
+ * 
+ * ===================================================================================================== */
 
-
-
-module.exports = parsePath;
+// If function calls need to be made to initialize the module, put those calls here.

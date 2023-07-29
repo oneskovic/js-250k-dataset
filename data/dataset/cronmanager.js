@@ -1,6 +1,3 @@
-/**
- * Created by sander.struijk on 08.08.14.
- */
 'use strict';
 
 var CronJob = require('cron').CronJob,

@@ -1,8 +1,3 @@
-/**
- * The puff visual effect
- *
- * Copyright (C) 2009-2010 Nikolay V. Nemshilov
- */
 Fx.Puff = new Class(Fx.Zoom, {
   extend: {
     Options: Object.merge(Fx.Zoom.Options, {

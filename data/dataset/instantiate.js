@@ -1,5 +1,3 @@
-/** @license MIT License (c) copyright original author or authors */
-
 /**
  * Licensed under the MIT License at:
  * http://www.opensource.org/licenses/mit-license.php

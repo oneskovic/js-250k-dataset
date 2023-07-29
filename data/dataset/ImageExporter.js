@@ -1,29 +1,3 @@
-/**
- * Exports a {@link Ext.draw.Surface Surface} to an image. To do this,
- * the svg string must be sent to a remote server and processed.
- *
- * # Sending the data
- *
- * A post request is made to the URL. The following fields are sent:
- *
- * + width: The width of the image
- * + height: The height of the image
- * + type: The image type to save as, see {@link #supportedTypes}
- * + svg: The svg string for the surface
- *
- * # The response
- *
- * It is expected that the user will be prompted with an image download.
- * As such, the following options should be set on the server:
- *
- * + Content-Disposition: 'attachment, filename="chart.png"'
- * + Content-Type: 'image/png'
- *
- * **Important**: By default, chart data is sent to a server operated
- * by Sencha to do data processing. You may change this default by
- * setting the {@link #defaultUrl} of this class.
- * In addition, please note that this service only creates PNG images.
- */
 Ext.define('Ext.draw.engine.ImageExporter', {
     singleton: true,
 

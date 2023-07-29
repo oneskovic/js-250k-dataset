@@ -1,5 +1,3 @@
-/*globals R, Main */
-
 (function() {
 
   window.Music = {

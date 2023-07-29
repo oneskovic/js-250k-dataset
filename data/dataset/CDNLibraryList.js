@@ -1,4 +1,3 @@
-/*jslint vars: true */
 /*global define, $, brackets, window, console */
 
 define(function (require, exports, module) {

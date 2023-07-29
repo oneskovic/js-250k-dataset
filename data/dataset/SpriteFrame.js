@@ -4,23 +4,7 @@ var util = require('util'),
     geo = require('geometry'),
     ccp = geo.ccp
 
-/**
- * @class
- * Represents a single frame of animation for a cocos.Sprite
- *
- * A SpriteFrame has:
- * - texture: A Texture2D that will be used by the Sprite
- * - rectangle: A rectangle of the texture
- *
- * @example
- * var frame = new SpriteFrame({texture: texture, rect: rect})
- * sprite.displayFrame = frame
- *
- * @memberOf cocos
- *
- * @opt {cocos.Texture2D} texture The texture to draw this frame using
- * @opt {geometry.Rect} rect The rectangle inside the texture to draw
- */
+
 function SpriteFrame (opts) {
     SpriteFrame.superclass.constructor.call(this, opts)
 

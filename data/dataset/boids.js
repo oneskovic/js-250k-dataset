@@ -1,15 +1,7 @@
 (function(){
   'use strict';
 
-/*
-  force definitions 
-  includes 
-  1) the agent that causes the force (can be reflexive)
-  2) area of effect of the force
-  3) the function to calculate the force
-    takes in the effected agent and the set of causing agents within the AoE
-    returns a Vector of the aggregate force exerted
-*/ 
+ 
   var forces = [
   { causes: ['boid'],
     areaOfEffect: 25,

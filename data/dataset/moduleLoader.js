@@ -10,7 +10,7 @@ define([
         this.loadModules('npmPlugins');
     }
 
-    /* наследуем от Module */
+    
     ModuleLoader.prototype = module.createInstance();
     ModuleLoader.prototype.constructor = ModuleLoader;
 

@@ -1,4 +1,3 @@
-/* Copyright 2015 PayPal */
 "use strict";
 
 var generate = require('../generate');

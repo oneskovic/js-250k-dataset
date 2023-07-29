@@ -1,72 +1,91 @@
-/*
- * 
- * UI5Strap
- *
- * ui5strap.ScrollContainer
- * 
- * @author Jan Philipp Knöller <info@pksoftware.de>
- * 
- * Homepage: http://ui5strap.com
- *
- * Copyright (c) 2013-2014 Jan Philipp Knöller <info@pksoftware.de>
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * Released under Apache2 license: http://www.apache.org/licenses/LICENSE-2.0.txt
- * 
- */
+define(function(require, exports, module) {
+    var ContainerSurface = require('../surfaces/ContainerSurface');
+    var EventHandler = require('../core/EventHandler');
+    var Scrollview = require('./Scrollview');
+    var Utility = require('../utilities/Utility');
+    var OptionsManager = require('../core/OptionsManager');
 
-(function(){
+    /**
+     * A Container surface with a scrollview automatically added. The convenience of ScrollContainer lies in
+     * being able to clip out portions of the associated scrollview that lie outside the bounding surface,
+     * and in being able to move the scrollview more easily by applying modifiers to the parent container
+     * surface.
+     * @class ScrollContainer
+     * @constructor
+     * @param {Options} [options] An object of configurable options.
+     * @param {Options} [options.container=undefined] Options for the ScrollContainer instance's surface.
+     * @param {Options} [options.scrollview={direction:Utility.Direction.X}]  Options for the ScrollContainer instance's scrollview.
+     */
+    function ScrollContainer(options) {
+        this.options = Object.create(ScrollContainer.DEFAULT_OPTIONS);
+        this._optionsManager = new OptionsManager(this.options);
 
-	jQuery.sap.declare("ui5strap.ScrollContainer");
-	
-	sap.ui.core.Control.extend("ui5strap.ScrollContainer", {
-		metadata : {
+        if (options) this.setOptions(options);
 
-			library : "ui5strap",
+        this.container = new ContainerSurface(this.options.container);
+        this.scrollview = new Scrollview(this.options.scrollview);
 
-			defaultAggregation : "content",
-			
-			properties : { 
-				vertical : {
-					type:"boolean", 
-					defaultValue:false
-				},
-				horizontal : {
-					type:"boolean", 
-					defaultValue:false
-				}
-			},
-			aggregations : { 
-				"content" : {
-					singularName: "content"
-				} 
-			}
-		}
-	});
+        this.container.add(this.scrollview);
 
-	ui5strap.ScrollContainer.prototype.onBeforeRendering = function(){
-		if(this.getDomRef()){
-			this._scrollTop = this.getDomRef().scrollTop;
-		}
-		else{
-			this._scrollTop =  null;
-		}
-	};
+        this._eventInput = new EventHandler();
+        EventHandler.setInputHandler(this, this._eventInput);
 
-	ui5strap.ScrollContainer.prototype.onAfterRendering = function(){
-		if(this._scrollTop){
-			this.getDomRef().scrollTop = this._scrollTop;
-		}
-	};
+        this._eventInput.pipe(this.scrollview);
 
-}());
+        this._eventOutput = new EventHandler();
+        EventHandler.setOutputHandler(this, this._eventOutput);
+
+        this.container.pipe(this._eventOutput);
+        this.scrollview.pipe(this._eventOutput);
+    }
+
+    ScrollContainer.DEFAULT_OPTIONS = {
+        container: {
+            properties: {overflow : 'hidden'}
+        },
+        scrollview: {}
+    };
+
+    /**
+     * Patches the ScrollContainer instance's options with the passed-in ones.
+     *
+     * @method setOptions
+     * @param {Options} options An object of configurable options for the ScrollContainer instance.
+     */
+    ScrollContainer.prototype.setOptions = function setOptions(options) {
+        return this._optionsManager.setOptions(options);
+    };
+
+    /**
+     * Sets the collection of renderables under the ScrollContainer instance scrollview's control.
+     *
+     * @method sequenceFrom
+     * @param {Array|ViewSequence} sequence Either an array of renderables or a Famous ViewSequence.
+     */
+    ScrollContainer.prototype.sequenceFrom = function sequenceFrom() {
+        return this.scrollview.sequenceFrom.apply(this.scrollview, arguments);
+    };
+
+    /**
+     * Returns the width and the height of the ScrollContainer instance.
+     *
+     * @method getSize
+     * @return {Array} A two value array of the ScrollContainer instance's current width and height (in that order).
+     */
+    ScrollContainer.prototype.getSize = function getSize() {
+        return this.container.getSize.apply(this.container, arguments);
+    };
+
+    /**
+     * Generate a render spec from the contents of this component.
+     *
+     * @private
+     * @method render
+     * @return {number} Render spec for this component
+     */
+    ScrollContainer.prototype.render = function render() {
+        return this.container.render();
+    };
+
+    module.exports = ScrollContainer;
+});

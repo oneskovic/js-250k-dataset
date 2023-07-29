@@ -1,141 +1,108 @@
-/**
- * CBC
- * ===
- *
- * Cipher Block Chaining (CBC). This is a low-level tool for chaining multiple
- * encrypted blocks together, usually with AES. This is a low-level tool that
- * does not include authentication. You should only be using this if you have
- * authentication at another step. It is best combined with HMAC.
- *
- * http://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#Cipher-block_chaining_.28CBC.29
- */
-var Random = require('./random');
-var cmp = require('./cmp');
+if (sjcl.beware === undefined) {
+  sjcl.beware = {};
+}
+sjcl.beware["CBC mode is dangerous because it doesn't protect message integrity."
+] = function() {
+  /** @namespace
+   * Dangerous: CBC mode with PKCS#5 padding.
+   *
+   * @author Emily Stark
+   * @author Mike Hamburg
+   * @author Dan Boneh
+   */
+  sjcl.mode.cbc = {
+    /** The name of the mode.
+     * @constant
+     */
+    name: "cbc",
+    
+    /** Encrypt in CBC mode with PKCS#5 padding.
+     * @param {Object} prp The block cipher.  It must have a block size of 16 bytes.
+     * @param {bitArray} plaintext The plaintext data.
+     * @param {bitArray} iv The initialization value.
+     * @param {bitArray} [adata=[]] The authenticated data.  Must be empty.
+     * @return The encrypted data, an array of bytes.
+     * @throws {sjcl.exception.invalid} if the IV isn't exactly 128 bits, or if any adata is specified.
+     */
+    encrypt: function(prp, plaintext, iv, adata) {
+      if (adata && adata.length) {
+        throw new sjcl.exception.invalid("cbc can't authenticate data");
+      }
+      if (sjcl.bitArray.bitLength(iv) !== 128) {
+        throw new sjcl.exception.invalid("cbc iv must be 128 bits");
+      }
+      var i,
+          w = sjcl.bitArray,
+          xor = w._xor4,
+          bl = w.bitLength(plaintext),
+          bp = 0,
+          output = [];
 
-var CBC = {};
+      if (bl&7) {
+        throw new sjcl.exception.invalid("pkcs#5 padding only works for multiples of a byte");
+      }
+    
+      for (i=0; bp+128 <= bl; i+=4, bp+=128) {
+        /* Encrypt a non-final block */
+        iv = prp.encrypt(xor(iv, plaintext.slice(i,i+4)));
+        output.splice(i,0,iv[0],iv[1],iv[2],iv[3]);
+      }
+      
+      /* Construct the pad. */
+      bl = (16 - ((bl >> 3) & 15)) * 0x1010101;
 
-CBC.buf2blockbufs = function(buf, blocksize) {
-  var bytesize = blocksize / 8;
-  var blockbufs = [];
+      /* Pad and encrypt. */
+      iv = prp.encrypt(xor(iv,w.concat(plaintext,[bl,bl,bl,bl]).slice(i,i+4)));
+      output.splice(i,0,iv[0],iv[1],iv[2],iv[3]);
+      return output;
+    },
+    
+    /** Decrypt in CBC mode.
+     * @param {Object} prp The block cipher.  It must have a block size of 16 bytes.
+     * @param {bitArray} ciphertext The ciphertext data.
+     * @param {bitArray} iv The initialization value.
+     * @param {bitArray} [adata=[]] The authenticated data.  It must be empty.
+     * @return The decrypted data, an array of bytes.
+     * @throws {sjcl.exception.invalid} if the IV isn't exactly 128 bits, or if any adata is specified.
+     * @throws {sjcl.exception.corrupt} if if the message is corrupt.
+     */
+    decrypt: function(prp, ciphertext, iv, adata) {
+      if (adata && adata.length) {
+        throw new sjcl.exception.invalid("cbc can't authenticate data");
+      }
+      if (sjcl.bitArray.bitLength(iv) !== 128) {
+        throw new sjcl.exception.invalid("cbc iv must be 128 bits");
+      }
+      if ((sjcl.bitArray.bitLength(ciphertext) & 127) || !ciphertext.length) {
+        throw new sjcl.exception.corrupt("cbc ciphertext must be a positive multiple of the block size");
+      }
+      var i,
+          w = sjcl.bitArray,
+          xor = w._xor4,
+          bi, bo,
+          output = [];
+          
+      adata = adata || [];
+    
+      for (i=0; i<ciphertext.length; i+=4) {
+        bi = ciphertext.slice(i,i+4);
+        bo = xor(iv,prp.decrypt(bi));
+        output.splice(i,0,bo[0],bo[1],bo[2],bo[3]);
+        iv = bi;
+      }
 
-  for (var i = 0; i <= buf.length / bytesize; i++) {
-    var blockbuf = buf.slice(i * bytesize, i * bytesize + bytesize);
+      /* check and remove the pad */
+      bi = output[i-1] & 255;
+      if (bi === 0 || bi > 16) {
+        throw new sjcl.exception.corrupt("pkcs#5 padding corrupt");
+      }
+      bo = bi * 0x1010101;
+      if (!w.equal(w.bitSlice([bo,bo,bo,bo], 0, bi*8),
+                   w.bitSlice(output, output.length*32 - bi*8, output.length*32))) {
+        throw new sjcl.exception.corrupt("pkcs#5 padding corrupt");
+      }
 
-    if (blockbuf.length < blocksize)
-      blockbuf = CBC.pkcs7pad(blockbuf, blocksize);
-
-    blockbufs.push(blockbuf);
-  }
-
-  return blockbufs;
+      return w.bitSlice(output, 0, output.length*32 - bi*8);
+    }
+  };
 };
-
-CBC.blockbufs2buf = function(blockbufs, blocksize) {
-  var bytesize = blocksize / 8;
-
-  var last = blockbufs[blockbufs.length - 1];
-  last = CBC.pkcs7unpad(last);
-  blockbufs[blockbufs.length - 1] = last;
-
-  var buf = Buffer.concat(blockbufs);
-
-  return buf;
-};
-
-CBC.encrypt = function(messagebuf, ivbuf, blockcipher, cipherkeybuf) {
-  var blocksize = ivbuf.length * 8;
-  var blockbufs = CBC.buf2blockbufs(messagebuf, blocksize);
-  var encbufs = CBC.encryptblocks(blockbufs, ivbuf, blockcipher, cipherkeybuf);
-  var encbuf = Buffer.concat(encbufs);
-  return encbuf;
-};
-
-CBC.decrypt = function(encbuf, ivbuf, blockcipher, cipherkeybuf) {
-  var blocksize = ivbuf.length * 8;
-  var bytesize = ivbuf.length;
-  var encbufs = [];
-  for (var i = 0; i < encbuf.length / bytesize; i++) {
-    encbufs.push(encbuf.slice(i * bytesize, i * bytesize + bytesize));
-  }
-  var blockbufs = CBC.decryptblocks(encbufs, ivbuf, blockcipher, cipherkeybuf);
-  var buf = CBC.blockbufs2buf(blockbufs, blocksize);
-  return buf;
-};
-
-CBC.encryptblock = function(blockbuf, ivbuf, blockcipher, cipherkeybuf) {
-  var xorbuf = CBC.xorbufs(blockbuf, ivbuf);
-  var encbuf = blockcipher.encrypt(xorbuf, cipherkeybuf);
-  return encbuf;
-};
-
-CBC.decryptblock = function(encbuf, ivbuf, blockcipher, cipherkeybuf) {
-  var xorbuf = blockcipher.decrypt(encbuf, cipherkeybuf);
-  var blockbuf = CBC.xorbufs(xorbuf, ivbuf);
-  return blockbuf;
-};
-
-CBC.encryptblocks = function(blockbufs, ivbuf, blockcipher, cipherkeybuf) {
-  var encbufs = [];
-
-  for (var i = 0; i < blockbufs.length; i++) {
-    var blockbuf = blockbufs[i];
-    var encbuf = CBC.encryptblock(blockbuf, ivbuf, blockcipher, cipherkeybuf);
-
-    encbufs.push(encbuf);
-
-    ivbuf = encbuf;
-  }
-
-  return encbufs;
-};
-
-CBC.decryptblocks = function(encbufs, ivbuf, blockcipher, cipherkeybuf) {
-  var blockbufs = [];
-
-  for (var i = 0; i < encbufs.length; i++) {
-    var encbuf = encbufs[i];
-    var blockbuf = CBC.decryptblock(encbuf, ivbuf, blockcipher, cipherkeybuf);
-
-    blockbufs.push(blockbuf);
-
-    ivbuf = encbuf;
-  }
-
-  return blockbufs;
-};
-
-CBC.pkcs7pad = function(buf, blocksize) {
-  var bytesize = blocksize / 8;
-  var padbytesize = bytesize - buf.length;
-  var pad = new Buffer(padbytesize);
-  pad.fill(padbytesize);
-  var paddedbuf = Buffer.concat([buf, pad]);
-  return paddedbuf;
-};
-
-CBC.pkcs7unpad = function(paddedbuf, blocksize) {
-  var bytesize = blocksize / 8;
-  var padbytesize = bytesize - paddedbuf.length;
-  var padlength = paddedbuf[paddedbuf.length - 1];
-  var padbuf = paddedbuf.slice(paddedbuf.length - padlength, paddedbuf.length);
-  var padbuf2 = new Buffer(padlength);
-  padbuf2.fill(padlength);
-  if (!cmp.eq(padbuf, padbuf2))
-    throw new Error('invalid padding');
-  return paddedbuf.slice(0, paddedbuf.length - padlength);
-};
-
-CBC.xorbufs = function(buf1, buf2) {
-  if (buf1.length !== buf2.length)
-    throw new Error('bufs must have the same length');
-
-  var buf = new Buffer(buf1.length);
-
-  for (var i = 0; i < buf1.length; i++) {
-    buf[i] = buf1[i] ^ buf2[i];
-  }
-
-  return buf;
-};
-
-module.exports = CBC;

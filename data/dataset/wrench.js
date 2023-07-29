@@ -1,16 +1,3 @@
-/*  wrench.js
- *
- *  A collection of various utility functions I've found myself in need of
- *  for use with Node.js (http://nodejs.org/). This includes things like:
- *
- *  - Recursively deleting directories in Node.js (Sync, not Async)
- *  - Recursively copying directories in Node.js (Sync, not Async)
- *  - Recursively chmoding a directory structure from Node.js (Sync, not Async)
- *  - Other things that I'll add here as time goes on. Shhhh...
- *
- *  ~ Ryan McGrath (ryan [at] venodesigns.net)
- */
-
 /* This file is originally licensed under https://raw.github.com/ryanmcgrath/wrench-js/master/LICENSE
  * This code has been copied from https://raw.github.com/ryanmcgrath/wrench-js and modified
  * add the functionality for a callback to the copyDirSyncRecursive method.

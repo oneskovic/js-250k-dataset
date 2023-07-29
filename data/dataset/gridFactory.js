@@ -20,13 +20,7 @@ define([
     ) {
         'use strict';
     
-        /**
-        *   Factory for creating grid entities.
-        *
-        *   @class 
-        *   @param {context}
-        *   @constructor
-        */
+        
         var GridFactory = function(context) {
             Factory.call(this, context);
         };

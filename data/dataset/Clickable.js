@@ -1,26 +1,3 @@
-/*
----
-
-name: "App.Clickable"
-
-description: "Provides interface for clickable canvas objects"
-
-license:
-	- "[GNU Lesser General Public License](http://opensource.org/licenses/lgpl-license.php)"
-	- "[MIT License](http://opensource.org/licenses/mit-license.php)"
-
-authors:
-	- "Shock <shocksilien@gmail.com>"
-
-requires:
-	- LibCanvas
-	- App.Behavior
-
-provides: App.Clickable
-
-...
-*/
-
 /** @class App.Clickable */
 var Clickable = declare( 'LibCanvas.App.Clickable', App.Behavior, {
 

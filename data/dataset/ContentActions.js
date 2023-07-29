@@ -60,17 +60,7 @@ module.exports = {
       done();
     });
   },
-  /*
-  tag: function(context, payload, done) {
-    context.service.read('content', {
-      tag: payload.tag,
-      actionType: 'tag'
-    }, {}, function(err, single) {
-      context.dispatch('GET_CONTENT_SUCCESS', single);
-      context.dispatch('UPDATE_PAGE_TITLE', single.title);
-      done();
-    });
-  },*/
+  
   error: function(context, payload, done) {
     context.dispatch('SET_ERROR', payload.err);
     done();

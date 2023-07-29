@@ -1,6 +1,3 @@
-/**
- * @private
- */
 Ext.define('Ext.fx.animation.Wipe', {
     extend: 'Ext.fx.Animation',
     alternateClassName: 'Ext.fx.animation.WipeIn',

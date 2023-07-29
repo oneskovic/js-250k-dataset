@@ -7,11 +7,7 @@
     this.transparentColor_ = 'white';
   };
 
-  /**
-   * Decide which color should be used to represent transparent pixels
-   * Default : white
-   * @param  {String} color the color to use either as '#ABCDEF' or 'red' or 'rgb(x,y,z)' or 'rgba(x,y,z,a)'
-   */
+  
   ns.CanvasRenderer.prototype.drawTransparentAs = function (color) {
     this.transparentColor_ = color;
   };

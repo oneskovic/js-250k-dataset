@@ -1,7 +1,3 @@
-/**
- @module resources/Calls
- The Twilio "Calls" Resource.
- */
 var generate = require('./generate');
 var ListInstanceResource = require('./ListInstanceResource');
 

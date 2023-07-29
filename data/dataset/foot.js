@@ -1,14 +1,3 @@
-/**
-View class responsible for rendering the `<tfoot>` section of a table. Can be
-used as the default `footerView` for `Y.DataTable.Base` and `Y.DataTable`
-classes.
-
-@module datatable
-@submodule datatable-foot
-@since 3.11.0
-**/
-
-
 Y.namespace('DataTable').FooterView = Y.Base.create('tableFooter', Y.View, [], {
     // -- Instance properties -------------------------------------------------
 

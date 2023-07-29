@@ -1,6 +1,4 @@
-﻿/**
- * @requires OpenCharts/BaseTypes/Class.js
- */
+﻿
 
 /**
  * Class: OpenCharts.Coordinate

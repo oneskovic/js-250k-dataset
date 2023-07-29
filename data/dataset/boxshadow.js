@@ -1,6 +1,3 @@
-/*! Copyright (c) 2010 Burin Asavesna (http://helloburin.com)
- * Licensed under the MIT License (LICENSE.txt).
- */
 (function($) {
     // boxShadow get hooks
     var div = document.createElement('div'),

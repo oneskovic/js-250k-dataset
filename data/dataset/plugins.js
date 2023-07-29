@@ -1,6 +1,3 @@
-/**
- * SceneJS plugin registry
- */
 SceneJS.Plugins = new (function () {
 
     // Plugin map for each node type

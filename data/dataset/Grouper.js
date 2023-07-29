@@ -1,113 +1,95 @@
-/**
- * Represents a grouping of items. The grouper works in a similar fashion as the
- * `Ext.util.Sorter` except that groups must be able to extract a value by which all items
- * in the group can be collected. By default this is derived from the `property` config
- * but can be customized using the `groupFn` if necessary.
- *
- * All items with the same group value compare as equal. If the group values do not compare
- * equally, the sort can be controlled further by setting `sortProperty` or `sorterFn`.
- */
 Ext.define('Ext.util.Grouper', {
+
+    /* Begin Definitions */
+
     extend: 'Ext.util.Sorter',
 
     isGrouper: true,
-
+    
     config: {
-        /**
-         * @cfg {Function} groupFn This function is called for each item in the collection
-         * to determine the group to which it belongs. By default the `property` value is
-         * used to group items.
-         * @cfg {Object} groupFn.item The current item from the collection.
-         * @cfg {String} groupFn.return The group identifier for the item.
-         */
         groupFn: null,
 
         /**
-         * @cfg {String} property The field by which records are grouped. Groups are 
-         * sorted alphabetically by group value as the default. To sort groups by a different 
-         * property, use the {@link #sortProperty} configuration.
+         * @cfg {String} sortProperty You can define this configuration if you want the groups to be sorted
+         * on something other then the group string returned by the groupFn.
+         * @param item1
+         * @param item2
          */
+        sortProperty: null,
 
         /**
-         * @cfg {String} sortProperty You can set this configuration if you want the groups
-         * to be sorted on something other then the group string returned by the `groupFn`.
-         * This serves the same role as `property` on a normal `Ext.util.Sorter`.
+         * @cfg
+         * Grouper has a custom sorterFn that cannot be overriden by the user. If a property has been defined
+         * on this grouper, we use the default sorterFn, else we sort based on the returned group string.
+         * @param item1
+         * @param item2
+         * @private
+         * @hide
          */
-        sortProperty: null
-    },
+        sorterFn: function(item1, item2) {
+            var property = this.getSortProperty(),
+                groupFn, group1, group2, modifier;
 
-    constructor: function(config) {
-        //<debug>
-        if (config) {
-            if (config.getGroupString) {
-                Ext.Error.raise("Cannot set getGroupString - use groupFn instead");
+            groupFn = this.getGroupFn();
+            group1 = groupFn.call(this, item1);
+            group2 = groupFn.call(this, item2);
+
+            if (property) {
+                if (group1 !== group2) {
+                    return this.defaultSortFn.call(this, item1, item2);
+                } else {
+                    return 0;
+                }
             }
+            return (group1 > group2) ? 1 : ((group1 < group2) ? -1 : 0);
         }
-        //</debug>
-
-        this.callParent(arguments);
     },
 
     /**
-     * Returns the value for grouping to be used.
-     * @param {Ext.data.Model} item The Model instance
-     * @return {String}
+     * @private
+     * Basic default sorter function that just compares the defined property of each object
      */
-    getGroupString: function (item) {
-        var group = this._groupFn(item);
-        return (group != null) ? String(group) : '';
-    },
-
-    sortFn: function (item1, item2) {
+    defaultSortFn: function(item1, item2) {
         var me = this,
-            lhs = me._groupFn(item1),
-            rhs = me._groupFn(item2),
-            property = me._sortProperty, // Sorter's sortFn uses "_property"
+            transform = me._transform,
             root = me._root,
-            sorterFn = me._sorterFn,
-            transform = me._transform;
+            value1, value2,
+            property = me._sortProperty;
 
-        // Items with the same groupFn result must be equal... otherwise we sort them
-        // by sorterFn or sortProperty.
-        if (lhs === rhs) {
-            return 0;
+        if (root !== null) {
+            item1 = item1[root];
+            item2 = item2[root];
         }
 
-        if (property || sorterFn) {
-            if (sorterFn) {
-                return sorterFn.call(this, item1, item2);
-            }
+        value1 = item1[property];
+        value2 = item2[property];
 
-            if (root) {
-                item1 = item1[root];
-                item2 = item2[root];
-            }
-
-            lhs = item1[property];
-            rhs = item2[property];
-
-            if (transform) {
-                lhs = transform(lhs);
-                rhs = transform(rhs);
-            }
+        if (transform) {
+            value1 = transform(value1);
+            value2 = transform(value2);
         }
 
-        return (lhs > rhs) ? 1 : (lhs < rhs ? -1 : 0);
+        return value1 > value2 ? 1 : (value1 < value2 ? -1 : 0);
     },
 
-    standardGroupFn: function (item) {
-        var root = this._root;
-        return (root ? item[root] : item)[this._property];
+    updateProperty: function(property) {
+        this.setGroupFn(this.standardGroupFn);
     },
 
-    updateSorterFn: function () {
-        // don't callParent here - we don't want to smash sortFn w/sorterFn
-    },
+    standardGroupFn: function(item) {
+        var root = this.getRoot(),
+            property = this.getProperty(),
+            data = item;
 
-    updateProperty: function () {
-        // we don't callParent since that is related to sorterFn smashing sortFn
-        if (!this.getGroupFn()) {
-            this.setGroupFn(this.standardGroupFn);
+        if (root) {
+            data = item[root];
         }
+
+        return data[property];
+    },
+
+    getGroupString: function(item) {
+        var group = this.getGroupFn().call(this, item);
+        return typeof group != 'undefined' ? group.toString() : '';
     }
 });

@@ -1,11 +1,3 @@
-/**
- * Quick select n-th element in an array.
- *
- * Note: it will change the elements placement in array.
- *
- * @module echarts/data/quickSelect
- * @author Yi Shen(https://github.com/pissang)
- */
 define(function (require) {
 
     function defaultCompareFunc(a, b) {

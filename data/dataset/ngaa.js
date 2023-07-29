@@ -1,11 +1,7 @@
 (function() {
     'use strict';
 
-    /**
-     * @ngdoc module
-     * @name ngAA
-     * @description DRY authentication and authorization for angular and ui-router
-     */
+    
     angular
         .module('ngAA', [
             //depend on ngStorage for

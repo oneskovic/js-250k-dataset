@@ -7,15 +7,7 @@ var operators = require('../operators');
 var isString = require('../../util/string').isString;
 var isArray = Array.isArray;
 
-/**
- * @constructor FunctionAssignmentNode
- * @extends {Node}
- * Function assignment
- *
- * @param {String} name           Function name
- * @param {String[]} params         Function parameter names
- * @param {Node} expr             The function expression
- */
+
 function FunctionAssignmentNode(name, params, expr) {
   if (!(this instanceof FunctionAssignmentNode)) {
     throw new SyntaxError('Constructor must be called with the new operator');

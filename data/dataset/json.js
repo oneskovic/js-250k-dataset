@@ -1,76 +1,78 @@
-var Generator = require("../lib/jison").Generator;
+var util = require('util'),
+    extendWithGettersAndSetters = require('../util/extendWithGettersAndSetters'),
+    errors = require('../errors'),
+    Text = require('./Text');
 
-exports.grammar = {
-    "comment": "ECMA-262 5th Edition, 15.12.1 The JSON Grammar.",
-    "author": "Zach Carter",
+function Json(config) { // Avoid clobbering the global JSON object
+    Text.call(this, config);
+}
 
-    "lex": {
-        "macros": {
-            "digit": "[0-9]",
-            "esc": "\\\\",
-            "int": "-?(?:[0-9]|[1-9][0-9]+)",
-            "exp": "(?:[eE][-+]?[0-9]+)",
-            "frac": "(?:\\.[0-9]+)"
-        },
-        "rules": [
-            ["\\s+", "/* skip whitespace */"],
-            ["{int}{frac}?{exp}?\\b", "return 'NUMBER';"],
-            ["\"(?:{esc}[\"bfnrt/{esc}]|{esc}u[a-fA-F0-9]{4}|[^\"{esc}])*\"", "yytext = yytext.substr(1,yyleng-2); return 'STRING';"],
-            ["\\{", "return '{'"],
-            ["\\}", "return '}'"],
-            ["\\[", "return '['"],
-            ["\\]", "return ']'"],
-            [",", "return ','"],
-            [":", "return ':'"],
-            ["true\\b", "return 'TRUE'"],
-            ["false\\b", "return 'FALSE'"],
-            ["null\\b", "return 'NULL'"]
-        ]
+util.inherits(Json, Text);
+
+extendWithGettersAndSetters(Json.prototype, {
+    contentType: 'application/json',
+
+    supportedExtensions: ['.json'],
+
+    isPretty: false,
+
+    get parseTree() {
+        if (!this._parseTree) {
+            try {
+                this._parseTree = JSON.parse(this.text);
+            } catch (e) {
+                var err = new errors.ParseError({message: 'Json parse error in ' + this.urlOrDescription + ': ' + e.message, asset: this});
+                if (this.assetGraph) {
+                    this.assetGraph.emit('warn', err);
+                } else {
+                    throw err;
+                }
+            }
+        }
+        return this._parseTree;
     },
 
-    "tokens": "STRING NUMBER { } [ ] , : TRUE FALSE NULL",
-    "start": "JSONText",
+    set parseTree(parseTree) {
+        this.unload();
+        this._parseTree = parseTree;
+        this.markDirty();
+    },
 
-    "bnf": {
-        "JSONString": [ "STRING" ],
+    get text() {
+        if (!('_text' in this)) {
+            if (this._parseTree) {
+                if (this.isPretty) {
+                    this._text = JSON.stringify(this._parseTree, undefined, '    ') + '\n';
+                } else {
+                    this._text = JSON.stringify(this._parseTree);
+                }
+            } else {
+                this._text = this._getTextFromRawSrc();
+            }
+        }
+        return this._text;
+    },
 
-        "JSONNumber": [ "NUMBER" ],
+    prettyPrint: function () {
+        this.isPretty = true;
+        /*jshint ignore:start*/
+        var parseTree = this.parseTree; // So markDirty removes this._text
+        /*jshint ignore:end*/
+        this.markDirty();
+        return this;
+    },
 
-        "JSONBooleanLiteral": [ "TRUE", "FALSE" ],
-
-
-        "JSONText": [ "JSONValue" ],
-
-        "JSONValue": [ "JSONNullLiteral",
-                       "JSONBooleanLiteral",
-                       "JSONString",
-                       "JSONNumber",
-                       "JSONObject",
-                       "JSONArray" ],
-
-        "JSONObject": [ "{ }",
-                        "{ JSONMemberList }" ],
-
-        "JSONMember": [ "JSONString : JSONValue" ],
-
-        "JSONMemberList": [ "JSONMember",
-                              "JSONMemberList , JSONMember" ],
-
-        "JSONArray": [ "[ ]",
-                       "[ JSONElementList ]" ],
-
-        "JSONElementList": [ "JSONValue",
-                             "JSONElementList , JSONValue" ]
+    minify: function () {
+        this.isPretty = false;
+        /*jshint ignore:start*/
+        var parseTree = this.parseTree; // So markDirty removes this._text
+        /*jshint ignore:end*/
+        this.markDirty();
+        return this;
     }
-};
+});
 
-var options = {type: "slr", moduleType: "commonjs", moduleName: "jsoncheck"};
+// Grrr...
+Json.prototype.__defineSetter__('text', Text.prototype.__lookupSetter__('text'));
 
-exports.main = function main () {
-    var code = new Generator(exports.grammar, options).generate();
-    console.log(code);
-};
-
-if (require.main === module)
-    exports.main();
-
+module.exports = Json;

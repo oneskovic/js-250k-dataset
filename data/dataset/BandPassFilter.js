@@ -1,7 +1,3 @@
-/*!
- * @depends BiquadFilter.js
- */
-
 /**
  * Band-pass filter
  *

@@ -1,19 +1,3 @@
-// module:
-//		delite/tests/boilerplate
-// description:
-//		A <script src="boilerplate.js"> on your test page will
-//		load the loader (i.e. define the require() method)
-//
-//		In addition, by URL flags you can specify:
-//			- locale=... to set the locale
-//			- dir=rtl to turn on the has("bidi") flag and set the page to RTL mode
-//
-//		You should NOT be using this in a production environment.  Rather, load
-//		the AMD loader directly, for example:
-//
-//		<script src="requirejs/require.js">
-
-
 // Parse the URL, get parameters
 var dir = "",
 	locale;

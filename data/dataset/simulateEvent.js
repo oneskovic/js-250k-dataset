@@ -1,12 +1,5 @@
 jasmineui.define('simulateEvent', function () {
-    /**
-     * Functions to simulate events.
-     * Based upon https://github.com/jquery/jquery-ui/blob/master/tests/jquery.simulate.js
-     * Can also handle elements from different frames.
-     * <p>
-     * Provides:
-     * simulate(el, type, options)
-     */
+    
     function simulate(el, type, options) {
         options = extend({}, simulate.defaults, options || {});
         var document = el.ownerDocument;

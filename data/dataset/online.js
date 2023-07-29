@@ -1,10 +1,3 @@
-/*
- * wq.app 0.7.4-dev - wq/online.js
- * Monitor network state.
- * (c) 2012-2015, S. Andrew Sheppard
- * https://wq.io/license
- */
-
 define(['./console'],
 function(console) {
 

@@ -1,63 +1,86 @@
-const exec = require('child_process').exec,
-    fs = require('fs'),
-    vow = require('vow');
+/*global define */
+define([
+    "js/util"
+], function (
+    util
+) {
+    "use strict";
 
-module.exports = {
+    var PENDING = 0,
+        REJECTED = 1,
+        RESOLVED = 2;
 
-    exec: function(command) {
-
-        var promise = vow.promise();
-
-        exec(command, function(err, stdout) {
-            if(err) return promise.reject(err);
-            // Удаление последнего лишнего переноса строки
-            promise.fulfill(stdout.slice(0, -1));
-        });
-
-        return promise;
-    },
-
-    readFile: function(file) {
-
-        var promise = vow.promise();
-
-        fs.readFile(file, { 'encoding': 'utf-8' }, function(err, data) {
-            if(err) return promise.reject(err);
-            promise.fulfill(data);
-        });
-
-        return promise;
-    },
-
-    exists: function(path) {
-
-        var promise = vow.promise();
-
-        fs.exists(path, function(exists) {
-            promise.fulfill(exists);
-        });
-
-        return promise;
-    },
-
-    unlink: function(path) {
-
-        return vow
-            .when(this.exists(path), function(exists) {
-                return exists;
-            })
-            .then(function(exists) {
-
-                var promise = vow.promise();
-                if(!exists) return promise.fulfill();
-
-                fs.unlink(path, function(err) {
-                    if(err) return promise.reject(err);
-                    promise.fulfill();
-                });
-
-                return promise;
-            });
+    function Promise() {
+        this.mode = PENDING;
+        this.thens = [];
+        this.value = null;
     }
 
-};
+    util.extend(Promise.prototype, {
+        done: function (callback) {
+            return this.then(callback);
+        },
+
+        fail: function (callback) {
+            return this.then(null, callback);
+        },
+
+        reject: function (exception) {
+            var promise = this;
+
+            if (promise.mode === PENDING) {
+                promise.mode = REJECTED;
+                promise.value = exception;
+
+                util.each(promise.thens, function (callbacks) {
+                    if (callbacks.onReject) {
+                        callbacks.onReject(exception);
+                    }
+                });
+            }
+
+            return promise;
+        },
+
+        resolve: function (result) {
+            var promise = this;
+
+            if (promise.mode === PENDING) {
+                promise.mode = RESOLVED;
+                promise.value = result;
+
+                util.each(promise.thens, function (callbacks) {
+                    if (callbacks.onResolve) {
+                        callbacks.onResolve(result);
+                    }
+                });
+
+            }
+
+            return promise;
+        },
+
+        then: function (onResolve, onReject) {
+            var promise = this;
+
+            if (promise.mode === PENDING) {
+                promise.thens.push({
+                    onReject: onReject,
+                    onResolve: onResolve
+                });
+            } else if (promise.mode === REJECTED) {
+                if (onReject) {
+                    onReject(promise.value);
+                }
+            } else if (promise.mode === RESOLVED) {
+                if (onResolve) {
+                    onResolve(promise.value);
+                }
+            }
+
+            return promise;
+        }
+    });
+
+    return Promise;
+});

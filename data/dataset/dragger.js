@@ -1,99 +1,81 @@
-/*
----
+/**
+ * Dragger component definition
+ */
+Crocodoc.addComponent('dragger', function (scope) {
 
-name: "App.Dragger"
+    'use strict';
 
-description: ""
+    var $el,
+        $window = $(window),
+        downScrollPosition,
+        downMousePosition;
 
-license:
-	- "[GNU Lesser General Public License](http://opensource.org/licenses/lgpl-license.php)"
-	- "[MIT License](http://opensource.org/licenses/mit-license.php)"
+    /**
+     * Handle mousemove events
+     * @param   {Event} event The event object
+     * @returns {void}
+     */
+    function handleMousemove(event) {
+        $el.scrollTop(downScrollPosition.top - (event.clientY - downMousePosition.y));
+        $el.scrollLeft(downScrollPosition.left - (event.clientX - downMousePosition.x));
+        event.preventDefault();
+    }
 
-authors:
-	- "Shock <shocksilien@gmail.com>"
+    /**
+     * Handle mouseup events
+     * @param   {Event} event The event object
+     * @returns {void}
+     */
+    function handleMouseup(event) {
+        scope.broadcast('dragend');
+        $window.off('mousemove', handleMousemove);
+        $window.off('mouseup', handleMouseup);
+        event.preventDefault();
+    }
 
-requires:
-	- LibCanvas
-	- App
-	- App.LayerShift
+    /**
+     * Handle mousedown events
+     * @param   {Event} event The event object
+     * @returns {void}
+     */
+    function handleMousedown(event) {
+        scope.broadcast('dragstart');
+        downScrollPosition = {
+            top: $el.scrollTop(),
+            left: $el.scrollLeft()
+        };
+        downMousePosition = {
+            x: event.clientX,
+            y: event.clientY
+        };
+        $window.on('mousemove', handleMousemove);
+        $window.on('mouseup', handleMouseup);
+        event.preventDefault();
+    }
 
-provides: App.Dragger
+    //--------------------------------------------------------------------------
+    // Public
+    //--------------------------------------------------------------------------
 
-...
-*/
-/** @class App.Dragger */
-declare( 'LibCanvas.App.Dragger', {
-	initialize: function (mouse) {
-		this.bindMethods([ 'dragStart', 'dragStop', 'dragMove' ]);
-		this.events = new Events(this);
+    return {
+        /**
+         * Initialize the scroller component
+         * @param   {Element} el The Element
+         * @returns {void}
+         */
+        init: function (el) {
+            $el = $(el);
+            $el.on('mousedown', handleMousedown);
+        },
 
-		this.mouse  = mouse;
-		this.shifts = [];
-
-		this._events = {
-			down: this.dragStart,
-			up  : this.dragStop,
-			out : this.dragStop,
-			move: this.dragMove
-		};
-	},
-
-	addLayerShift: function (shift) {
-		this.shifts.push( shift );
-		return this;
-	},
-
-	started: false,
-
-	start: function (callback) {
-		if (callback !== undefined) {
-			this.callback = callback;
-		}
-		this.started = true;
-		this.mouse.events.add( this._events );
-		return this;
-	},
-
-	stop: function () {
-		this.started = false;
-		this.mouse.events.remove( this._events );
-		return this;
-	},
-
-	/** @private */
-	dragStart: function (e) {
-		if (!this.shouldStartDrag(e)) return;
-
-		for (var i = this.shifts.length; i--;) {
-			this.shifts[i].layer.stop();
-		}
-		this.drag = true;
-		this.events.fire( 'start', [ e ]);
-	},
-	/** @private */
-	dragStop: function (e) {
-		if (!this.drag) return;
-
-		for (var i = this.shifts.length; i--;) {
-			var shift = this.shifts[i];
-			shift.addElementsShift();
-			shift.layer.start();
-		}
-
-		this.drag = false;
-		this.events.fire( 'stop', [ e ]);
-	},
-	/** @private */
-	dragMove: function (e) {
-		if (!this.drag) return;
-		for (var i = this.shifts.length; i--;) {
-			this.shifts[i].addShift(this.mouse.delta);
-		}
-	},
-	/** @private */
-	shouldStartDrag: function (e) {
-		if (!this.started) return false;
-
-		return this.callback ? this.callback(e) : true;
-	}
+        /**
+         * Destroy the scroller component
+         * @returns {void}
+         */
+        destroy: function () {
+            $el.off('mousedown', handleMousedown);
+            $el.off('mousemove', handleMousemove);
+            $window.off('mouseup', handleMouseup);
+        }
+    };
 });

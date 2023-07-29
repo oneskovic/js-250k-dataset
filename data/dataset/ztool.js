@@ -1,8 +1,3 @@
-
-/**
- * 从 zTool 中扣出来的方法们
- */
-
 var us = require('underscore');
 
 

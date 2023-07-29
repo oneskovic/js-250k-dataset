@@ -1,5 +1,3 @@
-/* global $: false, module: false, test: false, equal: false, ComicBook: false console: false */
-
 $(function () {
 
   'use strict';

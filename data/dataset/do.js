@@ -1,11 +1,4 @@
-  /**
-   *  Invokes an action for each element in the observable sequence and invokes an action upon graceful or exceptional termination of the observable sequence.
-   *  This method can be used for debugging, logging, etc. of query behavior by intercepting the message stream to run arbitrary actions for messages on the pipeline.
-   * @param {Function | Observer} observerOrOnNext Action to invoke for each element in the observable sequence or an observer.
-   * @param {Function} [onError]  Action to invoke upon exceptional termination of the observable sequence. Used if only the observerOrOnNext parameter is also a function.
-   * @param {Function} [onCompleted]  Action to invoke upon graceful termination of the observable sequence. Used if only the observerOrOnNext parameter is also a function.
-   * @returns {Observable} The source sequence with the side-effecting behavior applied.
-   */
+  
   observableProto['do'] = observableProto.tap = observableProto.doAction = function (observerOrOnNext, onError, onCompleted) {
     var source = this;
     return new AnonymousObservable(function (observer) {

@@ -1,21 +1,4 @@
-  /**
-    @class
-    A query that generates the union of documents produced by its subqueries, and
-    that scores each document with the maximum score for that document as produced
-    by any subquery, plus a tie breaking increment for any additional matching
-    subqueries.
-
-    @name ejs.DisMaxQuery
-    @ejs query
-    @borrows ejs.QueryMixin.boost as boost
-    @borrows ejs.QueryMixin._type as _type
-    @borrows ejs.QueryMixin.toJSON as toJSON
-
-    @desc
-    A query that generates the union of documents produced by its subqueries such
-    as <code>termQuerys, phraseQuerys</code>, <code>boolQuerys</code>, etc.
-
-    */
+  
   ejs.DisMaxQuery = function () {
 
     var

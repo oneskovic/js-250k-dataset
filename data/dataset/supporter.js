@@ -35,26 +35,7 @@
     }
 
     window.supporter = {
-        /**
-         * 移动设备操作系统信息，可能会包含一下属性:
-         *
-         *  Boolean : android
-         *  Boolean : android4
-         *  Boolean : android3
-         *  Boolean : android2
-         *  Boolean : ios
-         *  Boolean : ios7
-         *  Boolean : ios6
-         *  Boolean : ios5
-         *  Boolean : ipad
-         *  Boolean : iphone
-         *  Boolean : ipod
-         *  Boolean : wp
-         *  Boolean : wp8
-         *  Boolean : wp7
-         *  String : version 系统版本号
-         *
-         */
+        
         os: os,
 
         /**

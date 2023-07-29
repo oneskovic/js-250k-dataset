@@ -1,13 +1,3 @@
-/*******************************************************************************
- * @license
- * Copyright (c) 2014 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials are made 
- * available under the terms of the Eclipse Public License v1.0 
- * (http://www.eclipse.org/legal/epl-v10.html), and the Eclipse Distribution 
- * License v1.0 (http://www.eclipse.org/org/documents/edl-v10.html). 
- * 
- * Contributors: IBM Corporation - initial API and implementation
- ******************************************************************************/
 /*
  * Helper script for Orion build-time minification. Reads bundles from @{buildfile} and invokes
  * JSDoc on them using the provided @{jar}, passing command-line arguments <argline>s and <arg>s.

@@ -1,14 +1,4 @@
 /**
- * @requires javelin-install
- *           javelin-util
- *           javelin-stratcom
- *           javelin-request
- *           javelin-typeahead-source
- * @provides javelin-typeahead-ondemand-source
- * @javelin
- */
-
-/**
  * @group control
  */
 JX.install('TypeaheadOnDemandSource', {

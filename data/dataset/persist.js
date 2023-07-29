@@ -1,4 +1,3 @@
-/* persist.js - Toolbar Button Complete's module. */
 /* author: Geek in Training (user213) <goMobileFirefox@gmail.com> */
 
 

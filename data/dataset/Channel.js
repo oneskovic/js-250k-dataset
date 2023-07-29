@@ -1,99 +1,83 @@
-Socky.Channel = Events.extend({
-  init: function(channel_name, socky) {
-    this._socky = socky;
-    this._name = channel_name;
-    this._callbacks = {};
-    this._global_callbacks = [];
-    this._subscribed = false;
-    this._auth = null;
-    this.raw_event_bind('socky:subscribe:success', Socky.Utils.bind(this.acknowledge_subscription, this));
-  },
+define( [ "ember", "ember-data" ], function( Ember, DS ) {
 
-  disconnect: function(){
-  },
+	var get = Ember.get,
+	    re_lang = /^([a-z]{2})(:?-([a-z]{2}))?$/;
 
-  acknowledge_subscription: function(data){
-    this._subscribed = true;
-    this._trigger('public', 'socky:subscribe:success', data.members);
-  },
+	return DS.Model.extend({
+		background: DS.attr( "string" ),
+		banner: DS.attr( "string" ),
+		broadcaster_language: DS.attr( "string" ),
+		created_at: DS.attr( "date" ),
+		delay: DS.attr( "number" ),
+		display_name: DS.attr( "string" ),
+		followers: DS.attr( "number" ),
+		game: DS.attr( "string" ),
+		language: DS.attr( "string" ),
+		logo: DS.attr( "string" ),
+		mature: DS.attr( "boolean" ),
+		name: DS.attr( "string" ),
+		partner: DS.attr( "boolean" ),
+		profile_banner: DS.attr( "string" ),
+		profile_banner_background_color: DS.attr( "string" ),
+		staff: DS.attr( "boolean" ),
+		status: DS.attr( "string" ),
+		teams: DS.hasMany( "twitchTeam" ),
+		updated_at: DS.attr( "date" ),
+		url: DS.attr( "string" ),
+		video_banner: DS.attr( "string" ),
+		views: DS.attr( "number" ),
 
-  is_private: function(){
-    return false;
-  },
+		// Twitch.tv API bug?
+		// Sometimes a user record (/user/:user - model not implemented) is embedded into
+		// a stream record instead of a channels record (/channels/:channel - the current model).
+		// We're defining the "missing" attributes, so that ember-data doesn't complain...
+		bio: DS.attr(),
+		type: DS.attr(),
 
-  is_presence: function(){
-    return false;
-  },
 
-  subscribe: function() {
-    if (this._started_subscribe) {
-      return;
-    }
-    this._started_subscribe = true;
-    var self = this;
-    this.authorize(
-      function(data) {
-        self._auth = data.auth;
-        self.send_event('socky:subscribe', self.generate_subscription_payload());
-      },
-      function(data) {
-        self._socky.send_locally({
-          event: 'socky:subscribe:failure',
-          channel: self._name
-        });
-      }
-    );
-  },
+		title_followers: function() {
+			var followers = get( this, "followers" ),
+			    numerus   = followers === 1 ? "person is" : "people are";
+			return "%@ %@ following".fmt( followers, numerus );
+		}.property( "followers" ),
 
-  generate_subscription_payload: function() {
-    return null;
-  },
+		title_views: function() {
+			var views   = get( this, "views" ),
+			    numerus = views === 1 ? "view" : "views";
+			return "%@ channel %@".fmt( views, numerus );
+		}.property( "views" ),
 
-  unsubscribe: function() {
-    this.send_event('socky:unsubscribe');
-  },
 
-  authorize: function(callback){
-    // normal channels don't require auth
-    callback({});
-  },
+		has_language: function() {
+			var lang = get( this, "language" );
+			return lang && lang !== "other";
+		}.property( "language" ),
 
-  send_event: function(event_name, payload) {
-    payload = payload || {};
-    payload.event = event_name;
-    payload.channel = this._name;
-    payload.auth = this._auth;
-    this._socky.send(payload);
-  },
+		has_broadcaster_language: function() {
+			var broadcaster = get( this, "broadcaster_language" ),
+			    language = get( this, "language" ),
+			    m_broadcaster = re_lang.exec( broadcaster ),
+			    m_language = re_lang.exec( language );
+			// show the broadcaster_language only if it is set and
+			// 1. the language is not set or
+			// 2. the language is different from the broadcaster_language
+			//    WITHOUT comparing both lang variants
+			return m_broadcaster && ( !m_language || m_language[1] !== m_broadcaster[1] );
+		}.property( "broadcaster_language", "language" ),
 
-  receive_event: function(event_name, payload) {
-    if(payload.event.match(/^socky:/)) {
-      // notify internal handlers
-      this._trigger('raw', payload.event, payload);
-    } else {
-      // notify the external (client) handlers, passing them just the 'data' param
-      this._trigger('public', payload.event, payload.data);
-    }
-  },
 
-  raw_event_bind: function(event, callback) {
-    this._bind('raw', event, callback);
-  },
+		/** @type {(TwitchUserSubscription|boolean)} subscribed */
+		subscribed        : false,
+		isSubscribed      : Ember.computed.bool( "subscribed" ),
 
-  raw_event_unbind: function(event, callback) {
-    this._unbind('raw', event, callback);
-  },
+		/** @type {(TwitchUserFollowsChannel|boolean)} following */
+		following         : null,
+		isFollowing       : Ember.computed.bool( "following" ),
+		isFollowingLoading: Ember.computed.equal( "following", null ),
+		isFollowingLocked : false
 
-  bind: function(event, callback) {
-    this._bind('public', event, callback);
-  },
-
-  unbind: function(event, callback) {
-    this._unbind('public', event, callback);
-  },
-
-  trigger: function(event, data) {
-    this.send_event(event, {data: data});
-  }
+	}).reopenClass({
+		toString: function() { return "channels"; }
+	});
 
 });

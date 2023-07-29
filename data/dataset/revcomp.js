@@ -1,9 +1,3 @@
-/* The Computer Language Benchmarks Game
-   http://shootout.alioth.debian.org/
-
-   contributed by Jos Hirth
-*/
-
 var line, out, reverseFormat, complement;
 
 complement = {

@@ -1,7 +1,3 @@
-/**
- * Produces optimized XTemplates for chunks of tables to be
- * used in grids, trees and other table based widgets.
- */
 Ext.define('Ext.view.TableChunker', {
     singleton: true,
     requires: ['Ext.XTemplate'],

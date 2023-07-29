@@ -1,8 +1,3 @@
-/**
- * @author maurizzzio / http://maurizzzio.me
- * Ported from: http://www.gamerendering.com/2008/12/20/radial-blur-filter/
- */
-
 THREE.RadialBlurShader = {
 
 	uniforms: {

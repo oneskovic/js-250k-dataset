@@ -1,7 +1,3 @@
-// Copyright 2014 the V8 project authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 var whitespaces = [
   // WhiteSpace defined in ECMA-262 5.1, 7.2
   0x0009,  // Tab                  TAB

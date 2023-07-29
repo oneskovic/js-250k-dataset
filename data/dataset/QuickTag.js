@@ -1,10 +1,3 @@
-/*---------------------------------------*\
- Quick Tag Editor Plugin for HTMLArea-3.0
- -----------------------------------------
- author: Cau guanabara 
- e-mail: caugb@ibest.com.br
-\*---------------------------------------*/
-
 function QuickTag(editor) {
   var cfg = editor.config;
   var self = this;

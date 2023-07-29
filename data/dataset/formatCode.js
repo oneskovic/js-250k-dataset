@@ -1,11 +1,3 @@
-/* Formats block for as a <pre><code class="classname"></code></pre> block
- * Useful in conjuction for sytax highlight utility: highlight.js
- *
- * Usage:
- *
- * editorInstance.composer.commands.exec("formatCode", "language-html");
-*/
-
 (function(wysihtml5){
   wysihtml5.commands.formatCode = {
 

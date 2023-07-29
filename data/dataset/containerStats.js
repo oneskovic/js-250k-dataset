@@ -1,5 +1,3 @@
-// mode: js2
-
 startMonitoringContainer = function(hostId, containerId){
   if (! ensureApi(hostId,"1.17"))
     return;

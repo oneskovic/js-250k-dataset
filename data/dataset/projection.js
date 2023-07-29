@@ -1,6 +1,3 @@
-    // Projection
-    // ----------
-
     // An abstract class / interface for projections
     MM.Projection = function(zoom, transformation) {
         if (!transformation) {

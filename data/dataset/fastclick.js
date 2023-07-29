@@ -1,14 +1,3 @@
-/*!
- * fastClick
- * Copyright (C) KAYAC Inc. | http://www.kayac.com/
- * Dual licensed under the MIT <http://www.opensource.org/licenses/mit-license.php>
- * and GPL <http://www.opensource.org/licenses/gpl-license.php> licenses.
- * Date: 2012-07-06
- * @author @kyo_ago
- * @version 1.0.2
- * @see http://github.com/kyo-ago/fastClick
- */
-
 /**
  * initialize
  * @param base_selector(bind target)

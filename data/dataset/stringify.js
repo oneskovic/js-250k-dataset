@@ -1,5 +1,3 @@
-// Load modules
-
 var Lab = require('lab');
 var Qs = require('../');
 

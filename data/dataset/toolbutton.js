@@ -1,9 +1,3 @@
-/**
- *  toolbutton.js - what a tool
- *    A button which can be dragged off and dropped onto the workspace to create
- *    a new instance of an ODK Control.
- */
-
 ;(function($)
 {
     var createOdkControl = function(type)

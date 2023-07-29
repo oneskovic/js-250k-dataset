@@ -3,9 +3,7 @@
 var cluster = require('cluster');
 var log4js = require('../log4js');
 
-/**
- * Takes a loggingEvent object, returns string representation of it.
- */
+
 function serializeLoggingEvent(loggingEvent) {
 	// JSON.stringify(new Error('test')) returns {}, which is not really useful for us.
 	// The following allows us to serialize errors correctly.

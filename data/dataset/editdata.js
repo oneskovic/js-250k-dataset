@@ -1,5 +1,3 @@
-/*global define, window, console, jQuery, document, setTimeout */
-
 define("krusovice/editdata", ["krusovice/thirdparty/jquery-bundle", "krusovice/core"], function($, krusovice) {
 'use strict';
 

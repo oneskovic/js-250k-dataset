@@ -1,6 +1,3 @@
-/**
- * Expose the WebSocketTransport class.
- */
 module.exports = WebSocketTransport;
 
 

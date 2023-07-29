@@ -1,4 +1,3 @@
-// FIXME convert CR to LF http://www.whatwg.org/specs/web-apps/current-work/multipage/parsing.html#input-stream
 function InputStream() {
 	this.data = '';
 	this.start = 0;

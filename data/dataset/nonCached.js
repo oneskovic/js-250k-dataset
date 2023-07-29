@@ -1,4 +1,3 @@
-/* global imagesIn:false, breakpointsIn:false, ratiosIn:false */
 ({
 
     /**

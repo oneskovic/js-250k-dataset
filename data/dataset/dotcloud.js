@@ -1,14 +1,4 @@
 /**
- * dotcloud.js, a Javascript gateway library to powerful cloud services.
- * Copyright 2012 DotCloud Inc (Joffrey Fuhrer <joffrey@dotcloud.com>))
- *
- * This project is free software released under the MIT license:
- * http://www.opensource.org/licenses/mit-license.php
- */
-
-
-
-/**
     dotcloud.js is provided as a <em>requirejs</em> module. For more information, you can visit
     <a href="http://requirejs.org">the requireJS website</a>
 

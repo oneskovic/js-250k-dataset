@@ -1,51 +1,65 @@
-// force JSON.decode in MT to use JSON.parse (instead of eval)
-JSON.secure = true;
+module.exports = function setupLogger (logLevel) {
 
-Composer.suppress_warnings = true;
+	var noop = function () {};
 
-if(window.chrome && window.chrome.extension)
-{
-	window._base_url = chrome.extension.getURL('/data/app');
-	window.__api_url = config.api_url;
-	window._disable_cookie = true;
-	window._in_ext = true;
-	config.version = chrome.app.getDetails().version;
-
-	if(window._in_background)
-	{
-		// this is a background page of the chrome app.
-		turtl.do_sync = true;
-		window.port = new ChromeAddonPort();
+	// If log is specified, use it, otherwise use the console
+	if (FRAMEWORK.logger) {
+		FRAMEWORK.error     = FRAMEWORK.logger.error;
+		FRAMEWORK.warn      = FRAMEWORK.logger.warn;
+		FRAMEWORK.log       = FRAMEWORK.logger.debug || FRAMEWORK.logger;
+		FRAMEWORK.verbose   = FRAMEWORK.logger.verbose;
 	}
-	else
-	{
-		// this is the index.html page (the main app). run some extra setup.
-		// NOTE: this particular setup relies on the fact that setup.js loads
-		// *after* turtl.js
-		window._in_app = true;
 
-		// grab the background page, we'll be using it to bootstrap
-		var bg = chrome.extension.getBackgroundPage();
+	// In IE, we can't default to the browser console because there IS NO BROWSER CONSOLE
+	else if (typeof console !== 'undefined') {
 
-		// we're going to use a comm object for our port that was given to us by
-		// the gracious background app.
-		window.port = new ChromeAddonPort({comm: bg.ext.last_opened_tab.comm});
+		// We cannot called the .bind method on the console methods. We are in ie 9 or 8, just make
+		// everyhting a noop.
+		if (_.isUndefined(console.log.bind))  {
+			FRAMEWORK.error     = noop;
+			FRAMEWORK.warn      = noop;
+			FRAMEWORK.log       = noop;
+			FRAMEWORK.debug     = noop;
+			FRAMEWORK.verbose   = noop;
+		}
 
-		// log the user in on load
-		var user = bg.turtl.user;
-		window._auth = {
-			uid: user.id(),
-			auth: user.get_auth(),
-			key: tcrypt.key_to_string(user.get_key())
-		};
+		// We are in a friendly browser like Chrome, Firefox, or IE10
+		else {
+			FRAMEWORK.error		= console.error && console.error.bind(console);
+			FRAMEWORK.warn		= console.warn && console.warn.bind(console);
+			FRAMEWORK.log			= console.debug && console.debug.bind(console);
+			FRAMEWORK.verbose	= console.log && console.log.bind(console);
+
+			// Use log level config if provided
+			switch (logLevel) {
+				case 'verbose': break;
+
+				case 'debug':
+					FRAMEWORK.verbose = noop;
+					break;
+
+				case 'warn':
+					FRAMEWORK.verbose = FRAMEWORK.log = noop;
+					break;
+
+				case 'error':
+					FRAMEWORK.verbose = FRAMEWORK.log = FRAMEWORK.warn = noop;
+					break;
+
+				case 'silent':
+					FRAMEWORK.verbose = FRAMEWORK.log = FRAMEWORK.warn = FRAMEWORK.error = noop;
+					break;
+
+				default:
+					throw new Error ('Unrecognized logging level config ' +
+					'(' + FRAMEWORK.options.frameworkId + '.logLevel = "' + logLevel + '")');
+			}
+
+			// Support for `debug` for backwards compatibility
+			FRAMEWORK.debug = FRAMEWORK.log;
+
+			// Verbose spits out log level
+			FRAMEWORK.verbose('Log level set to :: ', logLevel);
+		}
 	}
 }
-
-if(window._in_desktop)
-{
-	config.version = gui.App.manifest.version;
-	window.__api_url = config.api_url;
-	window._base_url = window.location.toString().replace(/^(.*)\/.*?$/, '$1/app');
-	window._disable_cookie = true;
-}
-

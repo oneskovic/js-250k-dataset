@@ -1,62 +1,50 @@
-module("messages");
+'use strict';
 
-test("predefined message not overwritten by addMethod(a, b, undefined)", function() {
-	var message = "my custom message";
-	$.validator.messages.custom = message;
-	$.validator.addMethod("custom", function() {});
-	deepEqual(message, $.validator.messages.custom);
-	delete $.validator.messages.custom;
-	delete $.validator.methods.custom;
-});
+angular.module('insight.messages').controller('VerifyMessageController',
+  function($scope, $http) {
+  $scope.message = {
+    address: '',
+    signature: '',
+    message: ''
+  };
+  $scope.verification = {
+    status: 'unverified',  // ready|loading|verified|error
+    result: null,
+    error: null,
+    address: ''
+  };
 
-test("group error messages", function() {
-	$.validator.addClassRules({
-		requiredDateRange: {required:true, date:true, dateRange:true}
-	});
-	$.validator.addMethod("dateRange", function() {
-		return new Date($("#fromDate").val()) < new Date($("#toDate").val());
-	}, "Please specify a correct date range.");
-	var form = $("#dateRangeForm");
-	form.validate({
-		groups: {
-			dateRange: "fromDate toDate"
-		},
-		errorPlacement: function(error) {
-			form.find(".errorContainer").append(error);
-		}
-	});
-	ok( !form.valid() );
-	equal( 1, form.find(".errorContainer *").length );
-	equal( "Please enter a valid date.", form.find(".errorContainer label.error").text() );
+  $scope.verifiable = function() {
+    return ($scope.message.address
+            && $scope.message.signature
+            && $scope.message.message);
+  };
+  $scope.verify = function() {
+    $scope.verification.status = 'loading';
+    $scope.verification.address = $scope.message.address;
+    $http.post('/api/messages/verify', $scope.message)
+      .success(function(data, status, headers, config) {
+        if(typeof(data.result) != 'boolean') {
+          // API returned 200 but result was not true or false
+          $scope.verification.status = 'error';
+          $scope.verification.error = null;
+          return;
+        }
 
-	$("#fromDate").val("12/03/2006");
-	$("#toDate").val("12/01/2006");
-	ok( !form.valid() );
-	equal( "Please specify a correct date range.", form.find(".errorContainer label.error").text() );
+        $scope.verification.status = 'verified';
+        $scope.verification.result = data.result;
+      })
+      .error(function(data, status, headers, config) {
+        $scope.verification.status = 'error';
+        $scope.verification.error = data;
+      });
+  };
 
-	$("#toDate").val("12/04/2006");
-	ok( form.valid() );
-	ok( form.find(".errorContainer label.error").is(":hidden") );
-});
-
-test("read messages from metadata", function() {
-	var form = $("#testForm9");
-	form.validate();
-	var e = $("#testEmail9");
-	e.valid();
-	equal( form.find("label").text(), "required" );
-	e.val("bla").valid();
-	equal( form.find("label").text(), "email" );
-});
-
-
-test("read messages from metadata, with meta option specified, but no metadata in there", function() {
-	var form = $("#testForm1clean");
-	form.validate({
-		meta: "validate",
-		rules: {
-			firstname: "required"
-		}
-	});
-	ok(!form.valid(), "not valid");
+  // Hide the verify status message on form change
+  var unverify = function() {
+    $scope.verification.status = 'unverified';
+  };
+  $scope.$watch('message.address', unverify);
+  $scope.$watch('message.signature', unverify);
+  $scope.$watch('message.message', unverify);
 });

@@ -1,19 +1,16 @@
 var BaseComponent  = require("./base");
 
-/**
- */
+
 
 function EscapeComponent(options) {
   BaseComponent.call(this, options);
 }
 
-/**
- */
+
 
 module.exports = BaseComponent.extend(EscapeComponent, {
 
-  /**
-   */
+  /*  */
 
   update: function() {
 

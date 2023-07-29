@@ -6,13 +6,7 @@ var DefaultCommandHandler = require('../defaultCommandHandler'),
   dotty = require('dotty'),
   debug = require('debug')('domain:commandHandler');
 
-/**
- * CommandHandler constructor
- * @param {Object}   meta      Meta infos like: { name: 'name', version: 1 }
- * @param {Function} cmdHndlFn Function handle
- *                             `function(aggId, cmd, commandHandler, callback){}`
- * @constructor
- */
+
 function CommandHandler (meta, cmdHndlFn) {
   DefaultCommandHandler.call(this, meta);
 

@@ -87,7 +87,7 @@ PlayerManager.prototype.resetScores = function() {
 	}
 };
 
-/* ---- GETTER & SETTER ---- */
+
 PlayerManager.prototype.getPlayerByID = function(playerID) {
     return this.players[playerID]; 
 };

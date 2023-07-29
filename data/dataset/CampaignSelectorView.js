@@ -1,9 +1,3 @@
-/**
- Campaign selector, class extends Backbone > View and used to select a campaign or create a new one
- @class CampaignSelectorView
- @constructor
- @return {Object} instantiated CampaignSelectorView
- **/
 define(['jquery', 'backbone'], function ($, Backbone) {
 
     BB.SERVICES.CAMPAIGN_SELECTOR_EVER = 'CampaignSelector';

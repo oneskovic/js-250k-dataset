@@ -1,84 +1,63 @@
-var xhr = require('xhr')
-var locale = require('browser-locale')() || 'en-US'
-var userLang = locale.toLowerCase()
+// Ensure GENTICS Namespace
+window.GENTICS = window.GENTICS || {};
+window.GENTICS.Utils = window.GENTICS.Utils || {};
 
-xhr({url: 'languages/languages.json', json: true}, function (error, response, result) {
-  if (error) console.error('could not fetch languages.json', error)
-  var languages = result
-  // colelct all data-i18n attributes values on page
-  var i18nSpecifiers = $('[data-i18n]').toArray().map(function (node) {
-    return $(node).attr('data-i18n')
-  })
-  translate(languages, i18nSpecifiers)
-  
-  $(document.body).on( "click", "a.switch-lang", function(e) {
-    e.preventDefault()
-    var lang = $(e.target).attr('data-lang')
-    translateToLang(lang, languages, i18nSpecifiers)
-    return false
-  })
-})
-  
-function translate(languages, i18nSpecifiers) {
-  var lang = localStorage.getItem('lang') || userLang
-  
-  var supported = languages[lang]
-  if (!supported) supported = languages[lang.substr(0, 2)]
-  if (!supported) lang = null
+define('util/lang', [], function () {
+	'use strict';
+});
 
-  if (!lang) {
-    lang = "en"
-    $('html').attr("lang", 'en')
-  }
-  
-  translateToLang(lang, languages, i18nSpecifiers)
-}
+// Start Closure
+(function (window) {
+	"use strict";
+	var jQuery = window.alohaQuery || window.jQuery,
+		$ = jQuery,
+		GENTICS = window.GENTICS,
+		Class = window.Class,
+		console = window.console;
 
-function resetLang() {
-  localStorage.setItem('lang', 'en')
-  window.location.reload()
-}
+	/**
+	 * Takes over all properties from the 'properties' object to the target object.
+	 * If a property in 'target' with the same name as a property in 'properties' is already defined it is overridden.
+	 *
+	 * Example:
+	 *
+	 * var o1 = {a : 1, b : 'hello'};
+	 * var o2 = {a : 3, c : 'world'};
+	 *
+	 * GENTICS.Utils.applyProperties(o1, o2);
+	 *
+	 * Will result in an o1 object like this:
+	 *
+	 * {a : 3, b: 'hello', c: 'world'}
+	 *
+	 * @static
+	 * @return void
+	 */
+	GENTICS.Utils.applyProperties = function (target, properties) {
+		var name;
+		for (name in properties) {
+			if (properties.hasOwnProperty(name)) {
+				target[name] = properties[name];
+			}
+		}
+	};
 
-function translateToLang(lang, languages, i18nSpecifiers) {
-  addTranslationNav(lang, languages)
+	/**
+	 * Generate a unique hexadecimal string with 4 charachters
+	 * @return {string}
+	 */
+	GENTICS.Utils.uniqeString4 = function () {
+		return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+	};
 
-  if (lang === $('html').attr("lang")) return
-  if (lang === 'en') return resetLang()
-  
-  xhr({url: 'languages/' + lang + '.json', json: true}, function(err, resp, keys) {
-    if (err) return console.error('Could not fetch translation json for', lang)
-    $('html').attr("lang", lang)
-    localStorage.setItem('lang', lang)  
-    translateHTML(lang, keys, i18nSpecifiers)
-  })
-}
+	/**
+	 * Generate a unique value represented as a 32 character hexadecimal string,
+	 * such as 21EC2020-3AEA-1069-A2DD-08002B30309D
+	 * @return {string}
+	 */
+	GENTICS.Utils.guid = function () {
+		var S4 = GENTICS.Utils.uniqeString4;
+		return (S4() + S4() + '-' + S4() + '-' + S4() + '-' + S4() + '-' + S4() + S4() + S4());
+	};
 
-function selectorFor(i18nSpecifier) {
-  return '[data-i18n="' + i18nSpecifier + '"]'
-}
-
-function translateHTML(lang, translation, i18nSpecifiers) {
-  i18nSpecifiers.forEach(function(i18nSpecifier) {
-    var value = translation[i18nSpecifier]
-    if (!value) return console.log("Warning: Translation missing: " + i18nSpecifier, lang)
-    $(selectorFor(i18nSpecifier)).html(value)
-  })
-}
-
-function createLangButton(lang, langName, selectedLang) {
-  return $('<li class="nav-lang-' + lang + '">')
-    .toggleClass("selected", lang === selectedLang)
-    .html(lang === selectedLang ? langName : '<a href="#" class="switch-lang" data-lang="' + lang + '">' + langName + '</a>')
-}
-
-function addTranslationNav(selectedLang, languages) {
-  // remove existing nav if it's there
-  $('ul.nav-lang').remove()
-  // build new nav
-  var nav = $('<ul class="nav-lang"></ul>')
-  createLangButton("en", "English", selectedLang).appendTo(nav)
-  Object.keys(languages).forEach(function(key) {
-    createLangButton(key, languages[key], selectedLang).appendTo(nav)
-  })
-  nav.insertBefore("header > *:first-child")
-}
+}(window));

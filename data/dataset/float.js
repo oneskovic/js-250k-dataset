@@ -1,8 +1,3 @@
-/**
- * IEEE 754 floating-point.
- *
- * Supports single- or double-precision
- */
 var Float = exports.Float = {};
 
 var allZeros = /^0+$/;

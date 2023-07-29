@@ -1,75 +1,128 @@
-define([
-//	'../../../../src/utils/diff'
-], function(
-//	diff
-){
-
-var util = hello.utils.param;
-
-//
-// Events
-//
-describe('utils / param', function(){
-
-	var test = {
-		param : 'param1',
-		param2 : 'param2',
-		hyperlink : 'https://example.com?a=1&b=2',
-		jsonp : '?'
-	};
-
-
-	it('should accept an object and return a string', function(){
-
-		var value = util({});
-
-		expect( value ).to.be.a( 'string' );
-
-	});
-
-	it('should accept a string and return an object', function(){
-
-		var value = util("");
-
-		expect( value ).to.be.an( Object );
-
-	});
-
-
-	it('should turn URL query into an object', function(){
-
-		// convert there and back
-
-		var value = util(util(test));
-
-		expect( value ).to.eql( test );
-
-	});
-
-	it('should turn an object into a URL string', function(){
-
-		// convert there and back
-
-		var value = util(test);
-
-		expect( value ).to.be.a( 'string' );
-
-	});
-
-	it('should only include hasOwnProperties from an object', function(){
-
-		// convert there and back
+dojo.provide("mojo.controller.Param");
+dojo.declare("mojo.controller.Param", null, 
+{
+	/*
+		Function: constructor
 		
-		var obj = hello.utils.objectCreate({ignore:'this should be excluded'});
-		obj.included = 'this is included';
-
-		var value = util(util(obj));
-
-		expect( value ).to.have.property( 'included' ).and.not.to.have.property( 'ignore' );
-
-	});
-
-});
-
-	
+		Creates an instance of the mojo.controller.Param class.
+		
+		Parameters:
+			name - {string}
+			defaultValue - {object}
+			required -  {boolean}
+			type - {type}
+			paramsRootObj - {object}
+	*/
+	constructor: function(name, defaultValue, required, type, paramsRootObj) {
+		this._value = null;
+		this._defaultValue = null;
+		this._params = null;
+		this._type = null;
+		
+		this._name = name;
+		this._defaultValue = defaultValue;
+		if (type) this._type = type;
+		if (paramsRootObj) this._params = paramsRootObj;
+		this.setValue(this._defaultValue);
+		if (typeof required == "boolean") this._required = required;
+	},
+	_name: null,
+	_value: null,
+	_defaultValue: null,
+	_required: false,
+	_type: null,
+	_params: null,
+	/*
+		Function: getName
+		
+		Returns the name of the parameter.
+		
+		Returns:
+			{string} name
+	*/
+	getName: function() {
+		return this._name;
+	},
+	/*
+		Function: getValue
+		
+		Returns the value of the parameter.
+		
+		Returns:
+			{object} value
+	*/
+	getValue: function() {
+		return this._value;
+	},
+	/*
+		Function: setValue
+		
+		Sets the value of the parameter, and fires the onChange event if the value has changed.
+		
+		Parameters:
+			value - {object}
+	*/
+	setValue: function(value) {
+		var validate = mojo.helper.Validation.getInstance();
+		var required = this.getRequired();
+		var type = this.getType();
+		// check required and type
+		if (required && !validate.isRequired(value)) {
+			throw new Error("ERROR mojo.controller.Param.setValue - value parameter is required")
+		}
+		// don't set to undefined
+		if (typeof value == "undefined") {
+			return;
+		} 
+		if (type && !validate.isType(value, {type: type})) {
+			throw new Error("RROR mojo.controller.Param.setValue - value parameter is invalid type");
+		}
+		if (this.getValue() != value) {
+			this._value = value;
+			this.onChange();
+			if (this._params != null && this._params["onChange"]) {
+				this._params.onChange();
+			}
+		}
+	},
+	/*
+		Function: getDefaultValue
+		
+		Returns the default value of the parameter.
+		
+		Returns:
+			{object} value
+	*/
+	getDefaultValue: function() {
+		return this._defaultValue;
+	},
+	/*
+		Function: getRequired
+		
+		Returns whether or not the parameter is required.
+		
+		Returns:
+			{boolean} required
+	*/
+	getRequired: function() {
+		return this._required;
+	},
+	/*
+		Function: getType
+		
+		Returns the data type of the parameter
+		
+		Returns:
+			{type} type
+	*/
+	getType: function() {
+		return this._type;
+	},
+	/*
+		Event: onChange
+		
+		This event fires when the parameter value has changed.
+	*/
+	onChange: function() {
+	}
 });

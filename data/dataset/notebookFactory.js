@@ -17,10 +17,7 @@ Curiosity.factory('notebook',function($rootScope, context, moduleManager, $templ
 		return (notebookObj.info);	
 	}
 
-	/**
-	* @desc Built a notebook from params store it in a list and resiter a new module in the module manager
-	* @param object obj notebook list where store the new notebook 
-	*/
+	
 	notebookObj.newEmptyNotebook = function (name) {
 		var notebook = {};
 		notebook.name = name;

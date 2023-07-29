@@ -1,9 +1,3 @@
-
-/*
-Helpers for finding CoffeeLint config in standard locations, similar to how
-JSHint does.
- */
-
 (function() {
   var findFile, findFileResults, fs, loadJSON, loadNpmConfig, path;
 

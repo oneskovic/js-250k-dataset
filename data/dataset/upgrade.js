@@ -1,5 +1,5 @@
 'use strict';
-/*jshint asi: true */
+
 
 var test = require('tap').test
   , path = require('path')

@@ -3,9 +3,7 @@
 var path = require('path');
 var config = require('./helpers/config');
 
-/**
- * App and Firestarter create a circular require. Set the exports early, before requiring App, so that it's available in App already.
- */
+
 exports = module.exports = new Firestarter();
 
 var AppContainer = require('./app-container');

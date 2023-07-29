@@ -1,13 +1,6 @@
 Ext.namespace('Ext.testia');
 
-/**
- * Ext.testia.ImportForm extension class for Ext.testia.AppForm
- *
- * @class Ext.testia.ImportForm
- * @extend Ext.testia.AppForm
- *
- * Extend basic AppForm to specialize it for the import tools.
- */
+
 Ext.testia.ImportForm = function(form_div, toolbar_div, config) {
     config = config || {};
     var url = config.url;

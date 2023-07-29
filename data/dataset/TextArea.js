@@ -1,116 +1,63 @@
-/*
- * Ext JS Library 2.2.1
- * Copyright(c) 2006-2009, Ext JS, LLC.
- * licensing@extjs.com
- * 
- * http://extjs.com/license
- */
+Ext.define('Ext.field.TextArea', {
+    extend: 'Ext.field.Text',
+    xtype: 'textareafield',
+    requires: ['Ext.field.TextAreaInput'],
+    alternateClassName: 'Ext.form.TextArea',
 
-/**
- * @class Ext.form.TextArea
- * @extends Ext.form.TextField
- * Multiline text field.  Can be used as a direct replacement for traditional textarea fields, plus adds
- * support for auto-sizing.
- * @constructor
- * Creates a new TextArea
- * @param {Object} config Configuration options
- */
-Ext.form.TextArea = Ext.extend(Ext.form.TextField,  {
-    /**
-     * @cfg {Number} growMin The minimum height to allow when grow = true (defaults to 60)
-     */
-    growMin : 60,
-    /**
-     * @cfg {Number} growMax The maximum height to allow when grow = true (defaults to 1000)
-     */
-    growMax: 1000,
-    growAppend : '&#160;\n&#160;',
-    growPad : Ext.isWebKit ? -6 : 0,
+    config: {
+        /**
+         * @cfg
+         * @inheritdoc
+         */
+        ui: 'textarea',
 
-    enterIsSpecial : false,
+        /**
+         * @cfg
+         * @inheritdoc
+         */
+        autoCapitalize: false,
 
-    /**
-     * @cfg {Boolean} preventScrollbars True to prevent scrollbars from appearing regardless of how much text is
-     * in the field (equivalent to setting overflow: hidden, defaults to false)
-     */
-    preventScrollbars: false,
-    /**
-     * @cfg {String/Object} autoCreate A DomHelper element spec, or true for a default element spec (defaults to
-     * {tag: "textarea", style: "width:100px;height:60px;", autocomplete: "off"})
-     */
+        /**
+         * @cfg
+         * @inheritdoc
+         */
+        component: {
+            xtype: 'textareainput'
+        },
 
-    // private
-    onRender : function(ct, position){
-        if(!this.el){
-            this.defaultAutoCreate = {
-                tag: "textarea",
-                style:"width:100px;height:60px;",
-                autocomplete: "off"
-            };
-        }
-        Ext.form.TextArea.superclass.onRender.call(this, ct, position);
-        if(this.grow){
-            this.textSizeEl = Ext.DomHelper.append(document.body, {
-                tag: "pre", cls: "x-form-grow-sizer"
-            });
-            if(this.preventScrollbars){
-                this.el.setStyle("overflow", "hidden");
-            }
-            this.el.setHeight(this.growMin);
-        }
+        /**
+         * @cfg {Number} maxRows The maximum number of lines made visible by the input.
+         * @accessor
+         */
+        maxRows: null
     },
 
-    onDestroy : function(){
-        if(this.textSizeEl){
-            Ext.removeNode(this.textSizeEl);
-        }
-        Ext.form.TextArea.superclass.onDestroy.call(this);
+    // @private
+    updateMaxRows: function(newRows) {
+        this.getComponent().setMaxRows(newRows);
     },
 
-    fireKey : function(e){
-        if(e.isSpecialKey() && (this.enterIsSpecial || (e.getKey() != e.ENTER || e.hasModifier()))){
-            this.fireEvent("specialkey", this, e);
-        }
+    doSetHeight: function(newHeight) {
+        this.callParent(arguments);
+        var component = this.getComponent();
+        component.input.setHeight(newHeight);
     },
 
-    // private
-    onKeyUp : function(e){
-        if(!e.isNavKeyPress() || e.getKey() == e.ENTER){
-            this.autoSize();
-        }
-        Ext.form.TextArea.superclass.onKeyUp.call(this, e);
+    doSetWidth: function(newWidth) {
+        this.callParent(arguments);
+        var component = this.getComponent();
+        component.input.setWidth(newWidth);
     },
 
     /**
-     * Automatically grows the field to accomodate the height of the text up to the maximum field height allowed.
-     * This only takes effect if grow = true, and fires the {@link #autosize} event if the height changes.
+     * Called when a key has been pressed in the `<input>`
+     * @private
      */
-    autoSize: function(){
-        if(!this.grow || !this.textSizeEl){
-            return;
-        }
-        var el = this.el;
-        var v = el.dom.value;
-        var ts = this.textSizeEl;
-        ts.innerHTML = '';
-        ts.appendChild(document.createTextNode(v));
-        v = ts.innerHTML;
-        Ext.fly(ts).setWidth(this.el.getWidth());
-        if(v.length < 1){
-            v = "&#160;&#160;";
-        }else{
-            v += this.growAppend;
-            if(Ext.isIE){
-                v = v.replace(/\n/g, '<br />');
-            }
-        }
-        ts.innerHTML = v;
-        var h = Math.min(this.growMax, Math.max(ts.offsetHeight, this.growMin) + this.growPad);
-        if(h != this.lastHeight){
-            this.lastHeight = h;
-            this.el.setHeight(h);
-            this.fireEvent("autosize", this, h);
-        }
+    doKeyUp: function(me) {
+        // getValue to ensure that we are in sync with the dom
+        var value = me.getValue();
+
+        // show the {@link #clearIcon} if it is being used
+        me[value ? 'showClearIcon' : 'hideClearIcon']();
     }
 });
-Ext.reg('textarea', Ext.form.TextArea);

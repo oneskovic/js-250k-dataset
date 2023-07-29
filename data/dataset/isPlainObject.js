@@ -1,7 +1,7 @@
 var isNative = require('./isNative'),
     shimIsPlainObject = require('../internal/shimIsPlainObject');
 
-/** `Object#toString` result references. */
+
 var objectTag = '[object Object]';
 
 /** Used for native method references. */

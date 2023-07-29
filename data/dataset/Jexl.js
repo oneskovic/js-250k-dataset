@@ -1,8 +1,3 @@
-/*
- * Jexl
- * Copyright (c) 2015 TechnologyAdvice
- */
-
 var chai = require('chai'),
 	chaiAsPromised = require('chai-as-promised'),
 	should = require('chai').should(),

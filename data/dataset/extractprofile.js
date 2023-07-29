@@ -1,17 +1,3 @@
-//@Param userObjId - expects either user object or id
-//
-//Returns a basic user information object:
-// ._id - the Meteor.users id
-// .id  - service id
-// .accessToken - service access token
-// .serviceName - name of service eg. facebook, google etc.
-// .email       - user email, not to be expected from twitter service
-// .username    - profile username
-// .twitterUsername - twitters @username
-// 
-// tested with facebook, twitter, google, password
-// TODO: add picture / profile photo
-
 _extractProfile = function (userObjId) {
   if (!userObjId)
     return null;

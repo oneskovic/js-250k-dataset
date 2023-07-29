@@ -1,124 +1,70 @@
-/**
- * Copyright (c) 2009
- * Helen Kaltegaertner
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
- **/
+if(!dojo._hasResource["dijit.MenuBar"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
+dojo._hasResource["dijit.MenuBar"] = true;
+dojo.provide("dijit.MenuBar");
 
+dojo.require("dijit.Menu");
 
-if (! Container)
-	var Container = {};
+dojo.declare("dijit.MenuBar", dijit._MenuBase, {
+	// summary:
+	//		A menu bar, listing menu choices horizontally, like the "File" menu in most desktop applications
 
-Container.loadMenubar = function () {
+	templateString: dojo.cache("dijit", "templates/MenuBar.html", "<div class=\"dijitMenuBar dijitMenuPassive\" dojoAttachPoint=\"containerNode\"  waiRole=\"menubar\" tabIndex=\"${tabIndex}\" dojoAttachEvent=\"onkeypress: _onKeyPress\"></div>\n"),
 
-	// adding a widget, url taken from input dialog
-	var handleSubmit = function(){
-	
-		// TODO validierung
-		Container.addGadget(null, null, { url : panel.getData().url, options: {} } );
-		panel.cancel();
-		return true;
-	};
-	
-	var handleCancel = function(){
-		panel.cancel();
-		return true;
-	};
-	
-	//create menubar items 	for available gadgets 
-	//using information from Container.gedgetData (extracted from configShindig.xml)
-	var getGadgetMenu = function(){
-    	
-    	var gadgetItems = [];
-    	
-    	for (var i = 0; i < Container.gadgetData.length; i++){
-    		
-    		var splittedUrl = Container.gadgetData[i].url.split("/");
-    		
-    		gadgetItems[i] = { 
-    				text: splittedUrl[splittedUrl.length - 2], 
-    				onclick: { fn: Container.addGadget, obj: Container.gadgetData[i] }
-    		}
-    	}
-    	return gadgetItems;
-    };
-	
-	// panel content
-	var content = '<form method="post">'+
-						'<br><label for="url" > enter URL: </label>' +
-						'<input type="text" id="input-url" name = "url" size = 45 value = "/mashup/gadgets/files/gadgets/tools/tool.xml">'+ 
-						'</input> <br><br>'+
-					'</form>';
-	
-	// dialog to add an abitrary widget
-    var panel = new YAHOO.widget.Dialog("panel", 
-		{ width:"400px", visible : false, constraintoviewport : true, x: 30, y: 40, 
-		buttons : [ { text:"Submit", handler:handleSubmit, isDefault:true }, 
-					{ text:"Cancel", handler:handleCancel } ] 
-	} ); 	
-	
-	panel.setHeader("Add your own Widget!");
-	panel.setBody(content);
+	baseClass: "dijitMenuBar",
 
-	panel.render("container");	
-    
-    var showUpload = function(){ panel.show(); };
+	// _isMenuBar: [protected] Boolean
+	//		This is a MenuBar widget, not a (vertical) Menu widget.
+	_isMenuBar: true,
 
-    // menu top left
-    var aItemData = [
+	postCreate: function(){
+		var k = dojo.keys, l = this.isLeftToRight();
+		this.connectKeyNavHandlers(
+			l ? [k.LEFT_ARROW] : [k.RIGHT_ARROW],
+			l ? [k.RIGHT_ARROW] : [k.LEFT_ARROW]
+		);
 
-        { 
-        	text: "Widgets", 
-            submenu: {  
-                id: "widgetmenu", 
-                itemdata: [
-                           getGadgetMenu(),
-                           [ {text: "Own Widget", onclick: { fn: showUpload } }]
-               ] 
-        	}
-        }
-    ];
-    
-    var menuBar = new YAHOO.widget.MenuBar("mymenubar", {lazyload: true, itemdata: aItemData});
-    
-    menuBar.render(document.getElementById("menu"));
- 
-    var onSubmenuShow = function() {
+		// parameter to dijit.popup.open() about where to put popup (relative to this.domNode)
+		this._orient = this.isLeftToRight() ? {BL: 'TL'} : {BR: 'TR'};
+	},
 
-		var oIFrame,
-			oElement,
-            nOffsetWidth;
+	focusChild: function(item){
+		// overload focusChild so that whenever the focus is moved to a new item,
+		// check the previous focused whether it has its popup open, if so, after
+		// focusing the new item, open its submenu immediately
+		var prev_item = this.focusedChild,
+			showpopup = prev_item && prev_item.popup && prev_item.popup.isShowingNow;
+		this.inherited(arguments);
+		if(showpopup && item.popup && !item.disabled){
+			this._openPopup();		// TODO: on down arrow, _openPopup() is called here and in onItemClick()
+		}
+	},
 
-		if ((this.id == "widgetmenu") && YAHOO.env.ua.ie) {
+	_onKeyPress: function(/*Event*/ evt){
+		// summary:
+		//		Handle keyboard based menu navigation.
+		// tags:
+		//		protected
 
-            oElement = this.element;
-            nOffsetWidth = oElement.offsetWidth;
-            
-            oElement.style.width = nOffsetWidth + "px";
-            oElement.style.width = (nOffsetWidth - (oElement.offsetWidth - nOffsetWidth)) + "px";
-        }
-    };
-    
-    menuBar.subscribe("show", onSubmenuShow);
-  
+		if(evt.ctrlKey || evt.altKey){ return; }
 
-};
+		switch(evt.charOrCode){
+			case dojo.keys.DOWN_ARROW:
+				this._moveToPopup(evt);
+				dojo.stopEvent(evt);
+		}
+	},
 
+	onItemClick: function(/*dijit._Widget*/ item, /*Event*/ evt){
+		// summary:
+		//		Handle clicks on an item. Cancels a dropdown if already open.
+		// tags:
+		//		private
+		if(item.popup && item.popup.isShowingNow){
+			item.popup.onCancel();
+		}else{
+			this.inherited(arguments);
+		}
+	}
+});
 
-
+}

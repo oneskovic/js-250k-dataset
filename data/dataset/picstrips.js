@@ -1,6 +1,3 @@
-/*
-picstrips by Steve Claridge (http://www.moreofless.co.uk)
-*/
 (function( $ ){
 
   $.fn.picstrips = function( options ) {  

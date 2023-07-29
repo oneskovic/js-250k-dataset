@@ -8,15 +8,7 @@ var getPackageFile = require('./getPackageFile');
 var processString = require('./processString');
 
 
-/*
-{
-    framework: 'hapi' || 'express',
-    title: 'string',
-    machineName: 'string',
-    author: 'string',
-    folder: 'path string'
-}
-*/
+
 module.exports = function (options, cb) {
     if (!options.title || !options.projectFolder) {
         throw new Error('title, projectFolder are required');

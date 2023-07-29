@@ -1,7 +1,4 @@
-﻿/*
- * orderItem viewmodel associated with orderItem.html view
- * and its orderItem**.html sub-views.
- */
+﻿
 (function(angular) {
     'use strict';
 

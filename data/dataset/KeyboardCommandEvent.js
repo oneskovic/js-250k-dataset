@@ -1,6 +1,3 @@
-/// <reference path="KeyboardModifiers.ts" />
-/// <reference path="KeyboardCommand.ts" />
-/// <reference path="KeyboardEventTarget.ts" />
 var EndGate;
 (function (EndGate) {
     (function (Input) {

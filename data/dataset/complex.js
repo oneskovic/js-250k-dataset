@@ -1,9 +1,7 @@
 (function() {
     'use strict';
 
-    /**
-     * Complex prototype for computation with complex numbers
-     */
+    
     var Complex = function(real, imag) {
         if (!(this instanceof Complex)) {
             return new Complex(real, imag);

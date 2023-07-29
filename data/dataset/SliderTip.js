@@ -1,74 +1,71 @@
-/*!
- * Ext JS Library 3.3.0
- * Copyright(c) 2006-2010 Ext JS, Inc.
- * licensing@extjs.com
- * http://www.extjs.com/license
+/** api: (define)
+ *  module = gxp.slider
+ *  class = Tip
+ *  base_link = `Ext.slider.Tip <http://extjs.com/deploy/dev/docs/?class=Ext.slider.Tip>`_
  */
-/**
- * @class Ext.slider.Tip
- * @extends Ext.Tip
- * Simple plugin for using an Ext.Tip with a slider to show the slider value. Example usage:
-<pre>
-new Ext.Slider({
-    width: 214,
-    minValue: 0,
-    maxValue: 100,
-    plugins: new Ext.slider.Tip()
-});
-</pre>
- * Optionally provide your own tip text by overriding getText:
- <pre>
- new Ext.Slider({
-     width: 214,
-     minValue: 0,
-     maxValue: 100,
-     plugins: new Ext.slider.Tip({
-         getText: function(thumb){
-             return String.format('<b>{0}% complete</b>', thumb.value);
-         }
-     })
- });
- </pre>
+Ext.namespace("gxp.slider");
+
+/** api: constructor
+ *  .. class:: gxp.slider.Tip(config)
+ *
+ *    See http://trac.geoext.org/ticket/262
+ *
+ *    This tip matches the Ext.slider.Tip but addes the hover functionality.
  */
-Ext.slider.Tip = Ext.extend(Ext.Tip, {
-    minWidth: 10,
-    offsets : [0, -10],
+gxp.slider.Tip = Ext.extend(Ext.slider.Tip, {
+
+    /** api: config[hover]
+     *  ``Boolean`` Display the tip when hovering over a thumb.  If false, tip
+     *     will only be displayed while dragging.  Default is true.
+     */
+    hover: true,
     
+    /** private: property[dragging]
+     * ``Boolean`` A thumb is currently being dragged.
+     */
+    dragging: false,
+
+    /** private: method[init]
+     *  :arg slider: ``Object``
+     */
     init: function(slider) {
-        slider.on({
-            scope    : this,
-            dragstart: this.onSlide,
-            drag     : this.onSlide,
-            dragend  : this.hide,
-            destroy  : this.destroy
-        });
+        if(this.hover) {
+            slider.on("render", this.registerThumbListeners, this);
+        }
+        this.slider = slider;
+        gxp.slider.Tip.superclass.init.apply(this, arguments);
     },
     
-    /**
-     * @private
-     * Called whenever a dragstart or drag event is received on the associated Thumb. 
-     * Aligns the Tip with the Thumb's new position.
-     * @param {Ext.slider.MultiSlider} slider The slider
-     * @param {Ext.EventObject} e The Event object
-     * @param {Ext.slider.Thumb} thumb The thumb that the Tip is attached to
+    /** private: method[registerThumbListeners]
      */
-    onSlide : function(slider, e, thumb) {
-        this.show();
-        this.body.update(this.getText(thumb));
-        this.doAutoWidth();
-        this.el.alignTo(thumb.el, 'b-t?', this.offsets);
+    registerThumbListeners: function() {
+        for(var i=0, len=this.slider.thumbs.length; i<len; ++i) {
+            this.slider.thumbs[i].el.on({
+                "mouseover": this.createHoverListener(i),
+                "mouseout": function() {
+                    if(!this.dragging) {
+                        this.hide.apply(this, arguments);
+                    }
+                },
+                scope: this
+            });
+        }
+    },
+    
+    /** private: method[createHoverListener]
+     */
+    createHoverListener: function(index) {
+        return (function() {
+            this.onSlide(this.slider, {}, this.slider.thumbs[index]);
+            this.dragging = false;
+        }).createDelegate(this);
     },
 
-    /**
-     * Used to create the text that appears in the Tip's body. By default this just returns
-     * the value of the Slider Thumb that the Tip is attached to. Override to customize.
-     * @param {Ext.slider.Thumb} thumb The Thumb that the Tip is attached to
-     * @return {String} The text to display in the tip
+    /** private: method[onSlide]
      */
-    getText : function(thumb) {
-        return String(thumb.value);
+    onSlide: function(slider, e, thumb) {
+        this.dragging = true;
+        gxp.slider.Tip.superclass.onSlide.apply(this, arguments);
     }
-});
 
-//backwards compatibility - SliderTip used to be a ux before 3.2
-Ext.ux.SliderTip = Ext.slider.Tip;
+});

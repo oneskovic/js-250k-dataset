@@ -1,139 +1,92 @@
-'use strict';
-function AdminController($scope, $routeParams) {
-    $scope.employeeList = {};
-    $scope.portfolio = {};
-    $scope.item = {};
-    $scope.item.tech = [];
+"use strict";
 
-	$scope.addEmployee = function(employee) {
-        $.ajax({
-        	url:'/person/create',
-            data: {
-                name: employee.name,
-                imageUrl: employee.imageLink,
-                shortDesc: employee.desc
-            },
-			type:'POST',        	
-        	success: function(data) {
-                $scope.getEmployeeList();
-                $('.employee-btn').text('Added!').delay(500).text('Add Employee');
-                $scope.$apply();
-        	},
-            error: function(jqXHR, textStatus, errorThrown) {
-                console.log(errorThrown);
-            }        	
-        });
-	};
+let Promise = require('promise'),
+  userController = require('./userController.js'),
+  lessonController = require('./lessonController.js'),
+  async = require('async'),
+  redisController = require('./redisController.js'),
+  _ = require('underscore');
 
-    $scope.addPortfolioItem = function(item) {
 
-        $.ajax({
-            url:'/portfolio/create',
-            data: {
-                title: item.title,
-                imageUrl: item.imageUrl,
-                liveUrl: item.liveUrl,
-                technology: item.tech,
-                description: item.desc
-            },
-            type:'POST',            
-            success: function(data) {
-                $scope.getPortfolio();
-                $('.portfolio-btn').text('Added!').delay(500).text('Add Portfolio Item');
-                $scope.$apply();
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                console.log(errorThrown);
-            }           
-        });
-    };    
+exports.init = function(callback) {
+  exports.initialized = true;
+  callback();
+};
+exports.initPromise = Promise.denodeify(exports.init).bind(exports);
 
-    $scope.getEmployeeList = function() {
-        $.ajax({
-            url: '/person',
-            type:'GET',
-            success: function(data, textStatus, jqXHR) {
-                $scope.employeeList = data;
-                $scope.$apply();
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                console.log(errorThrown);
-            }
-        });     
 
-    };
+exports.getStats = function(users, callback) {
 
-    $scope.getPortfolio = function() {
-        $.ajax({
-            url: '/portfolio',
-            type:'GET',
-            success: function(data, textStatus, jqXHR) {
-                $scope.portfolio = data;
-                $scope.$apply();
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                console.log(errorThrown);
-            }
-        });     
+  // Get stats about the number of completed lessons
+  let slugCountMap = {};
+  let slugsCompletedCount = users.reduce(function(prevValue, user) {
+    if (!user)
+      return 0;
+    if (!user.slugsCompleted)
+      return 0;
 
-    };    
+    user.slugsCompleted.forEach(function(slug) {
+      if (slugCountMap[slug])
+        slugCountMap[slug]++;
+      else
+        slugCountMap[slug] = 1;
+    });
+    return prevValue + user.slugsCompleted.length;
+  }, 0);
 
-    $scope.removePerson = function(userId) {
-        $.ajax({
-            url: '/person/destroy/' + userId,
-            type: 'DELETE',         
-            success: function(data) {
-                $scope.getEmployeeList();
-                $scope.$apply();
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                console.log(errorThrown);
-            }           
-        });     
-    };
+  // Get the slugs comlpeted by video into an array sorted by # watched
+  let slugsCompletedSorted = [];
+  for (let slug in slugCountMap) {
+    slugsCompletedSorted.push({ slug: slug, count: slugCountMap[slug]});
+  }
+  slugsCompletedSorted.sort(function(a, b) {
+    return b.count - a.count;
+  });
 
-    $scope.removePortfolioItem = function(id) {
-        $.ajax({
-            url: '/portfolio/destroy/' + id,
-            type: 'DELETE',         
-            success: function(data) {
-                $scope.getPortfolio();
-                $scope.$apply();
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                console.log(errorThrown);
-            }           
-        });     
-    };   
-
-    $scope.addAnotherTech = function(item) {
-        var newTech = $scope.item.tech.name;
-
-        if ($scope.item.tech.name !== '') {
-            $scope.item.tech.push(newTech);
-        } else {
-            alert('please add a technology name');
-        }      
-    };
-
-    $scope.removeTech = function(techName) {
-        $scope.item.tech.pop();
-    };
-
-    $scope.logout = function() {
-        $.ajax({
-            url: '/logout',
-            success: function(data) {
-                window.location.href = '/';
-            },
-            error: function(textError) {
-                alert('failed to logout :{');
-            }
-        });
+  async.map(slugsCompletedSorted, function(slugCompleted, mapCallback) {
+     lessonController.get(slugCompleted.slug, mapCallback);
+  }, function(err, results) {
+    console.log('err: ' + err);
+    console.log('results: ' + results);
+    console.log('typeof err: ' + typeof err);
+    console.log('typeof results: ' + typeof results);
+    console.log('slugsCompletedSorted len: ' + slugsCompletedSorted.length);
+    for (let i = 0; i < slugsCompletedSorted.length; i++) {
+      console.log(results[i].title);
+      slugsCompletedSorted[i].title = results[i].title;
+      slugsCompletedSorted[i].type = results[i].type;
     }
 
-    // Run On-Load
-    $scope.getEmployeeList();
-    $scope.getPortfolio();    
+  });
 
+
+  // Get other user related stats
+  let bugzillaAccountCount = users.reduce(function(prevValue, user) {
+    return prevValue + (user.info.bugzilla ? 1 : 0);
+  }, 0);
+  let displayNameCount = users.reduce(function(prevValue, user) {
+    return prevValue + (user.info.displayName ? 1 : 0);
+  }, 0);
+  let websiteCount = users.reduce(function(prevValue, user) {
+    return prevValue + (user.info.website ? 1 : 0);
+  }, 0);
+  let maxJoinDate = users.reduce(function(prevValue, user) {
+    if (!prevValue)
+      return user.info.rawDateJoined;
+
+    return (prevValue > user.info.rawDateJoined) ? prevValue : user.info.rawDateJoined;
+  }, null);
+
+  let stats = {
+                slugsCompletedCount: slugsCompletedCount,
+                userCount: users.length,
+                completedPerUser: slugsCompletedCount / users.length,
+                bugzillaAccountCount: bugzillaAccountCount,
+                displayNameCount: displayNameCount,
+                websiteCount: websiteCount,
+                maxJoinDate: maxJoinDate,
+                slugsCompletedSorted: slugsCompletedSorted,
+              };
+  callback(null, stats);
 };
+exports.getStatsPromise = Promise.denodeify(exports.getStats).bind(exports);

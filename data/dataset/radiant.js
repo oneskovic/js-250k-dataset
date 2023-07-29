@@ -1,13 +1,6 @@
 'use strict'
 
-/**
- * This is a JavaScript implementation of the Radiant level editing software for
- * idTech games. It requires WebGL and a decent JavaScript engine.<br/>
- * 
- * To run tests, source this script with <code>Radiant.Test = true</code>.
- * 
- * @author jdolan
- */
+
 
 require.config({
 	baseUrl: 'scripts',

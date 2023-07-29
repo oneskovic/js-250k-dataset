@@ -1,8 +1,4 @@
 /**
- * @author Mat Groves http://matgroves.com/ @Doormat23
- */
-
-/**
 * @class WebGLMaskManager
 * @constructor
 * @private

@@ -7,9 +7,7 @@ goog.require('graphics.Image');
 goog.require('graphics.SpriteSheet');
 goog.require('Sound');
 
-/**
- * @constructor
- */
+
 ResourceManager = function() {
   /**
    * @type {goog.log.Logger}

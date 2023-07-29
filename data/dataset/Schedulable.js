@@ -1,7 +1,3 @@
-/**
- * This is a base class for objects that can be managed by `Ext.util.Scheduler`.
- * @private
- */
 Ext.define('Ext.util.Schedulable', {
     'abstract': true,
 

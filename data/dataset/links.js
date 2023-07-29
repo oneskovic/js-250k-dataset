@@ -1,4 +1,3 @@
-// __Dependencies__
 var url = require('url');
 var qs = require('querystring');
 var deco = require('deco');

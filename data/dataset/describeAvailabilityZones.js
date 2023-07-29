@@ -4,9 +4,7 @@ var
   aws = require('../aws'),
   _ = require('../util');
 
-/**
- * GET DescribeAvailabilityZones
- */
+
 var Request = module.exports.Request = function(args) {
   ec2.DescribeRequest.call(this, args, 'DescribeAvailabilityZones');
 

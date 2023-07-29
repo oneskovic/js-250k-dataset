@@ -18,10 +18,7 @@ kasairu.Base.prototype = {
     return !!this.owner.isViewer();
   }
   
-  /**
-   * アプリのオーナーに関する情報を取得する
-   * @param callback Function データストアに送信完了時のコールバック関数
-   */
+  
   ,getOwnerData: function(callback){
     var req = opensocial.newDataRequest();
     req.add(req.newFetchPersonRequest("OWNER"), "get_owner");

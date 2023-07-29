@@ -1,10 +1,3 @@
-/**
- * @class Ext.org.OrgPanel
- * @extends Ext.panel.Panel
- *
- * This class combines the {@link Ext.org.AlbumTree AlbumTree} and {@link Ext.org.ImageView ImageView}
- * components into a {@link Ext.layout.container.Border Border} layout.
- */
 Ext.define('Ext.org.OrgPanel', {
     extend: 'Ext.panel.Panel',
     requires: 'Ext.layout.container.Border',
@@ -41,7 +34,7 @@ Ext.define('Ext.org.OrgPanel', {
                         itemmouseenter: function (view, record, item, index, e) {
                             Ext.log('item', e.type, ' id=', record.id);
                         }
-                    },/**/
+                    },
                     trackOver: true
                 }
             }

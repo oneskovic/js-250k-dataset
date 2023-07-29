@@ -1,75 +1,56 @@
-var blessed = require('blessed')
-   , Node = blessed.Node   
-   , Canvas = require('../canvas')   
-
-function Bar(options) {  
-
-  if (!(this instanceof Node)) {
-    return new Bar(options);
-  }
-
-  Canvas.call(this, options, require('ansi-term'));
-
-  this.options.barWidth = this.options.barWidth || 6
-  this.options.barSpacing = this.options.barSpacing || 9
-
-  if ((this.options.barSpacing - this.options.barWidth) < 3) {
-    this.options.barSpacing = this.options.barWidth + 3;
-  }
-
-  this.options.xOffset = this.options.xOffset==null? 5 : this.options.xOffset
-  if (this.options.showText === false)
-    this.options.showText = false
-  else
-    this.options.showText = true
-}
-
-Bar.prototype.calcSize = function() {
-    this.canvasSize = {width: this.width-2, height: this.height}
-}
-
-Bar.prototype.setData = function(bar) {  
-  
-   if (!this.ctx) {
-      throw "error: canvas context does not exist. setData() for bar charts must be called after the chart has been added to the screen via screen.append()"
-   }
-
-  this.clear()
-
-  var c = this.ctx;
-  var max = Math.max.apply(Math, bar.data);
-  max = Math.max(max, this.options.maxHeight)
-  var x = this.options.xOffset;
-  var barY = this.canvasSize.height - 5;
-
-  for (var i = 0; i < bar.data.length; i++) {
-    var h = Math.round(barY * (bar.data[i] / max));
-
-    if (bar.data[i] > 0) {
-      c.strokeStyle = 'blue'
-      if (this.options.barBgColor)
-        c.strokeStyle = this.options.barBgColor;
-      c.fillRect(x, barY - h + 1, this.options.barWidth, h);
-    } else {
-      c.strokeStyle = 'normal'
+function __processArg(obj, key) {
+    var arg = null;
+    if (obj) {
+        arg = obj[key] || null;
+        delete obj[key];
     }
-
-    c.fillStyle = 'white'
-    if (this.options.barFgColor)
-      c.fillStyle = this.options.barFgColor;
-    if (this.options.showText)
-      c.fillText(bar.data[i].toString(), x + 1, this.canvasSize.height - 4);
-    c.strokeStyle = 'normal'
-    c.fillStyle = 'white';
-    if (this.options.showText)
-      c.fillText(bar.titles[i], x + 1, this.canvasSize.height - 3);
-
-    x += this.options.barSpacing;
-  }
+    return arg;
 }
 
-Bar.prototype.__proto__ = Canvas.prototype;
+function Controller() {
+    function addNewLabel() {
+        var index = ctr % Alloy.Globals.classes.length;
+        var label = $.UI.create("Label", {
+            classes: Alloy.Globals.classes[index],
+            id: "newLabel" + (ctr + 1),
+            text: "this is label #" + (ctr + 1),
+            touchEnabled: false
+        });
+        $.bar.add(label);
+        ctr++;
+    }
+    require("alloy/controllers/BaseController").apply(this, Array.prototype.slice.call(arguments));
+    this.__controllerPath = "foo/bar";
+    this.args = arguments[0] || {};
+    if (arguments[0]) {
+        {
+            __processArg(arguments[0], "__parentSymbol");
+        }
+        {
+            __processArg(arguments[0], "$model");
+        }
+        {
+            __processArg(arguments[0], "__itemTemplate");
+        }
+    }
+    var $ = this;
+    var exports = {};
+    var __defers = {};
+    $.__views.bar = Ti.UI.createWindow({
+        backgroundColor: "#fff",
+        fullscreen: false,
+        layout: "vertical",
+        id: "bar"
+    });
+    $.__views.bar && $.addTopLevelView($.__views.bar);
+    addNewLabel ? $.__views.bar.addEventListener("click", addNewLabel) : __defers["$.__views.bar!click!addNewLabel"] = true;
+    exports.destroy = function() {};
+    _.extend($, $.__views);
+    var ctr = 0;
+    __defers["$.__views.bar!click!addNewLabel"] && $.__views.bar.addEventListener("click", addNewLabel);
+    _.extend($, exports);
+}
 
-Bar.prototype.type = 'bar';
+var Alloy = require("alloy"), Backbone = Alloy.Backbone, _ = Alloy._;
 
-module.exports = Bar
+module.exports = Controller;

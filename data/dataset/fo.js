@@ -1,55 +1,52 @@
-/*______________
-|       ______  |   U I Z E    J A V A S C R I P T    F R A M E W O R K
-|     /      /  |   ---------------------------------------------------
-|    /    O /   |    MODULE : Uize.Loc.Plurals.Langs.fo Package
-|   /    / /    |
-|  /    / /  /| |    ONLINE : http://www.uize.com
-| /____/ /__/_| | COPYRIGHT : (c)2015 UIZE
-|          /___ |   LICENSE : Available under MIT License or GNU General Public License
-|_______________|             http://www.uize.com/license.html
-*/
-
-/* Module Meta Data
-	type: Package
-	importance: 1
-	codeCompleteness: 100
-	docCompleteness: 100
-*/
-
-/*?
-	Introduction
-		The =Uize.Loc.Plurals.Langs.fo= module implements a feature for determining a plural category from a number value for the fo language.
-
-		*DEVELOPERS:* `Chris van Rensburg`
-
-		Plural Categories
-			........................................................
-			<< table >>
-
-			title: Plural Categories
-			data:
-			:| Category | Rule |
-			:| one | n = 1 @integer 1 @decimal 1.0, 1.00, 1.000, 1.0000 |
-			:| other |  @integer 0, 2~16, 100, 1000, 10000, 100000, 1000000, … @decimal 0.0~0.9, 1.1~1.6, 10.0, 100.0, 1000.0, 10000.0, 100000.0, 1000000.0, … |
-			........................................................
-*/
-
-Uize.module ({
-	name:'Uize.Loc.Plurals.Langs.fo',
-	required:'Uize.Loc.Plurals.Util',
-	builder:function () {
-		'use strict';
-
-		return Uize.package ({
-			getPluralCategory:function (_value) {
-				return Uize.Loc.Plurals.Util.getPluralCategory (
-					_value,
-					function (n,i,f,t,v,w,within) {
-						return n == 1 ? 'one' : 'other';
-					}
-				);
-			}
-		});
-	}
-});
-
+(function (factory) {
+    if (typeof define === 'function' && define.amd) {
+        define(['moment'], factory); // AMD
+    } else if (typeof exports === 'object') {
+        module.exports = factory(require('../moment')); // Node
+    } else {
+        factory(window.moment); // Browser global
+    }
+}(function (moment) {
+    return moment.lang('fo', {
+        months : "januar_februar_mars_apríl_mai_juni_juli_august_september_oktober_november_desember".split("_"),
+        monthsShort : "jan_feb_mar_apr_mai_jun_jul_aug_sep_okt_nov_des".split("_"),
+        weekdays : "sunnudagur_mánadagur_týsdagur_mikudagur_hósdagur_fríggjadagur_leygardagur".split("_"),
+        weekdaysShort : "sun_mán_týs_mik_hós_frí_ley".split("_"),
+        weekdaysMin : "su_má_tý_mi_hó_fr_le".split("_"),
+        longDateFormat : {
+            LT : "HH:mm",
+            L : "DD/MM/YYYY",
+            LL : "D MMMM YYYY",
+            LLL : "D MMMM YYYY LT",
+            LLLL : "dddd D. MMMM, YYYY LT"
+        },
+        calendar : {
+            sameDay : '[Í dag kl.] LT',
+            nextDay : '[Í morgin kl.] LT',
+            nextWeek : 'dddd [kl.] LT',
+            lastDay : '[Í gjár kl.] LT',
+            lastWeek : '[síðstu] dddd [kl] LT',
+            sameElse : 'L'
+        },
+        relativeTime : {
+            future : "um %s",
+            past : "%s síðani",
+            s : "fá sekund",
+            m : "ein minutt",
+            mm : "%d minuttir",
+            h : "ein tími",
+            hh : "%d tímar",
+            d : "ein dagur",
+            dd : "%d dagar",
+            M : "ein mánaði",
+            MM : "%d mánaðir",
+            y : "eitt ár",
+            yy : "%d ár"
+        },
+        ordinal : '%d.',
+        week : {
+            dow : 1, // Monday is the first day of the week.
+            doy : 4  // The week that contains Jan 4th is the first week of the year.
+        }
+    });
+}));

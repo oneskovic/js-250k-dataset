@@ -1,6 +1,3 @@
-/// <reference path="../../Scripts/endgate-0.2.0.d.ts" />
-/// <reference path="IMoving.ts" />
-/// <reference path="ShipFireController.ts" />
 var ShootR;
 (function (ShootR) {
     var ShipInputController = (function () {

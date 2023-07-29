@@ -1,7 +1,3 @@
-/**
- * This example shows how to create a tab panel with reorderable tabs.
- * Simply drag any tab to change the order.
- */
 Ext.define('KitchenSink.view.tab.ReorderableTabs', {
     extend: 'Ext.tab.Panel',
     requires: [

@@ -1,88 +1,133 @@
-/**
- *  Copyright 2011 Rackspace
- *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- *
- */
+"use strict";
+var isObject      = require('./utility').isObject;
+var genesis       = require('./genesis');
+var StructSubtype = genesis.Subtype.bind(StructType);
+
+module.exports = StructType;
 
 
-function Obj(name, options) {
-  this.name = name;
-  options = options ? options : {};
-  this.singular = options.singular ? options.singular : name.toLowerCase();
-  this.plural = options.plural ? options.plural : name.toLowerCase();
-  this.fields = options.fields ? options.fields : [];
-  this.groups = options.groups;
-  this.doctype = options.doctype;
-}
+// ##############################
+// ### StructType Constructor ###
+// ##############################
 
-function Field(name, options) {
-  this.name = name;
-  options = options ? options : {};
-  this.src =  options.src ? options.src : null;
-  this.singular = options.singular ? options.singular : name.toLowerCase();
-  this.plural = options.plural ? options.plural : name.toLowerCase();
-  this.desc = options.desc;
-  this.val = options.val;
-  this.attribute = options.attribute || false;
-  this.enumerated = options.enumerated || false;
-  this.ignorePublic = options.ignorePublic || false;
-  this.filterFrom = options.filterFrom || [];
-  this.coerceTo = options.coerceTo || false;
-  this.group = options.group;
-}
-
-function isNumber(s) {
-  return !isNaN(new Number(s));
-}
-
-function isBoolean(s) {
-  return s === 'False' || s === 'false' ||
-         s === 'True' || s === 'true';
-}
-
-function coerce(value, coerceTo) {
-  coerceTo = coerceTo || 'auto';
-  if (coerceTo === 'boolean') {
-    return value.toString().toLowerCase() !== 'false';
-  } else if (coerceTo === 'number') {
-    return new Number(value).valueOf();
-  } else if (coerceTo === 'auto' && isNumber(value)) {
-    return new Number(value).valueOf();
-  } else if (coerceTo === 'auto' && isBoolean(value)) {
-    return value.toString().toLowerCase() !== 'false' && value.toString().toLowerCase() !== 'False';
-  } else if (coerceTo === 'array' && (value === null || value === '')) {
-    return [];
-  } else {
-    return value;
+function StructType(name, fields){
+  if (!fields) {
+    fields = name;
+    name = '';
   }
+
+  var bytes = 0;
+  var offsets = {};
+  var keys = [];
+
+  fields = Object.keys(fields).reduce(function(ret, name){
+    ret[name] = genesis.lookupType(fields[name]);
+    keys.push(name);
+    offsets[name] = bytes;
+    bytes += ret[name].bytes;
+    return ret;
+  }, {});
+
+  // ###########################
+  // ### StructT Constructor ###
+  // ###########################
+
+  function StructT(data, offset, values){
+    if (!genesis.isBuffer(data)) {
+      values = data;
+      data = null;
+    }
+    genesis.api(this, '_offset', +offset || 0);
+    this.rebase(data);
+
+    if (values) {
+      Object.keys(values).forEach(function(field){
+        if (!field in fields) throw new Error('Invalid field "'+field+'"');
+        field in fields && initField(this, StructT, field).write(values[field]);
+     }, this);
+    }
+    return this;
+  }
+
+
+  StructT.fields = fields;
+  StructT.offsets = offsets;
+  StructT.keys = keys;
+
+  return defineFields(StructSubtype(name, bytes, StructT));
 }
 
-
-/**
- * allows you to coerce a value to a native value. this is handy when your numbers and booleans get converted to
- * strings outside of your control.
- */
-Field.prototype.coerce = function(value) {
-  return coerce(value, this.coerceTo);
+function initField(target, ctor, field){
+  var block = new ctor.fields[field](target._data, target._offset + ctor.offsets[field]) ;
+  Object.defineProperty(target, field, {
+    enumerable: true,
+    configurable: true,
+    get: function(){ return block },
+    set: function(v){
+      if (v === null) {
+        genesis.nullable(this, field);
+        block = null;
+      } else {
+        block.write(v);
+      }
+    }
+  });
+  return block;
 }
 
-exports.Obj = function(name, options) {
-  return new Obj(name, options);
-};
+function defineFields(target){
+  target.keys.forEach(function(field){
+    Object.defineProperty(target.prototype, field, {
+      enumerable: true,
+      configurable: true,
+      get: function(){ return initField(this, target, field) },
+      set: function(v){ initField(this, target, field).write(v) }
+    });
+  });
+  return target;
+}
 
-exports.Field = function(name, options) {
-  return new Field(name, options);
-};
+// #######################
+// ### StructType Data ###
+// #######################
 
-exports.coerce = coerce;
+genesis.Type(StructType, {
+  DataType: 'struct',
+
+  reify: function reify(deallocate){
+    return  this.constructor.keys.reduce(function(ret, field){
+      ret[field] = this[field] == null ? initField(this, this.constructor, field).reify(deallocate) : this[field].reify(deallocate);
+      if (deallocate) this[field] = null;
+      return ret;
+    }.bind(this), {});
+  },
+
+  write: function write(o){
+    if (isObject(o)) {
+      if (o.reify) o = o.reify();
+      Object.keys(o).forEach(function(field, current){
+        current = o[field];
+        if (current != null) {
+          this[field] = current.reify ? current.reify() : current;
+        } else if (current === null) {
+          this[field] = null;
+        }
+      }, this);
+    }
+  },
+
+  realign: function realign(offset, deallocate){
+    this._offset = offset = +offset || 0;
+    Object.keys(this).forEach(function(field){
+      if (deallocate) this[field] = null;
+      else this[field].realign(offset);
+    }, this);
+  },
+
+  fill: function fill(val){
+    val = val || 0;
+    this.constructor.keys.forEach(function(field){
+      this[field] = val;
+    }, this);
+  },
+});

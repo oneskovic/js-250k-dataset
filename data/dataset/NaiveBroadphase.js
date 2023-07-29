@@ -7,13 +7,7 @@ var Circle = require('../shapes/Circle'),
 
 module.exports = NaiveBroadphase;
 
-/**
- * Naive broadphase implementation. Does N^2 tests.
- *
- * @class NaiveBroadphase
- * @constructor
- * @extends Broadphase
- */
+
 function NaiveBroadphase(){
     Broadphase.call(this, Broadphase.NAIVE);
 }

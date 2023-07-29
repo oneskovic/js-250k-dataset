@@ -1,6 +1,3 @@
-/**
- * @module Application
- */
 define([
     'core/modules/GelatoModel'
 ], function(GelatoModel) {

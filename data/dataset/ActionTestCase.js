@@ -53,20 +53,14 @@ function ActionTestCase () {
                   })
 }
 
-ActionTestCase.inherit(TestCase, /** @lends ActionTestCase# */ {
-    /**
-     * @type cocos.nodes.Sprite
-     */
+ActionTestCase.inherit(TestCase,  {
+    
     grossini: null
 
-    /**
-     * @type cocos.nodes.Sprite
-     */
+    
   , tamara: null
 
-    /**
-     * @type cocos.nodes.Sprite
-     */
+    
   , kathia: null
 
   , alignSpritesLeft: function (numSprites) {

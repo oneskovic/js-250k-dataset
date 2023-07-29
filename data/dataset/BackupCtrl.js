@@ -1,23 +1,3 @@
-/**
- * Handles creating and importing a backup.
- *
- * The backup format is a simple JSON file that has the following structure:
- *
- * {
- * "settings": {
- *   // serialized settings
- * },
- * "series": {
- *  <SHOW_TVDB_ID> : [ // array of objects
- *      {
- *          "TVDB_ID": <Episode_TVDB_ID>,
- *          "watchedAt": <timestamp watchedAt>
- *      },
- *      // repeat
- *    ],
- *    // repeat
- *  }
- */
 DuckieTV.controller('BackupCtrl', ["$scope", "$dialogs", "$filter", "FileReader", "TraktTVv2", "SettingsService", "FavoritesService", "CalendarEvents", "$q",
     function($scope, $dialogs, $filter, FileReader, TraktTVv2, SettingsService, FavoritesService, CalendarEvents, $q) {
 

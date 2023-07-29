@@ -1,15 +1,3 @@
-// This script compiles README_template.md 
-// into README.md by
-//
-//  * compiling metadata about examples 
-//  * dynamically generating a markdown list of example entries
-//  * injecting the list into the template
-//
-//  Created by Curran Kelleher 3/2/2014
-//
-//  Updated July 2014 to point to the "code" subdirectory,
-//  so the URL looks like modelDrivenDataVis/examples/code/index.html
-//  rather than modelDrivenDataVis/examples/examples/index.html
 var _ = require('underscore'),
     marked = require('marked'),
     fs = require('fs'),

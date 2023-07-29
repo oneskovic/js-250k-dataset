@@ -1,53 +1,76 @@
-var indentEach = require('./_utils').indentEach;
+if(!dojo._hasResource["dijit.Declaration"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
+dojo._hasResource["dijit.Declaration"] = true;
+dojo.provide("dijit.Declaration");
+dojo.require("dijit._Widget");
+dojo.require("dijit._Templated");
 
+dojo.declare(
+	"dijit.Declaration",
+	dijit._Widget,
+	{
+		// summary:
+		//		The Declaration widget allows a user to declare new widget
+		//		classes directly from a snippet of markup.
 
-exports.traverse = function traverse(cb) {
-    if (this.declType) cb(this.declType, 'type');
-    cb(this.value, 'value');
-};
+		_noScript: true,
+		widgetClass: "",
+		replaceVars: true,
+		defaults: null,
+		mixins: [],
+		buildRendering: function(){
+			var src = this.srcNodeRef.parentNode.removeChild(this.srcNodeRef);
+			var preambles = dojo.query("> script[type='dojo/method'][event='preamble']", src).orphan();
+			var scripts = dojo.query("> script[type^='dojo/']", src).orphan();
+			var srcType = src.nodeName;
 
-exports.substitute = function substitute(cb) {
-    this.value = cb(this.value, 'value') || this.value;
-};
+			var propList = this.defaults||{};
 
-exports.getType = function getType(ctx) {
-    return this.__staticType || (this.declType || this.value).getType(ctx);
-};
+			// map array of strings like [ "dijit.form.Button" ] to array of mixin objects
+			// (note that dojo.map(this.mixins, dojo.getObject) doesn't work because it passes
+			// a bogus third argument to getObject(), confusing it)
+			this.mixins = this.mixins.length ?
+				dojo.map(this.mixins, function(name){ return dojo.getObject(name); } ) :
+				[ dijit._Widget, dijit._Templated ];
 
-exports.validateTypes = function validateTypes(ctx) {
-    this.value.validateTypes(ctx, this);
+			if(preambles.length){
+				// we only support one preamble. So be it.
+				propList.preamble = dojo.parser._functionFromScript(preambles[0]);
+			}
 
-    if (this.value.type === 'Literal' &&
-        this.value.value === null) {
+			var parsedScripts = dojo.map(scripts, function(s){
+				var evt = s.getAttribute("event")||"postscript";
+				return {
+					event: evt,
+					func: dojo.parser._functionFromScript(s)
+				};
+			});
 
-        if (!this.declType) {
-            throw new TypeError('Cannot create variable containing null without a type');
-        }
-        // TODO: check that declType is not null?
-        return;
-    }
+			// do the connects for each <script type="dojo/connect" event="foo"> block and make
+			// all <script type="dojo/method"> tags execute right after construction
+			this.mixins.push(function(){
+				dojo.forEach(parsedScripts, function(s){
+					dojo.connect(this, s.event, this, s.func);
+				}, this);
+			});
 
-    if (!this.declType) {
-        if (this.value.getType(ctx) === null) {
-            throw new TypeError('Declaration with no type information');
-        }
+			propList.widgetsInTemplate = true;
+			propList._skipNodeCache = true;
+			propList.templateString = "<"+srcType+" class='"+src.className+"' dojoAttachPoint='"+(src.getAttribute("dojoAttachPoint")||'')+"' dojoAttachEvent='"+(src.getAttribute("dojoAttachEvent")||'')+"' >"+src.innerHTML.replace(/\%7B/g,"{").replace(/\%7D/g,"}")+"</"+srcType+">";
+			// console.debug(propList.templateString);
 
-        this.__staticType = this.value.getType(ctx);
-        return;
-    }
-    var declType = this.declType.getType(ctx);
-    var valueType = this.value.getType(ctx);
-    if (!valueType.equals(declType)) {
-        throw new TypeError('Mismatched types in declaration: ' + declType.toString() + ' != ' + valueType.toString());
-    }
-};
+			// strip things so we don't create stuff under us in the initial setup phase
+			dojo.query("[dojoType]", src).forEach(function(node){
+				node.removeAttribute("dojoType");
+			});
 
-exports.toString = function toString() {
-    return 'Declaration(' + this.identifier + (this.__assignedName ? '::' + this.__assignedName : '') + ')\n' +
-           (!this.declType ? '' :
-               '    Type:\n' +
-               indentEach(this.declType.toString(), 2) + '\n'
-            ) +
-           '    Value:\n' +
-           indentEach(this.value.toString(), 2);
-};
+			// create the new widget class
+			dojo.declare(
+				this.widgetClass,
+				this.mixins,
+				propList
+			);
+		}
+	}
+);
+
+}

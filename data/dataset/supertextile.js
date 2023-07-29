@@ -1,6 +1,3 @@
-/*
- * This is the orginial function from Stuart Langridge at http://www.kryogenix.org/
- */
  
 /*
 * This is the update function from Jeff Minard - http://www.jrm.cc/

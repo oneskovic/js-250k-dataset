@@ -1,7 +1,3 @@
-/**
- * @class Manages creation, reuse and destruction of {@link SceneJS_Chunk}s for the nodes within a single {@link SceneJS_Display}.
- * @private
- */
 var SceneJS_ChunkFactory = function() {
 
     this._chunks = {};

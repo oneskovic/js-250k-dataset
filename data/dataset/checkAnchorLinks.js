@@ -1,11 +1,7 @@
 var _ = require('lodash');
 var path = require('canonical-path');
 
-/**
- * @dgProcessor checkAnchorLinksProcessor
- * @param {Object} log A service that provides logging
- * @description Checks that the generated documents do not have any dangling anchor links.
- */
+
 module.exports = function checkAnchorLinksProcessor(log, resolveUrl, extractLinks) {
   return {
     ignoredLinks: [/^http(?:s)?:\/\//, /^mailto:/, /^chrome:/],

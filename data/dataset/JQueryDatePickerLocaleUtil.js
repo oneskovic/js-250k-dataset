@@ -1,8 +1,6 @@
 'use strict';
 
-/**
- * @module br/presenter/control/datefield/JQueryDatePickerLocaleUtil
- */
+
 
 var i18n = require('br/I18n');
 

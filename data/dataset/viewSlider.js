@@ -1,6 +1,4 @@
-﻿/**
-  * @constructor
-  */
+﻿
 
 var SlideViews = function(container)
 {

@@ -14,9 +14,7 @@ define([
     }
   }
 
-  /**
-   * @class Codeview
-   */
+  
   var Codeview = function (handler) {
 
     this.sync = function (layoutInfo) {

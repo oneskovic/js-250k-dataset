@@ -1,14 +1,3 @@
-/**
- * isMobile.js v0.3.6
- *
- * A simple library to detect Apple phones and tablets,
- * Android phones and tablets, other mobile devices (like blackberry, mini-opera and windows phone),
- * and any kind of seven inch device, via user agent sniffing.
- *
- * @author: Kai Mallea (kmallea@gmail.com)
- *
- * @license: http://creativecommons.org/publicdomain/zero/1.0/
- */
 (function (global) {
 
     var apple_phone         = /iPhone/i,

@@ -1,4 +1,3 @@
-
 var IOSMonkey = {
     run: function(action, repeat, delay) {
         var me = this;
@@ -46,9 +45,7 @@ var IOSMonkey = {
          }
        },
         
-        /**
-         * Randomly tap.
-         */
+        
         tap: function() {
             var xyobj = this._getXY();
             var target = UIATarget.localTarget();

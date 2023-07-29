@@ -1,17 +1,5 @@
 "use strict";
-/**
- * @class ArrayPaginator
- * @classdesc
- * The server side adapter for Backbone.Paginator class
- * supports URL get parameters as below 
- * 	pre_page - how many items per page
- * 	page  - page number
- * 	sort  - sort by which column
- *  order - 1 for asc , -1 for desc
- *  callback - supports for JSONP
- *  query - query keywords
- * 
- **/
+
 
 module.exports = function(dataArray, params){
 	if(params.query)

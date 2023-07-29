@@ -1,5 +1,3 @@
-/*global define,jasmine,angular,describe,it,expect,beforeEach,spyOn*/
-
 define(function (require) {
     'use strict';
 

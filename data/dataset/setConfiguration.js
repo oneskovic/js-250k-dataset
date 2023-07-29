@@ -1,8 +1,3 @@
-/**
- * Created by lihui on 14-8-26.
- * 修改配置操作
- */
-
 module.exports = function(grunt,body){
     var path = require('path');
     var fs = require('fs');

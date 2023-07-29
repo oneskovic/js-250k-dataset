@@ -1,7 +1,3 @@
-/**
- * @class Scene graph node which defines the modelling transform to apply to the objects in its subgraph
- * @extends SceneJS.Node
- */
 SceneJS.XForm = SceneJS_NodeFactory.createNodeType("xform");
 
 SceneJS.XForm.prototype._init = function (params) {

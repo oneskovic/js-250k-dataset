@@ -1,4 +1,4 @@
-﻿/*globals describe, it, beforeEach, afterEach */
+﻿
 
 var assert = require("assert"),
     path = require("path"),

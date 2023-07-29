@@ -1,5 +1,3 @@
-/*package annotator.authorizer */
-
 "use strict";
 
 /**

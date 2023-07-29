@@ -1,7 +1,3 @@
-/**
- * This I/O module is for unit testing of I/O dependent modules.
- * It is intentionally very primitive at the beginning, parts may be missing.
- */
 define([
     'ufojs/errors'
   , './_base'

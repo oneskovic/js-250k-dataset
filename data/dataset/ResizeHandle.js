@@ -50,9 +50,7 @@ var ResizeHandle = function( eContainer, maxWidth, maxHeight )
 
 	eContainer.appendChild( element );
 
-	/**
-	* Dragging the frame
-	*/
+	
 	var eHandle = element.getElementsByTagName( "div" )[ 0 ];
 	var oHandleDrag = new Drag( eHandle );
 

@@ -1,4 +1,3 @@
-//>>built
 define("dojox/charting/themes/Charged", ["../Theme", "dojox/gfx/gradutils", "./common"], function(Theme, gradutils){
 
 	var themes = dojox.charting.themes, g = Theme.generateGradient,

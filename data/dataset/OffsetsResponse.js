@@ -4,24 +4,7 @@ var Response = require('./Response');
 var BufferMaker = require('buffermaker');
 var _ = require('underscore');
 
-/*
- https://cwiki.apache.org/KAFKA/writing-a-driver-for-kafka.html
 
-   0                   1                   2                   3
-   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  /                         RESPONSE HEADER                       /
-  /                                                               /
-  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  |                         NUMBER_OFFSETS                        |
-  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  /                       OFFSETS (0 or more)                     /
-  /                                                               /
-  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-
-  NUMBER_OFFSETS = int32 // How many offsets are being returned
-  OFFSETS = int64[] // List of offsets
-*/
 var OffsetsResponse = function(error, offsets){
   this.error = error;
   this.offsets = offsets;

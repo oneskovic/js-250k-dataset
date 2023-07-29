@@ -1,74 +1,89 @@
-/**
- * Convenience type for storing and aggregating
- * test result information.
- * @private
- * @namespace Test
- * @module test
- * @class Results
- * @constructor
- * @param {String} name The name of the test.
- */
-YUITest.Results = function(name){
+var g_results;
+chrome.extension.sendMessage({
+    cmd: "getStats"
+}, function( results ){
+    g_results  = results;
+    var nb = 0, used = 0, duplicate = 0;
+    for( var elem in results ){
+        nb++;
+        if( results[elem].isUsed ){
+            used++;
+        }
+        if( results[elem].isDuplicate ){
+            duplicate++;
+        }
+    }
+    var pc_used   = ((used/nb)*100).toFixed(2) + '%';
+    var pc_unused = (((nb-used)/nb)*100).toFixed(2) + '%';
+    var pc_duplicate = ((duplicate/nb)*100).toFixed(2) + '%';
 
-    /**
-     * Name of the test, test case, or test suite.
-     * @type String
-     * @property name
-     */
-    this.name = name;
+    var t = document.getElementById('selectors');
+    t.model = {
+        selectors: {
+            count_selectors: nb,
+            used_selectors: used + ' (' + pc_used +  ')',
+            unused_selectors: (nb -used) + ' (' + pc_unused +  ')',
+            duplicate_selectors: duplicate + ' (' + pc_duplicate +  ')'
+        }
+    };
 
-    /**
-     * Number of passed tests.
-     * @type int
-     * @property passed
-     */
-    this.passed = 0;
+    var c = document.getElementById('chart');
+    c.model = {
+      chartData: {
+        data: nb + "," + used + "," + (nb-used) + "," + duplicate
+      }
+    };
 
-    /**
-     * Number of failed tests.
-     * @type int
-     * @property failed
-     */
-    this.failed = 0;
 
-    /**
-     * Number of errors that occur in non-test methods.
-     * @type int
-     * @property errors
-     */
-    this.errors = 0;
+    // Needed to detect model changes if Object.observe
+    // is not available in the JS VM.
+    Platform.performMicrotaskCheckpoint();
 
-    /**
-     * Number of ignored tests.
-     * @type int
-     * @property ignored
-     */
-    this.ignored = 0;
+    // addition
+    chrome.extension.sendMessage({
+        cmd: "stop"
+    });
+});
 
-    /**
-     * Number of total tests.
-     * @type int
-     * @property total
-     */
-    this.total = 0;
+document.getElementById( "show_unused" ).addEventListener( "click", function(){
+    displayDetails( "unused" );
+});
 
-    /**
-     * Amount of time (ms) it took to complete testing.
-     * @type int
-     * @property duration
-     */
-    this.duration = 0;
-};
+document.getElementById( "show_duplicate" ).addEventListener( "click", function(){
+    displayDetails( "duplicate" );
+});
 
-/**
- * Includes results from another results object into this one.
- * @param {Test.Results} result The results object to include.
- * @method include
- */
-YUITest.Results.prototype.include = function(results){
-    this.passed += results.passed;
-    this.failed += results.failed;
-    this.ignored += results.ignored;
-    this.total += results.total;
-    this.errors += results.errors;
-};
+document.getElementById('show_all' ).addEventListener( "click", function(){
+    displayDetails( "all" );
+});
+
+
+// TODO: move all of the inline markup out of here, to templating.
+function displayDetails( mode ){
+    var html = "<tr><th>Selector</th><th>Used</th><th>Duplicate</th><th>Source</th></tr>";
+    var orderedMap = [];
+    for( var selectorID in g_results ){
+        orderedMap.push( selectorID );
+    }
+    orderedMap.sort();
+    for(var i= 0, l=orderedMap.length; i<l; i++ ){
+        var selector = g_results[ orderedMap[i] ];
+
+        if( mode == "unused" && selector.isUsed ){
+            continue;
+        }
+        if( mode == "duplicate" && !selector.isDuplicate){
+            continue;
+        }
+
+        html += "<tr class=" + (selector.isUsed ? 'green' : 'red' ) + ">" +
+                    "<td>" + orderedMap[i] + "</td>" +
+                    "<td>" + selector.isUsed + "</td>" +
+                    "<td>" + selector.isDuplicate + "</td>" +
+                    "<td><a href="+ selector.src +">"+ selector.src +"</a></td>" +
+            "</tr>";
+    }
+    document.getElementById( "table" ).innerHTML = html;
+}
+
+

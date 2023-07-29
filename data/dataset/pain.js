@@ -10,13 +10,7 @@ ig.module(
 
         var _ut = ig.utils;
 
-        /**
-         * Entity trigger that does damage to another entity upon activation.
-         * @class
-         * @extends ig.EntityTrigger
-         * @memberof ig
-         * @author Collin Hover - collinhover.com
-         **/
+        
         ig.EntityPain = ig.global.EntityPain = ig.EntityTrigger.extend( /**@lends ig.EntityPain.prototype */ {
 
             // editor properties

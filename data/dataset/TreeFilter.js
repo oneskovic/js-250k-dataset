@@ -1,11 +1,3 @@
-/*
- * Ext JS Library 2.2.1
- * Copyright(c) 2006-2009, Ext JS, LLC.
- * licensing@extjs.com
- * 
- * http://extjs.com/license
- */
-
 /**
  * @class Ext.tree.TreeFilter
  * Note this class is experimental and doesn't update the indent (lines) or expand collapse icons of the nodes

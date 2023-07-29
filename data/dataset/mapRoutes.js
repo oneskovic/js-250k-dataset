@@ -1,4 +1,3 @@
-// map routes
 'use strict';
 
 var fs = require('fs'),

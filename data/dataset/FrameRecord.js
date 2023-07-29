@@ -1,14 +1,4 @@
 /**
- * Helper class for the new replay system.  Represents all the game inputs for one "frame" or "step" of the game loop.
- * 
- * v1.0 Initial version
- * 
- * @version 1.0 - 17/09/2014
- * @author	Adam Atomic
- * @author	ratalaika / ratalaikaGames
- * @class Flixel.system.replay.FrameRecord
- */
-/**
  * Instantiate array new frame record.
  */
 Flixel.system.replay.FrameRecord = function()

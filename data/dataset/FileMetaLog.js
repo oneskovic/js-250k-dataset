@@ -1,13 +1,7 @@
 (function(module) {
     var fs = require("fs");
 
-    /**
-     * Create metadata log for specified data file.
-     * Metadata file will be opened synchronously.
-     *
-     * @param {String} path Path for data file
-     * @constructor
-     */
+    
     function FileMetaLog(path) {
         var self = this;
 

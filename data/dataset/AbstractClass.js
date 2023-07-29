@@ -1,5 +1,3 @@
-/*jshint node:true*/
-
 if (typeof define !== 'function') {
     var define = require('amdefine')(module);
 }
@@ -21,14 +19,7 @@ define([
         $bound = '$bound_dejavu',
         AbstractClass = {};
 
-    /**
-     * Create an abstract class definition.
-     *
-     * @param {Object}      params        An object containing methods and properties
-     * @param {Constructor} [constructor] Assume the passed constructor
-     *
-     * @return {Function} The constructor
-     */
+    
     function createAbstractClass(params, constructor) {
         var def,
             savedMembers,

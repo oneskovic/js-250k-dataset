@@ -1,8 +1,3 @@
-/**
- * Talk to the PVR
- * @type {{}}
- */
-
 //$(window).on('shellReady', function(){
 //  app.pvr.setIsEnabled(function(enabled){
 //    if(enabled){

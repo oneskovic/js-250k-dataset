@@ -24,7 +24,7 @@ Object.defineProperties(ThrobberIterator.prototype, {
 	})
 });
 
-module.exports = exports = function (write, interval/*, format*/) {
+module.exports = exports = function (write, interval) {
 	var format = arguments[2], token, iterator = new ThrobberIterator();
 	callable(write);
 	interval = validTimeout(interval);

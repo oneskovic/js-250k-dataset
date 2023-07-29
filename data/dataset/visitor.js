@@ -1,69 +1,56 @@
-(function (tree) {
+'use strict';
 
-    tree.visitor = function(implementation) {
-        this._implementation = implementation;
-    };
+// TODO: docs
+var Visitor = exports.Visitor = function(parser) {
+    var runtime = require('jsdoc/util/runtime');
+    if ( !runtime.isRhino() ) {
+        throw new Error('You must run JSDoc on Mozilla Rhino to use the Rhino node visitor.');
+    }
 
-    tree.visitor.prototype = {
-        visit: function(node) {
+    Visitor.super_.call(this, parser);
 
-            if (node instanceof Array) {
-                return this.visitArray(node);
-            }
+    // Rhino node visitors added by plugins (deprecated in JSDoc 3.3)
+    this._rhinoNodeVisitors = [];
+    // Rhino nodes retrieved from the org.jsdoc.AstBuilder instance
+    this._rhinoNodes = null;
 
-            if (!node || !node.type) {
-                return node;
-            }
+    this.addAstNodeVisitor({
+        visitNode: this._visitRhinoNode.bind(this)
+    });
+};
+require('util').inherits(Visitor, require('jsdoc/src/visitor').Visitor);
 
-            var funcName = "visit" + node.type,
-                func = this._implementation[funcName],
-                visitArgs, newNode;
-            if (func) {
-                visitArgs = {visitDeeper: true};
-                newNode = func.call(this._implementation, node, visitArgs);
-                if (this._implementation.isReplacing) {
-                    node = newNode;
-                }
+// TODO: docs (deprecated)
+Visitor.prototype.addRhinoNodeVisitor = function(visitor) {
+    this._rhinoNodeVisitors.push(visitor);
+};
+
+// TODO: docs (deprecated)
+Visitor.prototype.getRhinoNodeVisitors = function() {
+    return this._rhinoNodeVisitors;
+};
+
+// TODO: docs (deprecated)
+Visitor.prototype._visitRhinoNode = function(astNode, e, parser, filename) {
+    var rhinoNode;
+
+    var visitors = this._rhinoNodeVisitors;
+    // if there are no visitors, bail out before we retrieve all the nodes
+    if (!visitors.length) {
+        return;
+    }
+
+    if (!this._rhinoNodes) {
+        this._rhinoNodes = parser.astBuilder.getRhinoNodes();
+    }
+
+    rhinoNode = this._rhinoNodes ? this._rhinoNodes.get(astNode.nodeId) : null;
+    if (rhinoNode) {
+        for (var i = 0, l = visitors.length; i < l; i++) {
+            visitors[i].visitNode(rhinoNode, e, parser, filename);
+            if (e.stopPropagation) {
+                break;
             }
-            if ((!visitArgs || visitArgs.visitDeeper) && node && node.accept) {
-                node.accept(this);
-            }
-            funcName = funcName + "Out";
-            if (this._implementation[funcName]) {
-                this._implementation[funcName](node);
-            }
-            return node;
-        },
-        visitArray: function(nodes) {
-            var i, newNodes = [];
-            for(i = 0; i < nodes.length; i++) {
-                var evald = this.visit(nodes[i]);
-                if (evald instanceof Array) {
-                    evald = this.flatten(evald);
-                    newNodes = newNodes.concat(evald);
-                } else {
-                    newNodes.push(evald);
-                }
-            }
-            if (this._implementation.isReplacing) {
-                return newNodes;
-            }
-            return nodes;
-        },
-        doAccept: function (node) {
-            node.accept(this);
-        },
-        flatten: function(arr, master) {
-            return arr.reduce(this.flattenReduce.bind(this), master || []);
-        },
-        flattenReduce: function(sum, element) {
-            if (element instanceof Array) {
-                sum = this.flatten(element, sum);
-            } else {
-                sum.push(element);
-            }
-            return sum;
         }
-    };
-
-})(require('./tree'));
+    }
+};

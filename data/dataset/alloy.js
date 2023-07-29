@@ -1,8 +1,3 @@
-/**
- * Alloy
- * Copyright (c) 2012 by Appcelerator, Inc. All Rights Reserved.
- * See LICENSE for more information on licensing.
- */
  var program = require('commander'),
 	logger = require("./logger"),
 	os = require('os'),

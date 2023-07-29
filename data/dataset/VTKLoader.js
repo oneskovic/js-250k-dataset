@@ -1,7 +1,3 @@
-/**
- * @author mrdoob / http://mrdoob.com/
- */
-
 THREE.VTKLoader = function () {};
 
 THREE.VTKLoader.prototype = {

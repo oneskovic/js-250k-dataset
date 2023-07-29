@@ -1,7 +1,3 @@
-/**
- * @module Application
- * @submodule Components
- */
 define([
     'require.text!templates/components/prompt-navigation.html',
     'core/modules/GelatoComponent'

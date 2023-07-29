@@ -1,7 +1,3 @@
-/**
- * @fileOverview Load locales, any dynamic post-script loading activities.
- */
-
 Exhibit.jQuery(document).ready(function() {
     var delays, localeLoaded;
     // Without threading, this shouldn't introduce a race condition,

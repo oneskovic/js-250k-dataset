@@ -1,5 +1,3 @@
-/*global $, _ */
-
 function ChartLegend(controller, data, chart) {
   this.chart = chart
   this.controller = controller

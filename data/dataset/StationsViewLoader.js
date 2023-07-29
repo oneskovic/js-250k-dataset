@@ -1,9 +1,3 @@
-/**
- StationsViewLoader  StackView navigation
- @class StationsViewLoader
- @constructor
- @return {Object} instantiated StationsViewLoader
- **/
 define(['jquery', 'backbone'], function ($, Backbone) {
 
     var StationsViewLoader = Backbone.View.extend({

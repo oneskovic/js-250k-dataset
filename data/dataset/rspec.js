@@ -58,14 +58,7 @@ var RSpec = {
         scroll: window
       });
 
-/*    Disable for now - it messes with the autocomplete's visibility (zIndex galore)  
-      Droppables.add(footer, {
-        hoverclass: 'wastebin',
-        onDrop: function(li, droppable, evt) {
-          li.remove();
-        }
-      });
-*/      
+      
       Event.observe(addStepLink, 'click', function() {
         var form = Builder.node('form', {});
         

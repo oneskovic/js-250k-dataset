@@ -1,4 +1,3 @@
-/*global jQuery */
 /*!
 * Simple Jekyll Search
 * Christian Fei - https://github.com/christian-fei/Simple-Jekyll-Search *

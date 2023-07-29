@@ -1,7 +1,3 @@
-/*! eCSSential
-* https://github.com/scottjehl/eCSSential
-* Copyright (c) 2012 Scott Jehl, @scottjehl, Filament Group, Inc.; Licensed GPL, MIT; Includes matchMedia.js: http://j.mp/jay3wJ (MIT)  */
-
 window.eCSSential = function( css, config ){
 	"use strict";
 	var load = [],

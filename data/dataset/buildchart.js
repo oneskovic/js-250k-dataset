@@ -1,12 +1,6 @@
 'use strict';
 
-/**
- * N.b., the tests in this spec are a TOTAL mess.
- * Mainly because the buildChart directive itself is a total mess.
- *
- * Please, if you want some project credit, FIX THIS MESS.
- * #messymessmessmess
- */
+
 
 describe('Directive: BuildChart', function () {
 

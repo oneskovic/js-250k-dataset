@@ -1,7 +1,3 @@
-/*!
- * @depends ../core/AudioletNode.js
- */
-
 /**
  * Sine wave oscillator
  *

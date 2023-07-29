@@ -1,6 +1,3 @@
-/**
- * Module dependencies
- */
 var renderDataBindings = require('./renderDataBindings');
 
 

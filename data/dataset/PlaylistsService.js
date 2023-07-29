@@ -1,4 +1,3 @@
-// a playlists service to create new playlists
 var _ = require('underscore');
 var Backbone = require('backbonejs');
 var Gapi = require('../gapi.js');

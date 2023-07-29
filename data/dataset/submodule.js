@@ -1,7 +1,3 @@
-// npm submodule <pkg>
-// Check the package contents for a git repository url.
-// If there is one, then create a git submodule in the node_modules folder.
-
 module.exports = submodule
 
 var npm = require("./npm.js")

@@ -1,13 +1,3 @@
-/**
- * @class Loads in a resource file over AJAX <strong>[A3.MeshLoader]</strong>.
- * Handy for the loading of mesh data files
- *
- * @author Paul Lewis
- *
- * @param {String} url The URL to load
- * @param {Function} callback The callback to which the geometry should be passed
- * @param {Boolean} separateFaces Whether the mesh is expected to have shared vertices that need breaking out (as in the case of discontinuous UV)
- */
 A3.Core.Remote.MeshLoader = function(url, callback, separateFaces) {
 
   var request       = new XMLHttpRequest(),

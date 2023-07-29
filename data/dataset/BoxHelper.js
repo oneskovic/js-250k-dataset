@@ -1,7 +1,3 @@
-/**
- * @author mrdoob / http://mrdoob.com/
- */
-
 THREE.BoxHelper = function ( object ) {
 
 	var geometry = new THREE.BufferGeometry();

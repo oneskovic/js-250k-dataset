@@ -8,16 +8,7 @@ var util = require('util'),
     TextureAtlas = require('../TextureAtlas').TextureAtlas,
     ccp = geo.ccp
 
-/**
- * @class
- * An in-memory canvas which can be drawn to in the background before drawing on screen
- *
- * @memberOf cocos.nodes
- * @extends cocos.nodes.Node
- *
- * @opt {Integer} width The width of the canvas
- * @opt {Integer} height The height of the canvas
- */
+
 function RenderTexture (opts) {
     RenderTexture.superclass.constructor.call(this, opts)
 

@@ -1,5 +1,3 @@
-
-
 var axm = require('pmx');
 
 var probe = axm.probe();
@@ -9,9 +7,7 @@ var users = {
   'musta' : 'fa'
 };
 
-/**
- * Monitor synchronous return of functions
- */
+
 var rt_users = probe.metric({
   name : 'Realtime user',
   value : function() {

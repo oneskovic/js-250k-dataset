@@ -1,6 +1,3 @@
-/**
- *      Mapping tests
- */
 var mongoose = require('mongoose'),
     request = require('request'),
     assert = require('assert'),

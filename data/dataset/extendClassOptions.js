@@ -2,10 +2,7 @@
 
 	'use strict';
 
-	/**
-	 * JavaScript Inheritance
-	 * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Inheritance_Revisited
-	 */
+	
 	var exports = function() {
 
 		// get child constructor

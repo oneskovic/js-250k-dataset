@@ -1,96 +1,116 @@
-(function () {
-  var assembler, parser, lexer, analyser;
+'use strict';
 
-  module("assembler parser", {
-    setup: function () {
-      assembler = new yasp.Assembler();
-      parser = new yasp.Parser();
-      lexer = new yasp.Lexer();
-      analyser = new yasp.Analyser();
+
+xss.level.Parser = function(imagedata) {
+    this.width = imagedata.width;
+    this.height = imagedata.height;
+    this.walls = new xss.PixelCollection();
+    this.unreachables = new xss.PixelCollection();
+
+    /** @type {Array.<xss.level.Spawn>} */
+    this.spawns = new Array(xss.ROOM_CAPACITY);
+
+    /** @type {Array.<xss.Coordinate>} */
+    this.spawnCoordinates = new Array(xss.ROOM_CAPACITY);
+
+    /** @type {Array.<xss.Coordinate>} */
+    this.spawnDirections = [];
+
+    this.parsePixels(imagedata.data);
+    this.generateSpawns();
+};
+
+xss.level.Parser.prototype = {
+
+    /**
+     * @param {Object} imagedata
+     */
+    parsePixels: function(imagedata) {
+        for (var i = 0, m = imagedata.length / 4; i < m; i++) {
+            this.parsePixel(
+                [
+                    imagedata[i * 4],
+                    imagedata[i * 4 + 1],
+                    imagedata[i * 4 + 2]
+                ], [
+                    i % this.width,
+                    Math.floor(i / this.width)
+                ]
+            );
+        }
     },
-    teardown: function () {
-      assembler = null;
-      parser = null;
-      lexer = null;
-      analyser = null;
+
+    /**
+     * @param {Array.<number>} rgb
+     * @param {xss.Coordinate} coordinate
+     */
+    parsePixel: function(rgb, coordinate) {
+        function rgbEquals(r, g, b) {
+            return rgb[0] === r && rgb[1] === g && rgb[2] === b;
+        }
+
+        if (rgbEquals(0, 0, 0)) {
+            this.walls.add(coordinate[0], coordinate[1]);
+        } else if (rgbEquals(222, 222, 222)) {
+            this.unreachables.add(coordinate[0], coordinate[1]);
+        } else if (rgbEquals(99, 99, 99)) {
+            this.spawnDirections.push(coordinate);
+        } else if (rgbEquals(255, 0, 0)) {
+            this.spawnCoordinates[0] = coordinate;
+        } else if (rgbEquals(0, 255, 0)) {
+            this.spawnCoordinates[1] = coordinate;
+        } else if (rgbEquals(0, 0, 255)) {
+            this.spawnCoordinates[2] = coordinate;
+        } else if (rgbEquals(255, 255, 0)) {
+            this.spawnCoordinates[3] = coordinate;
+        } else if (rgbEquals(255, 0, 255)) {
+            this.spawnCoordinates[4] = coordinate;
+        } else if (rgbEquals(0, 255, 255)) {
+            this.spawnCoordinates[5] = coordinate;
+        } else if (!rgbEquals(255, 255, 255)) {
+            throw new Error('Unknown color: ' + rgb + ' ' + 'at ' + coordinate);
+        }
+    },
+
+    generateSpawns: function() {
+        for (var i = 0, m = this.spawnCoordinates.length; i < m; i++) {
+            var spawnCoordinate = this.spawnCoordinates[i];
+            
+            if (spawnCoordinate) {
+                this.spawns[i] = new xss.level.Spawn(
+                    spawnCoordinate,
+                    this.getDirectionForSpawn(spawnCoordinate)
+                );
+            } else {
+                throw new Error('Missing spawn with index: ' + i);
+            }
+        }
+    },
+
+    /**
+     * @param {xss.Coordinate} spawn
+     * @return {number}
+     */
+    getDirectionForSpawn: function(spawn) {
+        for (var i = 0, m = this.spawnDirections.length; i < m; i++) {
+            var dx, dy;
+
+            if (!this.spawnDirections[i]) {
+                continue;
+            }
+
+            dx = spawn[0] - this.spawnDirections[i][0];
+            dy = spawn[1] - this.spawnDirections[i][1];
+
+            if (1 === Math.abs(dx) + Math.abs(dy)) {
+                if (dx === 0) {
+                    return (dy === 1) ? xss.DIRECTION_UP : xss.DIRECTION_DOWN;
+                } else {
+                    return (dx === 1) ? xss.DIRECTION_LEFT : xss.DIRECTION_RIGHT;
+                }
+            }
+        }
+
+        throw new Error('Spawn at ' + spawn + ' is missing a direction');
     }
-  });
-
-  var parser_cases = [
-    {input: "MOV W0, 100 \n PUSH W0 \n ASDF: GOTO ASDF \n", fails: false, symbols:
-    {
-      "defines": { },
-      "instructions": {
-        "GOTO": 1,
-        "MOV": 1,
-        "PUSH": 1
-      },
-      "labels": {
-        "ASDF": {
-          "char": 2,
-          "line": 3,
-          "text": "ASDF"
-        }
-      },
-      "usedRegisters": {
-        "W0": 2
-      }
-    }},
-    {input: "", fails: false},
-    {input: "MOV MOV MOV", fails: true},
-    {input: "MOV B0, B1, B3", fails: true},
-    {input: "asdfdspsidhgeoighfg", fails: true},
-    {input: "sub:", fails: true},
-    {input: "DEFINE importantRegister W0 \n ASDF: GOTO ASDF\n\n\nPUSH importantregister \n END asdf yolomolo", fails: false, symbols: {
-      "defines": {
-        "IMPORTANTREGISTER": "W0"
-      },
-      "instructions": {
-        "GOTO": 1,
-        "PUSH": 1
-      },
-      "labels": {
-        "ASDF": {
-          "char": 2,
-          "line": 2,
-          "text": "ASDF"
-        }
-      },
-      "usedRegisters": {
-        "W0": 1
-      }
-    }}
-  ];
-
-  QUnit.cases(parser_cases).test("ensure parser syntax checking working", function (params) {
-    // arrange
-    var pass1, pass2, pass3;
-
-    // act
-    pass1 = lexer.pass(assembler, params.input);
-    pass2 = analyser.pass(assembler, pass1)
-    pass3 = parser.pass(assembler, pass2);
-
-    // assert
-    ok(params.fails ? assembler.errors.length > 0 : assembler.errors.length == 0);
-  });
-  
-  QUnit.cases(parser_cases).test("ensure parser symbol table working", function(params) {
-    // arrange
-    assembler.jobs = ["symbols"];
-    var pass1, pass2;
-    
-    // act
-    pass1 = lexer.pass(assembler, params.input);
-    pass2 = analyser.pass(assembler, pass1)
-    parser.pass(assembler, pass2);
-    
-    // assert
-    deepEqual(JSON.parse(JSON.stringify(assembler.symbols)), !!params.symbols ? params.symbols : {
-      labels: { },
-      usedRegisters: { },
-      defines: { },
-      instructions: { }
-    });
-  })
-})();
+};

@@ -1,8 +1,3 @@
-/*
-
-	Native objects
-
-*/
 //String Object
 var _array = Array,
 	//Object Object

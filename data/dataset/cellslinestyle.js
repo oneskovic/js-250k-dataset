@@ -1,4 +1,3 @@
-
 TrexMessage.addMsg({
 	'@cellslinestyle.subtitle1': '테두리 없음',
 	'@cellslinestyle.subtitle2': '실선',

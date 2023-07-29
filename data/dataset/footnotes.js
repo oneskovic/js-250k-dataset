@@ -1,14 +1,3 @@
-/*
-Footnotes script by Lukas Mathis
-Web: http://ignorethecode.net/blog/2010/04/20/footnotes/
-Twitter: https://twitter.com/ignorethecode
-License: Public Domain
-
-Some tweaks by Matt Gemmell
-Web: http://mattgemmell.com/
-Twitter: http://twitter.com/mattgemmell
-*/
-
 // this script requires jQuery
 jQuery(document).ready(function() {
     Footnotes.setup();

@@ -1,6 +1,3 @@
-/**
- * @namespace
- */
 var Ozone = Ozone ? Ozone : {};
 
 /**

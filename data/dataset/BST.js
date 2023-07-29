@@ -1,4 +1,3 @@
-// Plain vanilla insert -- no animation
 var insert = function (node, insval) {
   var val = node.value();
   if (!val || val === "jsavnull") { // no value in node

@@ -1,7 +1,7 @@
 var createWrapper = require('../internal/createWrapper'),
     isIterateeCall = require('../internal/isIterateeCall');
 
-/** Used to compose bitmasks for wrapper metadata. */
+
 var CURRY_RIGHT_FLAG = 16;
 
 /**

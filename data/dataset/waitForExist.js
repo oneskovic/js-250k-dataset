@@ -1,19 +1,3 @@
-/**
- *
- * Wait for an element (selected by css selector) for the provided amount of
- * milliseconds to be present within the DOM. Returns true if the selector
- * matches at least one element. If the reverse flag is true, the command will
- * instead return true if the selector does not match any elements.
- *
- * @param {String}   selector CSS selector to query
- * @param {Number=}  ms       time in ms (default: 500)
- * @param {Boolean=} reverse  if true it instead waits for the selector to not match any elements (default: false)
- * @callbackParameter error, isExisting
- *
- * @type utility
- *
- */
-
 var async = require('async'),
     ErrorHandler = require('../utils/ErrorHandler.js');
 

@@ -1,4 +1,3 @@
-
 var crypto = require('crypto');
 
 var SHash = module.exports = function SHash() {

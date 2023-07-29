@@ -1,4 +1,3 @@
-/* global chai, define, describe, before, it */
 define([
     'underscore',
     'jquery',

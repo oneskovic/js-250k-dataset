@@ -12,7 +12,7 @@ function scrobble () {
     var duration = parseDuration($('span.m_h_player_seek_time_duration').text().substring(1));
 
     var now = new Date().getTime();
-    var isNewPlaying = (lastTrack != artist + ' ' + title) || /* new artist-title pair or */
+    var isNewPlaying = (lastTrack != artist + ' ' + title) || 
             ((lastTrack == artist + ' ' + title) && ((now - startTime) > 1000 * duration)); /* repeated playing of same track */
     
     if (isNewPlaying) {

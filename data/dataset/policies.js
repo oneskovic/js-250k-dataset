@@ -1,32 +1,21 @@
-/**
- * Policies are simply Express middleware functions which run before your controllers.
- * You can apply one or more policies for a given controller or action.
- *
- * Any policy file (e.g. `authenticated.js`) can be dropped into the `/policies` folder,
- * at which point it can be accessed below by its filename, minus the extension, (e.g. `authenticated`)
- *
- * For more information on policies, check out:
- * http://sailsjs.org/#documentation
- */
-
-
 module.exports.policies = {
 
   // Default policy for all controllers and actions
-  // (`true` allows public access) 
-  '*': true,
-	UserController: {
-	 	'*': 'authenticated',
-	 	'create': true
-	},
-	AuthController: {
-		'post login': true,
-		'get logout': 'authenticated'
-	},
-	AdminController: {
-		'*':'authenticated',
-		'create':false
+  // (`true` allows public access)
+  // '*': true
+  '*': 'flash',
+
+
+	// Here's an example of adding some policies to a controller
+	TweetController: {
+
+        // Apply the `false` policy as the default for all of RabbitController's actions
+        // (`false` prevents all access, which ensures that nothing bad happens to our rabbits)
+        // '*': false,
+
+        index : ['flash', 'isAuthenticated']
 	}
+
 
   /*
 	// Here's an example of adding some policies to a controller
@@ -36,7 +25,7 @@ module.exports.policies = {
 		// (`false` prevents all access, which ensures that nothing bad happens to our rabbits)
 		'*': false,
 
-		// For the action `nurture`, apply the 'isRabbitMother' policy 
+		// For the action `nurture`, apply the 'isRabbitMother' policy
 		// (this overrides `false` above)
 		nurture	: 'isRabbitMother',
 
@@ -55,7 +44,7 @@ module.exports.policies = {
  * We'll make some educated guesses about whether our system will
  * consider this user someone who is nice to animals.
  *
- * Besides protecting rabbits (while a noble cause, no doubt), 
+ * Besides protecting rabbits (while a noble cause, no doubt),
  * here are a few other example use cases for policies:
  *
  *	+ cookie-based authentication
@@ -69,19 +58,19 @@ module.exports.policies = {
 
 /*
 module.exports = function isNiceToAnimals (req, res, next) {
-	
+
 	// `req.session` contains a set of data specific to the user making this request.
 	// It's kind of like our app's "memory" of the current user.
-	
-	// If our user has a history of animal cruelty, not only will we 
-	// prevent her from going even one step further (`return`), 
+
+	// If our user has a history of animal cruelty, not only will we
+	// prevent her from going even one step further (`return`),
 	// we'll go ahead and redirect her to PETA (`res.redirect`).
 	if ( req.session.user.hasHistoryOfAnimalCruelty ) {
 		return res.redirect('http://PETA.org');
 	}
 
 	// If the user has been seen frowning at puppies, we have to assume that
-	// they might end up being mean to them, so we'll 
+	// they might end up being mean to them, so we'll
 	if ( req.session.user.frownsAtPuppies ) {
 		return res.redirect('http://www.dailypuppy.com/');
 	}

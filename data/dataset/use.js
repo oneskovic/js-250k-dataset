@@ -1,7 +1,3 @@
-/*
- * USE 功能
- */
-
 define(function(require, exports, module) {
 
     var Svg = require('./svg');

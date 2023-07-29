@@ -1,4 +1,3 @@
-//获取模版文件
 var WriteHtmlCacheBehavior = thinkRequire('WriteHtmlCacheBehavior');
 var fs = require('fs');
 /**

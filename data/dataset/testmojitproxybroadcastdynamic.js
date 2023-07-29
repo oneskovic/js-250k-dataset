@@ -1,6 +1,3 @@
-/*
- * This is a basic func test for a Common application.
- */
 YUI({
     useConsoleOutput: true,
     useBrowserConsole: true,

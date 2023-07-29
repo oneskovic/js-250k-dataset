@@ -1,13 +1,3 @@
-/*!
- * Nodeunit
- *
- * @author  Alisue (lambdalisue@hashnote.net)
- * @url     http://hashnote.net/
- *
- * Copyright (c) 2011 Alisue
- * MIT Licensed
- */
-
 /**
  * Module dependencies
  */

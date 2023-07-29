@@ -1,4 +1,3 @@
-/*global describe, it, beforeEach*/
 // ActionContainer _addContainerActions() had errors passing groups from
 // parent to child parser.  This tests for those.
 'use strict';

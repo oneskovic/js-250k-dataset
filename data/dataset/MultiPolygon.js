@@ -1,6 +1,3 @@
-/*
- *
- */
 r360.MultiPolygon = function() {
     
     var that = this;    

@@ -1,50 +1,67 @@
-/**
- * Copyright 2014, Yahoo! Inc.
- * Copyrights licensed under the New BSD License. See the accompanying LICENSE file for terms.
- */
-/*global App, document, window */
-'use strict';
-var React = require('react');
-var debug = require('debug');
-var bootstrapDebug = debug('Example');
-var app = require('./app');
-var dehydratedState = window.App; // Sent from the server
-var Router = require('react-router');
-var HistoryLocation = Router.HistoryLocation;
-var navigateAction = require('./actions/navigate');
+var async = require('async');
+var Config = require('bower-config');
+var methods = require('./lib');
+var Cache = require('./lib/util/Cache');
 
-window.React = React; // For chrome dev tool support
-debug.enable('*');
+function RegistryClient(config, logger) {
+    this._logger = logger;
+    this._config = Config.normalise(config);
 
-bootstrapDebug('rehydrating app');
+    // Cache defaults to storage registry
+    if (!Object.prototype.hasOwnProperty.call(this._config, 'cache')) {
+        this._config.cache = this._config.storage ? this._config.storage.registry : null;
+    }
 
-function RenderApp(context, Handler){
-    bootstrapDebug('React Rendering');
-    var mountNode = document.getElementById('app');
-    var Component = React.createFactory(Handler);
-    React.render(Component({context:context.getComponentContext()}), mountNode, function () {
-        bootstrapDebug('React Rendered');
-    });
+    // Init the cache
+    this._initCache();
 }
 
-app.rehydrate(dehydratedState, function (err, context) {
-    if (err) {
-        throw err;
-    }
-    window.context = context;
+// Add every method to the prototype
+RegistryClient.prototype.lookup = methods.lookup;
+RegistryClient.prototype.search = methods.search;
+RegistryClient.prototype.list = methods.list;
+RegistryClient.prototype.register = methods.register;
+RegistryClient.prototype.unregister = methods.unregister;
 
-    var firstRender = true;
-    Router.run(app.getComponent(), HistoryLocation, function (Handler, state) {
-        if (firstRender) {
-            // Don't call the action on the first render on top of the server rehydration
-            // Otherwise there is a race condition where the action gets executed before
-            // render has been called, which can cause the checksum to fail.
-            RenderApp(context, Handler);
-            firstRender = false;
-        } else {
-            context.executeAction(navigateAction, state, function () {
-                RenderApp(context, Handler);
-            });
-        }
-    });
-});
+RegistryClient.prototype.clearCache = function (name, callback) {
+    if (typeof name === 'function') {
+        callback = name;
+        name = null;
+    }
+
+    async.parallel([
+        this.lookup.clearCache.bind(this, name),
+        this.search.clearCache.bind(this, name),
+        this.list.clearCache.bind(this)
+    ], callback);
+};
+
+RegistryClient.prototype.resetCache = function (name) {
+    this.lookup.resetCache.call(this, name);
+    this.search.resetCache.call(this, name);
+    this.list.resetCache.call(this);
+
+    return this;
+};
+
+RegistryClient.clearRuntimeCache = function () {
+    Cache.clearRuntimeCache();
+};
+
+// -----------------------------
+
+RegistryClient.prototype._initCache = function () {
+    var cache;
+    var dir = this._config.cache;
+
+    // Cache is stored/retrieved statically to ensure singularity
+    // among instances
+    cache = this.constructor._cache = this.constructor._cache || {};
+    this._cache = cache[dir] = cache[dir] || {};
+
+    this.lookup.initCache.call(this);
+    this.search.initCache.call(this);
+    this.list.initCache.call(this);
+};
+
+module.exports = RegistryClient;

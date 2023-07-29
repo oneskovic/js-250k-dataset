@@ -1,10 +1,3 @@
-/*
- * Fabtabulous! Simple tabs using Prototype
- * http://tetlaw.id.au/view/blog/fabtabulous-simple-tabs-using-prototype/
- * Andrew Tetlaw
- * version 1.1 2006-05-06
- * http://creativecommons.org/licenses/by-sa/2.5/
- */
 var Fabtabs = Class.create();
 
 Fabtabs.prototype = {

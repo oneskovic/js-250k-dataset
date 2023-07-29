@@ -8,12 +8,7 @@ define([
     ) {
         'use strict';
 
-        /**
-        *   UIContainer component class.
-        *
-        *   @class 
-        *   @constructor
-        */
+        
         var UIContainer = function(uiElementStyle) {
             UIElement.call(this, uiElementStyle);
 

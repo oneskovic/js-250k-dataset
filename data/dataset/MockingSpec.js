@@ -2,7 +2,7 @@
 
 var TestHelper = require('../../TestHelper');
 
-/* global bootstrapViewer, inject */
+
 
 var Events = require('diagram-js/lib/core/EventBus');
 

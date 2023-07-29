@@ -1,5 +1,3 @@
-// Quick and dirty 'dig' wrapper
-
 var assert = require('assert');
 var exec = require('child_process').exec;
 var sprintf = require('util').format;

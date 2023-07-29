@@ -1,11 +1,3 @@
-/**
- * @ngdoc service
- * @name $famousPipe
- * @module famous.angular
- * @description
- * Provides common helpers for the event pipe directives fa-pipe-from and fa-pipe-to.
- */
-
 angular.module('famous.angular')
   .service('$famousPipe', function() {
 

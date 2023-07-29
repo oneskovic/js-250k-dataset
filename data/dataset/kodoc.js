@@ -1,10 +1,7 @@
 (function () {
     "use strict";
 
-    /**
-     * @class ko
-     *
-     */
+    
     var ko = {};
     window.ko = ko;
 

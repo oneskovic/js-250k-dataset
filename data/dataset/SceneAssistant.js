@@ -1,5 +1,3 @@
-//>>built
-// wrapped by build app
 define("dojox/mobile/app/SceneAssistant", ["dojo","dijit","dojox"], function(dojo,dijit,dojox){
 dojo.provide("dojox.mobile.app.SceneAssistant");
 dojo.experimental("dojox.mobile.app.SceneAssistant");

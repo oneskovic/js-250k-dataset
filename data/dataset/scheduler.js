@@ -1,74 +1,39 @@
-var assert = require('assert');
-var LinkedList = require('./linked-list.js');
-var realNextTick = process.nextTick;
+var exports = module.exports;
 
-var callbackQueue = new LinkedList();
-var zoneQueue = [];
-var scheduled = false;
+var SchedulerClient = require('./schedulerClient');
+exports.SchedulerClient = SchedulerClient;
 
-function enqueueCallback(zone, receiver, fn, args) {
-  callbackQueue.push([zone, receiver, fn, args]);
-  zone._incrementScheduledTaskCount();
+/**
+* Creates a new {@link SchedulerClient} object.
+*
+* NOTE: These APIs are still in development and should not be used.
+*
+* @param {string} [credentials.subscriptionId]      The subscription identifier.
+* @param {string} [credentials.cert]                The cert value.
+* @param {string} [credentials.key]                 The key value.
+* @param {string} cloudServiceName
+*
+* @param {string} jobCollectionName
+* @param {string} [baseUri]                         The base uri.
+* @param {array}  [filters]                         Optional array of service filters
+* @return {SchedulerClient}                         A new SchedulerClient object.
+*/
+exports.createSchedulerClient = function (credentials, cloudServiceName, jobCollectionName, baseUri, filters) {
+  return new exports.SchedulerClient.SchedulerClient(credentials, cloudServiceName, jobCollectionName, baseUri, filters);
+};
 
-  if (!scheduled) {
-    scheduled = true;
-    realNextTick(processQueues);
-  }
-}
+var common = require('azure-common');
 
-function enqueueZone(zone) {
-  zoneQueue.push(zone);
-
-  if (!scheduled) {
-    scheduled = true;
-    realNextTick(processQueues);
-  }
-}
-
-function dequeueZone(zone) {
-  var length = zoneQueue.length;
-  for (var i = 0; i < length; i++) {
-    if (zoneQueue[i] === zone) {
-      zoneQueue[i] = null;
-    }
-  }
-}
-
-function processCallbacks() {
-  var callbackEntry = callbackQueue.shift();
-  for (; callbackEntry !== null; callbackEntry = callbackQueue.shift()) {
-    var zone = callbackEntry[0];
-    var receiver = callbackEntry[1];
-    var fn = callbackEntry[2];
-    var args = callbackEntry[3];
-
-    var prevZone = global.zone;
-    global.zone = null;
-    zone.apply(receiver, fn, args);
-    global.zone = prevZone;
-    zone._decrementScheduledTaskCount();
-    zone = null;
-  }
-}
-
-function processZones() {
-  var zoneEntry = zoneQueue.shift();
-  if (zoneEntry && !zoneEntry._closed) {
-    zoneEntry._finalize();
-  }
-}
-
-function processQueues() {
-  scheduled = false;
-  var zoneEntry;
-  var result;
-
-  do {
-    processCallbacks();
-    processZones();
-  } while (zoneQueue.length !== 0);
-}
-
-exports.enqueueCallback = enqueueCallback;
-exports.enqueueZone = enqueueZone;
-exports.dequeueZone = dequeueZone;
+/**
+* Creates a new CertificateCloudCredentials object.
+* Either a pair of cert / key values need to be pass or a pem file location.
+*
+* @param {string} credentials.subscription  The subscription identifier.
+* @param {string} [credentials.cert]        The certificate.
+* @param {string} [credentials.key]         The certificate key.
+* @param {string} [credentials.pem]         The PEM file content.
+* @return {CertificateCloudCredentials}
+*/
+exports.createCertificateCloudCredentials = function (credentials) {
+  return new common.CertificateCloudCredentials(credentials);
+};

@@ -1,8 +1,3 @@
-/**
- * Results of joins between our tables of test data.
- * @type {Object}
- */
-
 module.exports = {
 
 

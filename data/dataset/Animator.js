@@ -1,16 +1,3 @@
-/**
-	A basic animation component. Call play to start the animation. The animation will run for
-	the period of its duration, measured in milliseconds. The onStep event will fire in quick 
-	succession and should be handled to do something based on the value property. The value 
-	property will progress from startValue to endValue during the animation based on a 
-	the specified function referenced by the easingFunction property. The stop method may
-	be called to manually stop an in-progress animation; calling it will fire the onStop event.
-	When the animation completes normally, the onEnd event is fired.
-
-	Event handlers may be specified as functions. If so the handler function will be used
-	to handle the event directly, without sending the event to its owner or bubbling it.
-	The context property can be used to call the supplied event functions in a particular "this" context.
-*/
 enyo.kind({
 	name: "enyo.Animator",
 	kind: "Component",

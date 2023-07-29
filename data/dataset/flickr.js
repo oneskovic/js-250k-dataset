@@ -1,6 +1,3 @@
-// Flickr plugin for Leaflet
-// https://github.com/shurshur/Leaflet.Flickr
-
 L.Flickr = L.FeatureGroup.extend({
 	options: {
 		maxLoad: 100, // max photos loaded in one request (should be less or equal 100)

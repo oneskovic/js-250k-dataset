@@ -1,7 +1,7 @@
 define(function(require, exports, module) {
 "use strict";
 
-/************** modes ***********************/
+
 /**
  * An array containing information about rendering modes.
  */

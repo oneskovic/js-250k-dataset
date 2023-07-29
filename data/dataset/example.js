@@ -1,77 +1,58 @@
-var colors = require('./colors');
+var engine = require('../.')
+  , aprint = require('printarray')
+  , field = engine( {
+    dt: 0.1
+  , gamma: 0.02
+  , eqn: "wave"        // put "diffusion" here to solve the heat eqn.
+  })
 
-//colors.mode = "browser";
 
-var test = colors.red("hopefully colorless output");
-console.log('Rainbows are fun!'.rainbow);
-console.log('So '.italic + 'are'.underline + ' styles! '.bold + 'inverse'.inverse); // styles not widely supported
-console.log('Chains are also cool.'.bold.italic.underline.red); // styles not widely supported
-//console.log('zalgo time!'.zalgo);
-console.log(test.stripColors);
-console.log("a".grey + " b".black);
-console.log("Zebras are so fun!".zebra);
-console.log('background color attack!'.black.whiteBG)
+var dims = {
+  x: 12
+, y: 12
+}
+/*
+ * This sets up the dimensions of the field.
+ * Everytime setResolution is called the field
+ * arrays are reset (new Typed Arrays of given size
+ * are created.)
+ */
+field.setResolution(dims.x, dims.y)
 
-//
-// Remark: .strikethrough may not work with Mac OS Terminal App
-//
-console.log("This is " + "not".strikethrough + " fun.");
-console.log(colors.rainbow('Rainbows are fun!'));
-console.log(colors.italic('So ') + colors.underline('are') + colors.bold(' styles! ') + colors.inverse('inverse')); // styles not widely supported
-console.log(colors.bold(colors.italic(colors.underline(colors.red('Chains are also cool.'))))); // styles not widely supported
-//console.log(colors.zalgo('zalgo time!'));
-console.log(colors.stripColors(test));
-console.log(colors.grey("a") + colors.black(" b"));
+var src = {
+  x: 3
+, y: 5
+, mag: 1
+}
 
-colors.addSequencer("america", function(letter, i, exploded) {
-  if(letter === " ") return letter;
-  switch(i%3) {
-    case 0: return letter.red;
-    case 1: return letter.white;
-    case 2: return letter.blue;
-  }
-});
+/*
+ * You can add sources before you begin the timesteps (updates)
+ * or during. Note if you begin updating field (progressing in time)
+ * before adding a source the field will have no energy and will not
+ * evolve (the 2D diffusion of zero is zero).
+ */
+field.addSource(src.x, src.y, src.mag)
 
-colors.addSequencer("random", (function() {
-  var available = ['bold', 'underline', 'italic', 'inverse', 'grey', 'yellow', 'red', 'green', 'blue', 'white', 'cyan', 'magenta'];
+/*
+ * Run the wave eqn solver.
+ * Do something cool with the
+ * coefficients: plot with html5 canvas
+ * or gnuplot or whatever, or turn it into
+ * animations within a website or video game.
+ */
+var steps = 5
+var tic = setInterval( function () {
 
-  return function(letter, i, exploded) {
-    return letter === " " ? letter : letter[available[Math.round(Math.random() * (available.length - 1))]];
-  };
-})());
+  var coeffs = field.update()
+  //
+  // Render coeffs
+  //
 
-console.log("AMERICA! F--K YEAH!".america);
-console.log("So apparently I've been to Mars, with all the little green men. But you know, I don't recall.".random);
+  aprint(coeffs, 5, [dims.x, dims.y])
+  console.log()
+  steps--
 
-//
-// Custom themes
-//
+  if (steps === 0)
+    clearInterval(tic)
 
-// Load theme with JSON literal
-colors.setTheme({
-  silly: 'rainbow',
-  input: 'grey',
-  verbose: 'cyan',
-  prompt: 'grey',
-  info: 'green',
-  data: 'grey',
-  help: 'cyan',
-  warn: 'yellow',
-  debug: 'blue',
-  error: 'red'
-});
-
-// outputs red text
-console.log("this is an error".error);
-
-// outputs yellow text
-console.log("this is a warning".warn);
-
-// outputs grey text
-console.log("this is an input".input);
-
-// Load a theme from file
-colors.setTheme('./themes/winston-dark.js');
-
-console.log("this is an input".input);
-
+} , 1000 )

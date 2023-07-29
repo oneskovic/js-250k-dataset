@@ -1,7 +1,3 @@
-/**
-*/
-
-
 var fun = require("../../uki-core/function"),
     utils = require("../../uki-core/utils"),
     Campaign = require("../model/campaign").Campaign,
@@ -71,13 +67,10 @@ function _fillCSV(accountId, callback) {
 
 }
 
-/**
- * Generates the 10 digit hash needed for non-fb employees to view a demo ad
- *
- * adgroup_id string   a string of the adgroup id to be shown
+/* * Generates the 10 digit hash needed for non-fb employees to view a demo ad
+  * adgroup_id string   a string of the adgroup id to be shown
  * return: string the 10 digit hash that must match the 'h' param
- *
- */
+  */
 function _buildDemoAdLink(base, adgroup_id, hash) {
   var str = base + '?demo_ad=' + adgroup_id +
     '&h=' + hash;

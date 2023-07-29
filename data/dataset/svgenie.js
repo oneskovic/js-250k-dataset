@@ -1,4 +1,3 @@
-/* global canvg window document */
 /*
  * svgenie
  * https://github.com/Causata/svgenie

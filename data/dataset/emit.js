@@ -1,8 +1,6 @@
 'use strict';
 
-/**
- * Benchmark related modules.
- */
+
 var benchmark = require('benchmark');
 
 /**

@@ -1,8 +1,3 @@
-/**
- * This is a drug order form 
- * containing various parameters of placing an order including name,strength,quantity 
- * frequency and duration
- */
 Ext.define("Screener.view.DrugStore", {
     xtype: 'drugStore',
 

@@ -1,8 +1,7 @@
 var protoclass = require("protoclass");
 var utils      = require("../../../utils");
 
-/**
- */
+
 
 function AttributesBinding(attributes, rawAttributes, component, view) {
   this.attributes    = attributes;
@@ -11,13 +10,11 @@ function AttributesBinding(attributes, rawAttributes, component, view) {
   this.view          = view;
 }
 
-/**
- */
+
 
 module.exports = protoclass(AttributesBinding, {
 
-  /**
-   */
+  /*  */
 
   bind: function() {
     this.bindings = [];
@@ -31,8 +28,7 @@ module.exports = protoclass(AttributesBinding, {
     }
   },
 
-  /**
-   */
+  /*  */
 
   _bindAttr: function(k, v) {
     var self = this;
@@ -46,8 +42,7 @@ module.exports = protoclass(AttributesBinding, {
 
   },
 
-  /**
-   */
+  /*  */
 
   unbind: function() {
     if (!this.bindings) return;

@@ -1,21 +1,6 @@
 var utils = require('./utils');
 
-/**
- * A middleware that provides host and/or location-based routing. Modifies
- * `env.scriptName` and `env.pathInfo` for all downstream apps such that the
- * part relevant for dispatch is in scriptName and the rest in pathInfo.
- * This should be taken into account in downstream apps that need to create
- * links, for example.
- *
- *   var app = strata.urlMap();
- *
- *   app.map('/files', function (env, callback) {
- *     // env.scriptName is '/files', env.pathInfo is remainder of URL
- *   });
- *
- * Note: Dispatch is done in such a way that the longest paths are tried first
- * since they are the most specific.
- */
+
 module.exports = function (app) {
   app = app || utils.notFound;
 

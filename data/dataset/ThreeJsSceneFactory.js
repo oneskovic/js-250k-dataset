@@ -1,11 +1,3 @@
-// ----------------------------------------------------------------------------
-// File: ThreeJsSceneFactory.js
-//
-// Copyright (c) 2014 VoodooJs Authors
-// ----------------------------------------------------------------------------
-
-
-
 /**
  * Creates ThreeJs scenes customized for each View.
  *

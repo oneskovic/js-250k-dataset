@@ -1,7 +1,4 @@
 /**
- * @depend ../sinon.js
- */
-/**
  * Format functions
  *
  * @author Christian Johansen (christian@cjohansen.no)

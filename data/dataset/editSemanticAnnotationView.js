@@ -1,7 +1,3 @@
-/**
- * UI Component to edit or create a single semantic annotation payload. Currently just supports free
- * text annotations.
- */
 define([ 'text!templates/editSemanticAnnotationView.html', 'views/annotationTypes' ], function(layoutTemplate,
 		annotationTypes) {
 

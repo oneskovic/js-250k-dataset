@@ -1,3 +1,5 @@
+if(!dojo._hasResource["dijit.ProgressBar"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
+dojo._hasResource["dijit.ProgressBar"] = true;
 dojo.provide("dijit.ProgressBar");
 
 dojo.require("dojo.fx");
@@ -7,43 +9,45 @@ dojo.require("dijit._Widget");
 dojo.require("dijit._Templated");
 
 dojo.declare("dijit.ProgressBar", [dijit._Widget, dijit._Templated], {
-	// summary: A progress indication widget
+	// summary:
+	// a progress widget
 	//
-	// example:
-	// |	<div dojoType="ProgressBar"
-	// |		 places="0"
-	// |		 progress="..." maximum="...">
-	// |	</div>
-	//
+	// usage:
+	// <div dojoType="ProgressBar"
+	//   places="0"
+	//   progress="..." maximum="..."></div>
+
 	// progress: String (Percentage or Number)
-	// 	initial progress value.
-	// 	with "%": percentage value, 0% <= progress <= 100%
-	// 	or without "%": absolute value, 0 <= progress <= maximum
+	// initial progress value.
+	// with "%": percentage value, 0% <= progress <= 100%
+	// or without "%": absolute value, 0 <= progress <= maximum
 	progress: "0",
 
 	// maximum: Float
-	// 	max sample number
+	// max sample number
 	maximum: 100,
 
 	// places: Number
-	// 	number of places to show in values; 0 by default
+	// number of places to show in values; 0 by default
 	places: 0,
 
 	// indeterminate: Boolean
-	// 	If false: show progress.
-	// 	If true: show that a process is underway but that the progress is unknown
+	// false: show progress
+	// true: show that a process is underway but that the progress is unknown
 	indeterminate: false,
 
-	templatePath: dojo.moduleUrl("dijit", "templates/ProgressBar.html"),
+	templateString:"<div class=\"dijitProgressBar dijitProgressBarEmpty\"\n\t><div waiRole=\"progressbar\" tabindex=\"0\" dojoAttachPoint=\"internalProgress\" class=\"dijitProgressBarFull\"\n\t\t><div class=\"dijitProgressBarTile\"></div\n\t\t><span style=\"visibility:hidden\">&nbsp;</span\n\t></div\n\t><div dojoAttachPoint=\"label\" class=\"dijitProgressBarLabel\">&nbsp;</div\n\t><img dojoAttachPoint=\"inteterminateHighContrastImage\" class=\"dijitProgressBarIndeterminateHighContrastImage\"\n\t></img\n></div>\n",
 
 	_indeterminateHighContrastImagePath:
 		dojo.moduleUrl("dijit", "themes/a11y/indeterminate_progress.gif"),
 
 	// public functions
 	postCreate: function(){
-		this.inherited(arguments);
+		dijit.ProgressBar.superclass.postCreate.apply(this, arguments);
+
 		this.inteterminateHighContrastImage.setAttribute("src",
 			this._indeterminateHighContrastImagePath);
+
 		this.update();
 	},
 
@@ -52,14 +56,11 @@ dojo.declare("dijit.ProgressBar", [dijit._Widget, dijit._Templated], {
 		//
 		// attributes: may provide progress and/or maximum properties on this parameter,
 		//	see attribute specs for details.
-		dojo.mixin(this, attributes || {});
-		var tip = this.internalProgress;
+		dojo.mixin(this, attributes||{});
 		var percent = 1, classFunc;
 		if(this.indeterminate){
 			classFunc = "addClass";
-			dijit.removeWaiState(tip, "valuenow");
-			dijit.removeWaiState(tip, "valuemin");
-			dijit.removeWaiState(tip, "valuemax");
+			dijit.wai.removeAttr(this.internalProgress, "waiState", "valuenow");
 		}else{
 			classFunc = "removeClass";
 			if(String(this.progress).indexOf("%") != -1){
@@ -71,22 +72,19 @@ dojo.declare("dijit.ProgressBar", [dijit._Widget, dijit._Templated], {
 			}
 			var text = this.report(percent);
 			this.label.firstChild.nodeValue = text;
-			dijit.setWaiState(tip, "describedby", this.label.id);
-			dijit.setWaiState(tip, "valuenow", this.progress);
-			dijit.setWaiState(tip, "valuemin", 0);
-			dijit.setWaiState(tip, "valuemax", this.maximum);
+			dijit.wai.setAttr(this.internalProgress, "waiState", "valuenow", text);
 		}
 		dojo[classFunc](this.domNode, "dijitProgressBarIndeterminate");
-		tip.style.width = (percent * 100) + "%";
+		this.internalProgress.style.width = (percent * 100) + "%";
 		this.onChange();
 	},
 
 	report: function(/*float*/percent){
-		// summary: Generates message to show; may be overridden by user
-		return dojo.number.format(percent, { type: "percent", places: this.places, locale: this.lang });
+		// Generates message to show; may be overridden by user
+		return dojo.number.format(percent, {type: "percent", places: this.places, locale: this.lang});
 	},
 
-	onChange: function(){
-		// summary: User definable function fired when progress updates.
-	}
+	onChange: function(){}
 });
+
+}

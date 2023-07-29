@@ -1,17 +1,3 @@
-/*
- * JavaScript Templates 2.4.1
- * https://github.com/blueimp/JavaScript-Templates
- *
- * Copyright 2011, Sebastian Tschan
- * https://blueimp.net
- *
- * Licensed under the MIT license:
- * http://www.opensource.org/licenses/MIT
- *
- * Inspired by John Resig's JavaScript Micro-Templating:
- * http://ejohn.org/blog/javascript-micro-templating/
- */
-
 /*jslint evil: true, regexp: true, unparam: true */
 /*global document, define */
 

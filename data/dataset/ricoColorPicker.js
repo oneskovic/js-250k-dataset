@@ -1,11 +1,3 @@
-// ===================================================================
-// Original author: Matt Kruse <matt@mattkruse.com>
-// WWW: http://www.mattkruse.com/
-//
-// Adapted to Rico by Matt Brown
-// ===================================================================
-
-
 Rico.ColorPicker = Class.create();
 
 Rico.ColorPicker.prototype = {

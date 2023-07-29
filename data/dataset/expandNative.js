@@ -1,9 +1,7 @@
 (function($) {'use strict'
     var f = Function.prototype;
     var oo = Object.prototype;
-    /*
-     *used to creat a new object
-     */
+    
     oo.create = Object.create ||
     function(o) {
         var f = function() {

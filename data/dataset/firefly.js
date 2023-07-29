@@ -1,17 +1,3 @@
-/**
-
-hey dumbass.  MVC.
-GraphDash model is a matrix specifying which graphs are active in which slots,
-how many rows there are, etc.
-GraphDash Controller listens for events, maybe also attaches handlers?
-GraphDash View calls things like addTableRow
-
-GraphEdit Model is just the list of graphs and maybe the functionality for delayed loading
-GraphEdit Controller
-
-*/
-
-
 goog.provide('firefly.init');
 goog.provide('firefly.ffURL');
 // goog.provide('firefly.getToken');

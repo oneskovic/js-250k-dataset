@@ -1,7 +1,3 @@
-/**
- * Created by Stefano on 06/04/2014.
- */
-
 RBTreeIterator.prototype = new Iterator();
 RBTreeIterator.prototype.constructor = RBTreeIterator;
 

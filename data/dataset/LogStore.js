@@ -3,12 +3,7 @@
 var Utils = require('../Utils');
 var RingBuffer = require('../RingBuffer');
 
-/**
- * Records log events in an array or ring buffer.
- *
- * @param maxRecords the size of the ring buffer.
- * @constructor
- */
+
 function LogStore(maxRecords) {
 	this.logRecords = maxRecords ? new RingBuffer(maxRecords) : [];
 }

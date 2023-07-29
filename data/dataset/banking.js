@@ -1,8 +1,3 @@
-
-/*!
- * banking.js
- */
-
 /**
  * [request description]
  * @type {[type]}

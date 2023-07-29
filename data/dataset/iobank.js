@@ -2,9 +2,7 @@ if (typeof yasp == 'undefined') yasp = { };
 
 (function() {
 
-  /** a collection of pins
-   * @constructor
-   */
+  
   yasp.IOBank = function () {
     this.pins = [];
   };

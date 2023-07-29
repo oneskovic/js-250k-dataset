@@ -1,8 +1,3 @@
-/**
- * @class Simplified A* algorithm: all edges have a value of 1
- * @augments ROT.Path
- * @see ROT.Path
- */
 ROT.Path.AStar = function(toX, toY, passableCallback, options) {
 	ROT.Path.call(this, toX, toY, passableCallback, options);
 
@@ -13,10 +8,7 @@ ROT.Path.AStar = function(toX, toY, passableCallback, options) {
 }
 ROT.Path.AStar.extend(ROT.Path);
 
-/**
- * Compute a path from a given point
- * @see ROT.Path#compute
- */
+
 ROT.Path.AStar.prototype.compute = function(fromX, fromY, callback) {
 	this._todo = [];
 	this._done = {};

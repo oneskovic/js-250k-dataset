@@ -1,7 +1,3 @@
-/**
- * Layout class for {@link Ext.form.field.HtmlEditor} fields. Sizes the toolbar, textarea, and iframe elements.
- * @private
- */
 Ext.define('Ext.layout.component.field.HtmlEditor', {
     extend: 'Ext.layout.component.field.Field',
     alias: ['layout.htmleditor'],

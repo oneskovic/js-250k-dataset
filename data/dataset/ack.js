@@ -1,19 +1,7 @@
 dojo.provide("dojox.cometd.ack");
 dojo.require("dojox.cometd._base");
 
-/*
- * This file provides the dojox cometd ack extension which
- * acknowledges the messages received in /meta/connect responses.
- * Each meta/connect is sent with the id of the last successful meta/connect
- * received.  The server uses this information to manage a queue of unacknowleged
- * messages.
- *
- * To use, add dojo.require("dojox.cometd.ack"); and if the handshake will be sent
- * with ext:{ack:true}.  If the server supports the same extension, then the 
- * mechanism will be initialized.  The dojox.cometd.ackEnabled field may also be
- * used to optionally enable/disable the extension before init of cometd.
- *
- */
+
 dojox.cometd._ack = new function(){
 	var supportAcks = false;
 	var lastAck = -1;

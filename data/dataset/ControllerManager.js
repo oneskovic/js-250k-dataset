@@ -7,12 +7,7 @@ define([
 
 function($, _, Backbone, Plumage) {
 
-  /**
-   * Creates and keeps the singleton Controller instances.
-   *
-   * The instance of ControllerManager. Access the ControllerManager through the global App.
-   * @constructs Plumage.ControllerManager
-   */
+  
   var ControllerManager = function(app, controllerNames) {
     this.app = app;
 

@@ -1,7 +1,3 @@
-/**
- * @class YAHOO.ext.grid.CellEditor
- * Base class for all EditorGrid editors
- */
 YAHOO.ext.grid.CellEditor = function(element){
     this.colIndex = null;
     this.rowIndex = null;

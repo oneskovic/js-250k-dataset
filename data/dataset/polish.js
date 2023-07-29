@@ -1,14 +1,3 @@
-/* Polish keyboard layouts
- * contains layout: 'polish-qwerty'
- * Author: Piotr Roznicki
- *
- * To use:
- *  Point to this js file into your page header: <script src="layouts/polish.js" type="text/javascript"></script>
- *  Initialize the keyboard using: $('input').keyboard({ layout: 'polish-qwerty' });
- *
- * license for this file: WTFPL, unless the source layout site has a problem with me using them as a reference
- */
-
 jQuery.keyboard.layouts['polish-qwerty'] = {
 	'name' : 'polish-qwerty',
 	'lang' : ['pl'],

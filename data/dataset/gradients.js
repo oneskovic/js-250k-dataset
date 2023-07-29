@@ -1,25 +1,3 @@
-/*! 
-* Copyright (c) 2011 Tom Ellis (http://www.webmuse.co.uk)
-* Linear and Radial Gradient cssHook for jQuery
-* Limitations:
-  - Works with jQuery 1.4.3 and higher
-  - Works in Firefox 3.6+, Safari 5.1+, Chrome 13+, Opera 11.10+, IE9+ 
-  - Radial Gradients DO NOT work in Opera yet (Doesn't make sense I Know!)
-  - Only works for background and background image CSS properties
-* Licensed under the MIT License (LICENSE.txt).
-
-
-
-Need to somehow split on each color animation
-
-two - colors
-
-three + position and colours
-
-
-In $.fn.custom try to split
-
-*/
 (function($) {
 
 	var div = document.createElement( "div" ),
@@ -45,12 +23,12 @@ In $.fn.custom try to split
 		divStyle.cssText = cssLinear,
 		linearSettings = function ( value ) {
 			var parts = rLinearSettings.exec( value );
-	        value = value.replace( parts[2] , $.support.linearGradient );
+			value = value.replace( new RegExp(parts[2], 'g') , $.support.linearGradient );
 			return value;
 		},
 		radialSettings = function ( value ) {
 			var parts = rRadialSettings.exec( value );			
-			value = value.replace( parts[2] , $.support.radialGradient );
+			value = value.replace( new RegExp(parts[2], 'g') , $.support.radialGradient );
 			return value;
 		};
 
@@ -77,35 +55,7 @@ In $.fn.custom try to split
 				$.cssHooks[ prop ] = {
 
 					set: function( elem, value ) {
-						
-						//EXTRA - for animation
-						/*
-						if( $.type(value) == 'object' ) {
-							value = $.Color( value );
-							
-							if ( !$.support.rgba && value._rgba[ 3 ] !== 1 ) {
-								var curElem = prop === "backgroundColor" ? elem.parentNode : elem,
-									backgroundColor;
-								do {
-									backgroundColor = jQuery.curCSS( curElem, "backgroundColor" );
-									if ( backgroundColor !== "" && backgroundColor !== "transparent" ) {
-										break;
-									}
-
-								} while ( ( elem = elem.parentNode ) && elem.style );
-
-								value = value.blend( $.Color( backgroundColor || "_default" ) );
-							}
-
-							value = value.toRgbaString();	
-							value = '-moz-linear-gradient('+value+', blue)';
-							elem.style[ prop ] = value;
-							//console.log( value );
-							return true;
-						}
-						*/
-						//END EXTRA
-						
+												
 						if( rLinear.test( value ) ){
 							elem.style[ prop ] = linearSettings( value );
 						} else if ( rRadial.test( value ) ) {
@@ -116,24 +66,9 @@ In $.fn.custom try to split
 					}
 				};
 				
-				/*
-				$.fx.step[ prop ] = function(fx){
-					
-					if ( !fx.colorInit ) {
-						fx.start = $.Color( fx.elem, prop );
-						fx.end = $.Color( fx.end );
-						fx.colorInit = true;
-					}
-					//console.log( fx.end );
-
-					$.cssHooks[ prop ].set( fx.elem, fx.start.transition( fx.end, fx.pos ) );
-				}
-				*/
-
 			});
 
 	    }
 	
-		div = divStyle = null;    
-  
+		div = divStyle = null; 
 })(jQuery);

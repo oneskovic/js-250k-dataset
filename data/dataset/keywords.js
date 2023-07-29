@@ -1,10 +1,3 @@
-/**
- * (C) Copyright 2007-2008 Jeremy Maitin-Shepard
- *
- * Use, modification, and distribution are subject to the terms specified in the
- * COPYING file.
- **/
-
 {
     let _keyword_argument_list = [];
     let _get_keyword_argument_setter = function _get_keyword_argument_setter (name) {

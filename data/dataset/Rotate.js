@@ -1,148 +1,114 @@
-/**
- * @class Scene graph node which defines a rotation modelling transform to apply to the objects in its subgraph
- * @extends SceneJS.Node
- */
-SceneJS.Rotate = SceneJS_NodeFactory.createNodeType("rotate");
+Ext.define('Ext.event.recognizer.Rotate', {
+    extend: 'Ext.event.recognizer.MultiTouch',
 
-SceneJS.Rotate.prototype._init = function(params) {
+    requiredTouchesCount: 2,
 
-    if (this._core.useCount == 1) { // This node is the resource definer
+    handledEvents: ['rotatestart', 'rotate', 'rotateend'],
 
-        SceneJS_modelXFormStack.buildCore(this._core);
-        
-        this.setMultOrder(params.multOrder);
+    /**
+     * @member Ext.dom.Element
+     * @event rotatestart
+     * Fired once when a rotation has started.
+     * @param {Ext.event.Event} event The {@link Ext.event.Event} event encapsulating the DOM event.
+     * @param {HTMLElement} node The target of the event.
+     * @param {Object} options The options object passed to Ext.mixin.Observable.addListener.
+     */
 
-        this.setAngle(params.angle);
+    /**
+     * @member Ext.dom.Element
+     * @event rotate
+     * Fires continuously when there is rotation (the touch must move for this to be fired).
+     * When listening to this, ensure you know about the {@link Ext.event.Event#angle} and {@link Ext.event.Event#rotation}
+     * properties in the `event` object.
+     * @param {Ext.event.Event} event The {@link Ext.event.Event} event encapsulating the DOM event.
+     * @param {HTMLElement} node The target of the event.
+     * @param {Object} options The options object passed to Ext.mixin.Observable.addListener.
+     */
 
-        this.setXYZ({
-            x: params.x,
-            y: params.y,
-            z: params.z
-        });
+    /**
+     * @member Ext.dom.Element
+     * @event rotateend
+     * Fires when a rotation event has ended.
+     * @param {Ext.event.Event} event The {@link Ext.event.Event} event encapsulating the DOM event.
+     * @param {HTMLElement} node The target of the event.
+     * @param {Object} options The options object passed to Ext.mixin.Observable.addListener.
+     */
 
-        var core = this._core;
+    /**
+     * @property {Number} angle
+     * The angle of the rotation.
+     *
+     * **This is only available when the event type is `rotate`**
+     * @member Ext.event.Event
+     */
 
-        this._core.buildMatrix = function() {
-            core.matrix = SceneJS_math_rotationMat4v(core.angle * Math.PI / 180.0, [core.x, core.y, core.z]);
-        };
+    /**
+     * @property {Number} rotation
+     * A amount of rotation, since the start of the event.
+     *
+     * **This is only available when the event type is `rotate`**
+     * @member Ext.event.Event
+     */
+
+    startAngle: 0,
+
+    lastTouches: null,
+
+    lastAngle: null,
+
+    onTouchMove: function(e) {
+        if (!this.isTracking) {
+            return;
+        }
+
+        var touches = Array.prototype.slice.call(e.touches),
+            lastAngle = this.lastAngle,
+            firstPoint, secondPoint, angle, nextAngle, previousAngle, diff;
+
+        firstPoint = touches[0].point;
+        secondPoint = touches[1].point;
+
+        angle = firstPoint.getAngleTo(secondPoint);
+
+        if (lastAngle !== null) {
+            diff = Math.abs(lastAngle - angle);
+            nextAngle = angle + 360;
+            previousAngle = angle - 360;
+
+            if (Math.abs(nextAngle - lastAngle) < diff) {
+                angle = nextAngle;
+            }
+            else if (Math.abs(previousAngle - lastAngle) < diff) {
+                angle = previousAngle;
+            }
+        }
+
+        this.lastAngle = angle;
+
+        if (!this.isStarted) {
+            this.isStarted = true;
+
+            this.startAngle = angle;
+
+            this.fire('rotatestart', e, touches, {
+                touches: touches,
+                angle: angle,
+                rotation: 0
+            });
+        }
+        else {
+            this.fire('rotate', e, touches, {
+                touches: touches,
+                angle: angle,
+                rotation: angle - this.startAngle
+            });
+        }
+
+        this.lastTouches = touches;
+    },
+
+    fireEnd: function(e) {
+        this.lastAngle = null;
+        this.fire('rotateend', e, this.lastTouches);
     }
-};
-
-/**
- * Get Model matrix
- * @return {*}
- */
-SceneJS.Rotate.prototype.getModelMatrix = function() {
-    if (this._core.dirty) {
-        this._core.build();
-    }
-    return this._core.matrix;
-};
-
-/**
- * Get World matrix. That's the multiplication of this node's Model matrix by the World matrix of the the next
- * tranform (scale, rotate, translate etc) node on the path to the scene root.
- * @return {*}
- */
-SceneJS.Rotate.prototype.getWorldMatrix = function() {
-    if (this._core.dirty) {
-        this._core.build();
-    }
-    return Array.apply( [], this._core.mat);
-};
-
-/**
- * Sets the multiplication order of this node's transform matrix with respect to the parent modeling transform
- * in the scene graph.
- *
- * @param {String} multOrder Mulplication order - "post" and "pre"
- */
-SceneJS.Rotate.prototype.setMultOrder = function(multOrder) {
-
-    multOrder = multOrder || "post";
-
-    if (multOrder != "post" && multOrder != "pre") {
-
-        throw SceneJS_error.fatalError(
-                SceneJS.errors.NODE_CONFIG_EXPECTED,
-                "Illegal multOrder for rotate node - '" + multOrder + "' should be 'pre' or 'post'");
-    }
-
-    this._core.multOrder = multOrder;
-
-    this._core.setDirty();
-    this._engine.display.imageDirty = true;
-};
-
-SceneJS.Rotate.prototype.setAngle = function(angle) {
-    this._core.angle = angle || 0;
-    this._core.setDirty();
-    this._engine.display.imageDirty = true;
-};
-
-SceneJS.Rotate.prototype.getAngle = function() {
-    return this._core.angle;
-};
-
-SceneJS.Rotate.prototype.setXYZ = function(xyz) {
-
-    xyz = xyz || {};
-
-    this._core.x = xyz.x || 0;
-    this._core.y = xyz.y || 0;
-    this._core.z = xyz.z || 0;
-
-    this._core.setDirty();
-
-    this._engine.display.imageDirty = true;
-};
-
-SceneJS.Rotate.prototype.getXYZ = function() {
-    return {
-        x: this._core.x,
-        y: this._core.y,
-        z: this._core.z
-    };
-};
-
-SceneJS.Rotate.prototype.setX = function(x) {
-    this._core.x = x;
-    this._core.setDirty();
-    this._engine.display.imageDirty = true;
-};
-
-SceneJS.Rotate.prototype.getX = function() {
-    return this._core.x;
-};
-
-SceneJS.Rotate.prototype.setY = function(y) {
-    this._core.y = y;
-    this._core.setDirty();
-    this._engine.display.imageDirty = true;
-};
-
-SceneJS.Rotate.prototype.getY = function() {
-    return this._core.y;
-};
-
-SceneJS.Rotate.prototype.setZ = function(z) {
-    this._core.z = z;
-    this._core.setDirty();
-    this._engine.display.imageDirty = true;
-};
-
-SceneJS.Rotate.prototype.getZ = function() {
-    return this._core.z;
-};
-
-SceneJS.Rotate.prototype.incAngle = function(angle) {
-    this._core.angle += angle;
-    this._core.setDirty();
-    this._engine.display.imageDirty = true;
-};
-
-SceneJS.Rotate.prototype._compile = function(ctx) {
-    SceneJS_modelXFormStack.push(this._core);
-    this._compileNodes(ctx);
-    SceneJS_modelXFormStack.pop();
-};
+});

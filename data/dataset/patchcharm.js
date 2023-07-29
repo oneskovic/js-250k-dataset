@@ -1,13 +1,3 @@
-/*
-
-patchcharm.js
-=============
-
-A patch to charm to add text scrolling capability
-and also a fix to `erase()`.
-
-*/
-
 var charm = require('charm')
 var Charm = charm.Charm
 

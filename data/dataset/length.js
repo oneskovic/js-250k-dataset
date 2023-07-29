@@ -6,37 +6,7 @@ Ember.ValidationError.addMessages({
   'wrongLength': "is the wrong length (should be @{value} characters)"
 });
 
-/**
-   @class
 
-   Validates whether the attribute has the supplied length.
-
-   Options:
-
-    - `minimum` - The value must have at least this length
-    - `is` - The value must equal this length
-    - `maximum` - The value must have at most this length
-
-    When passing a number as option to the validation, it will use it as the `is` option:
-
-        validations: {
-          zipCode: {
-            length: 5
-          }
-        }
-
-    Another implementation could be:
-
-        validations: {
-          zipCode: {
-            length: {
-              is: 5
-            }
-          }
-        }
-
-   @extends Ember.Validator
- */
 Ember.Validators.LengthValidator = Ember.Validator.extend(/** @scope Ember.Validators.LengthValidator */{
 
   /** @private */

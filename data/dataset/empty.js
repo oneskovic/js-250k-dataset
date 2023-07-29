@@ -1,10 +1,3 @@
-/**
- * Scaffolding Command
- *
- * @module greppy/cli/scaffolding/controller/empty
- * @author Hermann Mayer <hermann.mayer92@gmail.com>
- */
-
 exports.run = function(options, printHints, callback)
 {
     // Print the general header

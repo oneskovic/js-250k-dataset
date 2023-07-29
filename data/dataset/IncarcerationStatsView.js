@@ -1,7 +1,3 @@
-//
-// This computes and displays Incarveration statistics about the Cook County Jail System.
-//
-
 define([
   // Libraries
   'views/JailView', 'd3',

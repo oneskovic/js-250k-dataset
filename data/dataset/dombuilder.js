@@ -1,11 +1,3 @@
-//////////////////////////////////////
-//                                  //
-// JS domBuilder Library            //
-//                                  //
-// Tim Caswell <tim@creationix.com> //
-//                                  //
-//////////////////////////////////////
-
 ( // Module boilerplate to support component, browser globals and AMD.
   (typeof module === "object" && typeof module.exports === "object" && function (m) { module.exports = m(); }) ||
   (typeof define === "function" && function (m) { define("dombuilder", m); }) ||

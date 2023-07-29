@@ -1,12 +1,3 @@
-/**
- * This is my example module
- * @module ExampleModule
- * @example
- *
- *     var bar;
- *
- */
-
 YUI.add('examplemodule', function (Y) {
         Y.namespace('mywidget');
         

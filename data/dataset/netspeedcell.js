@@ -1,6 +1,3 @@
-/**
- * Module dependencies
- */
 var fs = require('fs');
 var dns = require('dns');
 var path  = require('path');

@@ -1,108 +1,79 @@
-var cmp = require('../lib/cmp');
-var should = require('chai').should();
+var test = require('tape');
+var equal = require('../');
+var isArguments = require('../lib/is_arguments.js');
+var objectKeys = require('../lib/keys.js');
 
-describe('cmp', function() {
+test('equal', function (t) {
+    t.ok(equal(
+        { a : [ 2, 3 ], b : [ 4 ] },
+        { a : [ 2, 3 ], b : [ 4 ] }
+    ));
+    t.end();
+});
 
-  describe('#eq', function() {
+test('not equal', function (t) {
+    t.notOk(equal(
+        { x : 5, y : [6] },
+        { x : 5, y : 6 }
+    ));
+    t.end();
+});
+
+test('nested nulls', function (t) {
+    t.ok(equal([ null, null, null ], [ null, null, null ]));
+    t.end();
+});
+
+test('strict equal', function (t) {
+    t.notOk(equal(
+        [ { a: 3 }, { b: 4 } ],
+        [ { a: '3' }, { b: '4' } ],
+        { strict: true }
+    ));
+    t.end();
+});
+
+test('non-objects', function (t) {
+    t.ok(equal(3, 3));
+    t.ok(equal('beep', 'beep'));
+    t.ok(equal('3', 3));
+    t.notOk(equal('3', 3, { strict: true }));
+    t.notOk(equal('3', [3]));
+    t.end();
+});
+
+test('arguments class', function (t) {
+    t.ok(equal(
+        (function(){return arguments})(1,2,3),
+        (function(){return arguments})(1,2,3),
+        "compares arguments"
+    ));
+    t.notOk(equal(
+        (function(){return arguments})(1,2,3),
+        [1,2,3],
+        "differenciates array and arguments"
+    ));
+    t.end();
+});
+
+test('test the arguments shim', function (t) {
+    t.ok(isArguments.supported((function(){return arguments})()));
+    t.notOk(isArguments.supported([1,2,3]));
     
-    it('should know if these buffers are equal', function() {
-      var buf1 = new Buffer([]);
-      var buf2 = new Buffer([]);
-      cmp.eq(buf1, buf2).should.equal(true);
-
-      var buf1 = new Buffer([1]);
-      var buf2 = new Buffer([]);
-      cmp.eq(buf1, buf2).should.equal(false);
-
-      var buf1 = new Buffer([]);
-      var buf2 = new Buffer([1]);
-      cmp.eq(buf1, buf2).should.equal(false);
-
-      var buf1 = new Buffer([1]);
-      var buf2 = new Buffer([1]);
-      cmp.eq(buf1, buf2).should.equal(true);
-
-      var buf1 = new Buffer([1, 1]);
-      var buf2 = new Buffer([1]);
-      cmp.eq(buf1, buf2).should.equal(false);
-
-      var buf1 = new Buffer([1]);
-      var buf2 = new Buffer([1, 1]);
-      cmp.eq(buf1, buf2).should.equal(false);
-
-      var buf1 = new Buffer([1, 1]);
-      var buf2 = new Buffer([1, 1]);
-      cmp.eq(buf1, buf2).should.equal(true);
-
-      var buf1 = new Buffer([1, 0]);
-      var buf2 = new Buffer([1, 1]);
-      cmp.eq(buf1, buf2).should.equal(false);
-
-      (function() {
-        var buf1 = "";
-        var buf2 = new Buffer([0]);
-        cmp.eq(buf1, buf2);
-      }).should.throw('buf1 and buf2 must be buffers');
-
-      (function() {
-        var buf1 = new Buffer([0]);
-        var buf2 = "";
-        cmp.eq(buf1, buf2);
-      }).should.throw('buf1 and buf2 must be buffers');
-
-    });
-
-  });
-
-  describe('#fasteq', function() {
+    t.ok(isArguments.unsupported((function(){return arguments})()));
+    t.notOk(isArguments.unsupported([1,2,3]));
     
-    it('should know if these buffers are equal', function() {
-      var buf1 = new Buffer([]);
-      var buf2 = new Buffer([]);
-      cmp.fasteq(buf1, buf2).should.equal(true);
+    t.end();
+});
 
-      var buf1 = new Buffer([1]);
-      var buf2 = new Buffer([]);
-      cmp.fasteq(buf1, buf2).should.equal(false);
+test('test the keys shim', function (t) {
+    t.deepEqual(objectKeys.shim({ a: 1, b : 2 }), [ 'a', 'b' ]);
+    t.end();
+});
 
-      var buf1 = new Buffer([]);
-      var buf2 = new Buffer([1]);
-      cmp.fasteq(buf1, buf2).should.equal(false);
-
-      var buf1 = new Buffer([1]);
-      var buf2 = new Buffer([1]);
-      cmp.fasteq(buf1, buf2).should.equal(true);
-
-      var buf1 = new Buffer([1, 1]);
-      var buf2 = new Buffer([1]);
-      cmp.fasteq(buf1, buf2).should.equal(false);
-
-      var buf1 = new Buffer([1]);
-      var buf2 = new Buffer([1, 1]);
-      cmp.fasteq(buf1, buf2).should.equal(false);
-
-      var buf1 = new Buffer([1, 1]);
-      var buf2 = new Buffer([1, 1]);
-      cmp.fasteq(buf1, buf2).should.equal(true);
-
-      var buf1 = new Buffer([1, 0]);
-      var buf2 = new Buffer([1, 1]);
-      cmp.fasteq(buf1, buf2).should.equal(false);
-
-      (function() {
-        var buf1 = "";
-        var buf2 = new Buffer([0]);
-        cmp.eq(buf1, buf2);
-      }).should.throw('buf1 and buf2 must be buffers');
-
-      (function() {
-        var buf1 = new Buffer([0]);
-        var buf2 = "";
-        cmp.eq(buf1, buf2);
-      }).should.throw('buf1 and buf2 must be buffers');
-
-    });
-
-  });
-
+test('dates', function (t) {
+    var d0 = new Date(1387585278000);
+    var d1 = new Date('Fri Dec 20 2013 16:21:18 GMT-0800 (PST)');
+    t.ok(equal(d0, d1));
+    t.end();
 });

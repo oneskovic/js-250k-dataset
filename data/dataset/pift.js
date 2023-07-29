@@ -1,6 +1,3 @@
-/**
- * PIFT enhancements.
- */
 Drupal.behaviors.dreditorPIFT = {
   attach: function (context) {
     var $context = $(context);

@@ -1,10 +1,3 @@
-/*
- * expire.js: Stream for filtering changes to properties on events.
- *
- * (C) 2012, Nodejitsu Inc.
- *
- */
-
 var util = require('util'),
     ReadWriteStream = require('../common/read-write-stream');
 

@@ -1,8 +1,3 @@
-/**
- * These formulas are stolen straight from WoW.
- * See: http://www.wowwiki.com/Formulas:XP_To_Level
- */
-
 var reduction = function (level)
 {
 	var val;

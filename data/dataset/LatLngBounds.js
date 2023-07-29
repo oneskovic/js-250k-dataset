@@ -1,7 +1,3 @@
-/*
- * L.LatLngBounds represents a rectangular area on the map in geographical coordinates.
- */
-
 L.LatLngBounds = function (southWest, northEast) { // (LatLng, LatLng) or (LatLng[])
 	if (!southWest) { return; }
 

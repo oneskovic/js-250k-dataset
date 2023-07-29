@@ -1,6 +1,3 @@
-/**
- * This view shows a list of moderators of a group.
- */
 girder.views.GroupModsWidget = girder.View.extend({
     events: {
         'click .g-group-mod-promote': function (e) {

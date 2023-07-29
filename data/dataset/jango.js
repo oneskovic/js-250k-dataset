@@ -40,11 +40,7 @@ jango.scrape = function () {
     };
 };
 
-/**
- * Injection script that gets appended to the page so it can access the
- * jango API methods and update the hidden scroblr form fields for keeping
- * track of the currently playing track.
- */
+
 function injectScript() {
     /* globals _jm, _jp */
 

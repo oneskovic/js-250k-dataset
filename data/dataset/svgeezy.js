@@ -1,19 +1,9 @@
 /*
- * SVGeezy.js 1.0
- *
- * Copyright 2012, Ben Howdle http://twostepmedia.co.uk
- * Released under the WTFPL license
- * http://sam.zoy.org/wtfpl/
- *
- * Date: Sun Aug 26 20:38 2012 GMT
- */
-
-/*
 	//call like so, pass in a class name that you don't want it to check and a filetype to replace .svg with
 	svgeezy.init('nocheck', 'png');
 */
 
-var svgeezy = function() {
+window.svgeezy = function() {
 
 		return {
 

@@ -1,9 +1,4 @@
-﻿/**
- * The binder joins an object instance and a DOM element tree by applying databinding and/or invoking binding lifecycle callbacks (binding and bindingComplete).
- * @module binder
- * @requires system
- * @requires knockout
- */
+﻿
 define(['durandal/system', 'knockout'], function (system, ko) {
     var binder,
         insufficientInfoMessage = 'Insufficient Information to Bind',

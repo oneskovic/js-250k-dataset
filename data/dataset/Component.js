@@ -1,11 +1,3 @@
-/*
- * Zest Component Inheritor
- *
- * Can be used as AMD or global.
- *
- * When used as a global, must be included after 'zoe.js' and 'zest-render.js'.
- *
- */
 (function (root, factory) {
   if (typeof define === 'function' && define.amd)
     define(['zoe', 'is!browser?./zest-render'], factory);

@@ -1,8 +1,3 @@
-/**
- * @fileOverview 树形菜单
- * @ignore
- */
-
 define('bui/tree/treemenu',['bui/common','bui/list','bui/tree/treemixin','bui/tree/selection'],function (require) {
   var BUI = require('bui/common'),
     List = require('bui/list'),
@@ -83,7 +78,7 @@ define('bui/tree/treemenu',['bui/common','bui/list','bui/tree/treemixin','bui/tr
       },
 
       itemStatusFields  : {
-        /**/
+        
         value : {
           selected : 'selected'
         }
@@ -95,7 +90,7 @@ define('bui/tree/treemenu',['bui/common','bui/list','bui/tree/treemixin','bui/tr
       collapseEvent : {
         value : 'itemclick'
       },
-      /**/xview : {
+      xview : {
         value : TreeMenuView
       },
       /**

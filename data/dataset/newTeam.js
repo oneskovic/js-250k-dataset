@@ -1,7 +1,3 @@
-/**
- * @name views.newTeam
- * @namespace Pick a new team after being fired.
- */
 define(["db", "globals", "ui", "core/league", "core/team", "util/bbgmView", "util/helpers"], function (db, g, ui, league, team, bbgmView, helpers) {
     "use strict";
 

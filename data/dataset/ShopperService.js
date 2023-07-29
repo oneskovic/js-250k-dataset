@@ -1,7 +1,5 @@
 define(['service/BaseService', 'Config', 'q', 'view/EditAccountIFrameView'], function(BaseService, Config, Q, EditAccountIFrameView) {
-    /**
-     * Service Manager for Shopper Resource
-     */
+    
     var ShopperService = BaseService.extend({
         
         uri: Config.service.URI.SHOPPER,

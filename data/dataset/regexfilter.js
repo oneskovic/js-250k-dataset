@@ -1,14 +1,3 @@
-/**
- * @fileoverview Filter based on a regular expression.
- *
- * A regex filter filters an incoming log event based on whether its message
- * matches a regular expression or not.
- *
- * Wrapped filters get applied in order.
- *
- * Copyright (c) 2013 Joshfire
- * MIT license (see LICENSE file)
- */
 /*global module*/
 
 // Ensure "define" is defined in node.js in the absence of require.js

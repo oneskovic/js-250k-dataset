@@ -1,10 +1,3 @@
-/*
- * grunt-istanbul
- * https://github.com/taichi/grunt-istanbul
- *
- * Copyright (c) 2012 taichi
- * Licensed under the MIT license.
- */
 module.exports = function(grunt) {
   'use strict';
 

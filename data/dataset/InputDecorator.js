@@ -1,41 +1,6 @@
 (function (enyo, scope) {
 
-	/**
-	* {@link onyx.InputDecorator} is a control that provides input styling. Any
-	* controls in the InputDecorator will appear to be inside an area styled as an
-	* input. Usually, an InputDecorator surrounds an {@link onyx.Input}.
-	*
-	* ```
-	* {kind: 'onyx.InputDecorator', components: [
-	* 	{kind: 'onyx.Input'}
-	* ]}
-	* ```
-	*
-	* Other controls, such as buttons, may be placed to the right or left of the
-	* input control, e.g.:
-	*
-	* ```
-	* {kind: 'onyx.InputDecorator', components: [
-	* 	{kind: 'onyx.IconButton', src: 'search.png'},
-	* 	{kind: 'onyx.Input'},
-	* 	{kind: 'onyx.IconButton', src: 'cancel.png'}
-	* ]}
-	* ```
-	*
-	* Note that the InputDecorator fits around the content inside it. If the
-	* decorator is sized, then its contents will likely need to be sized as well.
-	*
-	* ```
-	* {kind: 'onyx.InputDecorator', style: 'width: 500px;', components: [
-	* 	{kind: 'onyx.Input', style: 'width: 100%;'}
-	* ]}
-	* ```
-	*
-	* @class  onyx.InputDecorator
-	* @extends enyo.ToolDecorator
-	* @ui
-	* @public
-	*/
+	
 	enyo.kind(
 		/** @lends  onyx.InputDecorator.prototype */ {
 

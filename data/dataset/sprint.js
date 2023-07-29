@@ -1,7 +1,3 @@
-/***************************************
-  SPRINT
-***************************************/
-
 RB.Sprint = RB.Object.create(RB.Model, RB.EditableInplace, {
   update_permission: 'update_sprints',
   create_url: 'create_sprint',

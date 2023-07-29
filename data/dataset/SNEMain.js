@@ -1,4 +1,3 @@
-
 var SNE  = {
 
 	language : {

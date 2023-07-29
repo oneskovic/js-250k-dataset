@@ -1,125 +1,88 @@
-getJasmineRequireObj().ConsoleReporter = function() {
+/*global phantom:false, jasmine:false*/
 
-  var noopTimer = {
-    start: function(){},
-    elapsed: function(){ return 0; }
-  };
 
-  function ConsoleReporter(options) {
-    var print = options.print,
-      showColors = options.showColors || false,
-      onComplete = options.onComplete || function() {},
-      timer = options.timer || noopTimer,
-      specCount,
-      failureCount,
-      failedSpecs = [],
-      pendingCount,
-      ansi = {
-        green: '\x1B[32m',
-        red: '\x1B[31m',
-        yellow: '\x1B[33m',
-        none: '\x1B[0m'
-      };
+(function() {
+  "use strict";
 
-    this.jasmineStarted = function() {
-      specCount = 0;
-      failureCount = 0;
-      pendingCount = 0;
-      print("Started");
-      printNewline();
-      timer.start();
-    };
-
-    this.jasmineDone = function() {
-      printNewline();
-      for (var i = 0; i < failedSpecs.length; i++) {
-        specFailureDetails(failedSpecs[i]);
-      }
-
-      printNewline();
-      var specCounts = specCount + " " + plural("spec", specCount) + ", " +
-        failureCount + " " + plural("failure", failureCount);
-
-      if (pendingCount) {
-        specCounts += ", " + pendingCount + " pending " + plural("spec", pendingCount);
-      }
-
-      print(specCounts);
-
-      printNewline();
-      var seconds = timer.elapsed() / 1000;
-      print("Finished in " + seconds + " " + plural("second", seconds));
-
-      printNewline();
-
-      onComplete(failureCount === 0);
-    };
-
-    this.specDone = function(result) {
-      specCount++;
-
-      if (result.status == "pending") {
-        pendingCount++;
-        print(colored("yellow", "*"));
-        return;
-      }
-
-      if (result.status == "passed") {
-        print(colored("green", '.'));
-        return;
-      }
-
-      if (result.status == "failed") {
-        failureCount++;
-        failedSpecs.push(result);
-        print(colored("red", 'F'));
-      }
-    };
-
-    return this;
-
-    function printNewline() {
-      print("\n");
-    }
-
-    function colored(color, str) {
-      return showColors ? (ansi[color] + str + ansi.none) : str;
-    }
-
-    function plural(str, count) {
-      return count == 1 ? str : str + "s";
-    }
-
-    function repeat(thing, times) {
-      var arr = [];
-      for (var i = 0; i < times; i++) {
-        arr.push(thing);
-      }
-      return arr;
-    }
-
-    function indent(str, spaces) {
-      var lines = (str || '').split("\n");
-      var newArr = [];
-      for (var i = 0; i < lines.length; i++) {
-        newArr.push(repeat(" ", spaces).join("") + lines[i]);
-      }
-      return newArr.join("\n");
-    }
-
-    function specFailureDetails(result) {
-      printNewline();
-      print(result.fullName);
-
-      for (var i = 0; i < result.failedExpectations.length; i++) {
-        var failedExpectation = result.failedExpectations[i];
-        printNewline();
-        print(indent(failedExpectation.stack, 2));
-      }
-
-      printNewline();
-    }
+  /**
+   * Basic reporter that outputs spec results to the browser console.
+   * Useful if you need to test an html page and don't want the TrivialReporter
+   * markup mucking things up.
+   *
+   * Usage:
+   *
+   * jasmine.getEnv().addReporter(new jasmine.ConsoleReporter());
+   * jasmine.getEnv().execute();
+   */
+  function ConsoleReporter() {
+    this.started = false;
+    this.finished = false;
   }
 
-  return ConsoleReporter;
-};
+  ConsoleReporter.prototype = {
+    buffer : '',
+    reportRunnerResults: function(runner) {
+      var dur = (new Date()).getTime() - this.start_time;
+      var failed = this.executed_specs - this.passed_specs;
+      var spec_str = this.executed_specs + (this.executed_specs === 1 ? " spec, " : " specs, ");
+      var fail_str = failed + (failed === 1 ? " failure in " : " failures in ");
+
+      this.log("Runner Finished.");
+      phantom.sendMessage('writeln', spec_str + fail_str + (dur/1000) + "s.");
+      this.finished = true;
+      phantom.sendMessage( 'jasmine.done.ConsoleReporter' );
+    },
+    reportRunnerStarting: function(runner) {
+      this.started = true;
+      this.start_time = (new Date()).getTime();
+      this.executed_specs = 0;
+      this.passed_specs = 0;
+      this.log("Runner Started.");
+    },
+
+    reportSpecResults: function(spec) {
+      var resultText = "Failed.";
+
+      if (spec.results().passed()) {
+        this.passed_specs++;
+        resultText = "Passed.";
+      }
+
+
+      var results = spec.results();
+      var items = results.getItems();
+      phantom.sendMessage('verbose',this.buffer + resultText);
+      for (var i = 0; i < items.length; i++) {
+        var item = items[i];
+
+        if (item.type === 'log') {
+          this.log(item.toString());
+        } else if (item.type === 'expect' && item.passed && !item.passed()) {
+          phantom.sendMessage('console',this.buffer + resultText);
+          phantom.sendMessage('onError', item.message, item.trace);
+        }
+      }
+
+      phantom.sendMessage( 'jasmine.testDone', results.totalCount, results.passedCount, results.failedCount, results.skipped );
+    },
+
+    reportSpecStarting: function(spec) {
+      this.executed_specs++;
+      this.buffer = spec.suite.description + ' : ' + spec.description + ' ... ';
+    },
+
+    reportSuiteResults: function(suite) {
+      var results = suite.results();
+      this.log(suite.description + ": " + results.passedCount + " of " + results.totalCount + " passed.");
+    },
+
+    log: function(str) {
+      phantom.sendMessage('verbose',str);
+    }
+  };
+
+  jasmine.reporters = jasmine.reporters || {};
+  // export public
+  jasmine.reporters.ConsoleReporter = ConsoleReporter;
+  jasmine.getEnv().addReporter( new ConsoleReporter() );
+}());

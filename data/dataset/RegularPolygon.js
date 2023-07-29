@@ -1,25 +1,5 @@
 (function() {
-    /**
-     * RegularPolygon constructor.&nbsp; Examples include triangles, squares, pentagons, hexagons, etc.
-     * @constructor
-     * @memberof Konva
-     * @augments Konva.Shape
-     * @param {Object} config
-     * @param {Number} config.sides
-     * @param {Number} config.radius
-     * @@shapeParams
-     * @@nodeParams
-     * @example
-     * var hexagon = new Konva.RegularPolygon({
-     *   x: 100,
-     *   y: 200,
-     *   sides: 6,
-     *   radius: 70,
-     *   fill: 'red',
-     *   stroke: 'black',
-     *   strokeWidth: 4
-     * });
-     */
+    
     Konva.RegularPolygon = function(config) {
         this.___init(config);
     };

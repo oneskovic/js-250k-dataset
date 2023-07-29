@@ -1,8 +1,3 @@
-/**
- * Simple notifier system based on localStorage API
- * @author Shadez <https://github.com/Shadez>
- **/
-
 var Notifier = function()
 {
 	this.m_localStorageKey = 'notifier_event';

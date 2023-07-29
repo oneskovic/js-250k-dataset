@@ -1,10 +1,3 @@
-/**
- * A SimpleListItem is a simplified list item that is used by {@link Ext.dataview.List} when
- * useSimpleItems is set to true.  It supports disclosure icons and headers and generates the
- * slimmest markup possible to achieve this. It doesn't support container functionality like adding
- * or docking items. If you require those features you should have your list use
- * {@link Ext.dataview.component.ListItem} instances.
- */
 Ext.define('Ext.dataview.component.SimpleListItem', {
     extend: 'Ext.Component',
     xtype : 'simplelistitem',

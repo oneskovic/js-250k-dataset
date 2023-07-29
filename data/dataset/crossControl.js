@@ -1,10 +1,3 @@
-/**
- * Class: OpenLayers.Control.Cross
- * The Cross control renders a cross in the middle of the map.
- *
- * Inherits from:
- *  - <OpenLayers.Control>
- */
 OpenLayers.Control.Cross = OpenLayers.Class(OpenLayers.Control, {
     
     /**

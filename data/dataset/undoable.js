@@ -1,5 +1,3 @@
-/*globals SCUI*/
-
 (function() {
 
   var view;

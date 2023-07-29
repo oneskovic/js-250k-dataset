@@ -1,9 +1,3 @@
-// Vex Flow Notation
-// Author Larry Kuhns 2011
-// Implements voltas (repeat brackets)
-//
-// Requires vex.js.
-
 Vex.Flow.Volta = (function() {
   function Volta(type, number, x, y_shift) {
     if (arguments.length > 0) this.init(type, number, x, y_shift);

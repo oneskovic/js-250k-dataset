@@ -1,4 +1,3 @@
-
 var adaptorPort         = 3000;
 var adaptorHost         = "localhost";
 var assert              = require('assert');

@@ -5,10 +5,7 @@ goog.require('fb.simplelogin.Vars');
 goog.require('fb.simplelogin.util.json');
 goog.require('fb.simplelogin.util.misc');
 
-/**
- * @constructor
- * @implements {fb.simplelogin.Popup}
- */
+
 fb.simplelogin.transports.TriggerIoTab_ = function() {};
 
 /**

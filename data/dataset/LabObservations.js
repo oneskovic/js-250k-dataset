@@ -1,13 +1,3 @@
-/**
- * Created by JetBrains PhpStorm.
- * User: ernesto
- * Date: 6/27/11
- * Time: 8:43 AM
- * To change this template use File | Settings | File Templates.
- *
- *
- * @namespace Patient.patientLiveSearch
- */
 Ext.define('App.ux.combo.LabObservations', {
 	extend       : 'Ext.form.ComboBox',
 	alias        : 'widget.labobservationscombo',

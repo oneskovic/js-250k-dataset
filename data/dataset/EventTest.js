@@ -1,8 +1,3 @@
-/**
- * Tests for Event.js model
- *
- * @copyright  Nothing Interactive 2014
- */
 /* globals describe, it, afterEach, beforeEach, after, before */
 'use strict';
 

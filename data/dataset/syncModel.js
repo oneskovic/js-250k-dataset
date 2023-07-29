@@ -2,20 +2,7 @@
 	define(function () {
 		"use strict";
 
-		/**
-		 * Creates a strategy to push all data from a source into the consumers
-		 * in the network directly (rather than as a sequence of 'add' events
-		 * in the network) when a sync event happens.
-		 *
-		 * @description This strategy helps eliminate loops and complexities
-		 * when data providers and consumers are added at unpredictable times.
-		 * During a sync, all 'add' events are squelched while providers push
-		 * all items to all consumers.
-		 *
-		 * @param [options.providersAreConsumers] {Boolean} if truthy, providers
-		 *   are also treated as consumers and receive items from other providers.
-		 * @return {Function} a network strategy function
-		 */
+		
 		return function (options) {
 			var synced, providers, consumers, undef;
 

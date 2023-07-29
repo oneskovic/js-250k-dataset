@@ -1,9 +1,3 @@
-/**
- * @class Geo.views.StartScreen
- * @extends Ext.Panel
- *
- * This is the start screen that the user sees when initially opening the app.
- */
 Geo.views.StartScreen = Ext.extend(Ext.Panel, {
     cls: 'start-screen',
     layout: 'card',

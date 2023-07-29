@@ -1,7 +1,3 @@
-/*
-	MediaCapturePropertyHelper::
-	Helper:: Property bag helper that facilitate formulation of the device settings
-*/
 enyo.kind({
 	name: "enyo.MediaCapturePropertyHelper",
 	kind: enyo.Component,

@@ -1,4 +1,3 @@
-/** MIT License (c) copyright 2010-2013 B Cavalier & J Hann */
 (function (define) {
 define(function (require) {
 

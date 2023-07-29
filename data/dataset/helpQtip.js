@@ -1,6 +1,3 @@
-// Nice little plugin from http://www.learnsomethings.com/2012/03/16/extjs4-x-plugin-that-adds-a-help-icon-and-rich-tooltip-to-your-field-labels/
-// modified to allow for tooltips on all field types, not just comboboxes as well as
-// support for labelAlign 'left' in addition to 'top'
 Ext.util.CSS.createStyleSheet('.icon-help{ background-image:url(/images/help.jpg) !important; background-repeat:no-repeat; background-position:center; }', 'helpQtip');
 helpQtip = function(txt) {
     return {

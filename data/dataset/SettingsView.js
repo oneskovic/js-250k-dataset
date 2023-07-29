@@ -2,10 +2,7 @@
 
 tutao.provide('tutao.tutanota.gui.SettingsView');
 
-/**
- * @constructor
- * @implements {tutao.tutanota.ctrl.View}
- */
+
 tutao.tutanota.gui.SettingsView = function() {
 	tutao.util.FunctionUtils.bindPrototypeMethodsToThis(this);
 };

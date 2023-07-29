@@ -1,7 +1,3 @@
-/**
- * @author Philipp Hoffmann
- */
-
 const Lang = imports.lang;
 const Shell = imports.gi.Shell;
 const St = imports.gi.St;

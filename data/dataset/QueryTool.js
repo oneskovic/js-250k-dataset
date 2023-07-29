@@ -1,12 +1,3 @@
-/* micropolisJS. Adapted by Graeme McCutcheon from Micropolis.
- *
- * This code is released under the GNU GPL v3, with some additional terms.
- * Please see the files LICENSE and COPYING for details. Alternatively,
- * consult http://micropolisjs.graememcc.co.uk/LICENSE and
- * http://micropolisjs.graememcc.co.uk/COPYING
- *
- */
-
 define(['BaseTool', 'Config', 'EventEmitter', 'Messages', 'Text', 'Tile'],
        function(BaseTool, Config, EventEmitter, Messages, Text, Tile) {
   "use strict";

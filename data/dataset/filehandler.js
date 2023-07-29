@@ -1,74 +1,57 @@
-var should = require("should"),
-    requirejs = require('requirejs');
+module.exports = function (middleware, options) {
 
-requirejs.config({
-    baseUrl: 'pulsr',
-    nodeRequire: require,
-    paths: {
-        conf: '../conf/conf'
+    return function (req, res, next) {
+        res.set({
+            'Access-Control-Allow-Origin': options.accessControl.allowOrigin,
+            'Access-Control-Allow-Methods': options.accessControl.allowMethods
+        });
+        var UploadHandler = require('./uploadhandler')(options);
+        var handler = new UploadHandler(req, res, function (result, redirect) {
+            if (redirect) {
+                files = {files: result};
+                res.redirect(redirect.replace(/%s/, encodeURIComponent(JSON.stringify(files))));
+            } else {
+                res.set({
+                    'Content-Type': (req.headers.accept || '').indexOf('application/json') !== -1
+                        ? 'application/json'
+                        : 'text/plain'
+                });
+                res.json(200, result);
+            }
+        });
+
+        handler.on('begin', function (fileInfo) {
+            middleware.emit('begin', fileInfo, req, res);
+        });
+        handler.on('end', function (fileInfo) {
+            middleware.emit('end', fileInfo, req, res);
+        });
+        handler.on('abort', function (fileInfo) {
+            middleware.emit('abort', fileInfo, req, res);
+        });
+        handler.on('error', function (e) {
+            middleware.emit('abort', e, req, res);
+        });
+        handler.on('delete', function (fileName) {
+            middleware.emit('delete', fileName, req, res);
+        });
+
+        switch (req.method) {
+            case 'OPTIONS':
+                res.end();
+                break;
+            case 'HEAD':
+            case 'GET':
+                handler.get();
+                break;
+            case 'POST':
+                handler.post();
+                break;
+            case 'DELETE':
+                handler.destroy();
+                break;
+            default:
+                res.send(405);
+        }
     }
-});
-
-describe('Pulsr', function (){
-    describe('fileHandler', function (){
-        it('should return 403 statusCode for direct directory access requests within 20s', function (done){
-            // set timeout to 20s
-            this.timeout(20000);
-
-            requirejs(['async', 'http', 'conf'], function (async, http, conf) {
-                var restrictedDirs = ['img', 'js', 'less', 'pulsr', 'controller', 'nonExistingDir', 'js/bootstrap', 'less/foundation', 'assets'];
-
-                function requestDir(dirName, done) {
-                    http.get('http://' + conf.get('app.domains.static') + '/' + dirName, function (response) {
-                        response.should.have.status(403);
-                        done();
-                    });
-                }
-
-                async.forEach(restrictedDirs, requestDir, function (err) {
-                    done();
-                });
-            });
-        });
-
-        it('should return 403 statusCode for restricted directory access requests within 20s', function (done){
-            // set timeout to 20s
-            this.timeout(20000);
-
-            requirejs(['async', 'http', 'conf'], function (async, http, conf) {
-                var restrictedDirs = ['pulsr/conf.js', 'pagelets/ga/ga.js', 'contents/404.md', 'controllers/api.js', 'node_modules/bin/docco', 'nonExistingDir', 'tests/baseController.js', 'views/layout.hb', '../aboveRootNonExistDir', 'app.js', '.travis.yml', '.gitignore', 'Makefile', 'package.json', 'assets'];
-
-                function requestDir(dirName, done) {
-                    http.get('http://' + conf.get('app.domains.static') + '/' + dirName, function (response) {
-                        response.should.have.status(403);
-                        done();
-                    });
-                }
-
-                async.forEach(restrictedDirs, requestDir, function (err) {
-                    done();
-                });
-            });
-        });
-
-        it('should return 200 statusCode for plain text requests located in the root directory.', function (done){
-            // set timeout to 20s
-            this.timeout(20000);
-
-            requirejs(['async', 'http', 'conf'], function (async, http, conf) {
-                var rootDirFiles = ['robots.txt', 'humans.txt', 'README.md', 'CHANGELOG.md'];
-
-                function sendRequest(filePath, done) {
-                    http.get('http://' + conf.get('app.domains.static') + '/' + filePath, function (response) {
-                        response.should.have.status(200);
-                        done();
-                    });
-                }
-
-                async.forEach(rootDirFiles, sendRequest, function (err) {
-                    done();
-                });
-            });
-        });
-    });
-});
+};

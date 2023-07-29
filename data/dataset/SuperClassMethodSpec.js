@@ -1,10 +1,3 @@
-/**
- * Created with IntelliJ IDEA.
- * User: pouncilt
- * Date: 8/26/13
- * Time: 2:54 PM
- * To change this template use File | Settings | File Templates.
- */
 describe("JS Inheritance Test Suite", function () {
     it('Super class method returns wrong id.  Should return sub class id; but returns super class id.', function () {
         var BaseClass = function BaseClass() {}

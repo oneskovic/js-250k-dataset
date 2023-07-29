@@ -1,8 +1,3 @@
-/**
- * Author: krasu
- * Date: 8/17/13
- * Time: 4:44 PM
- */
 var _ = require('lodash'),
     mongoose = require('mongoose'),
     async = require('async'),

@@ -1,4 +1,3 @@
-// Add Events Cross-browser
 var event = {
 	add: function(elem, type, fn) {
 		if (elem.attachEvent) {

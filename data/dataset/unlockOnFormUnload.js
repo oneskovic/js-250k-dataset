@@ -1,10 +1,3 @@
-/*
-  Plone unlock handler; attaches an unlock handler to $('form.enableUnlockProtection')
-  
-  provides global plone
-*/
-
-
 /*global plone:true, setInterval:false, clearInterval:false */
 /*jslint nomen:false */
 

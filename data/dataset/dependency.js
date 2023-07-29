@@ -1,11 +1,4 @@
 /**
- * Dependency Helper
- *
- * @module greppy/helper/dependency
- * @author Nabil Krause <nabil.krause@silberlicht.eu>
- */
-
-/**
  * @constructor
  */
 var Dependency = function() {

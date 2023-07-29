@@ -1,8 +1,3 @@
-/**
- * A chunk object represents a chunk of data that is part of a chunk stream.
- * Multiple chunks form complete messages, but chunks in the same stream may or may not belong to the same message
- */
-
 var sys = require('sys');
 
 var utils = require('../node-amf/utils');

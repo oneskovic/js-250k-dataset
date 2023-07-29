@@ -1,6 +1,3 @@
-// install   :     cordova plugin add org.apache.cordova.file-transfer
-// link      :     https://github.com/apache/cordova-plugin-file-transfer/blob/master/doc/index.md
-
 angular.module('ngCordova.plugins.fileTransfer', [])
 
   .factory('$cordovaFileTransfer', ['$q', '$timeout', function ($q, $timeout) {

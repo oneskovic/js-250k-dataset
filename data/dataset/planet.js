@@ -1,4 +1,3 @@
-// Custom Planet class
 Planet = function()
 {
 	Sim.Object.call(this);

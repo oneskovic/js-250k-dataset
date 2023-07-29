@@ -1,6 +1,3 @@
-// Panoramio plugin for Leaflet
-// https://github.com/shurshur/Leaflet.Panoramio
-
 L.Panoramio = L.FeatureGroup.extend({
 	options: {
 		maxLoad: 100, // max photos loaded in one request (should be less or equal 100)

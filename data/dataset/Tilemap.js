@@ -2,10 +2,7 @@ define([ './jo', './core', './system', './Grid', './Point', './Tile', 'TileSet',
 
 	function(jo, core, system, Grid, Point, Tile, TileSet, Camera) {
 	
-	/**
-	 * @class holds Level data 
-	 * @extends jo.Grid
-	 */
+	
 	jo.Tilemap = Grid.extend(
 		/**
 		 * @lends jo.Tilemap

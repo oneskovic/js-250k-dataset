@@ -1,8 +1,3 @@
-// ==========================================================================
-// Project:   SproutCore - JavaScript Application Framework
-// Copyright: ©2006-2011 Apple Inc. and contributors.
-// License:   Licensed under MIT license (see license.js)
-// ==========================================================================
 /*globals module ok equals same test MyApp */
 
 // NOTE: The test below are based on the Data Hashes state chart.  This models

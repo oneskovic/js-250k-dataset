@@ -1,5 +1,3 @@
-// for scroll view
-// source: http://stackoverflow.com/questions/14035083/jquery-bind-event-on-scroll-stops
 jQuery.fn.scrollStop = function(callback) {
   $(this).scroll(function() {
     var self  = this,

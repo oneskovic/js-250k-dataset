@@ -1,150 +1,83 @@
-var userModule = require('/modules/user.js').user;
-var user = new userModule(db);
-
-var groupModule = require('/modules/group.js').group;
-var group = new groupModule(db);
-
-var userGModule = require('/modules/user_group.js').user_group;
-var userG = new userGModule(db);
-
-var common = require('/modules/common.js');
+var util        = require('util'),
+    Client      = require('./client').Client,
+    defaultUser = require('./helpers').defaultUser;
 
 
-configuration = function(appController) {
-	context = appController.context();
-	
-	context.title = context.title + " | Configuration";
-	context.page = "configuration";
-	context.jsFile = "users/configuration.js";
-	context.data = {
-		configOption : "users",
-	};
-	return context;
+var Users = exports.Users = function (options) {
+  this.jsonAPIName = 'users';
+  this.jsonAPIName2 = 'user';
+  Client.call(this, options);
+};
+
+// Inherit from Client base object
+util.inherits(Users, Client);
+
+
+Users.prototype.auth = function (cb) {
+  this.request('GET', ['users', 'me'], cb);
 };
 
 
-add = function(appController) {
-	context = appController.context();
-
-	try {
-		var groups = group.getGroupsByType({type:context.contextData.user.role});	
-	} catch(e) {		
-		var groups = [];
-	}
-	
-
-	context.title = context.title + " | Add User";
-	context.page = "configuration";
-	context.jsFile = "users/add.js";
-	context.data = {
-		configOption : "users",
-		groups : groups,
-		tenantId : session.get("mamConsoleUser").tenantId
-	};
-	return context;
-
+Users.prototype.list = function (cb) {
+  this.requestAll('GET', ['users'], cb);
 };
 
 
-edit = function(appController) {
-	var userid = request.getParameter('user');
-	try {
-		var selectedUser = user.getUser({userid: userid});
-	} catch(e) {
-		var selectedUser = {};
-	}
-	
-	//print(selectedUser);
-	
-	context = appController.context();
-	context.title = context.title + " | Add User";
-	context.page = "configuration";
-	context.jsFile = "users/edit.js";
-	context.data = {
-		configOption : "users",
-		user : selectedUser
-	};
-	return context;
-
+Users.prototype.listByGroup = function (id, cb) {
+  this.requestAll('GET', ['groups', id, 'users'], cb);
 };
 
 
-view = function(appController) {
-	context = appController.context();
-	var userId = request.getParameter('user');
-	if (!userId) {
-		userId = session.get('mdmConsoleSelectedUser');
-	}
-	session.put('mdmConsoleSelectedUser', userId);
-	try {
-		var objUser = user.getUser({
-			"userid" : userId
-		});
-	} catch(e) {
-		var objUser = {};
-	}
-	
-	
-	try {
-		var groups = userG.getRolesOfUserByAssignment({
-			username : userId
-
-		});
-	} catch(e) {       
-		var groups = [];
-	}
-	
-		
-	context.title = context.title + " | View User";
-	context.page = "configuration";	
-	context.data = {
-		user: objUser,
-		groups: groups
-	};
-	return context;
-
+Users.prototype.listByOrganization = function (id, cb) {
+  this.requestAll('GET', ['organizations', id, 'users'], cb);
 };
 
-assign_groups = function(appController) {
 
-	var username = request.getParameter('user');
+Users.prototype.show = function (id, cb) {
+  this.request('GET', ['users', id], cb);
+};
 
-	try {
-		var groups = userG.getRolesOfUserByAssignment({
-			username : username
-		});
-	} catch(e) {
-        print(userG.getRolesOfUserByAssignment({username : username}));
-		var groups = [];
-	}
 
-	context = appController.context();
-	
-	// Array Remove - By John Resig (MIT Licensed)
-	Array.prototype.remove = function(from, to) {
-	  var rest = this.slice((to || from) + 1 || this.length);
-	  this.length = from < 0 ? this.length + from : from;
-	  return this.push.apply(this, rest);
-	};
-	
-	
-	if (context.contextData.user.role != 'masteradmin') {
-		for (var i = 0; i < groups.length; i++) {
-			if (groups[i].name == 'masteradmin' | groups[i].name == "admin") {
-				groups.remove(i);
-			}
-		}
-	}
-	context = appController.context();
-	context.title = context.title + " | Assign Users to group";
-	context.page = "configuration";
-	context.jsFile = "users/assign_groups.js";
-	context.data = {
-		configOption : "policies",
-		groups : groups,
-		tenantId : session.get("mamConsoleUser").tenantId,
-		username : username
+Users.prototype.showMany = function (user_ids, cb) {
+  this.request('GET', ['users', 'show_many', '?ids=' + user_ids.toString()], cb);
+};
 
-	};
-	return context;
+
+Users.prototype.create = function (user, cb) {
+  this.request('POST', ['users'], user, cb);
+};
+
+
+Users.prototype.createMany = function (users, cb) {
+  this.request('POST', ['users', 'create_many'], users, cb);
+};
+
+
+Users.prototype.update = function (id, user, cb) {
+  this.request('PUT', ['users', id], user, cb);
+};
+
+
+Users.prototype.suspend = function (id, cb) {
+  this.request('PUT', ['users', id], {"user": {"suspended": true} }, cb);
+};
+
+Users.prototype.unsuspend = function (id, cb) {
+  this.request('PUT', ['users', id], {"user": {"suspended": false} }, cb);
+};
+
+Users.prototype.delete = function (id, cb) {
+  this.request('DELETE', ['users', id], cb);
+};
+
+Users.prototype.search = function (params, cb) {
+  this.requestAll('GET', ['users', 'search', params], cb);
+};
+
+Users.prototype.me = function (cb) {
+  this.request('GET', ['users', 'me'], cb);
+};
+
+Users.prototype.merge = function (id, targetId, cb) {
+  this.request('PUT', ['users', id, 'merge'], {"user": {"id": targetId} }, cb);
 };

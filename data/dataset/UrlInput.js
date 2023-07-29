@@ -24,11 +24,7 @@ Class(Dm.UI, 'URLInput').inherits(Widget)({
             this._bindEvents();
         },
 
-        /**
-         * Event bindings.
-         * @method _bindEvents <private> [Function]
-         * @return this [Dm.UI.URLInput]
-         */
+        
         _bindEvents : function _bindEvents() {
             this.element.on('submit', this._submitHandler.bind(this));
             this.input.bind('click', function() {

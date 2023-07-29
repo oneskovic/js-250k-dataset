@@ -1,9 +1,4 @@
 /**
- * Playcraft Engine - (C)2012 Playcraft Labs, Inc.
- * See licence.txt for details
- */
-
-/**
  * @class pc.components.Spin
  * @description
  * [Extends <a href='pc.components.Component'>pc.components.Component</a>]<BR>

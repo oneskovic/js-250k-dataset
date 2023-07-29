@@ -1,7 +1,3 @@
-/**
- * @author oosmoxiecode
- * based on http://code.google.com/p/away3d/source/browse/trunk/fp10/Away3D/src/away3d/primitives/TorusKnot.as?spec=svn2473&r=2473
- */
 /*
 ///TorusKnotGeometryy用来在三维空间内创建一个圆环结或者环形结对象.是由圆环体通过打结构成的扩展三维几何体，常用于制作管状,缠绕.带囊肿类的造型.
 /// 关于环形结的几何特征,参考:http://en.wikipedia.org/wiki/Torus_knot

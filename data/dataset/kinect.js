@@ -1,4 +1,3 @@
-// usage without warranty!
 var usb_driver = require("../../usb.js"),
 	assert = require('assert'),
 	http = require('http'),

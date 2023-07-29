@@ -16,9 +16,7 @@ function getWindowScrollPosition() {
   };
 }
 
-/**
- * A hash of { name: scrollBehavior } pairs.
- */
+
 var NAMED_SCROLL_BEHAVIORS = {
   none: null,
   browser: ImitateBrowserBehavior,

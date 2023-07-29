@@ -1,13 +1,3 @@
-/**
- * filesize
- *
- * @author Jason Mulligan <jason.mulligan@avoidwork.com>
- * @copyright 2013 Jason Mulligan
- * @license BSD-3 <https://raw.github.com/avoidwork/filesize.js/master/LICENSE>
- * @link http://filesizejs.com
- * @module filesize
- * @version 2.0.0
- */
 ( function ( global ) {
 "use strict";
 

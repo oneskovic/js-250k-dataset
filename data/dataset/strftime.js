@@ -12,9 +12,7 @@ define(['../number/pad', './i18n_', './dayOfTheYear', './timezoneOffset', './tim
     };
 
 
-    /**
-     * format date based on strftime format
-     */
+    
     function strftime(date, format, localeData){
         localeData = localeData  || i18n;
         var reToken = /%([a-z%])/gi;

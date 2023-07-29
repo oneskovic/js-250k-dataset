@@ -1,3 +1,5 @@
+if(!dojo._hasResource["dojox.layout.DragPane"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
+dojo._hasResource["dojox.layout.DragPane"] = true;
 dojo.provide("dojox.layout.DragPane");
 
 dojo.require("dijit._Widget");
@@ -34,7 +36,7 @@ dojo.declare("dojox.layout.DragPane",
 		if ((this._x < t.offsetLeft + t.clientWidth) &&
 			(this._y < t.offsetTop + t.clientHeight)) {
 			dojo.setSelectable(t,false);
-			this._mover = this.connect(t,"onmousemove","_move");
+			this._mover = dojo.connect(t,"onmousemove",this,"_move");		
 		}
 	},
 	
@@ -43,7 +45,7 @@ dojo.declare("dojox.layout.DragPane",
 		
 		dojo.setSelectable(this.domNode,true);
 		dojo.style(this.domNode,"cursor","pointer");
-		this.disconnect(this._mover);
+		dojo.disconnect(this._mover);
 	},
 	
 	_move: function(e){
@@ -59,3 +61,5 @@ dojo.declare("dojox.layout.DragPane",
 	}
 	
 });
+
+}

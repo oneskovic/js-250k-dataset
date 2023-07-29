@@ -44,13 +44,7 @@ exports.Digest= BaseHttpStrategy.extend({
      return "Digest realm=\"" + this._realm.replace("\"","\\\"") + "\", nonce=\""+ this._getNonce(32)+"\"";
    },
 
-   /**
-    * Given a valid Digest Authorization HTTP Header will return an object literal
-    * that contains the passed credentials.
-    *
-    * @return {object} The digest credentials, un-encoded and un-quoted.
-    * @api private
-    */
+   
    _splitAuthorizationHeader: function( authorizationHeader ) {
 
      var results= {};

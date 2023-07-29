@@ -1,7 +1,3 @@
-/**
- * @class Ozone.components.SearchBox
- * @extends Ext.form.Text
- */
 Ext.define('Ozone.components.form.field.SearchBox', {
     extend: 'Ext.form.field.Text',
     alias: 'widget.searchbox',

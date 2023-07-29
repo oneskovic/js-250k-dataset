@@ -1,18 +1,3 @@
-//		Author: Chrissy Clark(fivefourths@gmail.com)
-//		webtypographyforthelonely.com
-//
-//      Coolinate makes lines behind text using a function I made
-//      called shellac, which is a helper function to seamlessly
-//      convert an html text element into a canvas element.
-//      
-//      Like all functions that use shellac, loading order can be
-//      an issue. You need to wrap the function is a font-loading
-//      callback function (something like typekit.load). Even After
-//      this there can still be some issues with loading if you are
-//      putting all your js in the footer. wrapping in a very short
-//		setInterval helps usually. 
-
-
 var coolinate = {  
 	
 	

@@ -1,4 +1,3 @@
-//json test object
 var jsonObject ={
     //prop one
     one:"one", 

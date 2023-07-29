@@ -1,6 +1,3 @@
-/**
- * @author Kaleb Murphy
- */
 /*
 ///RingGeometry用来在三维空间内创建一个二维圆环面对象.
 ///

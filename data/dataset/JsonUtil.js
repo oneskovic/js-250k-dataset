@@ -1,8 +1,5 @@
 function JsonUtil() {
-    /**
-     * Given a provided object,
-     * return a string representation of the object type.
-     */
+    
     this.isType = function (obj_) {
         if (obj_ === null) {
             return "null";

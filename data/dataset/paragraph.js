@@ -1,7 +1,3 @@
-///import core
-///commands 格式
-///commandsName  Paragraph
-///commandsTitle  段落格式
 /**
  * 段落样式
  * @function

@@ -1,12 +1,3 @@
-/**
- * The mutations submodule defines the MutationObserver object and related objects.
- * MutationObserver provides developers a way to react to changes in a DOM. It is designed as a replacement for
- * Mutation Events defined in the DOM3 Events specification.
- *
- * TODO: add more high level explanation of what, how, why MutationObserver and MutationRecord, possibly add examples?
- *
- * @submodule mutations
- */
 if (typeof define !== 'function') { var define = require('amdefine')(module); }
 define(
 	[

@@ -1,9 +1,3 @@
-/**
- * Small utility module for compling HTML templates or pre-processed CSS.
- *
- * @author: [@jasonsims]('https://github.com/jasonsims')
- */
-
 var path = require('path')
   , cons = require('consolidate')
 

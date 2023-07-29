@@ -1,96 +1,86 @@
-var Event = require('./Event')
+define(function(require, exports, module) {
+    /**
+     * EventEmitter represents a channel for events.
+     *
+     * @class EventEmitter
+     * @constructor
+     */
+    function EventEmitter() {
+        this.listeners = {};
+        this._owner = this;
+    }
 
+    /**
+     * Trigger an event, sending to all downstream handlers
+     *   listening for provided 'type' key.
+     *
+     * @method emit
+     *
+     * @param {string} type event type key (for example, 'click')
+     * @param {Object} event event data
+     * @return {EventHandler} this
+     */
+    EventEmitter.prototype.emit = function emit(type, event) {
+        var handlers = this.listeners[type];
+        if (handlers) {
+            for (var i = 0; i < handlers.length; i++) {
+                handlers[i].call(this._owner, event);
+            }
+        }
+        return this;
+    };
 
-module.exports = EventEmitter
+    /**
+     * Bind a callback function to an event type handled by this object.
+     *
+     * @method "on"
+     *
+     * @param {string} type event type key (for example, 'click')
+     * @param {function(string, Object)} handler callback
+     * @return {EventHandler} this
+     */
+   EventEmitter.prototype.on = function on(type, handler) {
+        if (!(type in this.listeners)) this.listeners[type] = [];
+        var index = this.listeners[type].indexOf(handler);
+        if (index < 0) this.listeners[type].push(handler);
+        return this;
+    };
 
-function EventEmitter() { 
-  this.eventRegister = { }
-}
+    /**
+     * Alias for "on".
+     * @method addListener
+     */
+    EventEmitter.prototype.addListener = EventEmitter.prototype.on;
 
-EventEmitter.prototype.event = function(key) {
-  var event, 
-      key
-  if(key instanceof Array || typeof key == 'object' && key.length) {
-    key = key.join('.')
-  } else if(key.length === 0) {
-    throw new Error('EventEmitter.prototype.event received empty key argument')
-  }
-  key = key.toLowerCase();
-  if(this.eventRegister[key]){
-    event = this.eventRegister[key]
-  } 
-  else {
-    event = new Event(this, key) 
-    this.eventRegister[key] = event
-  }
-  return event;
-}
+   /**
+     * Unbind an event by type and handler.
+     *   This undoes the work of "on".
+     *
+     * @method removeListener
+     *
+     * @param {string} type event type key (for example, 'click')
+     * @param {function} handler function object to remove
+     * @return {EventEmitter} this
+     */
+    EventEmitter.prototype.removeListener = function removeListener(type, handler) {
+        var listener = this.listeners[type];
+        if (listener !== undefined) {
+            var index = listener.indexOf(handler);
+            if (index >= 0) listener.splice(index, 1);
+        }
+        return this;
+    };
 
-EventEmitter.prototype.emit = function(key) {
-  var event, 
-      args, 
-      slice, 
-      key
-  if(key instanceof Array || typeof key == 'object' && key.length) {
-    key = key.join('')
-  }
-  key = key.toLowerCase() 
-  slice = Array.prototype.slice;
-  event = this.eventRegister[key]
-  args = []
-  if(arguments.length > 1) {
-    args = slice.call(arguments, 1)
-  }
-  if(event) {
-    setTimeout(function() {
-      event.fire.apply(event, args)
-    },0)
-  } 
-  return this
-}
+    /**
+     * Call event handlers with this set to owner.
+     *
+     * @method bindThis
+     *
+     * @param {Object} owner object this EventEmitter belongs to
+     */
+    EventEmitter.prototype.bindThis = function bindThis(owner) {
+        this._owner = owner;
+    };
 
-EventEmitter.prototype.on = function(key, handler) {
-  var event
-  event = this.event(key)
-  event.addHandler(handler)
-  return this
-}
-
-EventEmitter.prototype.off = function(key, handler) {
-  return this.removeAllEventListeners.apply(this, arguments)
-}
-
-EventEmitter.prototype.addEventListener = function(key, handler) {
-  return this.on.apply(this, arguments)
-}
-
-EventEmitter.prototype.removeEventListener = function(key, handler) {
-  var event, 
-      key;
-  key = key.toLowerCase()
-  event = this.event(key)
-  event.removeHandler(handler);
-  return this;
-}
-
-EventEmitter.prototype.removeAllEventListeners = function(key) {
-  var key
-  key = key.toLowerCase()
-  if(this.eventRegister[key]){
-    delete this.eventRegister[key]
-  } 
-  return this
-}
-
-EventEmitter.prototype.once = function(key, handler) {
-  var event
-  event = this.event(key)
-  function fireOnce() {
-    handler()
-    setTimeout(function() {
-      event.removeHandler(fireOnce)
-    },0)
-  }
-  event.addHandler(fireOnce)
-  return this 
-}
+    module.exports = EventEmitter;
+});

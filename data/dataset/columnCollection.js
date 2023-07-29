@@ -1,5 +1,5 @@
 var ColumnCollection = Backbone.Collection.extend(
-    /** @lends ColumnCollection.prototype */
+    
     {
         /**
          * @class The ATable's collection of {@link Column} models

@@ -1,4 +1,3 @@
-
 dojo.provide("dojo.widget.TreeCommon");
 dojo.require("dojo.widget.*"); // for dojo.widget.manager
 

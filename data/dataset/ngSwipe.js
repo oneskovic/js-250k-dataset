@@ -1,6 +1,6 @@
 'use strict';
 
-/* global ngTouch: false */
+
 
 /**
  * @ngdoc directive

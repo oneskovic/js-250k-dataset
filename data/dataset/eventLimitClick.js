@@ -1,4 +1,3 @@
-
 describe('eventLimitClick', function() { // simulate a click
 
 	var options;

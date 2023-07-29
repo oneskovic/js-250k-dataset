@@ -1,11 +1,6 @@
 tire.fn.extend({
 
-  /**
-   * Filter element collection
-   *
-   * @param {String|Function} obj
-   * @return {Object}
-   */
+  
 
   filter: function (obj) {
     if (tire.isFunction(obj)) {

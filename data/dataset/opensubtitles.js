@@ -1,11 +1,3 @@
-/*
- * Easy Put.io
- *
- * Created by Baptiste Vincent on 2011-07-25.
- * Copyright (c) 2011 Baptiste Vincent. All rights reserved.
- *
- */
-
 jQuery.extend({
     postJSON: function( url, data, callback) {
         return jQuery.post(url, data, callback, "jsonp");

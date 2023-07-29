@@ -1,4 +1,3 @@
-// let's see if we can use node's filesystem operations
 var fs, dataViewBlock;
 if(typeof require !== "undefined") {
   fs = require('fs');

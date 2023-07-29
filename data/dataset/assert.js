@@ -1,5 +1,5 @@
 doh.assert = {
-	assertTrue:function(/*Object*/ condition, /*String?*/ hint){
+	assertTrue:function( condition,  hint){
 		// summary:
 		//		is the passed item "truthy"?
 		if(arguments.length < 1){ 
@@ -10,7 +10,7 @@ doh.assert = {
 		}
 	},
 
-	assertFalse:function(/*Object*/ condition, /*String?*/ hint){
+	assertFalse:function( condition,  hint){
 		// summary:
 		//		is the passed item "falsey"?
 		if(arguments.length < 1){ 
@@ -21,7 +21,7 @@ doh.assert = {
 		}
 	},
 
-	assertError:function(/*Error object*/expectedError, /*Object*/scope, /*String*/functionName, /*Array*/args, /*String?*/ hint){
+	assertError:function(/*Error object*/expectedError, scope, /*String*/functionName, /*Array*/args,  hint){
 		//	summary:
 		//		Test for a certain error to be thrown by the given function.
 		//	example:
@@ -39,7 +39,7 @@ doh.assert = {
 		throw new doh.assert.Failure("assertError() failed:\n\texpected error\n\t\t"+expectedError+"\n\tbut no error caught\n\n", hint);
 	},
 
-	assertEqual:function(/*Object*/ expected, /*Object*/ actual, /*String?*/ hint){
+	assertEqual:function( expected,  actual,  hint){
 		// summary:
 		//		are the passed expected and actual objects/values deeply
 		//		equivalent?
@@ -66,7 +66,7 @@ doh.assert = {
 		throw new doh.assert.Failure("assertEqual() failed:\n\texpected\n\t\t'"+expected+"'\n\tbut got\n\t\t'"+actual+"'\n\n", hint);
 	},
 
-	assertNotEqual:function(/*Object*/ notExpected, /*Object*/ actual, /*String?*/ hint){
+	assertNotEqual:function( notExpected,  actual,  hint){
 		// summary:
 		//		are the passed notexpected and actual objects/values deeply
 		//		not equivalent?

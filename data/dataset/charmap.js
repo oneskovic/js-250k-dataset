@@ -1,19 +1,3 @@
-/**
- * Charmap plugin
- * by Christophe Dolivet
- * v0.1 (2006/09/22)
- * 
- *    
- * This plugin allow to use a visual keyboard allowing to insert any UTF-8 characters in the text.
- * 
- * - plugin name to add to the plugin list: "charmap"
- * - plugin name to add to the toolbar list: "charmap" 
- * - possible parameters to add to EditAreaLoader.init(): 
- * 		"charmap_default": (String) define the name of the default character range displayed on popup display
- * 							(default: "arrows")
- * 
- * 
- */
    
 var EditArea_charmap= {
 	/**

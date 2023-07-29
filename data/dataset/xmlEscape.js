@@ -1,9 +1,6 @@
 define([], function(){
 
-    /**
-     * HTML and XML escaping routines
-     * @namespace xmlEscape
-     */
+    
     var exports = /** @lends xmlEscape */{
 
         /**

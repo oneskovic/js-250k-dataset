@@ -1,10 +1,3 @@
-/*
- * resourceful.js: Top-level plugin exposing resourceful to flatiron app
- *
- * (C) 2011, Nodejitsu Inc.
- * MIT LICENSE
- *
- */
 var path = require('path'),
     fs = require('fs'),
     flatiron = require('../../flatiron'),

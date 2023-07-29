@@ -1,7 +1,3 @@
-//var gulp = require("gulp"),
-//    //source = require('vinyl-source-stream'),
-//    browserify = require('gulp-browserify');
-
 //gulp.task('bundle', function(){
 //    var args = xtend(watchify.args, { debug: true })
 //    var b = watchify(browserify(args))

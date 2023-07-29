@@ -1,9 +1,3 @@
-// ==========================================================================
-// Project:   SproutCore - JavaScript Application Framework
-// Copyright: ©2006-2010 Apple Inc. and contributors.
-// License:   Licensed under MIT license (see license.js)
-// ==========================================================================
-
 /*global module test equals context ok same notest */
 
 var source, indexes, observer, obj ; // base array to work with

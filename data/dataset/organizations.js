@@ -1,84 +1,53 @@
-/* globals App */
+var util        = require('util'),
+    Client      = require('./client').Client,
+    defaultgroups = require('./helpers').defaultgroups;
 
-App.module('Collection', function (Collection) {
-  'use strict';
 
-  var Promise = require('bluebird');
+var Organizations = exports.Organizations = function (options) {
+  this.jsonAPIName = 'organizations';
+  this.jsonAPIName2 = 'organization';
+  Client.call(this, options);
+};
 
-  var cache = null;
+// Inherit from Client base object
+util.inherits(Organizations, Client);
 
-  Promise.coroutine.addYieldHandler(function (yieldedValue) {
-    if (Array.isArray(yieldedValue)) {
-      return Promise.all(yieldedValue);  
-    }
-  });
+// ######################################################## Organizations
+// ====================================== Listing Organizations
+Organizations.prototype.list = function (cb) {
+  this.requestAll('GET', ['organizations'], cb);//all
+};
 
-  Collection.Organizations = Backbone.Collection.extend({
-    model: App.Model.Organization,
 
-    parse: function (res) {
-      res.forEach(function (org) {
-        if (_.has(org, 'repos')) {
-          org.repos = new Collection.Repositories(org.repos);
-        }
-      });
-      return res;
-    }
-  });
+// ====================================== Viewing Organizations
 
-  var hasCache = function () {
-    return !!cache;
-  };
+Organizations.prototype.show = function (organizationID, cb) {
+  this.request('GET', ['organizations', organizationID], cb);
+};
 
-  var storeCache = function (collection) {
-    cache = JSON.parse(JSON.stringify(collection));
-  };
+// ====================================== Creating Organizations
+Organizations.prototype.create = function (organization, cb) {
+  this.request('POST', ['organizations'], organization, cb);
+};
 
-  var restoreCache = function () {
-    var collection = new Collection.Organizations();
-    collection.set(cache, { parse: true });
-    return collection;
-  };
+// ====================================== Updating Organizations
 
-  var deleteCache = function () {
-    cache = null;
-  };
+Organizations.prototype.update = function (organizationID, organization, cb) {
+  this.request('PUT', ['organizations', organizationID], organization, cb);
+};
 
-  var API = {
-    fetchRemoteOrgs: Promise.coroutine(function* (options) {
 
-      if (options.clearCache) {
-        deleteCache();
-      }
+// ====================================== Deleting Organizations
+Organizations.prototype.delete = function (organizationID, cb) {
+  this.request('DELETE', ['organizations', organizationID],  cb);
+};
 
-      if (hasCache()) {
-        return restoreCache();
-      }
+// ====================================== Search Organizations
+Organizations.prototype.search = function (params, cb) {
+  this.requestAll('GET', ['organizations', 'search', params], cb);
+};
 
-      var userConfig = yield App.request('fetchUserConfig');
-      var client = App.request('githubClient', userConfig);
-
-      var orgs = yield client.orgsPromise();
-      var orgsCollection = new Collection.Organizations(orgs);
-
-      var orgRepos = yield orgsCollection.map(function (org) {
-          return client.reposFromOrgPromise({
-            org: org.get('login')
-          });
-      });
-
-      orgsCollection.each(function (org, i) {
-        org.set('repos', new Collection.Repositories(orgRepos[i]));
-      });
-
-      storeCache(orgsCollection);
-
-      return orgsCollection;
-    })
-  };
-
-  App.reqres.setHandler('fetchOrganizations', function (options) {
-    options = options || {};
-    return API.fetchRemoteOrgs(options);
-  });
-});
+// ====================================== Autocomplete Organizations
+Organizations.prototype.autocomplete = function (params, cb) {
+  this.requestAll('GET', ['organizations', 'autocomplete', params], cb);
+};

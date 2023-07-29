@@ -1,14 +1,14 @@
 dojo.provide("dojox.math.round");
 dojo.experimental("dojox.math.round");
 
-dojox.math.round = function(/*Number*/value, /*Number?*/places, /*Number?*/increment){
+dojox.math.round = function(value, /*?*/places, /*?*/increment){
 	//	summary:
 	//		Similar to dojo.number.round, but compensates for binary floating point artifacts
 	//	description:
 	//		Rounds to the nearest value with the given number of decimal places, away from zero if equal,
-	//		similar to Number.toFixed().  Rounding can be done by fractional increments also.
+	//		similar to .toFixed().  Rounding can be done by fractional increments also.
 	//		Makes minor adjustments to accommodate for precision errors due to binary floating point representation
-	//		of Javascript Numbers.  See http://speleotrove.com/decimal/decifaq.html for more information.
+	//		of Javascript s.  See http://speleotrove.com/decimal/decifaq.html for more information.
 	//		Because of this adjustment, the rounding may not be mathematically correct for full precision
 	//		floating point values.  The calculations assume 14 significant figures, so the accuracy will
 	//		be limited to a certain number of decimal places preserved will vary with the magnitude of
@@ -42,7 +42,7 @@ dojox.math.round = function(/*Number*/value, /*Number?*/places, /*Number?*/incre
 	var wholeFigs = Math.log(Math.abs(value))/Math.log(10);
 	var factor = 10 / (increment || 10);
 	var delta = Math.pow(10, -15 + wholeFigs);
-	return (factor * (+value + (value > 0 ? delta : -delta))).toFixed(places) / factor; // Number
+	return (factor * (+value + (value > 0 ? delta : -delta))).toFixed(places) / factor; // 
 }
 
 if((0.9).toFixed() == 0){

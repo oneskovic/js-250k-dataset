@@ -1,88 +1,69 @@
+/*global define */
+define([
+    'js/util',
+    '../Value'
+], function (
+    util,
+    Value
+) {
+    'use strict';
 
-/*!
- * Stylus - Null
- * Copyright(c) 2010 LearnBoost <dev@learnboost.com>
- * MIT Licensed
- */
+    function NullValue(factory, callStack) {
+        Value.call(this, factory, callStack, 'null', null);
+    }
 
-/**
- * Module dependencies.
- */
+    util.inherit(NullValue).from(Value);
 
-var Node = require('./node')
-  , nodes = require('./');
+    util.extend(NullValue.prototype, {
+        add: function (rightValue) {
+            return rightValue.addToNull();
+        },
 
-/**
- * Initialize a new `Null` node.
- *
- * @api public
- */
+        addToBoolean: function (booleanValue) {
+            return booleanValue.coerceToInteger();
+        },
 
-var Null = module.exports = function Null(){};
+        coerceToArray: function () {
+            // Null just casts to an empty array
+            return this.factory.createArray();
+        },
 
-/**
- * Inherit from `Node.prototype`.
- */
+        coerceToBoolean: function () {
+            return this.factory.createBoolean(false);
+        },
 
-Null.prototype.__proto__ = Node.prototype;
+        coerceToKey: function () {
+            return this.factory.createString('');
+        },
 
-/**
- * Return 'Null'.
- *
- * @return {String}
- * @api public
- */
+        coerceToString: function () {
+            return this.factory.createString('');
+        },
 
-Null.prototype.inspect = 
-Null.prototype.toString = function(){
-  return 'null';
-};
+        isEqualTo: function (rightValue) {
+            return rightValue.isEqualToNull(this);
+        },
 
-/**
- * Return false.
- *
- * @return {Boolean}
- * @api public
- */
+        isEqualToFloat: function (floatValue) {
+            return floatValue.isEqualToNull();
+        },
 
-Null.prototype.toBoolean = function(){
-  return nodes.false;
-};
+        isEqualToNull: function () {
+            return this.factory.createBoolean(true);
+        },
 
-/**
- * Check if the node is a null node.
- *
- * @return {Boolean}
- * @api public
- */
+        isEqualToObject: function (objectValue) {
+            return objectValue.isEqualToNull();
+        },
 
-Null.prototype.__defineGetter__('isNull', function(){
-  return true;
+        isEqualToString: function (stringValue) {
+            return stringValue.isEqualToNull();
+        },
+
+        isSet: function () {
+            return false;
+        }
+    });
+
+    return NullValue;
 });
-
-/**
- * Return hash.
- *
- * @return {String}
- * @api public
- */
-
-Null.prototype.__defineGetter__('hash', function(){
-  return null;
-});
-
-/**
- * Return a JSON representation of this node.
- *
- * @return {Object}
- * @api public
- */
-
-Null.prototype.toJSON = function(){
-  return {
-    __type: 'Null',
-    lineno: this.lineno,
-    column: this.column,
-    filename: this.filename
-  };
-};

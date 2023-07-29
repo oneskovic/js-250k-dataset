@@ -1,17 +1,8 @@
-/**
- * @fileOverview 图表中的激活的元素
- * @ignore
- */
-
 define('bui/chart/actived',function (require) {
 	
 	var BUI = require('bui/common');
 
-	/**
-	 * @protected
-	 * @class BUI.Chart.Actived
-	 * 控件可以被激活（active)的扩展
-	 */
+	
 	var Actived = function(){
 
 	};

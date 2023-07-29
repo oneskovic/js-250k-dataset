@@ -1,13 +1,3 @@
-/*
- * Tangram
- * Copyright 2009 Baidu Inc. All rights reserved.
- * 
- * path: baidu/event/un.js
- * author: erik
- * version: 1.1.0
- * date: 2009/12/16
- */
-
 ///import baidu.event._listeners;
 ///import baidu.dom._g;
 

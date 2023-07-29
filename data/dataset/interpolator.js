@@ -1,7 +1,3 @@
-/**
- * @fileoverview Interpolator for key frame animation
- * @author Tony Parisi
- */
 goog.provide('Vizi.Interpolator');
 goog.require('Vizi.EventDispatcher');
 

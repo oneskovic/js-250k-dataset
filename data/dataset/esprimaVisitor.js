@@ -1,15 +1,3 @@
-/*******************************************************************************
- * @license
- * Copyright (c) 2012, 2015 VMware, Inc. and others.
- * All Rights Reserved. This program and the accompanying materials are made 
- * available under the terms of the Eclipse Public License v1.0 
- * (http://www.eclipse.org/legal/epl-v10.html), and the Eclipse Distribution 
- * License v1.0 (http://www.eclipse.org/org/documents/edl-v10.html).
- *
- * Contributors:
- *     Andrew Eisenberg (VMware) - initial API and implementation
- * 	   IBM Corporation - bug fixes / improvements
- ******************************************************************************/
 /*global esprima */
 /*eslint-env amd*/
 define([

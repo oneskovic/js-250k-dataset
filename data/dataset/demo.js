@@ -1,110 +1,65 @@
-(function() {
-    var logs = document.getElementById('__logs'),win = window;
+/*jslint unparam: true, regexp: true */
+/*global $ */
 
-    win.__st_render = function (html,code) {
-        html && (document.getElementById('__show').innerHTML = html);
-        logs.innerHTML = '';
+$(function () {
+    'use strict';
 
-        if(code){
-             eval('(function (){  \r\n try { \r\n' + code + "\r\n} \r\n catch(e) {\r\n __showErr(e); \r\n} \r\n})();")
-        }
-    }
-
-    function __showErr(e){
-        //ff下错误行捕获
-        if(e.lineNumber){
-            alert(e.message + '\n  at JS ' + e.lineNumber);
-            return;
-        }
-        else {
-            var stack = e.stack;
-            if(stack)
-            {
-                var arr = stack.split('\n'),
-                    msg = arr[0],
-                    code = arr[1];
-
-                var index = code.lastIndexOf(':');
-                index = code.lastIndexOf(':',--index);
-                if(index > 0){
-                    var lines = code.substring(index + 1,code.length - 1).split(':');
-                    lines[0] = lines[0] * 1 - 2;
-                    alert(msg + '\n  at JS ' + lines.join(':'));
-                    return;
-                }
-            }
-        }
-        
-        alert(e);
-    }
-
-    function expect(result) {
-        return new Tester(result);
-    }
-
-    function Tester(result) {
-        this.ret = result;
-        this.not = new Not(result);
-    }
-
-    Tester.prototype = {
-        toBe: function(expectResult) {
-            check(this, expectResult);
+    // Load demo images from flickr:
+    $.ajax({
+        // Flickr API is SSL only:
+        // https://code.flickr.net/2014/04/30/flickr-api-going-ssl-only-on-june-27th-2014/
+        url: 'https://api.flickr.com/services/rest/',
+        data: {
+            format: 'json',
+            method: 'flickr.interestingness.getList',
+            api_key: '7617adae70159d09ba78cfec73c13be3' // jshint ignore:line
         },
-        toEqual: function(expectResult) {
-            check(this, expectResult, this.ret == expectResult);
-        },
-        toBeDefined: function() {
-            check(this, 'defined', this.ret !== undefined);
-        },
-        toBeUndefined: function() {
-            check(this, undefined);
-        },
-        toBeNull: function() {
-            check(this, null);
-        },
-        toBeTruthy: function() {
-            check(this, true);
-        },
-        toBeFalsy: function() {
-            check(this, false);
-        }
-    }
+        dataType: 'jsonp',
+        jsonp: 'jsoncallback'
+    }).done(function (result) {
+        var linksContainer = $('#links'),
+            baseUrl;
+        // Add the demo images as links with thumbnails to the page:
+        $.each(result.photos.photo, function (index, photo) {
+            baseUrl = 'https://farm' + photo.farm + '.static.flickr.com/' +
+                photo.server + '/' + photo.id + '_' + photo.secret;
+            $('<a/>')
+                .append($('<img>').prop('src', baseUrl + '_s.jpg'))
+                .prop('href', baseUrl + '_b.jpg')
+                .prop('title', photo.title)
+                .attr('data-dialog', '')
+                .appendTo(linksContainer);
+        });
+    });
 
-    function Not(result) {
-        this.ret = result;
-    }
+    // Initialize the theme switcher:
+    $('#theme-switcher').change(function () {
+        var theme = $('#theme');
+        theme.prop(
+            'href',
+            theme.prop('href').replace(
+                /[\w\-]+\/jquery-ui.css/,
+                $(this).val() + '/jquery-ui.css'
+            )
+        );
+    });
 
-    Not.prototype = Tester.prototype;
+    // Initialize the effect switcher:
+    $('#effect-switcher').change(function () {
+        var value = $(this).val();
+        $('#blueimp-gallery-dialog').data({
+            show: value,
+            hide: value
+        });
+    });
 
+    // Initialize the slideshow button:
+    $('#slideshow-button')
+        .button({icons: {primary: 'ui-icon-image'}})
+        .on('click', function () {
+            $('#blueimp-gallery-dialog .blueimp-gallery')
+                .data('startSlideshow', true);
+            $('#links').children().first().click();
+        });
 
-    function check(tester, expectResult, success) {
-        success === undefined && (success = tester.ret === expectResult);
-        if (!tester.not)
-            success = !success;
-
-        var html = '<p><b>result : </b>' + tester.ret + '</p><p><b>expect : </b>' + expectResult;
-        addLi(html,success ? 'success' : 'fail')
-    }
-
-    function log() {
-        var item,args = arguments,i =0,len = args.length,result = [];
-        for(;i < len; i++){
-            item = args[i];
-            if(item && typeof item === 'object' && window.JSON)
-                item = window.JSON.stringify(item);
-
-            result.push(item);
-        }
-
-        addLi('<p><b>log : </b>' + result.join(' , ') + '</p>');
-    }
-
-    function addLi(html,css){
-        var li = document.createElement('li');
-        css && (li.className = css);
-        li.innerHTML = html;
-        logs.appendChild(li);
-    }
-
-})();
+});

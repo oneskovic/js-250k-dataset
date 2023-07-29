@@ -1,7 +1,3 @@
-/**
- * DDL Adapter Normalization
- */
-
 var _ = require('underscore'),
     async = require('async');
 

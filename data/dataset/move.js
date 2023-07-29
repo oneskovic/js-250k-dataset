@@ -1,108 +1,67 @@
-//most (all at this time) of this code was written by Andrew Kelley
-//licensed under the BSD license: see https://github.com/andrewrk/node-mv/blob/master/package.json
+var path = require('path'),
+	exec = require('child_process').exec,
+	TU = require('../lib/testUtils');
 
-var fs = require('fs');
-var ncp = require('ncp').ncp;
-var path = require('path');
-var rimraf = require('rimraf');
-var mkdirp = require('mkdirp');
+var alloyRoot = path.join(__dirname,'..','..');
+var templatePath = path.join(alloyRoot,'Alloy','template');
+var Harness = path.join(alloyRoot,'test','projects','Harness');
 
-module.exports = mv;
+describe('alloy move', function() {
+	TU.addMatchers();
 
-function mv(source, dest, options, cb){
-  if (typeof options === 'function') {
-    cb = options;
-    options = {};
-  }
-  var shouldMkdirp = !!options.mkdirp;
-  var clobber = options.clobber !== false;
-  var limit = options.limit || 16;
+	it('exits with error, shows help', function() {
+		TU.asyncExecTest('alloy move', {
+			test: function() {
+				expect(this.output.error).not.toBeNull();
+			}
+		});
+	});
 
-  if (shouldMkdirp) {
-    mkdirs();
-  } else {
-    doRename();
-  }
+	it('exits with error when given an invalid source', function() {
+		TU.asyncExecTest('alloy move invalidSource', {
+			test: function() {
+				expect(this.output.error).not.toBeNull();
+			}
+		});
+	});
 
-  function mkdirs() {
-    mkdirp(path.dirname(dest), function(err) {
-      if (err) return cb(err);
-      doRename();
-    });
-  }
+	it('exits with error when given an invalid source and destination', function() {
+		TU.asyncExecTest('alloy move invalidSource invalidDestination', {
+			test: function() {
+				expect(this.output.error).not.toBeNull();
+			}
+		});
+	});
 
-  function doRename() {
-    if (clobber) {
-      fs.rename(source, dest, function(err) {
-        if (!err) return cb();
-        if (err.code !== 'EXDEV') return cb(err);
-        moveFileAcrossDevice(source, dest, clobber, limit, cb);
-      });
-    } else {
-      fs.link(source, dest, function(err) {
-        if (err) {
-          if (err.code === 'EXDEV') {
-            moveFileAcrossDevice(source, dest, clobber, limit, cb);
-            return;
-          }
-          if (err.code === 'EISDIR' || err.code === 'EPERM') {
-            moveDirAcrossDevice(source, dest, clobber, limit, cb);
-            return;
-          }
-          cb(err);
-          return;
-        }
-        fs.unlink(source, cb);
-      });
-    }
-  }
-}
+	var destinationName = 'testDestination';
 
-function moveFileAcrossDevice(source, dest, clobber, limit, cb) {
-  var outFlags = clobber ? 'w' : 'wx';
-  var ins = fs.createReadStream(source);
-  var outs = fs.createWriteStream(dest, {flags: outFlags});
-  ins.on('error', function(err){
-    ins.destroy();
-    outs.destroy();
-    outs.removeListener('close', onClose);
-    if (err.code === 'EISDIR' || err.code === 'EPERM') {
-      moveDirAcrossDevice(source, dest, clobber, limit, cb);
-    } else {
-      cb(err);
-    }
-  });
-  outs.on('error', function(err){
-    ins.destroy();
-    outs.destroy();
-    outs.removeListener('close', onClose);
-    cb(err);
-  });
-  outs.once('close', onClose);
-  ins.pipe(outs);
-  function onClose(){
-    fs.unlink(source, cb);
-  }
-}
+	it('move without error', function() {
+		TU.asyncExecTest('alloy move index ' + destinationName + ' --project-dir "' + Harness + '"', {reset:true});
+	});
 
-function moveDirAcrossDevice(source, dest, clobber, limit, cb) {
-  var options = {
-    stopOnErr: true,
-    clobber: false,
-    limit: limit,
-  };
-  if (clobber) {
-    rimraf(dest, function(err) {
-      if (err) return cb(err);
-      startNcp();
-    });
-  } else {
-    startNcp();
-  }
-  function startNcp() {
-    ncp(source, dest, options, function(errList) {
-      if (errList) return cb(errList[0]);
-      rimraf(source, cb);
-    });
-  }
-}
+	it('ends in error when does not exists source file', function() {
+		TU.asyncExecTest('alloy move doesNotExistsSource ' + destinationName + ' --project-dir "' + Harness + '"', {
+			test: function() {
+				expect(this.output.error).toBeTruthy();
+			}
+		});
+	});
+
+	it('ends in error when exists destination file', function() {
+		TU.asyncExecTest('alloy move index ' + destinationName + ' --project-dir "' + Harness + '"', {
+			test: function() {
+				expect(this.output.error).toBeTruthy();
+			}
+		});
+	});
+
+	it('move without error when exists destination file force options', function() {
+		TU.asyncExecTest('alloy move index ' + destinationName + ' --project-dir "' + Harness + '" --force', {reset:true});
+	});
+
+	var recursiveDestinationName = 'recursive/testDestination';
+
+	it('recursive move without error', function() {
+		TU.asyncExecTest('alloy move index ' + recursiveDestinationName + ' --project-dir "' + Harness + '"', {reset:true});
+	});
+});

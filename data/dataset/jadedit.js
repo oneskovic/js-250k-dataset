@@ -1,6 +1,3 @@
-/* JadEdit - An embeddable JavaScript editor using Jade template syntax.
- * ===================================================================== */
-
 // The staring point of the applications. Initializes the components
 // =================================================================
 

@@ -5,35 +5,7 @@ var Bluebird  = require('bluebird');
 var path      = require('path');
 var redefine  = require('redefine');
 
-/**
- * Sequelize storage
- *
- * Stores migration in a database table using Sequelize.  One of "sequelize" or
- * "model" storage option is required.
- *
- * If "sequelize" option is supplied will create a model named "SequelizeMeta" with
- * timestamps and an attribute "name" for storing migrations.  The model name,
- * table name, and column name are customizable with options.
- *
- * If "model" option is supplied will use existing model for storing migrations.
- * The model must have an attribute "name", which can be customized.
- *
- * If the table does not exist it will be created automatically.
- *
- * @param {Object} [options]
- * @param {Object} [options.storageOptions]
- * @param {Object} [options.storageOptions.sequelize] configured instance of Sequelize
- * @param {Object} [options.storageOptions.model] Sequelize model - must have column
- * name matching "columnName" option
- * @param {String} [options.storageOptions.modelName='SequelizeMeta'] name of model
- * to create if "model" option is not supplied
- * @param {String} [options.storageOptions.tableName=modelName] name of table
- * to create if "model" option is not supplied
- * @param {String} [options.storageOptions.columnName='name'] name of table column
- * holding migration name
- * @param {String} [options.storageOptions.columnType=Sequelize.STRING] type of the column
- * For utf8mb4 charsets under InnoDB, you may need to set this <= 190
- */
+
 module.exports = redefine.Class({
   constructor: function (options) {
     this.options = options || {};

@@ -1,5 +1,3 @@
-
-
 // Setup env
 var APPROVED_API_KEY = process.env.APPROVED_API_KEY || ''; // temporary.  TODO: use db or similar.
 if (!APPROVED_API_KEY) {

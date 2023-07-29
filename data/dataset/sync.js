@@ -1,81 +1,111 @@
-var core = require('./core');
-var fs = require('fs');
-var path = require('path');
-var caller = require('./caller.js');
-var nodeModulesPaths = require('./node-modules-paths.js');
+var Sync = {
+  // Currently interval is arbitrarily set to 10 minutes
+  INTERVAL: '300000',
 
-module.exports = function (x, opts) {
-    if (!opts) opts = {};
-    var isFile = opts.isFile || function (file) {
-        try { var stat = fs.statSync(file) }
-        catch (err) { if (err && err.code === 'ENOENT') return false }
-        return stat.isFile() || stat.isFIFO();
-    };
-    var readFileSync = opts.readFileSync || fs.readFileSync;
-    
-    var extensions = opts.extensions || [ '.js' ];
-    var y = opts.basedir || path.dirname(caller());
+  SYNCED_PROJECT_PROPERTIES: [
+    "apps",
+    "bookmarkFolderId",
+    "currentTaskId",
+    "emails",
+    "name",
+    "people",
+    "tabs",
+    "tasks"
+  ],
 
-    opts.paths = opts.paths || [];
+  PROJECT_NAME_PREFIX: "_p_",
 
-    if (/^(?:\.\.?(?:\/|$)|\/|([A-Za-z]:)?[\\\/])/.test(x)) {
-        var res = path.resolve(y, x);
-        if (x === '..') res += '/';
-        var m = loadAsFileSync(res) || loadAsDirectorySync(res);
-        if (m) return m;
-    } else {
-        var n = loadNodeModulesSync(x, y);
-        if (n) return n;
-    }
-    
-    if (core[x]) return x;
-    
-    throw new Error("Cannot find module '" + x + "' from '" + y + "'");
-    
-    function loadAsFileSync (x) {
-        if (isFile(x)) {
-            return x;
+  // Push the local storage to sync storage
+  // TODO: Only push if any changes are detected.
+  push: function() {
+    console.log("Pushing data to sync storage");
+
+    chrome.storage.local.get(null, function(localItems) {
+      var localProjects = localItems["projects"];
+      var syncProjects = [];
+      var syncItems = {};
+
+      _.each(localProjects, function(localProject) {
+        var syncProject = {};
+        _.each(localProject, function(value, key) {
+          if (Sync.SYNCED_PROJECT_PROPERTIES.indexOf(key) != -1) {
+            syncProject[key] = value;
+          }
+        });
+
+        // prepending project names with "_p_"
+        syncItems[Sync.PROJECT_NAME_PREFIX + syncProject.name] = syncProject;
+      });
+
+      syncItems.bookmarkFolderId = localItems.bookmarkFolderId;
+
+      chrome.storage.sync.clear(function() {
+        chrome.storage.sync.set(syncItems, function() {
+          console.log("Successfully pushed data to sync!");
+          chrome.storage.sync.getBytesInUse(function(bytesInUse) {
+            console.log(bytesInUse + " bytes are being used in sync storage.\
+              The limit is " + chrome.storage.sync.QUOTA_BYTES);
+          });
+        });
+      });
+    });
+  },
+
+  // Apply changes to sync storage to local storage
+  pull: function() {
+    console.log("Applying changes from sync to local store");
+    chrome.storage.local.get(null, function(localItems) {
+      chrome.storage.sync.get(null, function(syncItems) {
+        console.log(syncItems);
+        localItems.bookmarkFolderId = syncItems.bookmarkFolderId;
+        if (!localItems.projects) {
+          localItems.projects = {};
         }
-        
-        for (var i = 0; i < extensions.length; i++) {
-            var file = x + extensions[i];
-            if (isFile(file)) {
-                return file;
+
+        var syncProjectNames = [];
+
+        _.each(syncItems, function(syncProject, key) {
+          if (key.indexOf(Sync.PROJECT_NAME_PREFIX) === 0) {
+            var projectName = syncProject["name"];
+            syncProjectNames.push(projectName);
+            var projectFound = false;
+
+            _.each(localItems.projects, function(project, index) {
+              if (project.name === projectName) {
+
+                _.each(Sync.SYNCED_PROJECT_PROPERTIES, function(property) {
+                  project[property] = syncProject[property];
+                });
+
+                localItems.projects[index] = project;
+                projectFound = true;
+                return;
+              }
+            });
+
+            if (!projectFound) {
+              localItems.projects.push(syncProject);
             }
-        }
-    }
-    
-    function loadAsDirectorySync (x) {
-        var pkgfile = path.join(x, '/package.json');
-        if (isFile(pkgfile)) {
-            var body = readFileSync(pkgfile, 'utf8');
-            try {
-                var pkg = JSON.parse(body);
-                if (opts.packageFilter) {
-                    pkg = opts.packageFilter(pkg, x);
-                }
-                
-                if (pkg.main) {
-                    var m = loadAsFileSync(path.resolve(x, pkg.main));
-                    if (m) return m;
-                    var n = loadAsDirectorySync(path.resolve(x, pkg.main));
-                    if (n) return n;
-                }
-            }
-            catch (err) {}
-        }
-        
-        return loadAsFileSync(path.join( x, '/index'));
-    }
-    
-    function loadNodeModulesSync (x, start) {
-        var dirs = nodeModulesPaths(start, opts);
-        for (var i = 0; i < dirs.length; i++) {
-            var dir = dirs[i];
-            var m = loadAsFileSync(path.join( dir, '/', x));
-            if (m) return m;
-            var n = loadAsDirectorySync(path.join( dir, '/', x ));
-            if (n) return n;
-        }
-    }
-};
+          }
+        });
+
+        localItems.projects = _.filter(localItems.projects, function(project) {
+          return syncProjectNames.indexOf(project.name) != -1;
+        });
+
+        chrome.storage.local.set(localItems);
+      });
+    });
+  }
+}
+
+// Set up the task of updating sync storage
+setInterval(Sync.push, Sync.INTERVAL);
+
+// Listen to updates to sync storage
+chrome.storage.onChanged.addListener(function(changes, areaName) {
+  if (areaName === "sync") {
+    console.log("Sync storage updated");
+    Sync.pull();
+  }
+});

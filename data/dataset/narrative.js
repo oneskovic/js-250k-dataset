@@ -7,13 +7,7 @@ ig.module(
 )
     .defines(function() {
 
-        /**
-         * Trigger to start narration, similar in style to a comic book.
-         * @class
-         * @extends ig.EntityTrigger
-         * @memberof ig
-         * @author Collin Hover - collinhover.com
-         */
+        
         ig.EntityNarrative = ig.global.EntityNarrative = ig.EntityConversation.extend( /**@lends ig.EntityNarrative.prototype */ {
 
             /**

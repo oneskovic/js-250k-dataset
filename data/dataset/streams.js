@@ -1,8 +1,3 @@
-/*
- * This file is part of the fastimage node module. Copyright (C) 2015 and above Shogun <shogun@cowtech.it>.
- * Licensed under the MIT license, which can be found at http://www.opensource.org/licenses/mit-license.php.
- */
-
 (function(){
   "use strict";
 

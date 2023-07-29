@@ -1,13 +1,6 @@
 "use strict";
 
-/**
-* A simple in browser event hub.
-* Consists of multiple 'channels' where each channel is an <code>Emitr</code>.
-*
-* @module br/EventHub
-* @see {@link https://bladerunnerjs.github.io/emitr/}
-* @see {@link http://bladerunnerjs.org/docs/concepts/event_hub/}
-*/
+
 
 var Emitter = require( 'emitr' );
 var br = require( 'br/Core' );

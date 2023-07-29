@@ -1,11 +1,3 @@
-/*!
- * Influenced by Connect - bodyParser
- * Copyright(c) 2010 Sencha Inc.
- * Copyright(c) 2011 TJ Holowaychuk
- * Copyright(c) 2012 AppJS
- * MIT Licensed
- */
-
 /**
  * Module dependencies.
  */

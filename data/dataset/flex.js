@@ -1,7 +1,3 @@
-/**
- * Flex mixin
- */
-
 var flex = function flex(value) {
   value = value || '0 1 auto';
 

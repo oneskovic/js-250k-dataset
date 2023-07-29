@@ -1,6 +1,6 @@
 function phawkGmap()
 {
-	/* Public return api */
+	
 	var api = {};
 	
 	/* ID of the map container in DOM */

@@ -1,8 +1,3 @@
-
-/**
- * Module dependencies.
- */
-
 var Canvas = require('../')
   , size = process.stdout.getWindowSize()
   , Log = require('./log');

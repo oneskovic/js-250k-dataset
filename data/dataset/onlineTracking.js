@@ -1,7 +1,3 @@
-// This is example of a client for extenstion online tracking service
-// Part of Brackets Extension Rating extension by Alex Bardanov
-// https://github.com/dnbard/brackets-extension-rating
-
 // use require('./onlineTrackingClient').init() to activate tracking
 
 define(function(require, exports){

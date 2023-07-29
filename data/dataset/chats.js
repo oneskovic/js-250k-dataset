@@ -1,6 +1,3 @@
-/** The Chat object contains information about a channel on a given server.
-  * It makes use of the User object provided by users.js.
-  */
 var Chat = function (server, channel) {
   this.server = server;
   this.channel = channel;

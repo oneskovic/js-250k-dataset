@@ -1,7 +1,3 @@
-/**
- * Only Elements unique will be added to this array
- * @constructor
- */
 UniqueElementList = function(clickElementUniquenessType) {
 	this.clickElementUniquenessType = clickElementUniquenessType;
 	this.addedElements = {};

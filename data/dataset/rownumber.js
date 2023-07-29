@@ -1,10 +1,7 @@
 define('bui/grid/plugins/rownumber',function (require) {
 
   var CLS_NUMBER = 'x-grid-rownumber';
-  /**
-   * @class BUI.Grid.Plugins.RowNumber
-   * 表格显示行序号的插件
-   */
+  
   function RowNumber(config){
     RowNumber.superclass.constructor.call(this, config);
   }

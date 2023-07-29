@@ -1,7 +1,3 @@
-/**
- * Descibe me
- * @module stages
- */
 define( function () {
 
   /**

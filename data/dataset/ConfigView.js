@@ -1,7 +1,3 @@
-/**
- * Administrative configuration view. Shows the global-level settings for this
- * plugin for setting the Google Analytics tracking ID.
- */
 girder.views.google_analytics_ConfigView = girder.View.extend({
     events: {
         'submit #g-google_analytics-form': function (event) {

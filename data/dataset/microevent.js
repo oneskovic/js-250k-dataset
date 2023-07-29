@@ -1,9 +1,3 @@
-// This is a simple rewrite of microevent.js. I've changed the
-// function names to be consistent with node.js EventEmitter.
-//
-// microevent.js is copyright Jerome Etienne, and licensed under the MIT license:
-// https://github.com/jeromeetienne/microevent.js
-
 var MicroEvent = function() {};
 
 MicroEvent.prototype.on = function(event, fn) {

@@ -1,6 +1,3 @@
-/**
-* A horizontal blur filter by Mat Groves http://matgroves.com/ @Doormat23
-*/
 Phaser.Filter.BlurX = function (game) {
 
     Phaser.Filter.call(this, game);

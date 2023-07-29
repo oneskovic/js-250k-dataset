@@ -1,6 +1,3 @@
-/* ObjectMakr.js
- * A factory for JavaScript objects derived from Full Screen Mario
-*/
 function ObjectMakr(settings) {
   "use strict";
   

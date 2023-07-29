@@ -1,6 +1,3 @@
-//
-// Calcualtes the daily jail system population
-//
 define(['underscore', 'backbone'], function(_, Backbone) {
 
   var JailSystemPopulationModel = Backbone.Model.extend({

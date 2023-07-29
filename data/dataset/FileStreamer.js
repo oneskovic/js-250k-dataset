@@ -1,13 +1,5 @@
 define(['Eventify'],function(Eventify){
-	/** Events:
-			read(data)
-			progress(progressPoint)
-			end()
-			error(ErrorEvent)
-			abort(abortEvent)
-			start()
-			reading(from,to)
-	**/
+	
 	var defaultChunkSize = 32;
 
 	var FileStreamer = function(file) {

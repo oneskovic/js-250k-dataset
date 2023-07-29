@@ -11,12 +11,7 @@ module.exports = function(grunt) {
     var options;
     var minifier;
 
-    /**
-     * Returns an input source map if a map path was specified
-     * or options.map value otherwise
-     * @param {string} from
-     * @returns {string|boolean|undefined}
-     */
+    
     function getMapOption(from) {
         if (typeof options.map === 'string') {
             var mapPath = options.map + path.basename(from) + '.map';

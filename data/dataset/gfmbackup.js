@@ -1,8 +1,4 @@
 /*
-    GFMarkdownEditor 0.2
-    please see https://github.com/romaricdrigon/GFMarkdownEditor
- */
-/*
     this module is in charge of onLoadbackup to localStorage
     and restore
  */

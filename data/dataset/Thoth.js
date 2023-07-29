@@ -1,4 +1,3 @@
-/*globals global SC */
 var tools = require('./core/Tools');
 var sys = tools.sys;
 

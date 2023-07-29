@@ -1,81 +1,83 @@
-'use strict';
+var util        = require('util'),
+    Client      = require('../client').Client
+    //defaultgroups = require('./helpers').defaultgroups;
 
-var fs = require('fs'),
-    _ = require('underscore');
 
-var parseKanso = function(callback) {
-  fs.readFile('kanso.json', function (err, data) {
-    if (err) {
-      return callback('Error reading kanso.json: ' + err);
-    }
-    try {
-      var kanso = JSON.parse(data);
-      return callback(null, kanso.settings_schema.properties.translations.default);
-    } catch (e) {
-      console.log(e);
-      return callback('Failed to parse kanso.json');
-    }
-  });
+var Translations = exports.Translations = function (options) {
+  this.jsonAPIName = 'translations';
+  this.jsonAPIName2 = 'translation';
+  Client.call(this, options);
 };
 
-var parseAppSettings = function() {
-  var data = require('../../packages/kujua-sms/views/lib/app_settings');
-  return data.translations;
+// Inherit from Client base object
+util.inherits(Translations, Client);
+
+// ######################################################## Translations
+
+// ====================================== Viewing Translations
+Translations.prototype.show = function (articleID, locale, cb) {
+  this.request('GET', ['articles', articleID, 'translations', locale], cb);
 };
 
-var findDuplicates = function(data) {
-  var found = [];
-  var duplicates = [];
-  _.each(_.pluck(data, 'key'), function(key) {
-    if (_.contains(found, key)) {
-      duplicates.push(key);
-    } else {
-      found.push(key);
-    }
-  });
-  return duplicates;
+// ====================================== Listing Translations Belongs To An Article
+//Parameters allowed:
+//  locales=en-us,en-uk
+//  outdated=true
+Translations.prototype.listByArticle = function (articleID, filterParams, cb) {
+  this.requestAll('GET', ['articles', articleID, 'translations',filterParams], cb);
 };
 
-var findMissing = function(from, to) {
-  var missing = [];
-  _.each(from, function(f) {
-    if (!_.contains(to, f)) {
-      missing.push(f);
-    }
-  });
-  return missing;
+// ====================================== Listing Translations Belongs To A Section
+Translations.prototype.listBySection = function (sectionID, cb) {
+  this.requestAll('GET', ['sections', sectionID, 'translations'], cb);
 };
 
-exports['kanso default translation keys are unique'] = function(test) {
-  test.expect(1);
-  parseKanso(function(err, data) {
-    if (err) {
-      test.ok(false, err);
-    } else {
-      var duplicates = findDuplicates(data);
-      test.equals(0, duplicates.length, 'Duplicate translations in kanso: ' + JSON.stringify(duplicates));
-    }
-    test.done();
-  });
+// ====================================== Listing Translations Belongs To A Category
+Translations.prototype.listByCategory = function (categoryID, cb) {
+  this.requestAll('GET', ['categories', categoryID, 'translations'], cb);
 };
 
-exports['app_settings default translation keys are unique'] = function(test) {
-  test.expect(1);
-  var data = parseAppSettings();
-  var duplicates = findDuplicates(data);
-  test.equals(0, duplicates.length, 'Duplicate translations in app_settings: ' + JSON.stringify(duplicates));
-  test.done();
+// ====================================== Listing Translations Belongs To An Article
+Translations.prototype.listMissingLocalesByArticle = function (articleID, cb) {
+  this.request('GET', ['articles', articleID, 'translations', 'missing'], cb);
 };
 
-exports['kanso and app_settings defaults are consistent'] = function(test) {
-  test.expect(2);
-  var appsettings = _.pluck(parseAppSettings(), 'key');
-  parseKanso(function(err, data) {
-    var kanso = _.pluck(data, 'key');
-    var missingFromAppSettings = findMissing(kanso, appsettings);
-    var missingFromKanso = findMissing(appsettings, kanso);
-    test.equals(0, missingFromAppSettings.length, 'Missing translations from app_settings.js: ' + JSON.stringify(missingFromAppSettings));
-    test.equals(0, missingFromKanso.length, 'Missing translations from kanso.json: ' + JSON.stringify(missingFromKanso));
-    test.done();
-  });
+// ====================================== Listing Translations Belongs To A Section
+Translations.prototype.listMissingLocalesBySection = function (sectionID, cb) {
+  this.request('GET', ['sections', sectionID, 'translations', 'missing'], cb);
+};
+
+// ====================================== Listing Translations Belongs To A Category
+Translations.prototype.listMissingLocalesByCategory = function (categoryID, cb) {
+  this.request('GET', ['categories', categoryID, 'translations', 'missing'], cb);
+};
+
+// ====================================== Creating Translations For An Article
+Translations.prototype.createForArticle = function (articleID, translation, cb) {
+  this.request('POST', ['articles',articleID,'translations'], translation, cb);
+};
+
+// ====================================== Creating Translations For A Section
+Translations.prototype.createForSection = function (sectionID, translation, cb) {
+  this.request('POST', ['sections',sectionID,'translations'], translation, cb);
+};
+
+// ====================================== Creating Translations For A Category
+Translations.prototype.createForCategory = function (categoryID, translation, cb) {
+  this.request('POST', ['categories',categoryID,'translations'], translation, cb);
+};
+
+// ====================================== Updating Translations For An Article
+Translations.prototype.updateForArticle = function (articleID, locale, translation, cb) {
+  this.request('PUT', ['articles',articleID,'translations',locale], translation, cb);
+};
+
+// ====================================== Updating Translations For A Sectioon
+Translations.prototype.updateForSection = function (sectionID, locale, translation, cb) {
+  this.request('PUT', ['sections',sectionID,'translations',locale], translation, cb);
+};
+
+// ====================================== Deleting Translations
+Translations.prototype.delete = function (translationID, cb) {
+  this.request('DELETE', ['translations', translationID],  cb);
 };

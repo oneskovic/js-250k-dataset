@@ -1,5 +1,3 @@
-// Using find.
-
 // We define the canvas variables outside of setup so we can access them from anywhere in the sketch.
 var canvas0;
 var canvas1;

@@ -1,7 +1,3 @@
-/*
-Author:  github.com/quietshu
-License: The MIT License
-*/
 (function(){
     window.onload = function () {
         var browserPrefix = "";

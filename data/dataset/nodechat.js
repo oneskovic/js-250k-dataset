@@ -1,4 +1,3 @@
-/*jslint vars: true, indent: 2 */
 /*global window, document, XMLHttpRequest, EventSource */
 
 "use strict";

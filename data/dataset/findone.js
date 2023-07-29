@@ -1,6 +1,3 @@
-/**
- * Module dependencies
- */
 var util = require( 'util' ),
   actionUtil = require( './_util/actionUtil' );
 

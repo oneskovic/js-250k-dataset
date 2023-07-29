@@ -1,8 +1,3 @@
-/*
-Language: AVR Assembler
-Author: Vladimir Ermakov <vooon341@gmail.com>
-*/
-
 function(hljs) {
   return {
     case_insensitive: true,

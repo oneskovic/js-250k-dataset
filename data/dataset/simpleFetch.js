@@ -1,7 +1,7 @@
 dojo.provide("dojo.data.util.simpleFetch");
 dojo.require("dojo.data.util.sorter");
 
-dojo.data.util.simpleFetch.fetch = function(/* Object? */ request){
+dojo.data.util.simpleFetch.fetch = function( request){
 	//	summary:
 	//		The simpleFetch mixin is designed to serve as a set of function(s) that can
 	//		be mixed into other datastore implementations to accelerate their development.  

@@ -2,13 +2,7 @@ var Effect = require('./Effect'),
     inherit = require('../../utils/inherit'),
     C = require('../../constants');
 
-/**
- * Adds arcade-style scanlines to the camera viewport.
- *
- * @class fx.camera.Scanlines
- * @extends fx.camera.Effect
- * @constructor
- */
+
 var Scanlines = function() {
     Effect.call(this);
 };

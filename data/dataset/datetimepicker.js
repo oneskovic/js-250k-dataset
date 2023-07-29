@@ -1,9 +1,5 @@
 (function() {
-	/**
-	 * Backbone forms datetime editor
-	 * @author Michael May | Ivan Mayes
-	 * 
-	 */
+	
 
 	Backbone.Form.editors.Datetimepicker = Backbone.Form.editors.Text.extend({
 

@@ -1,6 +1,5 @@
-/**************************/
 // Undo Manager
-/**************************/
+
 
 function UndoState(state, description) {
 	// this.state = JSON.stringify(state);

@@ -2,11 +2,7 @@
 
 tutao.provide('tutao.entity.tutanota.Subfiles');
 
-/**
- * @constructor
- * @param {Object} parent The parent entity of this aggregate.
- * @param {Object=} data The json data to store in this entity.
- */
+
 tutao.entity.tutanota.Subfiles = function(parent, data) {
   if (data) {
     this.updateData(parent, data);

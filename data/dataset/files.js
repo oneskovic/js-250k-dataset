@@ -1,53 +1,48 @@
-var querystring = require('querystring');
-var request = require('request');
+'use strict';
 
-exports.sync = function(pi, cb) {
-  var arg = {};
-  arg.oauth = {
-    consumer_key    : pi.auth.consumerKey,
-    consumer_secret : pi.auth.consumerSecret,
-    token           : pi.auth.token,
-    token_secret    : pi.auth.tokenSecret
-  };
-  arg.data = {};
-  arg.files = arg.data['meta:' + pi.auth.pid + '/files'] = [];
-  arg.folders = arg.data['meta:' + pi.auth.pid + '/folders'] = [];
-  arg.url = 'https://api.dropbox.com/1/delta';
-  arg.form = {};
-  if(pi.config && pi.config.cursor) arg.form.cursor = pi.config.cursor;
-  delta(arg, function(err, hasMore, cursor) {
-    var config = {};
-    if (cursor) config.cursor = cursor;
-    if (hasMore) config.nextRun = -1;
 
-    cb(err, {
-      data: arg.data,
-      config: config
+angular.module('phrPrototypeApp')
+    .service('files', function files($http) {
+
+        this.getFiles = function (callback) {
+            /*
+            var fileList = [{
+                "name": "consolidated_cda_one.xml",
+                "type": "Health Summary",
+                "modified": "12/13/2012 2:09 PM"
+            }, {
+                "name": "provider_record.xml",
+                "type": "Health Summary",
+                "modified": "12/13/2012 2:09 PM"
+            }, {
+                "name": "chest_xray.png",
+                "type": "Image",
+                "modified": "12/13/2012 2:09 PM"
+            }];
+
+            */
+            $http.get('/api/v1/storage')
+                .success(function (data) {
+                    callback(null, data.storage);
+                    /*
+                        {
+                        storage: [
+                        {
+                        file_id: "548b5f0d8e42f100001aa3d6",
+                        file_name: "bluebutton-01-original.xml",
+                        file_size: 129070,
+                        file_mime_type: "application/xml",
+                        file_upload_date: "2014-12-12T21:33:01.567Z",
+                        file_class: "ccda",
+                        patient_key: "test"
+                        }
+                        ]
+                        }                    
+                    */
+                }).error(function (err) {
+                    callback(err);
+                });
+
+        };
+
     });
-  });
-};
-
-// check the delta
-function delta(arg, cbDone) {
-  request.post(arg, function(err, res, deltas){
-    if(err) return cbDone(err);
-    if(!deltas) return cbDone("no data, " + res.statusCode);
-
-    try {
-      deltas = JSON.parse(deltas);
-    } catch(E) {
-      return cbDone(E+' '+deltas);
-    }
-
-    if(!Array.isArray(deltas.entries)) return cbDone("no entries?");
-
-    deltas.entries.forEach(function(entry){
-      if(!entry[1]) return;
-
-      if (entry[1].is_dir === true) arg.folders.push(entry[1]);
-      else arg.files.push(entry[1]);
-    });
-
-    cbDone(err, deltas.has_more, deltas.cursor);
-  });
-}

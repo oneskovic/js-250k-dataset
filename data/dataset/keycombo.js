@@ -1,4 +1,3 @@
-// Code for detecting and validating keypresses in a field
 var KeyCombo = {
     init: function(el, codeEl) {
         el.value = KeyCombo.mapKeyDownCode(codeEl.innerText);

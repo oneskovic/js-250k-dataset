@@ -1,4 +1,3 @@
-// Local
 exports.init = function (req, res) {
 
 	var User = req.app.db.models.User,

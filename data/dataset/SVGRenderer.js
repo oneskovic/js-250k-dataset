@@ -1,7 +1,3 @@
-/**
- * @class SVG Renderer
- * @author Matthew Wagerfield
- */
 FSS.SVGRenderer = function() {
   FSS.Renderer.call(this);
   this.element = document.createElementNS(FSS.SVGNS, 'svg');

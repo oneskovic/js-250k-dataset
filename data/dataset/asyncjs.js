@@ -1,7 +1,3 @@
-/*
- * examples/beam/asyncjs.js
- */
-
 'use strict';
 
 var udoo = require('../..');

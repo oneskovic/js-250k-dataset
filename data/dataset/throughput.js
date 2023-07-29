@@ -6,15 +6,15 @@ var _ = require('underscore'),
 
 try {
   dust = require("dustjs-linkedin");
-} catch (err) { /* NOP */ }
+} catch (err) {  }
 
 try {
   Mustache = require("mustache");
-} catch (err) { /* NOP */ }
+} catch (err) {  }
 
 try {
   eco = require("eco");
-} catch (err) { /* NOP */ }
+} catch (err) {  }
 
 function error() {
   throw new Error("EWOT");

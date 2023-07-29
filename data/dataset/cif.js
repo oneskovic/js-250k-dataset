@@ -1,8 +1,3 @@
-
-/**
- * Module dependencies.
- */
-
 var Type = require('./type')
   , assert = require('assert')
   , debug = require('debug')('ffi:cif')

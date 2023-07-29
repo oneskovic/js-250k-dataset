@@ -8,14 +8,7 @@ goog.require('ol.array');
 goog.require('ol.source.Source');
 
 
-/**
- * @typedef {{attributions: (Array.<ol.Attribution>|undefined),
- *            extent: (null|ol.Extent|undefined),
- *            logo: (string|olx.LogoOptions|undefined),
- *            projection: ol.proj.ProjectionLike,
- *            resolutions: (Array.<number>|undefined),
- *            state: (ol.source.State|undefined)}}
- */
+
 ol.source.ImageOptions;
 
 

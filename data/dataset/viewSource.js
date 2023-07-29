@@ -1,11 +1,6 @@
 'use strict';
 
-/**
- * 支持查看源代码的指令，此版本只能配合ui-router使用
- * 原理：
- * 拦截路由变化的事件，并且根据route中的template或templateUrl参数获得view的源代码。
- * 根据控制器名称和相应的规约获得动态取得controller的源代码。
- */
+
 angular.module('ngShowcaseApp').directive('appViewSource', function($rootScope, $templateCache, $http) {
   var getFileType = function(url) {
     var match = url.match(/\.(\w+)$/);

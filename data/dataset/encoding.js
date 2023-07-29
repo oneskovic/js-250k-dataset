@@ -1,86 +1,70 @@
-module.exports = preferredEncodings;
-preferredEncodings.preferredEncodings = preferredEncodings;
+(function() {
+  var configuration, preferredEncodings, testConfigurations, testCorrectEncoding, _i, _len,
+    _this = this;
 
-function parseAcceptEncoding(accept) {
-  var acceptableEncodings;
+  preferredEncodings = require('../lib/encoding').preferredEncodings;
 
-  if (accept) {
-    acceptableEncodings = accept.split(',').map(function(e) {
-      return parseEncoding(e.trim());
-    });
-  } else {
-    acceptableEncodings = [];
-  }
-
-  if (!acceptableEncodings.some(function(e) {
-    return e.encoding === 'identity';
-  })) {
-    acceptableEncodings.push({
-      encoding: 'identity',
-      q: 0.1
-    });
-  }
-
-  return acceptableEncodings.filter(function(e) {
-    return e && e.q > 0;
-  });
-}
-
-function parseEncoding(s) {
-  var match = s.match(/^\s*(\S+?)\s*(?:;(.*))?$/);
-
-  if (!match) return null;
-
-  var encoding = match[1];
-  var q = 1;
-  if (match[2]) {
-    var params = match[2].split(';');
-    for (var i = 0; i < params.length; i ++) {
-      var p = params[i].trim().split('=');
-      if (p[0] === 'q') {
-        q = parseFloat(p[1]);
-        break;
-      }
-    }
-  }
-
-  return {
-    encoding: encoding,
-    q: q
+  this["Should return identity encoding when no encoding is provided"] = function(test) {
+    test.deepEqual(preferredEncodings(null), ['identity']);
+    return test.done();
   };
-}
 
-function getEncodingPriority(encoding, accepted) {
-  return (accepted.filter(function(a) {
-    return specify(encoding, a);
-  }).sort(function (a, b) {
-    // revsort
-    return a.q === b.q ? 0 : a.q > b.q ? -1 : 1;
-  })[0] || {q:0}).q;
-}
+  this["Should include the identity encoding even if not explicity listed"] = function(test) {
+    test.ok(preferredEncodings('gzip').indexOf('identity') !== -1);
+    return test.done();
+  };
 
-function specify(encoding, spec) {
-  if (spec.encoding === '*' || spec.encoding === encoding) {
-    return spec;
+  this["Should not return identity encoding if q = 0"] = function(test) {
+    test.ok(preferredEncodings('identity;q=0').indexOf('identity') === -1);
+    return test.done();
+  };
+
+  testCorrectEncoding = function(c) {
+    return _this["Should return " + c.selected + " for accept-encoding header " + c.accept + " with provided encoding " + c.provided] = function(test) {
+      test.deepEqual(preferredEncodings(c.accept, c.provided), c.selected);
+      return test.done();
+    };
+  };
+
+  testConfigurations = [
+    {
+      accept: 'gzip',
+      provided: ['identity', 'gzip'],
+      selected: ['gzip', 'identity']
+    }, {
+      accept: 'gzip, compress',
+      provided: ['compress'],
+      selected: ['compress']
+    }, {
+      accept: 'deflate',
+      provided: ['gzip', 'identity'],
+      selected: ['identity']
+    }, {
+      accept: '*',
+      provided: ['identity', 'gzip'],
+      selected: ['identity', 'gzip']
+    }, {
+      accept: 'gzip, compress',
+      provided: ['compress', 'identity'],
+      selected: ['compress', 'identity']
+    }, {
+      accept: 'gzip;q=0.8, identity;q=0.5, *;q=0.3',
+      provided: ['identity', 'gzip', 'compress'],
+      selected: ['gzip', 'identity', 'compress']
+    }, {
+      accept: 'gzip;q=0.8, compress',
+      provided: ['gzip', 'compress'],
+      selected: ['compress', 'gzip']
+    }, {
+      accept: 'gzip;q=0.8, compress',
+      provided: null,
+      selected: ['compress', 'gzip', 'identity']
+    }
+  ];
+
+  for (_i = 0, _len = testConfigurations.length; _i < _len; _i++) {
+    configuration = testConfigurations[_i];
+    testCorrectEncoding(configuration);
   }
-}
 
-function preferredEncodings(accept, provided) {
-  accept = parseAcceptEncoding(accept || '');
-  if (provided) {
-    return provided.map(function(type) {
-      return [type, getEncodingPriority(type, accept)];
-    }).filter(function(pair) {
-      return pair[1] > 0;
-    }).sort(function(a, b) {
-      // revsort
-      return a[1] === b[1] ? 0 : a[1] > b[1] ? -1 : 1;
-    }).map(function(pair) {
-      return pair[0];
-    });
-  } else {
-    return accept.map(function(type) {
-      return type.encoding;
-    });
-  }
-}
+}).call(this);

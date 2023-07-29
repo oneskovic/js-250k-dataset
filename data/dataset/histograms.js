@@ -1,7 +1,3 @@
-/* If you have not signed up for Plotly you can do so using https://plot.ly
- * or see the example signup.js. Once you do, populate the config.json in this
- * example folder!
- */
 var config = require('./config.json')
   , username = config['user']
   , apikey = config['apikey']

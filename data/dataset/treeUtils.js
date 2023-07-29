@@ -1,5 +1,3 @@
-//@line 39 "/builds/slave/rel-m-rel-xr-osx64-bld/build/toolkit/content/treeUtils.js"
-
 var gTreeUtils = {
   deleteAll: function (aTree, aView, aItems, aDeletedItems)
   {

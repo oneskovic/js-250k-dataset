@@ -5,7 +5,7 @@ try {
 	load(filename);
     }
 
-    /* NOTE: condition should return null for success */
+    
     function assert(condition, explanation) {
 	if (condition !== null) {
 	    throw {message: "Assertion failure",

@@ -1,4 +1,3 @@
-/* jshint -W058 */
 var createConnection = require('./createConnection');
 
 /**

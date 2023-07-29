@@ -1,4 +1,3 @@
-/* eslint-env mocha */
 var Combokeys = require('..')
 var assert = require('proclaim')
 var makeElement = require('./helpers/make-element')

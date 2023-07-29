@@ -1,9 +1,3 @@
-/**
- * User: austinrivas
- * Date: 5/2/13
- * Time: 2:04 AM
- * To change this template use File | Settings | File Templates.
- */
 function showTooltip(e, t, n) {
     $('<div id="tooltip" class="flot-tooltip tooltip"><div class="tooltip-arrow"></div>' + n + "</div>").css({top: t - 43, left: e - 15}).appendTo("body").fadeIn(200)
 }

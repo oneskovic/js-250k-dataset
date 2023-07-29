@@ -1,58 +1,70 @@
-var Game = function(socket){
-	this.init(socket);
+"use strict";
+var req = require('../requirejs/setup').requirejs,
+    mazeModel = req('minesweeper/model/maze'),
+    _ = require('underscore');
+
+var gameSocket = function(socket, room) {
+    this.socket = socket;
+    this.room = room;
+    _.bindAll(this, 'join', 'display', 'flag', 'disconnect', 'restart');
 };
 
-Game.prototype = {
-	init: function(socket) {
-		this.socket = socket;
-		this.fs = require("fs");
-	},
-	
-	a_Ping: function(data, cb) {
-		cb("Pong",data);
-	},
-	
-	a_GetConfig: function(data, cb) {
-		console.log("Game.CFG",Game.cfg);
-		cb(Game.cfg);
-	},
-	
-	a_LoadLevel: function(levelId, cb)
-	{	
-		console.error("LoadLevel", this.socket);
-		
-		this.socket.leaveAllRooms();
-		this.socket.joinRoom(levelId);
-		this.fs.readFile(Game.cfg.mapsLocation+"/"+levelId+".map", "utf-8", function(err, content){
-			if(err != null){
-				cb(null);
-				return;
-			}
-			cb(content);
-		});
-	},
-	
-	a_SaveLevel: function(data, cb) {
-		var dataParsed = JSON.parse(data);
-		var levelId = dataParsed.id;
-		
-		var that = this;
-		
-		this.fs.mkdir(Game.cfg.mapsLocation+"/offline",function() {
-			that.fs.writeFile(Game.cfg.mapsLocation+"/"+levelId+".map", data, "utf-8",function(){
-				that.fs.writeFile(Game.cfg.mapsLocation+"/offline/"+levelId+".js", "Map['level_"+levelId+"']  = "+data, "utf-8");
-			});
-		});
-		
-		cb("Saved");
-	},
-	
-	a_Signal: function(data, cb){
-		this.emitAll("Signal",data);
-	},
-	
-	
-	socket: null
+gameSocket.prototype.bindEventHandlers = function() {
+    this.socket.on('join', this.join);
+    this.socket.on('display', this.display);
+    this.socket.on('flag', this.flag);
+    this.socket.on('leave', this.leave);
+    this.socket.on('restart', this.restart);
+    this.socket.on('disconnect', this.disconnect);
 };
 
-this.Game = Game;
+gameSocket.prototype.join = function() {
+    if (typeof this.room.getRoom(this.socket.id) !== 'undefined') {
+        return;
+    }
+
+    var roomId = this.room.add(this.socket.id);
+    this.socket.join('room_'+roomId);
+    console.log(this.socket.id+" joined room "+roomId);
+
+    if (this.room.isRoomReady(roomId)) {
+        this.startGame(roomId);
+    }
+};
+
+gameSocket.prototype.startGame = function(roomId) {
+    console.log("room "+roomId+" is ready");
+    var maze = new mazeModel({sizeX: 9, sizeY: 9, bombs: 10});
+    maze.generate();
+
+    this.socket.emit('game', maze.toJSON());
+    this.socket.broadcast.to('room_'+roomId).emit('game', maze.toJSON());
+    console.log(this.socket.id+" started the game");
+};
+
+function transmitEvent (eventType) {
+    return function(field) {
+        var roomId = this.room.getRoom(this.socket.id);
+        this.socket.broadcast.to('room_'+roomId).emit(eventType, field);
+        console.log(this.socket.id + " " + eventType + "s field " + field.x + " " + field.y);
+    };
+}
+
+gameSocket.prototype.display = transmitEvent('display');
+
+gameSocket.prototype.flag = transmitEvent('flag');
+
+gameSocket.prototype.leave = gameSocket.prototype.disconnect = function() {
+    this.room.remove(this.socket.id);
+    console.log(this.socket.id+" left");
+};
+
+gameSocket.prototype.restart = function() {
+    console.log(this.socket.id+" restart");
+    var roomId = this.room.getRoom(this.socket.id);
+    if (this.room.isRoomReady(roomId)) {
+        this.startGame(roomId);
+    }
+};
+
+exports.gameSocket = gameSocket;

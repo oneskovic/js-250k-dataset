@@ -1,9 +1,3 @@
-/**
- * In the following example, the space needed for the email validation error message is
- * taken automatically from the field size when needed. The mousedown event is being used
- * for validation for more immediate feedback. Also note that the FormPanel itself is
- * using an HBox layout.
- */
 Ext.define('KitchenSink.view.form.HBoxLayoutForm', {
     extend: 'Ext.form.Panel',
     xtype: 'form-hboxlayout',

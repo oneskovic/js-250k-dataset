@@ -6,10 +6,7 @@ var fs = require("fs"), path = require("path"), plugins = require("../plugins"),
     Watcher = require("../Watcher"),
     FileUtil = require("../file/FileUtil");
 
-/**
- * Returns unique id depends on file location i.e. a theme file or a plugin file
- * @param filePath
- */
+
 function generateIdFromFilePath(filePath) {
     var arr = filePath.split("/"), len = arr.length, last = arr[len - 1],
         secondLast = arr[len - 2], thirdLast = arr[len - 3];

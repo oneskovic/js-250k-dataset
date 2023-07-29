@@ -1,13 +1,3 @@
-/**
- * Tangram UI
- * Copyright 2010 Baidu Inc. All rights reserved.
- * 
- * path: ui/behavior/statable/setStateHandler.js
- * author: berg
- * version: 1.0.0
- * date: 2010/12/14
- */
-
 ///import baidu.ui.behavior.statable;
 ///import baidu.object.extend;
 

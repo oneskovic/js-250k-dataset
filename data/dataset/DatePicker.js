@@ -1,119 +1,94 @@
-/**
-A <a href="#enyo.PickerGroup">PickerGroup</a> that offers selection of the month, day and year.  The DatePicker uses the JavaScript Date object to represent the chosen date.
+Aria.classDefinition({
+    $classpath : "test.aria.widgets.form.datepicker.checkValue.DatePicker",
+    $extends : "aria.jsunit.TemplateTestCase",
+    $constructor : function () {
+        this.$TemplateTestCase.constructor.call(this);
 
-	{kind: "DatePicker", label: "birthday", onChange: "pickerPick"}
-
-The selected date can be retrieved by calling <code>getValue</code>, like so:
-
-	pickerPick: function(inSender) {
-		var bDate = this.$.datePicker.getValue();
-	}
-	
-The year range can be adjusted by setting the minYear and maxYear properties, like so:
-
-	{kind: "DatePicker", label: "birthday", minYear: 1900, maxYear: 2011, onChange: "pickerPick"}
-*/
-enyo.kind({
-	name: "enyo.DatePicker",
-	kind: enyo.PickerGroup,
-	published: {
-		label: enyo._$L("date"),
-		//* `value` is used as a starting point and consumed internally. `onChange` will return a new Date object every time.
-		value: null,
-		hideDay: false,
-		hideMonth: false,
-		hideYear: false,
-		minYear: 1900,
-		maxYear: 2099
-	},
-	components: [
-	],
-	//* @protected
-	initComponents: function() {
-		this.inherited(arguments);
-		
-		this._tf = new enyo.g11n.Fmts();
-		var dfmVisible = {};
-		if (!this.hideDay) { dfmVisible.d = 'day' };
-		if (!this.hideMonth) { dfmVisible.m = 'month' };
-		if (!this.hideYear) { dfmVisible.y = 'year' };
-		var dfm = {d: 'day', m: 'month', y: 'year'};
-		var ordering = this._tf.getDateFieldOrder();
-		var orderingArr = ordering.split("");
-		var o,f,l;
-		for(f = 0, l = orderingArr.length; f < l; f++) {
-			o = orderingArr[f];
-			var dateComp = this.createComponent({name: dfm[o]});
-			if (!dfmVisible[o]){
-				dateComp.setShowing(false);
-			}
-		}
-	},
-	create: function() {
-		this.inherited(arguments);
-		this.value = this.value || new Date();
-		this.setupMonth();
-		this.yearRangeChanged();
-		this.valueChanged();
-	},
-	setupMonth: function() {
-		var i = 0;
-		var ms = this._tf.getMonthFields().map(function(m) { return {caption:m, value:i++}; });
-		this.$.month.setItems(ms);
-	},
-	monthLength: function(inYear, inMonth) {
-		// determine number of days in a particular month/year
-		return 32 - new Date(inYear, inMonth, 32).getDate();
-	},
-	setupDay: function(inYear, inMonth, inDay) {
-		var n = this.monthLength(inYear, inMonth);
-		var items = [];
-		for (var i=1; i<=n; i++) {
-			items.push(String(i));
-		}
-		this.$.day.setItems(items);
-		this.$.day.value = "";
-		this.$.day.setValue(inDay > n ? n : inDay);
-	},
-	minYearChanged: function() {
-		this.yearRangeChanged();
-	},
-	maxYearChanged: function() {
-		this.yearRangeChanged();
-	},
-	yearRangeChanged: function() {
-		var items = [];
-		for (var i=this.minYear; i<=this.maxYear; i++) {
-			items.push(String(i));
-		}
-		this.$.year.setItems(items);
-	},
-	hideDayChanged: function(){
-		this.$.day.setShowing(!this.hideDay);
-	},
-	hideMonthChanged: function(){
-		this.$.month.setShowing(!this.hideMonth);
-	},
-	hideYearChanged: function(){
-		this.$.year.setShowing(!this.hideYear);
-	},
-	valueChanged: function() {
-		var v = this.value;
-		var m = v.getMonth();
-		var d = v.getDate();
-		var y = v.getFullYear();
-		
-		this.setupDay(y, m, d);
-		this.$.month.setValue(m);
-		this.$.year.setValue(y);
-	},
-	pickerChange: function(inSender) {
-		var m, d, y;
-		y = parseInt(this.$.year.getValue());
-		m = parseInt(this.$.month.getValue());
-		d = Math.min(parseInt(this.$.day.getValue()), this.monthLength(y, m));
-		var h = this.value.getHours(), mm = this.value.getMinutes(), s = this.value.getSeconds(), ms = this.value.getMilliseconds();
-		this.setValue(new Date(y, m, d, h, mm, s, ms))
-		this.doChange(this.value);
-	}
+        this.data = {
+            date1 : null,
+            date2 : null,
+            date3 : null
+        };
+        this.setTestEnv({
+            data : this.data
+        });
+    },
+    $prototype : {
+        runTemplateTest : function () {
+            this.focusDate();
+        },
+        focusDate : function () {
+            this.synEvent.click(this.getInputField("date1"), {
+                fn : function () {
+                    this.waitForWidgetFocus("date1", this.typeDate);
+                },
+                scope : this
+            });
+        },
+        typeDate : function () {
+            this.synEvent.type(this.getInputField("date1"), "10/09/11", {
+                fn : this.focusDate2,
+                scope : this
+            });
+        },
+        focusDate2 : function () {
+            this.synEvent.click(this.getInputField("date2"), {
+                fn : function () {
+                    this.waitForWidgetFocus("date2", this.typeDate2);
+                },
+                scope : this
+            });
+        },
+        typeDate2 : function () {
+            this.synEvent.type(this.getInputField("date2"), "+5", {
+                fn : this.focusDate3,
+                scope : this
+            });
+        },
+        focusDate3 : function () {
+            this.synEvent.click(this.getInputField("date3"), {
+                fn : function () {
+                    this.waitForWidgetFocus("date3", this.typeDate3);
+                },
+                scope : this
+            });
+        },
+        typeDate3 : function () {
+            this.synEvent.type(this.getInputField("date3"), "+5", {
+                fn : this.focusDate4,
+                scope : this
+            });
+        },
+        focusDate4 : function () {
+            this.synEvent.click(this.getInputField("date4"), {
+                fn : function () {
+                    this.waitForWidgetFocus("date4", this.checkDate4);
+                },
+                scope : this
+            });
+        },
+        checkDate4 : function () {
+            this.synEvent.type(this.getInputField("date4"), "+5", {
+                fn : this.focusText,
+                scope : this
+            });
+        },
+        focusText : function () {
+            this.synEvent.click(this.getInputField("text1"), {
+                fn : function () {
+                    this.waitForWidgetFocus("text1", this.finishTest);
+                },
+                scope : this
+            });
+        },
+        finishTest : function () {
+            var val1 = this.getInputField("date2").value;
+            var val2 = this.getInputField("date3").value;
+            var val3 = this.getInputField("date4").value;
+            this.assertTrue(val1 === "15/9/11", "Value is not 15/9/11");
+            this.assertTrue(val2 === "20/9/11", "Value is not 20/9/11");
+            this.assertTrue(val3 === "15/10/11", "Value is not 15/10/11");
+            this.notifyTemplateTestEnd();
+        }
+    }
 });

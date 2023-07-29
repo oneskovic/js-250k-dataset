@@ -1,4 +1,3 @@
-// 种子模块的测试
 define( 'easyCheck', ['check'], function( Check ){
 
 return function(){

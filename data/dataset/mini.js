@@ -1,12 +1,6 @@
 jui.define("chartx.mini", [ "jquery", "chart.builder" ], function($, builder) {
 
-    /**
-     * @class chartx.mini
-     *
-     * 심플 차트 구현
-     *
-     * @extends core
-     */
+    
     var UI = function(selector, data, options) {
 
       options = options || { type : "column" };

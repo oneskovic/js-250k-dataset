@@ -1,10 +1,6 @@
 'use strict';
 
-/**
- * 外文字符、数字识别模块
- *
- * @author 老雷<leizongmin@gmail.com>
- */
+
  
 var debug = console.log; 
  

@@ -1,8 +1,3 @@
-/**
- * This example shows how to create basic panels. Panels typically have a header and a body,
- * although the header is optional. The panel header can contain a title, and icon, and
- * one or more tools for performing specific actions when clicked.
- */
 Ext.define('KitchenSink.view.panel.BasicPanels', {
     extend: 'Ext.Container',
     xtype: 'basic-panels',

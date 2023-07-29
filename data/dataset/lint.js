@@ -1,104 +1,129 @@
-/*
- Simple linter, based on the Acorn [1] parser module
+/**
+ * Module dependencies.
+ */
 
- All of the existing linters either cramp my style or have huge
- dependencies (Closure). So here's a very simple, non-invasive one
- that only spots
+var connect = require('./../index'),
+    sys = require('sys');
 
-  - missing semicolons and trailing commas
-  - variables or properties that are reserved words
-  - assigning to a variable you didn't declare
+/**
+ * Output the given warning message.
+ *
+ * @param  {String} msg
+ * @api private
+ */
 
- [1]: https://github.com/marijnh/acorn/
-*/
+function warn(msg) {
+    sys.error('Warning: ' + msg);
+}
 
-var fs = require("fs"), acorn = require("./acorn.js"), walk = require("./walk.js");
+/**
+ * Setup lint for the given `server`.
+ *
+ * @return {Function}
+ * @api public
+ */
 
-var scopePasser = walk.make({
-  ScopeBody: function(node, prev, c) { c(node, node.scope); }
-});
+module.exports = function lint(server){
 
-function checkFile(fileName) {
-  var file = fs.readFileSync(fileName, "utf8");
-  var badChar = file.match(/[\x00-\x08\x0b\x0c\x0e-\x19\uFEFF]/);
-  if (badChar)
-    fail("Undesirable character " + badChar[0].charCodeAt(0) + " at position " + badChar.index,
-         {source: fileName});
-
-  try {
-    var parsed = acorn.parse(file, {
-      locations: true,
-      ecmaVersion: 3,
-      strictSemicolons: true,
-      forbidReserved: true,
-      sourceFile: fileName
-    });
-  } catch (e) {
-    fail(e.message, {source: fileName});
-    return;
-  }
-
-  var scopes = [];
-
-  walk.simple(parsed, {
-    ScopeBody: function(node, scope) {
-      node.scope = scope;
-      scopes.push(scope);
+    // Ensure a server is passed
+    if (!server) {
+        throw new Error('lint "server" must be passed.');
     }
-  }, walk.scopeVisitor, {vars: Object.create(null)});
 
-  var ignoredGlobals = Object.create(null);
-
-  function inScope(name, scope) {
-    for (var cur = scope; cur; cur = cur.prev)
-      if (name in cur.vars) return true;
-  }
-  function checkLHS(node, scope) {
-    if (node.type == "Identifier" && !(node.name in ignoredGlobals) &&
-        !inScope(node.name, scope)) {
-      ignoredGlobals[node.name] = true;
-      fail("Assignment to global variable", node.loc);
+    // Warn unless in development mode
+    if (process.connectEnv.name !== 'development') {
+        warn('"lint" middleware should never be enabled outside of the development environment');
     }
-  }
 
-  walk.simple(parsed, {
-    UpdateExpression: function(node, scope) {checkLHS(node.argument, scope);},
-    AssignmentExpression: function(node, scope) {checkLHS(node.left, scope);},
-    Identifier: function(node, scope) {
-      // Mark used identifiers
-      for (var cur = scope; cur; cur = cur.prev)
-        if (node.name in cur.vars) {
-          cur.vars[node.name].used = true;
-          return;
+    // Check the stack
+    checkStack(server.stack);
+
+    // Do nothing
+    return function(req, res, next){
+        next();
+    }
+};
+
+/**
+ * Validate middleware in the stack.
+ *
+ * @param  {Array} stack
+ * @api private
+ */
+
+function checkStack(stack) {
+    var layers = [];
+    stack.forEach(function(layer, i){
+        if (layer.name !== 'lint') {
+            var handle = layer.handle,
+                handleParams = params(handle),
+                handleBody = contents(handle);
+
+            function warn(msg) {
+                layers[i] = layer;
+                sys.error('Warning: layer \x1B[1m' + layer.handle.name
+                    + '\x1B[0m:' + i + ' '
+                    + msg.replace(/\{(.*?)\}/g, '\x1B[1m$1\x1B[0m'));
+            }
+
+            // Param names
+
+            if (handleParams[0] !== 'req' &&
+                handleParams[0] !== 'request') {
+                warn('First parameter should be named {req} or {request}, but is {' + handleParams[0] + '}');
+            }
+            if (handleParams[1] !== 'res' &&
+                handleParams[1] !== 'response') {
+                warn('Second parameter should be named {res} or {response}, but is {' + handleParams[1] + '}');
+            }
+            if (handleParams[2] !== 'next') {
+                warn('Third parameter should be named {next}, but is {' + handleParams[2] + '}');
+            }
+
+            // Respond or call next()
+
+            if (handleBody.indexOf('next(') === -1 &&
+                handleBody.indexOf('writeHead') === -1) {
+                warn('Does not seem to call {next()}, or respond to the request');
+            }
+
+            // Check for request headers gotcha
+
+            if (/req(uest)?\.headers\[("|')[A-Z]/.test(handleBody)) {
+                 warn('Request headers are {lowercased}, seems to be accessed with {capitals}');
+            }
         }
-    }
-  }, scopePasser);
+    });
 
-  for (var i = 0; i < scopes.length; ++i) {
-    var scope = scopes[i];
-    for (var name in scope.vars) {
-      var info = scope.vars[name];
-      if (!info.used && info.type != "catch clause" && info.type != "function name" && name.charAt(0) != "_")
-        fail("Unused " + info.type + " " + name, info.node.loc);
-    }
-  }
+    // Output potentially problematic handlers
+    layers.forEach(function(layer, i){
+        var str = layer.handle.toString(),
+            indents = str.match(/( *)\}$/)[1].length;
+        str = str.replace(new RegExp('^ {0,' + indents + '}', 'gm'), '    ');
+        sys.puts('\n' + i + ') \x1B[1m' + layer.handle.name + '\x1B[0m:', str);
+    });
 }
 
-var failed = false;
-function fail(msg, pos) {
-  if (pos.start) msg += " (" + pos.start.line + ":" + pos.start.column + ")";
-  console.log(pos.source.match(/[^\/]+$/)[0] + ": " + msg);
-  failed = true;
+/**
+ * Return the function body as a string.
+ *
+ * @param  {Function} fn
+ * @return {String}
+ * @api private
+ */
+
+function contents(fn){
+    return fn.toString().match(/^[^\{]*{((.*\n*)*)}/m)[1];
 }
 
-function checkDir(dir) {
-  fs.readdirSync(dir).forEach(function(file) {
-    var fname = dir + "/" + file;
-    if (/\.js$/.test(file)) checkFile(fname);
-    else if (fs.lstatSync(fname).isDirectory()) checkDir(fname);
-  });
-}
+/**
+ * Return array of function parameter names.
+ *
+ * @param  {Function} fn
+ * @return {String}
+ * @api private
+ */
 
-exports.checkDir = checkDir;
-exports.checkFile = checkFile;
-exports.success = function() { return !failed; };
+function params(fn){
+    return fn.toString().match(/\((.*?)\)/)[1].match(/[\w]+/g) || [];
+}

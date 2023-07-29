@@ -1,14 +1,3 @@
-/**
- * @fileoverview Provides a directive to use on resizable elements that change
- * the map size when they are resized. The directive calls `map.updateSize`
- * during the animation.
- *
- * Example:
- *
- *   <div ng-class="ctrl.open ? 'open' : 'close' ngeo-resizemap="ctrl.map"><div>
- *   <input type="checkbox" ng-model="ctrl.open" />
- */
-
 goog.provide('ngeo.resizemapDirective');
 
 goog.require('goog.async.AnimationDelay');

@@ -1,10 +1,3 @@
-
-/*!
- * Connect - limit
- * Copyright(c) 2011 TJ Holowaychuk
- * MIT Licensed
- */
-
 /**
  * Module dependencies.
  */

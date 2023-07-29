@@ -1,15 +1,3 @@
-/**
- * Tool that has a tool group inside. This is a bad workaround for the lack of proper hierarchical
- * menus in toolbars (T74159).
- *
- * @abstract
- * @class
- * @extends OO.ui.Tool
- *
- * @constructor
- * @param {OO.ui.ToolGroup} toolGroup
- * @param {Object} [config] Configuration options
- */
 OO.ui.ToolGroupTool = function OoUiToolGroupTool( toolGroup, config ) {
 	// Allow passing positional parameters inside the config object
 	if ( OO.isPlainObject( toolGroup ) && config === undefined ) {

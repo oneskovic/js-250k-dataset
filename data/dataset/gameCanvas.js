@@ -1,8 +1,5 @@
 ﻿(function() {
-  /*
-  	Base class to represent a double buffered canvas object.
-  	Code by Rob Kleffner, 2011
-  */
+  
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
   this.module("Enjine", function() {
     return this.GameCanvas = (function() {

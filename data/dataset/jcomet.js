@@ -1,14 +1,3 @@
-/*
- * jcomet.js
- *
- * Software: jComet HTTP Pushing Library
- * Author: James Brumond
- * Version: 0.1.1
- *
- * Copyright 2010 James Brumond
- * Dual licensed under MIT and GPL
- */
-
 (function(window, $) {
 
 var  _defaultSettings = {

@@ -1,14 +1,3 @@
-/**
- * @file Manages Salesforce Apex REST endpoint calls
- * @author Shinichi Tomita <shinichi.tomita@gmail.com>
- */
-
-/**
- * API class for Apex REST endpoint call
- *
- * @class
- * @param {Connection} conn Connection
- */
 var Apex = function(conn) {
   this._conn = conn;
 };

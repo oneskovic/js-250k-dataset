@@ -2,10 +2,7 @@ var minimatch = require('minimatch');
 var util = require('../../util');
 var Line = require('../line');
 
-/**
- * Represents a line for an incoming event on the console.
- * @param {Object} packet Socket.io event packet
- */
+
 function IncomingEvent (packet) {
     Line.call(this);
     this.packet = packet;

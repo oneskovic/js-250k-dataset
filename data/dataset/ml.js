@@ -1,7 +1,3 @@
-// moment.js locale configuration
-// locale : malayalam (ml)
-// author : Floyd Pink : https://github.com/floydpink
-
 (function (factory) {
     if (typeof define === 'function' && define.amd) {
         define(['moment'], factory); // AMD

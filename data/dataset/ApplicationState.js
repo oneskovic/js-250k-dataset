@@ -1,4 +1,3 @@
-/*globals define*/
 define(function(require, exports, module) {
     'use strict';
     var BrowserHistory  = require('models/BrowserHistory');
@@ -6,11 +5,7 @@ define(function(require, exports, module) {
     var HeaderViewModel = require('viewmodels/ApplicationHeader');
     var ViewModel       = require('prototypes/ViewModel');
 
-    /*
-     * @name ApplicationState
-     * @constructor
-     * @description
-     */
+    
 
     function ApplicationState(userNotifier) {
         ViewModel.apply(this, arguments);

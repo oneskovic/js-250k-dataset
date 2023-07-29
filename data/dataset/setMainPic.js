@@ -1,9 +1,3 @@
-/**
- * @fileoverview 设置为主图功能，本来想作为插件去写，但是发现这么简单的功能不适合做插件，做成插件反而复杂了。
- * @author 紫英（橘子）<daxingplay@gmail.com>
- * @date 2012-03-07
- * @requires KISSY 1.2+
- */
 KISSY.add('gallery/form/1.3/uploader/themes/ershouUploader/setMainPic', function(S, Node){
 	
 	var $ = Node.all,

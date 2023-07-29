@@ -1,52 +1,52 @@
-// Copyright 2007 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+define(function(require, exports, module) {
+    var Body = require('./Body');
+    var Matrix = require('../../math/Matrix');
 
+    /**
+     * Implements a rectangular geometry for an Body with
+     * size = [width, height].
+     *
+     * @class Rectangle
+     * @extends Body
+     * @constructor
+     */
+    function Rectangle(options) {
+        options = options || {};
+        this.size = options.size || [0,0];
+        Body.call(this, options);
+    }
 
-/**
- * @fileoverview A thick wrapper around rectangles.
- * @author robbyw@google.com (Robby Walker)
- */
+    Rectangle.prototype = Object.create(Body.prototype);
+    Rectangle.prototype.constructor = Rectangle;
 
+    /**
+     * Basic setter for size.
+     * @method setSize
+     * @param size {Array} size = [width, height]
+     */
+    Rectangle.prototype.setSize = function setSize(size) {
+        this.size = size;
+        this.setMomentsOfInertia();
+    };
 
-goog.provide('goog.graphics.ext.Rectangle');
+    Rectangle.prototype.setMomentsOfInertia = function setMomentsOfInertia() {
+        var m = this.mass;
+        var w = this.size[0];
+        var h = this.size[1];
 
-goog.require('goog.graphics.ext.StrokeAndFillElement');
+        this.inertia = new Matrix([
+            [m * h * h / 12, 0, 0],
+            [0, m * w * w / 12, 0],
+            [0, 0, m * (w * w + h * h) / 12]
+        ]);
 
+        this.inverseInertia = new Matrix([
+            [12 / (m * h * h), 0, 0],
+            [0, 12 / (m * w * w), 0],
+            [0, 0, 12 / (m * (w * w + h * h))]
+        ]);
+    };
 
-/**
- * Wrapper for a graphics rectangle element.
- * @param {goog.graphics.ext.Group} group Parent for this element.
- * @constructor
- * @extends {goog.graphics.ext.StrokeAndFillElement}
- */
-goog.graphics.ext.Rectangle = function(group) {
-  // Initialize with some stock values.
-  var wrapper = group.getGraphicsImplementation().drawRect(0, 0, 1, 1, null,
-      null, group.getWrapper());
-  goog.graphics.ext.StrokeAndFillElement.call(this, group, wrapper);
-};
-goog.inherits(goog.graphics.ext.Rectangle,
-              goog.graphics.ext.StrokeAndFillElement);
+    module.exports = Rectangle;
 
-
-/**
- * Redraw the rectangle.  Called when the coordinate system is changed.
- * @protected
- */
-goog.graphics.ext.Rectangle.prototype.redraw = function() {
-  goog.graphics.ext.Rectangle.superClass_.redraw.call(this);
-
-  // Our position is already handled by transform_.
-  this.getWrapper().setSize(this.getWidth(), this.getHeight());
-};
+});

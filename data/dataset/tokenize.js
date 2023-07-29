@@ -1,4 +1,3 @@
-//split a string into 'words', as intended to be helpful for this library.
 var tokenize = (function() {
 
 	if (typeof module !== "undefined" && module.exports) {

@@ -1,21 +1,4 @@
-  /**
-    @class
-    <p>A shape which has already been indexed in another index and/or index 
-    type. This is particularly useful for when you have a pre-defined list of 
-    shapes which are useful to your application and you want to reference this 
-    using a logical name (for example ‘New Zealand’) rather than having to 
-    provide their coordinates each time.</p>
-
-    @name ejs.IndexedShape
-    @ejs geo
-
-    @desc
-    <p>Defines a shape that already exists in an index/type.</p>
-
-    @param {String} type The name of the type where the shape is indexed.
-    @param {String} id The document id of the shape.
-
-    */
+  
   ejs.IndexedShape = function (type, id) {
 
     var indexedShape = {

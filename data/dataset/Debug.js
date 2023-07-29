@@ -1,107 +1,60 @@
-/*!
-* Copyright 2002 - 2013 Webdetails, a Pentaho company.  All rights reserved.
-* 
-* This software was developed by Webdetails and is provided under the terms
-* of the Mozilla Public License, Version 2.0, or any later version. You may not use
-* this file except in compliance with the license. If you need a copy of the license,
-* please go to  http://mozilla.org/MPL/2.0/. The Initial Developer is Webdetails.
-*
-* Software distributed under the Mozilla Public License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to
-* the license for the specific language governing your rights and limitations.
-*/
+var bearcat = require('../../lib/bearcat');
 
-/*==================================================
- *  Debug Utility Functions
- *==================================================
- */
+var simplepath = require.resolve('../../examples/model_test/context.json');
+var paths = [simplepath];
 
-SimileAjax.Debug = {
-    silent: false
-};
+bearcat.getModel('xxx');
+bearcat.getRoute();
+bearcat.createApp(paths);
+bearcat.start(function() {
+	var car = bearcat.getModel('car'); // get bean
+	var r = car.$before('before')
+		.$set('num', 100);
 
-SimileAjax.Debug.log = function(msg) {
-    var f;
-    if ("console" in window && "log" in window.console) { // FireBug installed
-        f = function(msg2) {
-            console.log(msg2);
-        }
-    } else {
-        f = function(msg2) {
-            if (!SimileAjax.Debug.silent) {
-                alert(msg2);
-            }
-        }
-    }
-    SimileAjax.Debug.log = f;
-    f(msg);
-};
+	var num = car.$get('num');
 
-SimileAjax.Debug.warn = function(msg) {
-    var f;
-    if ("console" in window && "warn" in window.console) { // FireBug installed
-        f = function(msg2) {
-            console.warn(msg2);
-        }
-    } else {
-        f = function(msg2) {
-            if (!SimileAjax.Debug.silent) {
-                alert(msg2);
-            }
-        }
-    }
-    SimileAjax.Debug.warn = f;
-    f(msg);
-};
+	r = car.$before('before')
+		.$after(['transform'])
+		.$set('num', 100);
 
-SimileAjax.Debug.exception = function(e, msg) {
-    var f, params = SimileAjax.parseURLParameters();
-    if (params.errors == "throw" || SimileAjax.params.errors == "throw") {
-        f = function(e2, msg2) {
-            throw(e2); // do not hide from browser's native debugging features
-        };
-    } else if ("console" in window && "error" in window.console) { // FireBug installed
-        f = function(e2, msg2) {
-            if (msg2 != null) {
-                console.error(msg2 + " %o", e2);
-            } else {
-                console.error(e2);
-            }
-            throw(e2); // do not hide from browser's native debugging features
-        };
-    } else {
-        f = function(e2, msg2) {
-            if (!SimileAjax.Debug.silent) {
-                alert("Caught exception: " + msg2 + "\n\nDetails: " + ("description" in e2 ? e2.description : e2));
-            }
-            throw(e2); // do not hide from browser's native debugging features
-        };
-    }
-    SimileAjax.Debug.exception = f;
-    f(e, msg);
-};
+	num = car.$get('num');
 
-SimileAjax.Debug.objectToString = function(o) {
-    return SimileAjax.Debug._objectToString(o, "");
-};
+	r = car.$before(['checkNum'])
+		.$set('num', 'aaa');
 
-SimileAjax.Debug._objectToString = function(o, indent) {
-    var indent2 = indent + " ";
-    if (typeof o == "object") {
-        var s = "{";
-        for (n in o) {
-            s += indent2 + n + ": " + SimileAjax.Debug._objectToString(o[n], indent2) + "\n";
-        }
-        s += indent + "}";
-        return s;
-    } else if (typeof o == "array") {
-        var s = "[";
-        for (var n = 0; n < o.length; n++) {
-            s += SimileAjax.Debug._objectToString(o[n], indent2) + "\n";
-        }
-        s += indent + "]";
-        return s;
-    } else {
-        return o;
-    }
-};
+	num = car.$get('num');
+
+	r = car.$before()
+		.$set('len', 'aaaaa6');
+
+	r = car.$after()
+		.$pack({
+			id: 100,
+			num: 100,
+			len: 100
+		});
+
+	num = car.$get('num');
+
+	console.log(r);
+
+	r = car.$after(['transformError'])
+		.$set('num', 100);
+
+	console.log('~~~~~~~~~~~~');
+	console.log(r);
+
+	var num = car.$get('num');
+	r = car.$before(['checkNum'])
+		.$set('num', 'aaa');
+	console.log(r);
+
+	num = car.$get('num');
+
+	console.log(num);
+	r = car.$before()
+		.$set('len', 'aaaaa6');
+
+	console.log(r);
+	bearcat.stop();
+});

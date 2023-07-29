@@ -5,20 +5,7 @@
         'ngx.dictionary'
     ]);
 
-    /**
-     * Text curtain
-     *
-     * checks attr curtainMinHeight for minimal height
-     * if don't exist checks attr curtainMinChars for minimal chars count
-     * than shrinks element to curtainHeight
-     *
-     * @param curtainMinHeight min element height for collapse (number in px)
-     * @param curtainMinChars chars count for collapse
-     * @param curtainHeight height to collapse (with units)
-     * @param curtainText
-     * @param curtainTextHide
-     * @param curtainHide hide text will be removed
-     */
+    
     module.directive('ngxTextCurtain', ['ngxDictionary', function (ngxDictionary) {
         return {
             compile: function (element, attrs) {

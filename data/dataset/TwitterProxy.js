@@ -1,12 +1,3 @@
-/**
- * @class Ext.data.TwitterProxy
- * @extends Ext.data.ScriptTagProxy
- * 
- * This simple proxy allows us to use Twitter's JSON-P API to search for tweets. All we're really doing in this
- * class is setting a few defaults (such as the number of tweets per page and a simple JSON Reader), and using
- * any Filters attached to the read Operation to modify the request url (see buildRequest).
- * 
- */
 Ext.data.TwitterProxy = Ext.extend(Ext.data.ScriptTagProxy, {
     //this is the url we always query when searching for tweets
     url: 'http://search.twitter.com/search.json',

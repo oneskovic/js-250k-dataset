@@ -1,7 +1,3 @@
-/**
- * eventQueue
- * @author: brian
- */
 (function(define) {
 define(function(require) {
 

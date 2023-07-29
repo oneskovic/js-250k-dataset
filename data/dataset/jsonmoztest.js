@@ -1,10 +1,3 @@
-/**
- * Initialize a new `JSON` reporter for MozTest.
- *
- * @param {Runner} runner
- * @api public
- */
-
 'use strict';
 /* global global */
 

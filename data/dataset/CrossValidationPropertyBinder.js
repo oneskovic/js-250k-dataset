@@ -1,7 +1,3 @@
-/**
- * @module br/presenter/validator/CrossValidationPropertyBinder
- */
-
 var CrossPropertyValidatorProxy = require('br/presenter/validator/CrossPropertyValidatorProxy');
 
 /**

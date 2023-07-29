@@ -1,5 +1,3 @@
-/*globals define*/
-
 //TODO: used???
 define( [
     'lodash',

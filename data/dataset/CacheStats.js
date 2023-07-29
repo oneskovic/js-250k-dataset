@@ -1,10 +1,6 @@
 'use strict';
 
-/**
- * Cache stats.
- * Represents cache statistic
- * @constructor
- */
+
 function CacheStats() {
 
   var self = this;

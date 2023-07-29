@@ -1,8 +1,3 @@
-// Charcounter for Xinha
-// (c) Udo Schmal & L.N.Schaffrath NeueMedien
-// Distributed under the same terms as HTMLArea itself.
-// This notice MUST stay intact for use (see license.txt).
-
 function CharCounter(editor) {
   this.editor = editor;
   this._Chars = 0;

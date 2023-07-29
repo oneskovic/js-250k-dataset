@@ -1,62 +1,63 @@
-/*
-Copyright (c) 2012, Yahoo! Inc. All rights reserved.
-Code licensed under the BSD License:
-http://yuilibrary.com/license/
+﻿// 
+// Copyright (c) Microsoft and contributors.  All rights reserved.
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//   http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// 
+// See the License for the specific language governing permissions and
+// limitations under the License.
+// 
+
+// Module dependencies.
+var url = require('url');
+
+var WrapTokenManager = require('./wraptokenmanager');
+
+var Constants = require('azure-common').Constants;
+var HeaderConstants = Constants.HeaderConstants;
+var ServiceBusConstants = Constants.ServiceBusConstants;
+
+/**
+* Creates a new Wrap object.
+*
+* @param {string} acsHost                 The access control host.
+* @param {string} issuer                  The service bus issuer.
+* @param {string} accessKey               The service bus issuer password.
 */
-var Stack = require('../stack').Stack,
-    fs = require('fs'),
-    log = require('../log'),
-    exists = require('../util').exists;
+function Wrap(acsHost, issuer, accessKey) {
+  this.acsHost = acsHost;
+  this.issuer = issuer;
+  this.accessKey = accessKey;
+  this.wrapTokenManager = new WrapTokenManager(acsHost, issuer, accessKey);
+}
 
-var read = function (files, callback) {
-    var stack = new Stack(),
-        str = [];
-
-    if (typeof files === 'string') {
-        files = [files];
+/**
+* Signs a request with the Authentication header.
+*
+* @param {WebResource} The webresource to be signed.
+* @return {undefined}
+*/
+Wrap.prototype.signRequest = function (webResource, callback) {
+  var parsedUrl = url.parse(webResource.uri);
+  parsedUrl.protocol = 'http:';
+  delete parsedUrl.path;
+  delete parsedUrl.host;
+  delete parsedUrl.port;
+  var requestUrl = url.format(parsedUrl);
+  this.wrapTokenManager.getAccessToken(requestUrl, function (error, accessToken) {
+    if (!error) {
+      webResource.withHeader(HeaderConstants.AUTHORIZATION,
+        'WRAP access_token=\"' + accessToken[ServiceBusConstants.WRAP_ACCESS_TOKEN] + '\"');
     }
 
-    files.forEach(function (file, id) {
-        exists(file, stack.add(function (y) {
-            if (y) {
-                fs.readFile(file, 'utf8', stack.add(function (err, data) {
-                    str[id] = data;
-                }));
-            } else {
-                log.warn('failed to locate: ' + file);
-            }
-        }));
-    });
-
-    stack.done(function () {
-        callback(str.join('\n'));
-    });
-
+    callback(error);
+  });
 };
 
-
-exports.wrap = function (options, blob, done) {
-    options = options || {}; //Not needed here??
-
-    var prefix = '',
-        postfix = '',
-        stack = new Stack();
-
-    if (options.prepend) {
-        read(options.prepend, stack.add(function (str) {
-            prefix = str;
-        }));
-    }
-
-    if (options.append) {
-        read(options.append, stack.add(function (str) {
-            postfix = str;
-        }));
-    }
-
-    stack.done(function () {
-        var data = prefix + blob.result + postfix;
-
-        done(null, new blob.constructor(data, blob));
-    });
-};
+module.exports = Wrap;

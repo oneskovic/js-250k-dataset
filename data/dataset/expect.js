@@ -1,7 +1,3 @@
-/**
- * External dependencies.
- */
-
 var pathval = require('pathval');
 
 /**

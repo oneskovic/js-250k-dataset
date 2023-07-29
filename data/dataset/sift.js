@@ -1,5 +1,3 @@
-/* global define */
-
 define([
     'cilantro'
 ], function(c) {

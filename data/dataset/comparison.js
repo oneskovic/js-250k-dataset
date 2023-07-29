@@ -1,10 +1,3 @@
-/* jQRangeSlider
- * A javascript slider selector that supports dates
- * 
- * Copyright (C) Guillaume Gautreau 2010
- * Dual licensed under the MIT or GPL Version 2 licenses.
- *
- */
  
 (function(){
 	"use strict";

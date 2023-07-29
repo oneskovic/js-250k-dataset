@@ -1,11 +1,6 @@
 "use strict";
 
-/**
- * A modem via UART, like https://github.com/ewiger/jsmodem
- * Not particlarly useful for anything, superseded by network.js
- *
- * @constructor
- */
+
 function ModemAdapter()
 {
     this.send_char = function() {};

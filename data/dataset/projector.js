@@ -1,8 +1,3 @@
-/*
- * JavaScript functions for projector.
- *
- */
-
 $(document).ready(function() {
     if ($('#content.reload').length > 0) {
         updater.start();

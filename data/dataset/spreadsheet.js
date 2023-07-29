@@ -1,13 +1,10 @@
-
 var extend  = require('extend');
 var Emitter = require('events').EventEmitter;
 var inherit = require('util').inherits;
 var Request = require('./request');
 var Worksheet = require('./worksheet');
 
-/**
- * Expose `Spreadsheet`.
- */
+
 
 module.exports = Spreadsheet;
 

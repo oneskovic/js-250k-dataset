@@ -1,13 +1,3 @@
-/*jslint 
-browser: true,
-nomen: false,
-debug: true,
-forin: true,
-regexp: false,
-undef: true,
-white: false,
-onevar: false 
- */
 var sc, Mojo, use_palmhost_proxy;
  
  

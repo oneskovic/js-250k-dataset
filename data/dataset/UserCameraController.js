@@ -1,5 +1,3 @@
-/// <reference path="../../Scripts/endgate-0.2.0.d.ts" />
-/// <reference path="../Ships/ShipManager.ts" />
 var ShootR;
 (function (ShootR) {
     var UserCameraController = (function () {

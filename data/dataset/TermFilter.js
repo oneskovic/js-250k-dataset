@@ -1,23 +1,4 @@
-  /**
-    @class
-    <p>Constructs a filter for docs matching any of the terms added to this
-    object. Unlike a RangeFilter this can be used for filtering on multiple
-    terms that are not necessarily in a sequence.</p>
-
-    @name ejs.TermFilter
-    @ejs filter
-    @borrows ejs.FilterMixin.name as name
-    @borrows ejs.FilterMixin.cache as cache
-    @borrows ejs.FilterMixin.cacheKey as cacheKey
-    @borrows ejs.FilterMixin._type as _type
-    @borrows ejs.FilterMixin.toJSON as toJSON
-
-    @desc
-    Constructs a filter for docs matching the term added to this object.
-
-    @param {string} fieldName The document field/fieldName to execute the filter against.
-    @param {string} term The literal term used to filter the results.
-    */
+  
   ejs.TermFilter = function (fieldName, term) {
 
     var

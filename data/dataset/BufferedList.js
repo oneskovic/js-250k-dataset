@@ -1,8 +1,3 @@
-/**
- * @class Ext.plugin.BufferedList
- * @extends Ext.plugin.Plugin
- * Description
- */
 Ext.define('Ext.plugin.BufferedList', {
     alias: 'plugin.bufferedlist',
 

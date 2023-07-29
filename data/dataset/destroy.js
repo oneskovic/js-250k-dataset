@@ -1,61 +1,113 @@
+var async = require('async');
+var _ = require('lodash');
+var usageError = require('../../utils/usageError');
+var utils = require('../../utils/helpers');
+var normalize = require('../../utils/normalize');
+var Deferred = require('../deferred');
+var getRelations = require('../../utils/getRelations');
+var callbacks = require('../../utils/callbacksRunner');
+var hasOwnProperty = utils.object.hasOwnProperty;
 
-var game = new Phaser.Game(800, 600, Phaser.CANVAS, 'phaser-example', { preload: preload, create: create, update: update, render: render }, false);
+/**
+ * Destroy a Record
+ *
+ * @param {Object} criteria to destroy
+ * @param {Function} callback
+ * @return Deferred object if no callback
+ */
 
-function preload() {
+module.exports = function(criteria, cb) {
+  var self = this,
+      pk;
 
-	game.load.image('pic', 'assets/pics/backscroll.png');
-    game.load.spritesheet('button', 'assets/buttons/button_sprite_sheet.png', 193, 71);
+  if(typeof criteria === 'function') {
+    cb = criteria;
+    criteria = {};
+  }
 
-}
+  // Check if criteria is an integer or string and normalize criteria
+  // to object, using the specified primary key field.
+  criteria = normalize.expandPK(self, criteria);
 
-var sprite;
-var sprite2;
-var g;
-var p;
+  // Normalize criteria
+  criteria = normalize.criteria(criteria);
 
-function create() {
+  // Return Deferred or pass to adapter
+  if(typeof cb !== 'function') {
+    return new Deferred(this, this.destroy, criteria);
+  }
 
-	// game.stage.backgroundColor = '#ff5500';
+  var usage = utils.capitalize(this.identity) + '.destroy([options], callback)';
 
-	// game.renderer.useFillRect = false;
+  if(typeof cb !== 'function') return usageError('Invalid callback specified!', usage, cb);
 
-    sprite = game.add.button(game.world.centerX - 95, 400, 'button', tint, this, 2, 1, 0);
-	// sprite = game.add.sprite(0.5, 0, 'pic');
-	// sprite2 = game.add.sprite(0, 300, 'pic');
+  callbacks.beforeDestroy(self, criteria, function(err) {
+    if(err) return cb(err);
 
-	// game.physics.enable(sprite);
+    // Transform Search Criteria
+    criteria = self._transformer.serialize(criteria);
 
-	// sprite.inputEnabled = true;
-	// sprite.events.onInputDown.add(tint, this);
-	// sprite.events.onInputUp.add(wibble, this);
+    // Pass to adapter
+    self.adapter.destroy(criteria, function(err, result) {
+      if (err) return cb(err);
 
-	// game.add.tween(sprite).to({y: 500}, 3000, Phaser.Easing.Linear.None, true);
+      // Look for any m:m associations and destroy the value in the join table
+      var relations = getRelations({
+        schema: self.waterline.schema,
+        parentCollection: self.identity
+      });
 
-	// p = new PIXI.Point(43, 45);
+      if(relations.length === 0) return after();
 
-}
+      // Find the collection's primary key
+      for(var key in self.attributes) {
+        if(!self.attributes[key].hasOwnProperty('primaryKey')) continue;
 
-function tint() {
+        // Check if custom primaryKey value is falsy
+        if(!self.attributes[key].primaryKey) continue;
 
-	sprite.destroy();
-	// sprite.tint = Math.random() * 0xFFFFFF;
-	// sprite2.tint = Math.random() * 0xFFFFFF;
+        pk = key;
+        break;
+      }
 
-}
+      function destroyJoinTableRecords(item, next) {
+        var collection = self.waterline.collections[item];
+        var refKey;
 
-function wibble() {
+        Object.keys(collection._attributes).forEach(function(key) {
+          var attr = collection._attributes[key];
+          if(attr.references !== self.identity) return;
+          refKey = key;
+        });
 
-	console.log(sprite);
+        // If no refKey return, this could leave orphaned join table values but it's better
+        // than crashing.
+        if(!refKey) return next();
 
-}
+        var mappedValues = result.map(function(vals) { return vals[pk]; });
+        var criteria = {};
 
-function update() {
+        if(mappedValues.length > 0) {
+          criteria[refKey] = mappedValues;
+          collection.destroy(criteria).exec(next);
+        } else {
+          return next();
+        }
 
+      }
 
-}
+      async.each(relations, destroyJoinTableRecords, function(err) {
+        if(err) return cb(err);
+        after();
+      });
 
-function render() {
+      function after() {
+        callbacks.afterDestroy(self, result, function(err) {
+          if(err) return cb(err);
+          cb(null, result);
+        });
+      }
 
-	// game.debug.text(sprite.position.y, 32, 32);
-
-}
+    });
+  });
+};

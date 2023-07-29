@@ -5,11 +5,7 @@ var argscheck = require('cordova/argscheck'),
 
 var FileUtil = function () {};
 
-/**
- * Open the file
- * @param {string} file The uri of the file
- * @return {Promise.<undefined, Error>}.
- */
+
 FileUtil.prototype.open = function(file) {
     return new Promise(function (resolve, reject) {
         exec(resolve, reject,"FileUtil", "open",[file]);

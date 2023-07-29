@@ -35,9 +35,7 @@ Ext.define('Meetcha.view.JoinGroupQuestionsPanel', {
             }]
         }]
     },
-    /*
-     * Populate the questions etc that this panel needs from the configuraiton
-     */
+    
     initialize: function() {
         var me             = this,
             group          = this.getGroup(),

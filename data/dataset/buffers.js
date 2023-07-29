@@ -1,79 +1,57 @@
-var EMPTY = new Buffer(0);
+var fs = require('fs');
 
-var BufferList = function() {
-	this.length = 0;
+fs.readFile('./world.dbf', function (err, buf) {
+  var header = {};
 
-	this._list = [];
-	this._offset = 0;
-};
+  var date = new Date();
+  date.setFullYear(1900 + buf[1]);
+  date.setMonth(buf[2]);
+  date.setDate(buf[3]);
+  header.lastUpdated = date.toString();
 
-BufferList.prototype.push = function(buf) {
-	if (!buf.length) {
-		return;
-	}
-	this._list.push(buf);
+  header.totalRecords = buf.readUInt32LE(4);
+  header.bytesInHeader = buf.readUInt16LE(8);
+  header.bytesPerRecord = buf.readUInt16LE(10);
 
-	this.length += buf.length;
-};
-BufferList.prototype.shift = function() {	
-	var b = this._list[0] && this._list[0][this._offset++];
+  var fields = [];
+  var fieldOffset = 32;
+  var fieldTerminator = 0x0D;
 
-	this.length--;
+  var FIELD_TYPES = {
+    C: 'Character',
+    N: 'Numeric'
+  };
 
-	if (this._offset >= (this._list[0] && this._list[0].length)) {
-		this._list.shift();
-		this._offset = 0;
-	}
-	return b;
-};
-BufferList.prototype.join = function() {
-	var list = this._list;
+  while (buf[fieldOffset] != fieldTerminator) {
+    var fieldBuf = buf.slice(fieldOffset, fieldOffset+32);
+    var field = {};
+    field.name = fieldBuf.toString('ascii', 0, 11).replace(/\u0000/g,'');
+    field.type = FIELD_TYPES[fieldBuf.toString('ascii', 11, 12)];
+    field.length = fieldBuf[16];
 
-	if (!list.length) {
-		return EMPTY;
-	}
-	var first = this._offset ? list[0].slice(this._offset) : list[0];
+    fields.push(field);
+    fieldOffset += 32;
+  }
 
-	if (list.length === 1) {
-		return first;
-	}
+  var startingRecordOffset = header.bytesInHeader;
+  var records = [];
 
-	var all = new Buffer(this.length);
-	var offset = 0;
+  for (var i = 0; i < header.totalRecords; i++) {
+    var recordOffset = startingRecordOffset + (i * header.bytesPerRecord);
+    var record = {};
 
-	list[0] = first;
+    record._isDel = buf.readUInt8(recordOffset) == 0x2A; // asterisk indicates deleted record
+    recordOffset++;
 
-	for (var i = 0; i < list.length; i++) {
-		list[i].copy(all, offset);
-		offset += list[i].length
-	}
-	return all;
-};
-BufferList.prototype.empty = function(length) {
-	var first = this._list[0];
+    for (var j = 0; j < fields.length; j++) {
+      field = fields[j];
+      var Type = field.type === 'Numeric' ? Number : String;
+      record[field.name] = Type(buf.toString('utf8',recordOffset, recordOffset+field.length).trim());
+      recordOffset += field.length;
+    }
 
-	if (length && (this._offset + length < first.length)) {
-		var b = first.slice(this._offset, this._offset+length);
+    records.push(record);
+  }
 
-		this._offset += length;
-		this.length -= length;
-		return b;
-	}
-	var all = this.join();
-
-	this.length = 0;
-
-	this._list = [];
-	this._offset = 0;
-
-	if (!length) {
-		return all;
-	}
-
-	this.push(all.slice(length));
-	return all.slice(0, length);
-};
-
-exports.create = function() {
-	return new BufferList();
-};
+  console.log({ header: header, fields: fields, records: records });
+})

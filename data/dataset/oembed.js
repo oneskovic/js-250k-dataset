@@ -6,9 +6,7 @@ instagram.use({
   access_token: cfg['INSTAGRAM_ACCESS_TOKEN']
 });
 
-/**
- * Some test about media features
- */
+
 var oembed = (function(spec, my) {
   var _super = {};
   my = my || {};

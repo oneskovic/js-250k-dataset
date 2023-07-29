@@ -1,52 +1,38 @@
+/* jslint node: true */
+"use strict";
 
-/*!
- * Lingo - Language
- * Copyright(c) 2010 TJ Holowaychuk <tj@vision-media.ca>
- * MIT Licensed
- */
+var Library = require('../Library');
+var $ = require('../Array');
 
-/**
- * Module dependencies.
- */
+module.exports = function(name, vocabulary) {
 
-var lingo = require('./lingo');
+    var _this = this;
 
-/**
- * Initialize a new `Language` with the given `code` and `name`.
- *
- * @param {String} code
- * @param {String} name
- * @api public
- */
+    this.library = function(dictionary) {
+        return _this.localise_library(new Library(dictionary));
+    };
 
-var Language = module.exports = function Language(code, name) {
-  this.code = code;
-  this.name = name;
-  this.translations = {};
-  this.rules = {
-      plural: []
-    , singular: []
-    , uncountable: {}
-    , irregular: { plural: {}, singular: {}}
-  };
-  lingo[code] = this;
-};
+    this.localise_library = function(library) {
+        $(vocabulary._steps).each(function(keyword) {
+            library[keyword] = function(signatures, fn, ctx) {
+                return $(signatures).each(function(signature) {
+                    signature = prefix_signature(_this.localise(keyword), signature);
+                    return library.define(signature, fn, ctx);
+                });
+            };
+        });
+        return library;
+    };
 
-/**
- * Translate the given `str` with optional `params`.
- *
- * @param {String} str
- * @param {Object} params
- * @return {String}
- * @api public
- */
+    var prefix_signature = function(prefix, signature) {
+        var regex_delimiters = new RegExp('^/|/$', 'g');
+        var start_of_signature = new RegExp(/^(?:\^)?/);
+        var one_or_more_spaces = '\\s+';
+        return signature.toString().replace(regex_delimiters, '').replace(start_of_signature, prefix + one_or_more_spaces);
+    };
 
-Language.prototype.translate = function(str, params){
-  str = this.translations[str] || str;
-  if (params) {
-    str = str.replace(/\{([^}]+)\}/g, function(_, key){
-      return params[key];
-    });
-  }
-  return str;
+    this.localise = function(keyword) {
+        if (vocabulary[keyword] === undefined) throw new Error('Keyword "' + keyword + '" has not been translated into ' + name + '.');
+        return vocabulary[keyword];
+    };
 };

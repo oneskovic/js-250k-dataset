@@ -3,7 +3,7 @@ var fs = require('fs');
 var parser = require('../../lib/lifts/parser');
 var parse = require('../../lib/resorts/meribel');
 
-/*global describe, it */
+
 describe('parse meribel', function() {
 
   it('should return lift status', function(done) {

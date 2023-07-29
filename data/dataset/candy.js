@@ -1,10 +1,3 @@
-/**
- * Nickchange plugin for Candy
- *
- * Copyright 2014 Michael Weibel <michael.weibel@gmail.com>
- *
- * License: MIT
- */
 var CandyShop = (function(self) { return self; }(CandyShop || {}));
 
 CandyShop.Nickchange = (function(self, Candy, $) {

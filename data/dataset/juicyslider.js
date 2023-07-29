@@ -1,12 +1,3 @@
-/*
- * Juicy Slider Core
- * 
- * (c) 2013 by Van Ting
- * 
- * Implment as jQuery plugin.
- * 
- */
-
 (function($) {
 
     $.fn.juicyslider = function(options) {

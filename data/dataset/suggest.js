@@ -1,7 +1,3 @@
-/**
- * @author xuld
- */
-
 //#include ui/core/idropdownowner.js
 //#include ui/suggest/dropdownmenu.js
 

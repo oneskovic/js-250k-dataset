@@ -1,10 +1,3 @@
-/**
- * @class Ext.ux.toggleslide.Thumb
- * 
- * @author Harald Hanek (c) 2011-2012
- * @license http://harrydeluxe.mit-license.org
- */
-
 Ext.define('Ext.ux.toggleslide.Thumb', {
 
     /**

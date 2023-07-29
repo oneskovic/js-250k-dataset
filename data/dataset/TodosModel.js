@@ -1,4 +1,3 @@
-/*global dijondemo */
 /**
  * @author Camille Reynders
  * Date: 03/02/12

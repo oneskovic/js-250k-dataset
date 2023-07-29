@@ -1,8 +1,3 @@
-// Example: Phaser.Point.centroid
-// Author: Lewis 'SEPTiMUS' Lane
-// URL: http://www.rotates.org - https://github.com/lewster32
-// Instructions: Click to add points. Points can be dragged. Centroid is displayed as a white cross, points as red rings.
-
 var game = new Phaser.Game(800, 600, Phaser.CANVAS, 'phaser-example', { preload: preload, create: create, update: update, render: render });
 
 function preload() {

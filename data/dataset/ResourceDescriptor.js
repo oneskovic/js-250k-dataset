@@ -3,30 +3,7 @@ define(["require","./Util", "./Constants", "./EngineSingleton"], function (requi
 
     var ASSERT = constants._ASSERT;
 
-    /**
-     * A project is a container of all resources and assets used in a game.<br>
-     *
-     * @example
-     *     var materialConfig = {
-     *         name:"Some material",
-     *         shader:"Undefined",
-     *         uniforms: {
-     *             value:42,
-     *             type: kick.core.Constants.GL_FLOAT
-     *         }
-     *     };
-     *     var resourceDescriptorConfig = {
-     *         type: "kick/material/Material",
-     *         config: materialConfig,
-     *         uid: 132
-     *     };
-     *     var materialDescriptor = new ResourceDescriptor(resourceDescriptorConfig);
-     *
-     * @class ResourceDescriptor
-     * @namespace kick.core
-     * @constructor
-     * @param {Object} config an object which attributes matches the properties of ResourceDescriptor
-     */
+    
     return function (config) {
         var engine = EngineSingleton.engine,
             _config = config || {},

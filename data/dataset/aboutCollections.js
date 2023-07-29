@@ -1,5 +1,3 @@
-
-
 module('About Backbone.Collection');
 
     test('Can add Model instances as objects and arrays.', function() {

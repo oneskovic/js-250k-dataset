@@ -1,6 +1,3 @@
-/**
- * Utility class to provide a way to *approximately* measure the dimension of texts without a drawing context.
- */
 Ext.define("Ext.draw.TextMeasurer", {
     singleton: true,
 

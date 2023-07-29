@@ -1,4 +1,3 @@
-
 var Area = require('./area'),
     _ = require('underscore'),
     Types = require("../../shared/js/gametypes");

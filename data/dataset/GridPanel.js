@@ -1,9 +1,6 @@
 Ext.ux.maximgb.tg.GridPanel = Ext.extend(Ext.grid.GridPanel, 
 {
-    /**
-     * @cfg {String|Integer} master_column_id Master column id. Master column cells are nested.
-     * Master column cell values are used to build breadcrumbs.
-     */
+    
     master_column_id : 0,
     
     /**

@@ -1,4 +1,3 @@
-// Load .env for development environments
 require('dotenv')().load();
 
 var keystone = require('keystone');

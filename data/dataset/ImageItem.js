@@ -1,15 +1,5 @@
 (function (enyo, scope) {
-	/**
-	* {@link moon.ImageItem}, which derives from {@link moon.Item}, is a control that combines an
-	* {@link enyo.Image} with a {@link moon.LabeledTextItem}. By default, the image is displayed to
-	* the left of the text; to display the image on the right, set
-	* [imageAlignRight]{@link moon.ImageItem#imageAlignRight} to `true`.
-	*
-	* @class moon.ImageItem
-	* @extends moon.Item
-	* @ui
-	* @public
-	*/
+	
 
 	enyo.kind(
 		/** @lends moon.ImageItem.prototype */ {

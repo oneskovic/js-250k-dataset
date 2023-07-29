@@ -1,93 +1,73 @@
-(function() {
-  var blinky, counter, ghosts, http, io, pacman, pinky, redis, redisClient, server, socket;
-  http = require('http');
-  io = require('socket.io');
-  redis = require('redis');
-  redisClient = redis.createClient();
-  redisClient.on('error', function(err) {
-    return console.log('Error' + err);
-  });
-  server = http.createServer();
-  server.listen(8080);
-  socket = io.listen(server);
-  pacman = {
-    type: 'location',
-    x: 450,
-    y: 150,
-    sprite: 'pacman'
-  };
-  blinky = {
-    x: 10,
-    y: 60
-  };
-  pinky = {
-    x: 10,
-    y: 30
-  };
-  ghosts = ['clyde', 'inky', 'blinky', 'pinky'];
-  counter = 0;
-  socket.on('connection', function(client) {
-    var getSprite, ghost;
-    getSprite = function(name) {
-      return redisClient.get(name, function(error, data) {
-        if (!data) {
-          return;
-        }
-        console.log(error);
-        console.log(JSON.parse(data));
-        data = JSON.parse(data);
-        return client.send({
-          type: 'location',
-          sprite: name,
-          x: data.x,
-          y: data.y
-        });
+'use strict';
+
+// server-side socket behaviour
+var ios = null; // io is already taken in express
+var util = require('bitcore').util;
+var logger = require('../../lib/logger').logger;
+
+module.exports.init = function(io_ext) {
+  ios = io_ext;
+  if (ios) {
+    // when a new socket connects
+    ios.sockets.on('connection', function(socket) {
+      logger.verbose('New connection from ' + socket.id);
+      // when it subscribes, make it join the according room
+      socket.on('subscribe', function(topic) {
+        logger.debug('subscribe to ' + topic);
+        socket.join(topic);
+        socket.emit('subscribed');
       });
-    };
-    ghost = ghosts.pop();
-    console.log(ghost);
-    client.send({
-      type: 'ghost',
-      name: ghost
-    });
-    client.broadcast({
-      type: 'newghost'
-    });
-    client.on('message', function(message) {
-      console.log(message);
-      switch (message.type) {
-        case 'location':
-          redisClient.set(message.ghost, JSON.stringify({
-            x: message.x,
-            y: message.y
-          }));
-          return client.broadcast({
-            type: 'location',
-            sprite: message.ghost,
-            x: message.x,
-            y: message.y
-          });
-        case 'win':
-          client.broadcast({
-            type: 'win',
-            ghost: ghost
-          });
-          return client.send({
-            type: 'win',
-            ghost: ghost
-          });
-      }
-    });
-    return client.on('disconnect', function() {
-      console.log('disconnected');
-      ghosts.push(ghost);
-      console.log('resetting' + ghost);
-      return client.broadcast({
-        type: 'location',
-        sprite: ghost,
-        x: -100,
-        y: -100
+
+      // disconnect handler
+      socket.on('disconnect', function() {
+        logger.verbose('disconnected ' + socket.id);
       });
+
     });
+  }
+  return ios;
+};
+
+var simpleTx = function(tx) {
+  return {
+    txid: tx
+  };
+};
+
+var fullTx = function(tx) {
+  var t = {
+    txid: tx.txid,
+    size: tx.size,
+  };
+  // Outputs
+  var valueOut = 0;
+  tx.vout.forEach(function(o) {
+    valueOut += o.valueSat;
   });
-}).call(this);
+
+  t.valueOut = (valueOut.toFixed(8) / util.COIN);
+  return t;
+};
+
+module.exports.broadcastTx = function(tx) {
+  if (ios) {
+    var t = (typeof tx === 'string') ? simpleTx(tx) : fullTx(tx);
+    ios.sockets.in('inv').emit('tx', t);
+  }
+};
+
+module.exports.broadcastBlock = function(block) {
+  if (ios)
+    ios.sockets.in('inv').emit('block', block);
+};
+
+module.exports.broadcastAddressTx = function(txid, address) {
+  if (ios) {
+    ios.sockets.in(address).emit(address, txid);
+  }
+};
+
+module.exports.broadcastSyncInfo = function(historicSync) {
+  if (ios)
+    ios.sockets.in('sync').emit('status', historicSync);
+};

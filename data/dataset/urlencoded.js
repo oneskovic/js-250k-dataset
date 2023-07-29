@@ -1,10 +1,3 @@
-/*!
- * Connect - urlencoded
- * Copyright(c) 2010 Sencha Inc.
- * Copyright(c) 2011 TJ Holowaychuk
- * MIT Licensed
- */
-
 /**
  * Module dependencies.
  */

@@ -6,9 +6,7 @@ instagram.use({
   access_token: cfg['INSTAGRAM_ACCESS_TOKEN']
 });
 
-/**
- * Some test about likes features
- */
+
 var likes = (function(spec, my) {
   var _super = {};
   my = my || {};

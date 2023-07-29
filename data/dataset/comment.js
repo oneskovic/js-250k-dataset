@@ -1,65 +1,54 @@
-module.exports = {
-  "id": {
-    "type": "varchar(40)",
-    "allowNull": false,
-    "defaultValue": null,
-    "primaryKey": true,
-    "comment": null
-  },
-  "car_id": {
-    "type": "varchar(40)",
-    "allowNull": false,
-    "defaultValue": null,
-    "primaryKey": false,
-    "comment": null
-  },
-  "comment_type": {
-    "type": "varchar(20)",
-    "allowNull": false,
-    "defaultValue": null,
-    "primaryKey": false,
-    "comment": null
-  },
-  "comment_content": {
-    "type": "varchar(1024)",
-    "allowNull": true,
-    "defaultValue": null,
-    "primaryKey": false,
-    "comment": null
-  },
-  "to_user_id": {
-    "type": "varchar(40)",
-    "allowNull": true,
-    "defaultValue": null,
-    "primaryKey": false,
-    "comment": null
-  },
-  "comm_time": {
-    "type": "timestamp",
-    "allowNull": false,
-    "defaultValue": "CURRENT_TIMESTAMP",
-    "primaryKey": false,
-    "comment": null
-  },
-  "user_id": {
-    "type": "varchar(40)",
-    "allowNull": false,
-    "defaultValue": null,
-    "primaryKey": false,
-    "comment": null
-  },
-  "user_name": {
-    "type": "varchar(40)",
-    "allowNull": false,
-    "defaultValue": null,
-    "primaryKey": false,
-    "comment": null
-  },
-  "head": {
-    "type": "varchar(100)",
-    "allowNull": false,
-    "defaultValue": null,
-    "primaryKey": false,
-    "comment": null
-  }
-}
+"use strict";
+
+var _classProps = function (child, staticProps, instanceProps) {
+  if (staticProps) Object.defineProperties(child, staticProps);
+  if (instanceProps) Object.defineProperties(child.prototype, instanceProps);
+};
+
+var _extends = function (child, parent) {
+  child.prototype = Object.create(parent.prototype, {
+    constructor: {
+      value: child,
+      enumerable: false,
+      writable: true,
+      configurable: true
+    }
+  });
+  child.__proto__ = parent;
+};
+
+var Node = require("./node");
+
+var Comment = (function (Node) {
+  var Comment = function Comment(defaults) {
+    this.type = "comment";
+    Node.call(this, defaults);
+  };
+
+  _extends(Comment, Node);
+
+  _classProps(Comment, null, {
+    styleMap: {
+      writable: true,
+      value: function () {
+        return {
+          commentLeft: this.left,
+          commentRight: this.right
+        };
+      }
+    },
+    stringify: {
+      writable: true,
+      value: function (builder) {
+        if (this.before) builder(this.before);
+        var left = this.style("commentLeft");
+        var right = this.style("commentRight");
+        builder("/*" + left + this.text + right + "*/", this);
+      }
+    }
+  });
+
+  return Comment;
+})(Node);
+
+module.exports = Comment;

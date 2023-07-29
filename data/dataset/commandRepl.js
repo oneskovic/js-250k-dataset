@@ -8,12 +8,7 @@ var REPL_INITIAL_SUGGESTIONS = [
   'element(by.className(\'\'))'
 ];
 
-/**
- * Repl to interactively run code.
- *
- * @param {Client} node debugger client.
- * @constructor
- */
+
 var CommandRepl = function(client) {
   this.client = client;
   this.prompt = '> ';

@@ -1,8 +1,3 @@
-/**
- * Startup action to process permission form permissions definition files
- */
-
-
 var DBActions = require("../DBActions");
 var async = require("async");
 var pageSchemaKey = "model.pageSchema.Page";

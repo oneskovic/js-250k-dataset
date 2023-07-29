@@ -1,11 +1,4 @@
 /**
- * Base Application - Parameters
- *
- * @module greppy/app/worker/base/parameters
- * @author Hermann Mayer <hermann.mayer92@gmail.com>
- */
-
-/**
  * @constructor
  */
 var Parameters = function()

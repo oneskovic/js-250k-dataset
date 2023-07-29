@@ -1,10 +1,3 @@
-/**
- * @author: youxiachai
- * @Date: 13-7-2
- * @version: 1.0
- * To change this template use File | Settings | File Templates.
- */
-
 //动弹列表
 var oscTweets = function ($, pageIndex, pageSize, temlp) {
 //    'http://www.oschina.net/action/api/tweet_list?uid=0&pageIndex=0&pageSize=20'

@@ -1,10 +1,7 @@
 var http = require('http');
 var https = require('https');
 
-/**
- * Internal method for creating response hollabacks, should not be used on
- * its own
- */
+
 function makeResponse(hollaback) {
     var chunks = '';
 

@@ -22,9 +22,7 @@ Ext.define('JavisERP.view.ProductionPhotosDetailPanel', {
         '</div>'
     ],
 
-    /**
-     * Loads a given image record into the panel. Animates the newly-updated panel in from the left over 250ms.
-     */
+    
     loadRecord: function(image) {
     	var me = this;
         this.body.hide();

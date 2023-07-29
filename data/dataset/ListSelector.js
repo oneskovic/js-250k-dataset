@@ -1,7 +1,3 @@
-/*!
- * ${copyright}
- */
-
 sap.ui.define([
 		"sap/ui/base/Object"
 	], function (Object) {

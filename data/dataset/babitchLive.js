@@ -1,4 +1,3 @@
-/* global _ */
 /* jshint camelcase: false */
 'use strict';
 

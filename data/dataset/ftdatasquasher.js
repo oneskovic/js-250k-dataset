@@ -1,16 +1,3 @@
-/**
- * FT Data Squasher
- *
- * Data compression and decompression support, packing base64 into UTF8 high and
- * low bytes.
- *
- * A requireable module of the compression and decompression algorithm
- * {@link http://bit.ly/unireencode|described by @triblondon}.
- *
- * @module ftdatasquasher
- * @copyright The Financial Times Limited [All rights reserved]
- */
-
 /*jshint laxbreak:true*/
 
 /**

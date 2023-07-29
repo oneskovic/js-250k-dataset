@@ -1,5 +1,3 @@
-// CPU Instructions -----------------------------------------------------------
-// ----------------------------------------------------------------------------
 function Instruction(mnemonic, section, cycles, code, arg, isByte, isSigned, isBit, index) {
 
     this.mnemonic = mnemonic;

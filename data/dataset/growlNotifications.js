@@ -1,8 +1,6 @@
 (function () {
 
-  /**
-   * Growl notifications provider
-   */
+  
   function growlNotificationsProvider(){
 
     // Default options

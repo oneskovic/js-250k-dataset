@@ -1,4 +1,3 @@
-
 define([
   'opjs/Stack',
   'opjs/Core',
@@ -7,9 +6,7 @@ define([
 ], function (Stack, Core, Events, Q) {
   "use strict";
 
-  /**
-   * The Open Peer API entry point for core + stack accessible by clients.
-   */
+  
   function OpenPeer(options) {
     var self = this;
 

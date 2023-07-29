@@ -1,7 +1,3 @@
-/**
- * Module dependencies.
- */
-
 var async = require('async'),
     mongoose = require('mongoose'),
     Homepage = mongoose.model('Homepage'),

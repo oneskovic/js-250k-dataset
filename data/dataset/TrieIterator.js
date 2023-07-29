@@ -1,7 +1,3 @@
-/**
- * Created by Stefano on 06/04/2014.
- */
-
 TrieIterator.prototype = new Iterator();
 TrieIterator.prototype.constructor = TrieIterator;
 

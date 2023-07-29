@@ -1,6 +1,3 @@
-/**
- * @constructor
- */
 function HotkeysController(windowController, tabs, editor, settings, analytics) {
   this.windowController_ = windowController;
   this.tabs_ = tabs;

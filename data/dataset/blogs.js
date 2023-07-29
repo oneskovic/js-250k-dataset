@@ -3,9 +3,7 @@
 var mongoose = require('mongoose'),
   Blog = mongoose.model('BlogPost');
 
-/**
- * Find blog by id
- */
+
 exports.blog = function(req, res, next, id) {
   Blog.load(id, function(err, blog) {
     if (err) return next(err);

@@ -1,6 +1,3 @@
-/* Djatoka Protocol Handler
- */
-
 Protocols.Djatoka = new Class({
 
   svc_val_fmt: "info:ofi/fmt:kev:mtx:jpeg2000",

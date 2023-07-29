@@ -1,56 +1,55 @@
-// # Has Helper
-// Usage: `{{#has tag="video, music"}}`, `{{#has author="sam, pat"}}`
-//
-// Checks if a post has a particular property
+define(function() {
 
-var _               = require('lodash'),
-    errors          = require('../errors'),
-    has;
+	var cfg = require.config,
+		hasCache = cfg.hasCache || {},
+		global = window,
+		doc = global.document,
+		el = doc.createElement("div"),
+		i;
 
-has = function (options) {
-    options = options || {};
-    options.hash = options.hash || {};
+	function has(name) {
+		// summary:
+		//		Determines of a specific feature is supported.
+		//
+		// name: String
+		//		The name of the test.
+		//
+		// returns: Boolean (truthy/falsey)
+		//		Whether or not the feature has been detected.
 
-    var tags = _.pluck(this.tags, 'name'),
-        author = this.author ? this.author.name : null,
-        tagList = options.hash.tag || false,
-        authorList = options.hash.author || false,
-        tagsOk,
-        authorOk;
+		var fn = hasCache[name];
+		require.is(fn, "Function") && (fn = hasCache[name] = fn(global, doc, el));
+		return fn;
+	}
 
-    function evaluateTagList(expr, tags) {
-        return expr.split(',').map(function (v) {
-            return v.trim();
-        }).reduce(function (p, c) {
-            return p || (_.findIndex(tags, function (item) {
-                // Escape regex special characters
-                item = item.replace(/[\-\/\\\^$*+?.()|\[\]{}]/g, '\\$&');
-                item = new RegExp('^' + item + '$', 'i');
-                return item.test(c);
-            }) !== -1);
-        }, false);
-    }
+	has.add = function hasAdd(name, test, now, force){
+		// summary:
+		//		Adds a feature test.
+		//
+		// name: String
+		//		The name of the test.
+		//
+		// test: Function
+		//		The function that tests for a feature.
+		//
+		// now: Boolean?
+		//		If true, runs the test immediately.
+		//
+		// force: Boolean?
+		//		If true, forces the test to override an existing test.
 
-    function evaluateAuthorList(expr, author) {
-        var authorList =  expr.split(',').map(function (v) {
-            return v.trim().toLocaleLowerCase();
-        });
+		if (hasCache[name] === void 0 || force) {
+			hasCache[name] = test;
+		}
+		return now && has(name);
+	};
 
-        return _.contains(authorList, author.toLocaleLowerCase());
-    }
+	// run all feature detection tests
+	for (i in cfg.has) {
+		has.add(i, cfg.has[i], 0, true);
+	}
+	delete cfg.has;
 
-    if (!tagList && !authorList) {
-        errors.logWarn('Invalid or no attribute given to has helper');
-        return;
-    }
+	return has;
 
-    tagsOk = tagList && evaluateTagList(tagList, tags) || false;
-    authorOk = authorList && evaluateAuthorList(authorList, author) || false;
-
-    if (tagsOk || authorOk) {
-        return options.fn(this);
-    }
-    return options.inverse(this);
-};
-
-module.exports = has;
+});

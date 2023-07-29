@@ -1,16 +1,3 @@
-/**
- * AudioletParameters are used to provide either constant or varying values to
- * be used inside AudioletNodes.  AudioletParameters hold a static value, and
- * can also be linked to an AudioletInput.  If a node or group is connected to
- * the linked input, then the dynamic value taken from the node should be
- * prioritised over the stored static value.  If no node is connected then the
- * static value should be used.
- *
- * @constructor
- * @param {AudioletNode} node The node which the parameter is associated with.
- * @param {Number} [inputIndex] The index of the AudioletInput to link to.
- * @param {Number} [value=0] The initial static value to store.
- */
 var AudioletParameter = function(node, inputIndex, value) {
     this.node = node;
     if (typeof inputIndex != 'undefined' && inputIndex != null) {

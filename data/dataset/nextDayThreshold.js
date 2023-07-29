@@ -1,4 +1,3 @@
-
 describe('nextDayThreshold', function() {
 
 	// when a view object exposes its nextDayThreshold value (after some refactoring)...

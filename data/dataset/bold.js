@@ -1,23 +1,3 @@
-/*
----
-
-name: Jx.Plugin.Editor.Bold
-
-description: Button to mark sections in the editor as Bold.
-
-license: MIT-style license.
-
-requires:
- - Jx.Plugin.Editor.Button
- - Core/Browser
-
-provides: [Jx.Plugin.Editor.Bold]
-
-images:
- - text_bold.png
-
-...
- */
 define("jx/plugin/editor/bold", ['../../../base','./button'],
        function(base, Button){
     

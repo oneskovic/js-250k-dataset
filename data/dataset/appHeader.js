@@ -1,5 +1,5 @@
-﻿/*global define,dojo,dojoConfig */
-/*jslint browser:true,sloppy:true,nomen:true,unparam:true,plusplus:true,indent:4 */
+﻿
+
 /*
  | Copyright 2014 Esri
  |

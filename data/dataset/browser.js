@@ -1,134 +1,73 @@
+var events = require('events');
+var mdns = require('mdns');
+var util = require('util');
 
-var interpolate = function (source, target, shift) {
-  return (source + (target - source) * shift);
-};
+var Device = require('./device').Device;
 
-var easing = function (pos) {
-  return (-Math.cos(pos * Math.PI) / 2) + 0.5;
-};
+var Browser = function() {
+  var self = this;
 
-function scrollDown(duration, element) {
-  element = element || window;
-  duration = duration || 1000;
+  this.devices_ = {};
+  this.nextDeviceId_ = 0;
 
-  var deferred = when.defer();
-  var h = (element === window ? $(document).height() : $(element).get(0).scrollHeight);
-  var y = 0;
-
-  var endY = h - $(element).height();
-
-  var startY = (element === window ? element.pageYOffset : element.scrollTop()),
-      startT  = Date.now(),
-      finishT = startT + duration,
-      curY;
-
-  var animate = function() {
-    var now = +(new Date()),
-        shift = (now > finishT) ? 1 : (now - startT) / duration;
-
-    curY = interpolate(startY, endY, easing(shift));
-
-    if (element === window) {
-      element.scrollTo(0, curY);
-    } else {
-      element.scrollTop(curY);
+  this.browser_ = mdns.createBrowser(mdns.tcp('airplay'));
+  this.browser_.on('serviceUp', function(info, flags) {
+    var device = self.findDeviceByInfo_(info);
+    if (!device) {
+      device = new Device(self.nextDeviceId_++, info);
+      self.devices_[device.id] = device;
+      device.on('ready', function() {
+        self.emit('deviceOnline', device);
+      });
+      device.on('close', function() {
+        delete self.devices_[device.id];
+        self.emit('deviceOffline', device);
+      });
     }
-
-    if (now > finishT) {
-      deferred.resolve();
-    } else {
-      setTimeout(animate, 15);
-    }
-  };
-
-  animate();
-
-  return deferred.promise;
-}
-
-function wait(time) {
-  var deferred = when.defer();
-
-  setTimeout(function() {
-    deferred.resolve();
-  }, time);
-
-  return deferred.promise;
-}
-
-function waitUntil(condition, timeout) {
-  var deferred = when.defer();
-
-  var interval = 5;
-  var time = 0;
-  var result;
-
-  timeout = timeout || 1000;
-
-  var t = setInterval(function() {
-    result = condition.call();
-
-    if (result) {
-      clearInterval(t);
-      deferred.resolve();
-      return;
-    }
-
-    if (timeout && time >= timeout) {
-      clearInterval(t);
-      deferred.reject();
-      return;
-    }
-
-    time += interval;
-  }, interval);
-
-  return deferred.promise;
-}
-
-function clickAndWait(selector, time)
-{
-  var deferred = when.defer();
-
-  time = time || 1000;
-
-  $(selector).trigger('click');
-
-  wait(time).then(function() {
-    deferred.resolve();
   });
-
-  return deferred.promise;
-}
-
-function watch(selector, timeout, interval) {
-  var deferred = when.defer();
-
-  interval = interval || 25;
-  timeout = timeout || 1000;
-  var tracker = 0;
-  var time = 0;
-  var result = false;
-
-  var condition = function() {
-    return $(selector).length > 0;
-  };
-
-  var t = setInterval(function() {
-    result = condition.call();
-
-    if (result) {
-      tracker += interval;
+  this.browser_.on('serviceDown', function(info, flags) {
+    var device = self.findDeviceByInfo_(info);
+    if (device) {
+      device.close();
     }
+  });
+};
+util.inherits(Browser, events.EventEmitter);
+exports.Browser = Browser;
 
-    if (timeout && time >= timeout) {
-      clearInterval(t);
-      deferred.resolve(tracker);
-      return;
+Browser.prototype.findDeviceByInfo_ = function(info) {
+  for (var deviceId in this.devices_) {
+    var device = this.devices_[deviceId];
+    if (device.matchesInfo(info)) {
+      return device;
     }
+  }
+  return null;
+};
 
-    time += interval;
-  }, interval);
+Browser.prototype.getDevices = function() {
+  var devices = [];
+  for (var deviceId in this.devices_) {
+    var device = this.devices_[deviceId];
+    if (device.isReady()) {
+      devices.push(device);
+    }
+  }
+  return devices;
+};
 
-  return deferred.promise;
-}
+Browser.prototype.getDeviceById = function(deviceId) {
+  var device = this.devices_[deviceId];
+  if (device && device.isReady()) {
+    return device;
+  }
+  return null;
+};
+
+Browser.prototype.start = function() {
+  this.browser_.start();
+};
+
+Browser.prototype.stop = function() {
+  this.browser_.stop();
+};

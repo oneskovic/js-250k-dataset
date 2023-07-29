@@ -1,5 +1,3 @@
-/*global hte2, goog */
-
 goog.require('goog.array');
 goog.require('goog.dom.DomHelper');
 

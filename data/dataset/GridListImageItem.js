@@ -1,17 +1,5 @@
 (function (enyo, scope) {
-	/**
-	* {@link moon.GridListImageItem} extends {@link enyo.GridListImageItem}, adding
-	* Moonstone-specific configuration, styling, decorators, and focus-state management.
-	*
-	* You may create an image grid by adding instances of this kind as components of a
-	* {@link moon.DataGridList}.
-	*
-	* @class moon.GridListImageItem
-	* @extends enyo.GridListImageItem
-	* @mixes moon.MarqueeSupport
-	* @ui
-	* @public
-	*/
+	
 
 	enyo.kind(
 		/** @lends moon.GridListImageItem.prototype */ {

@@ -1,7 +1,3 @@
-/**
- * This example is the same as the basic tree sample, however it loads from an XML data
- * source.
- */
 Ext.define('KitchenSink.view.tree.XmlTree', {
     extend: 'Ext.tree.Panel',
     

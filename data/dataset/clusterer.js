@@ -1,7 +1,3 @@
-/**
- * Class Clusterer
- * a facade with limited method for external use
- **/
 function Clusterer(id, internalClusterer) {
   var self = this;
   self.id = function () {

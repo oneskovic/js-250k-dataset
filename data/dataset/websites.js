@@ -1,5 +1,3 @@
-// Load all the functions for website using jquery
-
 $(document).ready(function(){
             //Examples of how to assign the ColorBox event to elements
             $("a[rel='gallery']").colorbox();

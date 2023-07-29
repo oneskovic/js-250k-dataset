@@ -1,9 +1,3 @@
-/**
- * @fileoverview 
- *  글자 배경색을 적용 하기 위해 쓰이는, Toolbar의 글자배경색 Icon을 위해 필요한 
- *  configuration과 Class Trex.Tool.BackColor을/를 포함
- * 
- */
 TrexConfig.addTool(
 	"backcolor",
 	{

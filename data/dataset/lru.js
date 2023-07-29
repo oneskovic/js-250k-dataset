@@ -2,7 +2,7 @@
     peer5.core.dataStructures.LRU = Object.subClass({
         name:'peer5.core.dataStructures.LRU',
 
-        /** @Public Methods*/
+        
         ctor:function (maxElements,deleteCB) {
             this.max = maxElements;
             this.dict = {}; //<key,<value,pointer to list>>

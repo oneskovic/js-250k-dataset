@@ -1,10 +1,3 @@
-/*
- Language: Groovy
- Author: Guillaume Laforge <glaforge@gmail.com>
- Website: http://glaforge.appspot.com
- Description: Groovy programming language implementation inspired from Vsevolod's Java mode
- */
-
 function(hljs) {
     return {
         keywords: {

@@ -1,10 +1,3 @@
-/*
- * pkgcloud.js: Top-level include for the pkgcloud module
- *
- * (C) 2011 Charlie Robbins, Ken Perkins, Ross Kukulinski & the Contributors.
- *
- */
-
 var path = require('path');
 
 var pkgcloud = exports;

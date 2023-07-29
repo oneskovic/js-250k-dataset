@@ -1,12 +1,6 @@
 'use strict';
 
-/**
- * @ngdoc function
- * @name phrPrototypeApp.controller:PagetitleCtrl
- * @description
- * # PagetitleCtrl
- * Controller of the phrPrototypeApp
- */
+
 angular.module('phrPrototypeApp')
     .controller('titleController', function ($rootScope, $scope, $location, profile) {
 

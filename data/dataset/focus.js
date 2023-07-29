@@ -2,10 +2,7 @@ WAF.define('waf-behavior/focus', function() {
     "use strict";
     var Behavior = WAF.require('waf-core/behavior');
 
-    /**
-     * @class Focus
-     * @augments Behavior.BaseBehavior
-     */
+    
     var klass = Behavior.create();
     var proto = klass.prototype;
     

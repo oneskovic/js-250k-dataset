@@ -1,9 +1,3 @@
-/**
- * This example shows how to use segmented buttons. Segmented buttons are just containers
- * with regular buttons inside, with some special styling and options added. By default,
- * all the child buttons will be part of a toggleGroup, but this behavior can be customized
- * using the `allowToggle` and `allowMultiple` config options.
- */
 Ext.define('KitchenSink.view.button.SegmentedButtons', {
     extend: 'Ext.Container',
     xtype: 'segmented-buttons',

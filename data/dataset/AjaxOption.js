@@ -1,15 +1,6 @@
-/**
- * @class meta.AjaxOption
- *
- * AJAX请求参数
- */
 function AjaxOption() {
 
-    /**
-     * @property {string} url
-     *
-     * 请求的地址
-     */
+    
     this.url;
 
     /**

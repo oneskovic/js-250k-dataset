@@ -3,13 +3,9 @@ var Semaphore = require('./semaphore');
 var Config = require('./config');
 var defer = require('./defer');
 var await = require('../await/index');
-/**
- * Asynchronous analogue to an ES6 Iterator. Rather than return each value/done
- * result synchronously, the next() function notifies a promise and/or callback
- * when the next result is ready.
- */
+
 var AsyncIterator = (function () {
-    /** Construct a new AsyncIterator instance. This will create a fiber. */
+    
     function AsyncIterator(runContext, semaphore, returnValue, acceptsCallback) {
         this._runContext = runContext;
         this._semaphore = semaphore;

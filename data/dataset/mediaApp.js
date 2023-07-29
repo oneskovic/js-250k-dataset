@@ -1,5 +1,3 @@
-// ANGULAR
-
 var mediaApp = angular.module('mediaApp', []).value('$anchorScroll', angular.noop);
 
 mediaApp.filter('escape', function() {

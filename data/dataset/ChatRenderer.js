@@ -1,22 +1,6 @@
 Ext.namespace( "Xmpp4Js.UI.Chat" );
 
-/** 
-* @class A place were messages can be appended. Useful for Chat / IM windows. Component xtype = xmpp4js.chatrenderer.
-*
-* 	<pre>var cr = new Xmpp4Js.UI.Chat.ChatRenderer({
-* 	renderTo: document.body,
-* 	listeners: {
-* 		render: function(cr) {
-* 			cr.appendMessage( "test at test.com", "hello" );
-* 			cr.appendMessage( "test at test.com", "hello" );
-* 			cr.appendNotice( "omg cars" );
-* 			cr.appendMessage( "test at test.com", "hello" );
-* 		}
-* 	}
-* });</pre>
-*
-* @constructor
-*/
+
 Xmpp4Js.UI.Chat.ChatRenderer = function(config) {
     /**
      * @private

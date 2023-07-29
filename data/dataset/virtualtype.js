@@ -1,12 +1,3 @@
-/**
- * VirtualType constructor
- *
- * This is what mongoose uses to define virtual attributes via
- * `Schema.prototype.virtual`
- *
- * @api public
- */
-
 function VirtualType (options) {
   this.getters = [];
   this.setters = [];

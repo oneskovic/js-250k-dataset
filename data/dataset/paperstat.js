@@ -1,10 +1,3 @@
-// ==========================================================================
-// Papercube.PaperStatController
-//
-// License:  PaperCube is open source software released under 
-//           the MIT License (see license.js)
-// ==========================================================================
-
 require('core');
 
 /** @class

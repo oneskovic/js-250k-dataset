@@ -1,9 +1,3 @@
-
-
-/**
- * A module of methods for object that you want to be able to listen to.
- * This module is consumed by `createStore` and `createAction`
- */
 Reflux.PublisherMethods = {
 
     /**

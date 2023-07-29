@@ -22,9 +22,7 @@ tutao.tutanota.ctrl.AdminPremiumFeatureViewModel = function() {
     });
 };
 
-/**
- * Checks the entered old password and updates the password status.
- */
+
 tutao.tutanota.ctrl.AdminPremiumFeatureViewModel.prototype._checkCode = function() {
     var self = this;
     var codeToCheck = this.promotionCode().trim();
@@ -40,10 +38,7 @@ tutao.tutanota.ctrl.AdminPremiumFeatureViewModel.prototype._checkCode = function
     }
 };
 
-/**
- * Provides the information if the user may press the confirm button.
- * @return {boolean} True if the button can be presse, false otherwise.
- */
+
 tutao.tutanota.ctrl.AdminPremiumFeatureViewModel.prototype.confirmPossible = function() {
     return  this.inputEnabled() && this.promotionCodeStatus().type == "valid" && this.promotionCodeSubmitStatus().type != "valid";
 };

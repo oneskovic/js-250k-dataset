@@ -1,24 +1,14 @@
-// Copyright 2011 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 /**
  * @fileoverview A wrapper for the HTML5 FileWriter object.
+ *
+ * When adding or modifying functionality in this namespace, be sure to update
+ * the mock counterparts in goog.testing.fs.
  *
  */
 
 goog.provide('goog.fs.FileWriter');
 
+goog.require('goog.fs.Error');
 goog.require('goog.fs.FileSaver');
 
 
@@ -33,9 +23,10 @@ goog.require('goog.fs.FileSaver');
  * @param {!FileWriter} writer The underlying FileWriter object.
  * @constructor
  * @extends {goog.fs.FileSaver}
+ * @final
  */
 goog.fs.FileWriter = function(writer) {
-  goog.base(this, writer);
+  goog.fs.FileWriter.base(this, 'constructor', writer);
 
   /**
    * The underlying FileWriter object.
@@ -73,7 +64,7 @@ goog.fs.FileWriter.prototype.write = function(blob) {
   try {
     this.writer_.write(blob);
   } catch (e) {
-    throw new goog.fs.Error(e.code, 'writing file');
+    throw new goog.fs.Error(e, 'writing file');
   }
 };
 
@@ -87,7 +78,7 @@ goog.fs.FileWriter.prototype.seek = function(offset) {
   try {
     this.writer_.seek(offset);
   } catch (e) {
-    throw new goog.fs.Error(e.code, 'seeking in file');
+    throw new goog.fs.Error(e, 'seeking in file');
   }
 };
 
@@ -101,6 +92,6 @@ goog.fs.FileWriter.prototype.truncate = function(size) {
   try {
     this.writer_.truncate(size);
   } catch (e) {
-    throw new goog.fs.Error(e.code, 'truncating file');
+    throw new goog.fs.Error(e, 'truncating file');
   }
 };

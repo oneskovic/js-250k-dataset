@@ -1,6 +1,6 @@
 (function(exports) {
     "use strict";
-   /*global window*/
+   
 
     exports = exports || window;
 

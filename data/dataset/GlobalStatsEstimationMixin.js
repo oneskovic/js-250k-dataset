@@ -1,9 +1,3 @@
-/**
- * Mixin that adds _estimateGlobalStats method to a store, which
- * samples a section of the features in the store and uses those to
- * esimate the statistics of the whole data set.
- */
-
 define([
            'dojo/_base/declare',
            'dojo/_base/array',

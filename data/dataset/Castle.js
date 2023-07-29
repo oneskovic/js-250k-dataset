@@ -1,5 +1,5 @@
 'use strict';
-/*global require */
+
 var Drone = require('drone'),
     blocks = require('blocks');
 /************************************************************************

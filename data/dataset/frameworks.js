@@ -2,12 +2,7 @@ define([],
     function () {
         'use strict';
 
-        /**
-         * @ngdoc service
-         * @name myPage.frameworksService
-         * @description
-         * Service to return array of framework information
-         */
+        
         return ['$q', function ($q) {
 
             /**

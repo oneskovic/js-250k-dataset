@@ -8,9 +8,7 @@ define([
   'view/ListView'
 ], function($, _, Backbone, Handlebars, Plumage, ModelView, ListView) {
 
-  /**
-   * A selectable list and corresponding detail view.
-   */
+  
   return Plumage.view.ListAndDetailView = ModelView.extend({
 
     className: 'list-and-detail-view',

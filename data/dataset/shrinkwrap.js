@@ -1,6 +1,3 @@
-// emit JSON describing versions of all packages currently installed (for later
-// use with shrinkwrap install)
-
 module.exports = exports = shrinkwrap
 
 var npm = require("./npm.js")

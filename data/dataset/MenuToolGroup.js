@@ -1,13 +1,3 @@
-/**
- * Drop down menu layout of tools as selectable menu items.
- *
- * @class
- * @extends OO.ui.PopupToolGroup
- *
- * @constructor
- * @param {OO.ui.Toolbar} toolbar
- * @param {Object} [config] Configuration options
- */
 OO.ui.MenuToolGroup = function OoUiMenuToolGroup( toolbar, config ) {
 	// Allow passing positional parameters inside the config object
 	if ( OO.isPlainObject( toolbar ) && config === undefined ) {

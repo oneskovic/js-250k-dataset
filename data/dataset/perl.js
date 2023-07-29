@@ -1,20 +1,3 @@
-/***************************************************************************
- * (c) 2008 - file created by Christoph Pinkel, MTC Infomedia OHG.
- *
- * You may choose any license of the current release or any future release
- * of editarea to use, modify and/or redistribute this file.
- *
- * This language specification file supports for syntax checking on
- * a large subset of Perl 5.x.
- * The basic common syntax of Perl is fully supported, but as for
- * the highlighting of built-in operations, it's mainly designed
- * to support for hightlighting Perl code in a Safe environment (compartment)
- * as used by CoMaNet for evaluation of administrative scripts. This Safe
- * compartment basically allows for all of Opcode's :default operations,
- * but little others. See http://perldoc.perl.org/Opcode.html to learn
- * more.
- ***************************************************************************/
-
 editAreaLoader.load_syntax["perl"] = {
 
 	'COMMENT_SINGLE' : {1 : '#'},

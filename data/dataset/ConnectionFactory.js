@@ -1,7 +1,3 @@
-//////////////////
-// Requires
-//////////////////
-
 var Promise = require('bluebird');
 
 var SftpConnection = require("./SftpConnection");

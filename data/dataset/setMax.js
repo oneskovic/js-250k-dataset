@@ -1,4 +1,3 @@
-
 var simpleEvents= require('nodeunit').testCase;
 var file = '../../lib/eventemitter2';
 var EventEmitter2;

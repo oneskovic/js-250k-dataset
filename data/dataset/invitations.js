@@ -1,6 +1,3 @@
-/**
- * Invitations object
- */
 orion.users.invitations = new Meteor.Collection('invitations');
 
 /**

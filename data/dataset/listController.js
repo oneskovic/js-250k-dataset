@@ -1,9 +1,6 @@
 define(["app", "js/contactModel","js/list/listView"], function(app, Contact, ListView) {
 
-	/**
-	 * Bindings array. Bind DOM event to some handler function in controller
-	 * @type {*[]}
-	 */
+	
 	var bindings = [{
 		element: '.contact-add-link',
 		event: 'click',

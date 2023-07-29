@@ -1,7 +1,3 @@
-/**
- * @fileoverview Rule to flag missing semicolons.
- * @author Nicholas C. Zakas
- */
 "use strict";
 
 //------------------------------------------------------------------------------

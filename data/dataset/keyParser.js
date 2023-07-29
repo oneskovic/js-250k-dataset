@@ -1,7 +1,3 @@
-// TODO:
-//    * handle multi-line header values (OpenSSH)?
-//    * Putty's PPK format
-
 var RE_HEADER_PPK = /^PuTTY-User-Key-File-2: ssh-(rsa|dss)$/i,
     RE_HEADER_OPENSSH_PRIV = /^-----BEGIN (RSA|DSA) PRIVATE KEY-----$/i,
     RE_FOOTER_OPENSSH_PRIV = /^-----END (?:RSA|DSA) PRIVATE KEY-----$/i,

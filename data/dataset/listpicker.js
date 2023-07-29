@@ -1,8 +1,3 @@
-/**
- * @fileOverview 列表项的选择器
- * @ignore
- */
-
 define('bui/picker/listpicker',['bui/picker/picker','bui/list'],function (require) {
 
   var List = require('bui/list'),

@@ -1,64 +1,128 @@
-/**
- * The mongodb module implements all of the operations needed to interface our cms with mongo.
- *
- * @returns {{}}
- */
-module.exports = (function(){
-    'use strict';
-    var db = {},
-        config = require('../config'),
-        event = require('../event'),
-        Strings = require('../strings'),
-        strings = new Strings('en'),
-        createError = require('../utils/error'),
-        logger = require('../utils/logger'),
-        mongoose = require('mongoose'),
-        url =  config.db.host,
-        options = {
-            user: config.db.username,
-            pass: config.db.password
-        };
+'use strict';
 
-    db.tokens = require('./mongodb/tokens');
-    db.users = require('./mongodb/users');
-    db.contentTypes = require('./mongodb/contentTypes');
-    db.nodes = require('./mongodb/nodes');
-    db.content = require('./mongodb/content');
+var util = require('util'),
+  Lock = require('../base'),
+  _ = require('lodash'),
+  mongo = require('mongodb'),
+  mongoVersion = require('mongodb/package.json').version,
+  isNew = mongoVersion.indexOf('1.') !== 0,
+  ObjectID = isNew ? mongo.ObjectID : mongo.BSONPure.ObjectID;
 
-    mongoose.connect(url, options);
+function Mongo(options) {
+  Lock.call(this, options);
+  
+  var defaults = {
+    host: 'localhost',
+    port: 27017,
+    dbName: 'domain',
+    collectionName: 'aggregatelock'
+  };
 
-    if(config.db.debug){
-        mongoose.set('debug', true);
+  _.defaults(options, defaults);
+
+  var defaultOpt = {
+    auto_reconnect: false,
+    ssl: false
+  };
+
+  options.options = options.options || {};
+
+  _.defaults(options.options, defaultOpt);
+
+  this.options = options;
+}
+
+util.inherits(Mongo, Lock);
+
+_.extend(Mongo.prototype, {
+
+  connect: function (callback) {
+    var self = this;
+
+    var options = this.options;
+
+    var server;
+
+    if (options.servers && Array.isArray(options.servers)){
+      var servers = [];
+
+      options.servers.forEach(function(item){
+        if(item.host && item.port) {
+          servers.push(new mongo.Server(item.host, item.port, item.options));
+        }
+      });
+
+      server = new mongo.ReplSet(servers);
+    } else {
+      server = new mongo.Server(options.host, options.port, options.options);
     }
 
-    // When successfully connected
-    mongoose.connection.on('connected', function () {
-        require('../utils/typeCache');
-        logger.info(strings.group('notice').db_connected);
-        event.emit('start', { system: 'db' } );
+    this.db = new mongo.Db(options.dbName, server, { safe: true });
+    this.db.on('close', function() {
+      self.emit('disconnect');
     });
 
-    // If the connection throws an error
-    mongoose.connection.on('error',function (err) {
-        logger.error(strings.group('errors').db_connection_error, err);
-        event.emit('error', { system: 'db' } , createError(500, err) );
+    this.db.open(function (err, client) {
+      if (err) {
+        if (callback) callback(err);
+      } else {
+        var finish = function (err) {
+          self.client = client;
+          self.lock = self.db.collection(options.collectionName);
+          self.lock.ensureIndex({ 'aggregateId': 1, date: 1 }, function() {});
+          if (!err) {
+            self.emit('connect');
+          }
+          if (callback) callback(err, self);
+        };
+
+        if (options.username) {
+          client.authenticate(options.username, options.password, finish);
+        } else {
+          finish();
+        }
+      }
     });
+  },
 
-    // When the connection is disconnected
-    mongoose.connection.on('disconnected', function () {
-        logger.info(strings.group('notice').db_disconnected);
-        event.emit('stop', { system: 'db' } );
+  disconnect: function (callback) {
+    if (!this.db) {
+      if (callback) callback(null);
+      return;
+    }
+
+    this.db.close(callback || function () {});
+  },
+
+  getNewId: function(callback) {
+    callback(null, new ObjectID().toString());
+  },
+
+  reserve: function(workerId, aggregateId, callback) {
+    this.lock.save({ _id: workerId, aggregateId: aggregateId, date: new Date() }, { safe: true }, function (err) {
+      if (callback) callback(err);
     });
+  },
 
-    // If the Node process ends, close the Mongoose connection
-    process.on('SIGINT', function() {
-        mongoose.connection.close(function () {
-            logger.info(strings.group('notice').db_disconnected);
-            process.exit(0);
-        });
+  getAll: function(aggregateId, callback) {
+    this.lock.find({ aggregateId: aggregateId }, { sort: { date: 1 } }).toArray(function (err, res) {
+      if (err) {
+        return callback(err);
+      }
+      callback(null, _.map(res, function (entry) { return entry._id; }));
     });
+  },
 
-    db.mongoose = mongoose;
-    return db;
+  resolve: function(aggregateId, callback) {
+    this.lock.remove({ aggregateId: aggregateId }, { safe: true }, function (err) {
+      if (callback) callback(err);
+    });
+  },
 
-})();
+  clear: function (callback) {
+    this.lock.remove({}, { safe: true }, callback);
+  }
+
+});
+
+module.exports = Mongo;

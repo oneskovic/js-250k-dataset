@@ -1,96 +1,92 @@
+define(function(require, exports, module) {
 
-var intervals = function(from, to, num, range, int) {
-  from.length = 0;
-  to.length = 0;
-  for(var i = 0; i < num; i++) {
-    var a,b;
-    a = Math.random() * range;
-    b = Math.random() * range;
-    //console.log('%d,%d', a, b);
-    if (int) {
-      a = Math.floor(a);
-      b = Math.floor(b);
+    var RAND = Math.random;
+
+    function _randomFloat(min,max) {
+        return min + RAND() * (max - min);
     }
-    from.push(Math.min(a, b));
-    to.push(Math.max(a, b));
-  }
-}
 
-
-var intervalsM = function(from, to, num, range, maxLenght, int) {
-  from.length = 0;
-  to.length = 0;
-  for(var i = 0; i < num; i++) {
-    var a,b;
-    a = Math.random() * range;
-    b = a + Math.random() * maxLenght;
-    //console.log('%d,%d', a, b);
-    if (int) {
-      a = Math.floor(a);
-      b = Math.floor(b);
+    function _randomInteger(min,max) {
+        return (min + RAND() * (max - min + 1)) >> 0;
     }
-    from.push(a);
-    to.push(b);
-  }
-}
 
-var intervalsN = function(from, to, num, range, int) {
-  from.length = 0;
-  to.length = 0;
-  for(var i = 0; i < num; i++) {
-    var a,b,l;
-    l = Math.random() * range;
-    a = Math.random() * ( range - l );
-    b = a + l;
-    //console.log('%d,%d', a, b);
-    if (int) {
-      a = Math.floor(a);
-      b = Math.floor(b);
-    }
-    from.push(a);
-    to.push(b);
-  }
-}
+    /**
+     * Very simple uniform random number generator library wrapping Math.random().
+     *
+     * @class Random
+     * @static
+     */
+    var Random = {};
 
-var intervalsL = function(from, to, num, range, int) {
-  from.length = 0;
-  to.length = 0;
-  var step = range / num;
-  for(var i = 0; i < num; i++) {
-    var a,b,l;
-    l = Math.random() * ( range - i * step);
-    a = Math.random() * ( range - l );
-    b = a + l;
-    //console.log('%d,%d', a, b);
-    if (int) {
-      a = Math.floor(a);
-      b = Math.floor(b);
-    }
-    from.push(a);
-    to.push(b);
-  }
-}
+    /**
+     * Get single random integer between min and max (inclusive), or array
+     *   of size dim if specified.
+     *
+     * @method integer
+     *
+     * @param {Number} min lower bound, default 0
+     * @param {Number} max upper bound, default 1
+     * @param {Number} dim (optional) dimension of output array, if specified
+     * @return {number | array<number>} random integer, or optionally, an array of random integers
+     */
+    Random.integer = function integer(min,max,dim) {
+        min = (min !== undefined) ? min : 0;
+        max = (max !== undefined) ? max : 1;
+        if (dim !== undefined) {
+            var result = [];
+            for (var i = 0; i < dim; i++) result.push(_randomInteger(min,max));
+            return result;
+        }
+        else return _randomInteger(min,max);
+    };
 
-var intervalsMN = function(from, to, num, range, maxLenght, int) {
-  from.length = 0;
-  to.length = 0;
-  for(var i = 0; i < num; i++) {
-    var a,b,l;
-    l = Math.random() * maxLenght;
-    a = Math.random() * ( range - l );
-    b = a + l;
-    //console.log('%d,%d', a, b);
-    if (int) {
-      a = Math.floor(a);
-      b = Math.floor(b);
-    }
-    from.push(a);
-    to.push(b);
-  }
-}
+    /**
+     * Get single random float between min and max (inclusive), or array
+     *   of size dim if specified
+     *
+     * @method range
+     *
+     * @param {Number} min lower bound, default 0
+     * @param {Number} max upper bound, default 1
+     * @param {Number} [dim] dimension of output array, if specified
+     * @return {Number} random float, or optionally an array
+     */
+    Random.range = function range(min,max,dim) {
+        min = (min !== undefined) ? min : 0;
+        max = (max !== undefined) ? max : 1;
+        if (dim !== undefined) {
+            var result = [];
+            for (var i = 0; i < dim; i++) result.push(_randomFloat(min,max));
+            return result;
+        }
+        else return _randomFloat(min,max);
+    };
 
-module.exports.intervals = intervals;
-module.exports.intervalsM = intervalsM;
-module.exports.intervalsN = intervalsN;
-module.exports.intervalsL = intervalsL;
-module.exports.intervalsMN = intervalsMN;
+    /**
+     * Return random number among the set {-1 ,1}
+     *
+     * @method sign
+     *
+     * @param {Number} prob probability of returning 1, default 0.5
+     * @return {Number} random sign (-1 or 1)
+     */
+    Random.sign = function sign(prob) {
+        prob = (prob !== undefined) ? prob : 0.5;
+        return (RAND() < prob) ? 1 : -1;
+    };
+
+    /**
+     * Return random boolean value, true or false.
+     *
+     * @method bool
+     *
+     * @param {Number} prob probability of returning true, default 0.5
+     * @return {Boolean} random boolean
+     */
+    Random.bool = function bool(prob) {
+        prob = (prob !== undefined) ? prob : 0.5;
+        return RAND() < prob;
+    };
+
+    module.exports = Random;
+});

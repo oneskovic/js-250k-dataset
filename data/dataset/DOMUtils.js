@@ -1,9 +1,3 @@
-/**
- * DOMUtils contains some convenience functions to look up information in the DOM.
- * @type {{friendlyInputNames: {}, getElementsByAttribute: Function, getAttributeValueForElement: Function, supportsHTML5Validation: Function}}
- */
-
-
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
         // AMD. Register as an anonymous module.

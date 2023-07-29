@@ -1,4 +1,3 @@
-
 (function ( w ) {
 
 	w.srcsetfill = function () {

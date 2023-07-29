@@ -1,7 +1,3 @@
-/**
- * Created by Stefano on 04/04/2014.
- */
-
 DoubleLinkedListIterator.prototype = new Iterator();
 DoubleLinkedListIterator.prototype.constructor = DoubleLinkedListIterator;
 

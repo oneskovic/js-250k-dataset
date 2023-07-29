@@ -1,4 +1,3 @@
-/*jshint proto:true*/
 angular.module('encore.ui.rxSessionStorage', [])
     /**
     *

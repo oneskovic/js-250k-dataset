@@ -1,11 +1,3 @@
-// -------------------------------------------------------------------------- \\
-// File: ToOneAttribute.js                                                    \\
-// Module: DataStore                                                          \\
-// Requires: RecordAttribute.js                                               \\
-// Author: Neil Jenkins                                                       \\
-// License: © 2010-2014 FastMail Pty Ltd. MIT Licensed.                       \\
-// -------------------------------------------------------------------------- \\
-
 "use strict";
 
 ( function ( NS, undefined ) {

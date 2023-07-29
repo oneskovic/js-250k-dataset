@@ -1,72 +1,107 @@
-/**
- *
- * Copyright (c) 2008-2009 ClaypoolJS
- *
- */
-(function($){
+var utils = require('./utils');
 
-    var log;
-    
-    $.filters([{
-        id        : "#requestResponseParamFilter",
-        target    : "ClaypoolJS.Services.*",
-        before    : "([a-z]*)",
-        advice    : function(event){
-        	log = log||$.logger('ClaypoolJS.Filters');
-			var advisee = arguments[arguments.length - 1];
-			
-            log.debug('Adding normalized event state to event scoped model %s.%s',
-				advisee.target, advisee.method);
-				
-            var params = event.params('parameters');
-            
-            event.m({ admin:('admin' in params)?true:false });
+exports.findMatchingInstances = function (name, args) {
+  args.instances = utils.findMatchingInstances(name);
 
-			log.debug('m=>admin %s', event.m().admin);
-			event.m().reset();
-			log.debug('reset : m=>admin %s', event.m().admin);
-			
-            event.m({ admin:'jello' });
-			log.debug('m=>admin %s', event.m().admin);
-			event.m().reset();
-			log.debug('reset : m=>admin %s', event.m().admin);
-			
-            event.m({ admin:'pistachio' });
-			log.debug('m=>admin %s', event.m().admin);
-            event.m(event.params());
+  if (args.instances.length === 0) {
+    utils.dieWithList('No instances found matching "' + name + '".');
+    return false;
+  }
+};
 
-			
-        }
-    },{
-        id        : "#contentNegotiationFilter",
-        target    : "ClaypoolJS.Views.*",
-        around    : "(render)",
-        advice    : function(invocation){
+exports.findFirstMatchingInstance = function (name, args) {
+  args.instance = utils.findFirstMatchingInstance(name);
 
-            var model = invocation.arguments[0],
-                event = invocation.arguments[1],
-                view = invocation.object;
-                
-            log = log||$.logger('ClaypoolJS.Filters');
-            log.debug('Intercepted call to render %s.%s', 
-				invocation.target, invocation.method);
-            var model = invocation.arguments[0],
-                view = invocation.object;
-            if(model.parameters.fo == 'json'){
-                event.response.headers['Content-Type']='text/plain';
-                return view.write($.json(model, null, '\t'));
-                //do not proceed
-            }else if(model.parameters.fo == 'xml'){
-                event.response.headers['Content-Type']='text/xml';
-                return view.write($.x({x:model}));
-                //do not proceed
-            }else{
-                if('template' in model)
-                    model.template += '?'+new Date().getTime();
-                return invocation.proceed();
-            }
-        }
-    }]);
+  if (!args.instance) {
+    utils.dieWithList('No instance found matching "' + name + '".');
+    return false;
+  }
+};
 
-})(jQuery);
-    
+exports.findMatchingCluster = function (name, args) {
+  var clusters = utils.getClusters();
+  args.cluster = clusters[name];
+
+  if (!args.cluster) {
+    utils.dieWithList('No clusters found matching "' + name + '".');
+    return false;
+  }
+};
+
+exports.shouldBeNewCluster = function (name, args) {
+  var clusters = utils.getClusters();
+
+  if (clusters[name]) {
+    utils.grey('The cluster "' + name + '" already exists, no action taken.');
+    return false;
+  }
+};
+
+exports.shouldBeNewInstance = function (name, args) {
+  var clusters = utils.getClusters();
+
+  if (!args.cluster) {
+    utils.grey('Using "default" cluster.');
+    args.cluster = 'default';
+  }
+
+  if (clusters[name]) {
+    utils.die('"' + name + '" is already in use as a cluster name.');
+    return false;
+  } else if (name === 'all') {
+    utils.die('"all" is a special keyword that cannot be used for instance names.');
+    return false;
+  } else if (name.indexOf('*') !== -1) {
+    utils.die('Instance names cannot include asterisk characters.');
+    return false;
+  } else if (utils.findMatchingInstancesByInstanceName(name).length > 0) {
+    utils.die('Instance "' + name + '" already exists.');
+    return false;
+  }
+};
+
+exports.shouldBeNewKey = function (name, args) {
+  if (utils.keyExists(name)) {
+    utils.grey('The key "' + name + '" already exists, no action taken.');
+    return false;
+  }
+};
+
+exports.shouldBeExistingKey = function (name, args) {
+  if (!utils.keyExists(name)) {
+    utils.grey('The key "' + name + '" was not found, no action taken.');
+    return false;
+  }
+};
+
+exports.shouldBeAWS = function (name, args) {
+  if (!args.instance || !args.instance.aws) {
+    utils.die('This instance has no AWS metadata attached.');
+    return false;
+  }
+};
+
+exports.shouldBeDigitalOcean = function (name, args) {
+  if (!args.instance || !args.instance.digitalocean) {
+    utils.red('This instance has no DigitalOcean metadata attached.');
+    utils.red('Run this command and then try again:');
+    utils.die('overcast digitalocean sync "' + args.instance.name + '"');
+    return false;
+  }
+};
+
+exports.shouldBeVirtualbox = function (name, args) {
+  if (!args.instance || !args.instance.virtualbox) {
+    utils.die('This instance has no Virtualbox metadata attached.');
+    return false;
+  }
+};
+
+exports.shouldBeLinode = function (name, args) {
+  if (!args.instance || !args.instance.linode) {
+    utils.red('This instance has no Linode metadata attached.');
+    utils.red('Run this command and then try again:');
+    utils.die('overcast linode sync "' + args.instance.name + '"');
+    return false;
+  }
+};

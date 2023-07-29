@@ -1,9 +1,6 @@
 'use strict';
 
-/**
- * @description
- * Private service to sanitize uris for links and images. Used by $compile and $sanitize.
- */
+
 function $$SanitizeUriProvider() {
   var aHrefSanitizationWhitelist = /^\s*(https?|ftp|mailto|tel|file):/,
     imgSrcSanitizationWhitelist = /^\s*((https?|ftp|file|blob):|data:image\/)/;

@@ -1,4 +1,3 @@
-// Go through the items that have been added and deleted and try to find matches between them.
 ko.utils.findMovesInArrayComparison = function (left, right, limitFailedCompares) {
     if (left.length && right.length) {
         var failedCompares, l, r, leftItem, rightItem;

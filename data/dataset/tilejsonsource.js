@@ -1,6 +1,3 @@
-// FIXME add some error checking
-// FIXME check order of async callbacks
-
 /**
  * @see http://mapbox.com/developers/api/
  */

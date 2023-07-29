@@ -1,16 +1,3 @@
-/**
- * Karma middleware is responsible for serving:
- * - client.html (the entrypoint for capturing a browser)
- * - debug.html
- * - context.html (the execution context, loaded within an iframe)
- * - karma.js
- *
- * The main part is generating context.html, as it contains:
- * - generating mappings
- * - including <script> and <link> tags
- * - setting propert caching headers
- */
-
 var path = require('path');
 var util = require('util');
 

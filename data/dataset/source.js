@@ -1,12 +1,3 @@
-/**
- * Created with IntelliJ IDEA.
- * User: nisheeth
- * Date: 27/08/13
- * Time: 12:17
- * Email: nisheeth.k.kashyap@gmail.com
- * Repositories: https://github.com/nkashyap
- */
-
 ConsoleIO.namespace("ConsoleIO.View.Device.Source");
 
 ConsoleIO.View.Device.Source = function SourceView(ctrl, model) {

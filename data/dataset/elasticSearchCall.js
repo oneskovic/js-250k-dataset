@@ -101,10 +101,7 @@ ElasticSearchCall.prototype.exec = function (cb) {
     }
 }
 
-/**
- * Wrap the default data event
- * @param callback
- */
+
 ElasticSearchCall.prototype.data = function (callback) {
     this.on('data', callback);
 }

@@ -3,10 +3,7 @@ var Spec = require('./Spec');
 var Storage = require('./Storage');
 
 
-/** SharedWebStorage may use localStorage or sessionStorage
- *  to cache data. The role of ShWS is dual: it may also
- *  bridge ops from one browser tab/window to another using
- *  HTML5 onstorage events. */
+
 function SharedWebStorage(id, options) {
     this.options = options || {};
     this.lstn = {};

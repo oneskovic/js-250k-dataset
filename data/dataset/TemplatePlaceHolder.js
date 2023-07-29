@@ -4,12 +4,7 @@ define(["js/ui/View"], function (View) {
         defaults: {
 
             item: null,
-            /***
-             * the template name which to use
-             *
-             * @type String
-             * @required
-             */
+            
             templateName: null
         },
 

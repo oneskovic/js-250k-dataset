@@ -1,9 +1,8 @@
-/*global describe, beforeEach, module, inject, it, spyOn, expect, $ */
 describe('uiRoute', function () {
   'use strict';
 
   var scope, $compile, $location;
-  beforeEach(module('ui.route'));
+  beforeEach(module('ui.directives'));
   beforeEach(inject(function (_$rootScope_, _$compile_, _$window_, _$location_) {
     scope = _$rootScope_.$new();
     $compile = _$compile_;
@@ -13,12 +12,6 @@ describe('uiRoute', function () {
   function setPath(path) {
     $location.path(path);
     scope.$broadcast('$routeChangeSuccess');
-    scope.$apply();
-  }
-
-  function setPathWithStateChange(path) {
-    $location.path(path);
-    scope.$broadcast('$stateChangeSuccess');
     scope.$apply();
   }
 
@@ -32,8 +25,8 @@ describe('uiRoute', function () {
   function runTests(routeModel) {
     var modelProp = routeModel || '$uiRoute', elm = angular.noop;
     function compileRoute(template) {
-      elm = angular.element(template);
-      if (routeModel){ elm.attr('ng-model', routeModel);}
+      elm = $(template);
+      if (routeModel) elm.attr('ng-model', routeModel);
       return $compile(elm[0])(scope);
     }
     
@@ -101,18 +94,5 @@ describe('uiRoute', function () {
       setPath('/bar');
       expect(elm.scope()[modelProp]).toBe(false);
     });
-
-
-    it('should update model on state change', function(){
-      setPathWithStateChange('/bar');
-      compileRoute('<div ui-route="/foo">');
-      expect(elm.scope()[modelProp]).toBeFalsy();
-      setPathWithStateChange('/foo');
-      expect(elm.scope()[modelProp]).toBe(true);
-      setPathWithStateChange('/bar');
-      expect(elm.scope()[modelProp]).toBe(false);
-    });
-
-
   }
 });

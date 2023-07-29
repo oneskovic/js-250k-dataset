@@ -1,5 +1,3 @@
-/* graph generator */
-
 module.exports = function(flow){
   var fconsole = flow.console;
   var content = [];

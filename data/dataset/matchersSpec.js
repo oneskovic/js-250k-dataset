@@ -14,11 +14,7 @@ describe('angular.scenario.matchers', function() {
   }
 
   beforeEach(function() {
-    /**
-     * Mock up the future system wrapped around matchers.
-     *
-     * @see Scenario.js#angular.scenario.matcher
-     */
+    
     matchers = {
       future: { name: 'test' }
     };

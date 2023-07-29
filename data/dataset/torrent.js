@@ -4,7 +4,7 @@ var inherits = require('util').inherits
 
 var Streamer = require('./base');
 
-/* -- Torrent Streamer -- */
+
 function TorrentStreamer(source, options) {
 	if(!(this instanceof TorrentStreamer)) 
 		return new TorrentStreamer(source, options);

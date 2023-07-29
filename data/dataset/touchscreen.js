@@ -1,23 +1,6 @@
 (function(){
 
-/*
-	These tests are for all input types on touchscreens. The tests are based on my research at 
-	http://www.quirksmode.org/blog/archives/2011/03/the_new_input_t.html,
-	and they test one single purpose of the new input types:
-	
-	1) INTERFACE purpose: interacting with the input should give the user an easy way of filling in 
-	a valid value. The date types give the clearest example of this: the interface could take the 
-	form of a calendar widget, such as Opera does, or a native control, such as RIM does.
-	
-	On touchscreen devices, the INTERFACE purpose can be fulfilled by popping up a specialised 
-	keyboard. These tests determine whether the browser does so.
-	
-	These tests should ONLY be run on touchscreen devices; other devices will always score No on
-	all tests.
-	
-	- ppk
 
-*/
 
 	dohx.add({name:"Input types on touchscreens",
 		mqcExecutionOrderBaseOffset:600000, // This number is the base offset for the execution order, the test ID gets added. Never change this number unless you know what you are doing.

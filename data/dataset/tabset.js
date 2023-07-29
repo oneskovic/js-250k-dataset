@@ -1,9 +1,3 @@
-/* $Id: tabset.js 23146 2009-08-17 21:07:52Z kom $
- * The tool to use if you need a set of tabs.
- *
- * USE: NYTD.TabSet("idOfTabSetContainerDiv");
- */
-
 NYTD.TabSet = function( target ) {
 	function root() {
 		return $(target);

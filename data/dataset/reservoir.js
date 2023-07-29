@@ -9,9 +9,7 @@ module.exports = function (callback) {
 
     async.waterfall([
 
-        /*
-         * 得到目前網頁資料的 html
-         */
+        
         function (cb){
             request(_RESERVOIRGOVURL, function (error, response, body) {
 

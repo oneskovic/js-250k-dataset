@@ -1,9 +1,3 @@
-/**
- * This example demonstrates a chained store, a store that is backed by the data of another
- * store. Sorting and filtering of the stores are independent. Removing a value in the source
- * store removes it from the chained store. Model instances are shared, so editing the data
- * in one store will be reflected in the other.
- */
 Ext.define('KitchenSink.view.binding.ChainedStores', {
     extend: 'Ext.container.Container',
     xtype: 'binding-chained-stores',

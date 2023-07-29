@@ -25,19 +25,7 @@ Ext.define('Packt.view.film.FilmFormCategories', {
 
         bind: '{currentFilm.categories}',
 
-        /*columns: {
-            items: [
-                {
-                    text: 'Id',
-                    dataIndex: 'category_id',
-                    width: 50
-                },{
-                    text: 'Name',
-                    dataIndex: 'name',
-                    flex: 1
-                }
-            ]
-        },*/
+        
 
         search: {
             field: 'name',

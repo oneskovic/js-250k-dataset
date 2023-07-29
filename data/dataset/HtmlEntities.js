@@ -1,22 +1,3 @@
-/*------------------------------------------*\
-HtmlEntities for Xinha
-____________________
-
-Intended to faciliate the use of special characters with ISO 8 bit encodings.
-
-Using the conversion map provided by mharrisonline in ticket #127
-
-If you want to adjust the list, e.g. to except the characters that are available in the used charset,
-edit Entities.js. 
-You may save it under a different name using the xinha_config.HtmlEntities.EntitiesFile variable
-
-ISO-8859-1 preset is default, set
-  
-  xinha_config.HtmlEntities.Encoding = null;
-
-if you want all special characters to be converted or want to load a custom file 
-\*------------------------------------------*/
-
 function HtmlEntities(editor) {
 	this.editor = editor;
 }

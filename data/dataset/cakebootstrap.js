@@ -1,15 +1,3 @@
-/*
-* Twitter Bootstrappifier for CakePHP 
-*
-* Author: Mutlu Tevfik Kocak
-*
-* CakePHP Twitter Bootstrappifier
-*
-* Selects all con twitter Bootstrap incompatible form and buttons,
-* and converts them into pretty Twitter Bootstrap style.
-*
-*/
-
 var Bootstrappifier = {
 	straps		: {
 		cake	: function() {

@@ -1,6 +1,3 @@
-/**
- * This module returns a subset of the stored pixels of an image
- */
 var cornerstone = (function (cornerstone) {
 
     "use strict";

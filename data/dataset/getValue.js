@@ -1,26 +1,3 @@
-/**
- *
- * Get the value of a `<textarea>` or text `<input>` found by given selector.
- *
- * <example>
-    :index.html
-    <input type="text" value="John Doe" id="username">
-
-    :getValue.js
-    client.getValue('#username', function(err, value) {
-        console.log(value); // outputs: "John Doe"
-    });
- * </example>
- *
- * @param   {String} selector input or textarea element
- * @returns {String}          requested input value
- * @callbackParameter error, value
- *
- * @uses protocol/elements, protocol/elementIdAttribute
- * @type property
- *
- */
-
 var async = require('async'),
     ErrorHandler = require('../utils/ErrorHandler.js');
 

@@ -1,8 +1,6 @@
 Package("demo")
 .define("SlotMachine", function(cp) { return Package.Class.extend({
-    /**
-     * コンストラクタとして呼ばれる関数
-     */
+    
     initialize: function() {
         this.nums = [
             document.getElementById("num0"),

@@ -1,8 +1,3 @@
-/**
- * Draw solid triangle fill
- * args: coordinates of vertices, attributes 
- */
-
 /*
  * note: this code works for some limited cases of right triangles
  * need to add rectangle skew to make this applicable to all triangles

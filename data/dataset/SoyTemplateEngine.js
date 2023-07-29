@@ -7,10 +7,7 @@ var util = require('util');
 var config = require('./ProductFlavors').generateFlavoredConfig();
 var TemplateEngine = require('./TemplateEngine');
 
-/**
- * Soy template engine implementation.
- * @constructor
- */
+
 function SoyTemplateEngine() {
   TemplateEngine.call(this);
 }

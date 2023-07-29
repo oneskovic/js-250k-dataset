@@ -1,102 +1,57 @@
-/**
- * @fileoverview This module provides an implementation of the system module
- * compliant to the <a href="http://wiki.commonjs.org/wiki/System/1.0">CommonJS
- * System/1.0</a> specification. Beyond the standard a <code>print()</code>
- * function is provided.
- */
+var deviceSettings = require('ripple/deviceSettings'),
+    devices = require('ripple/devices'),
+    app = require('ripple/app'),
+    utils = require('ripple/utils'),
+    _self;
 
-var stdin, stdout, stderr;
-var System = java.lang.System;
-
-/**
- * A [TextStream](../io/#TextStream) to read from stdin.
- * @name stdin
- */
-Object.defineProperty(exports, "stdin", {
-    get: function() {
-        if (!stdin) {
-            var {Stream, TextStream} = require('io');
-            stdin = new TextStream(new Stream(System['in']));
+function _is(feature) {
+    return {
+        allowedFor: function (location) {
+            return feature && feature.URIs.some(function (uri) {
+                return uri.value === location ||
+                      (location.indexOf(uri.value) >= 0 && uri.subdomains);
+            });
         }
-        return stdin;
-    },
-    set: function(value) {
-        stdin = value;
-    }, configurable: true, enumerable: true
-});
+    };
+}
 
-/**
- * A [TextStream](../io/#TextStream) to write to stdout.
- * @name stdout
- */
-Object.defineProperty(exports, "stdout", {
-    get: function() {
-        if (!stdout) {
-            var {Stream, TextStream} = require('io');
-            stdout = new TextStream(new Stream(System.out));
-        }
-        return stdout;
+_self = {
+    hasCapability: function (capability) {
+        var capabilities = devices.getCurrentDevice().capabilities;
+        return capabilities ? capabilities.some(function (type) {
+                return type === capability;
+            }) : false;
     },
-    set: function(value) {
-        stdout = value;
-    }, configurable: true, enumerable: true
-});
+    hasPermission: function (desiredModule) {
+        var info = app.getInfo(),
+            feature = info.features ? info.features[desiredModule] : null;
 
-/**
- * A [TextStream](../io/#TextStream) to write to stderr.
- * @name stderr
- */
-Object.defineProperty(exports, "stderr", {
-    get: function() {
-        if (!stderr) {
-            var {Stream, TextStream} = require('io');
-            stderr = new TextStream(new Stream(System.err));
-        }
-        return stderr;
-    },
-    set: function(value) {
-        stderr = value;
-    }, configurable: true, enumerable: true
-});
-
-/**
- * A utility function to write to stdout.
- */
-exports.print = function() {
-    exports.stdout.print.apply(exports.stdout, arguments);
+        return feature === null || _is(feature).allowedFor(utils.location().href) ? _self.ALLOW : _self.DENY;
+    }
 };
 
-/**
- * An array of strings representing the command line arguments passed to the running script.
- * @example >> ringo .\myScript.js foo bar baz 12345
- * system.args -> ['.\myScript.js', 'foo', 'bar', 'baz', '12345']
- */
-exports.args = global.arguments || [];
+_self.__defineGetter__("ALLOW", function () {
+    return 0;
+});
 
-/**
- * An object containing of the current system environment.
- * @example {
- *   USERPROFILE: 'C:\Users\username',
- *   JAVA_HOME: 'C:\Program Files\Java\jdk1.7.0_07\',
- *   SystemDrive: 'C:',
- *   Path: '%System%/...',
- *   PROCESSOR_REVISION: '1a05',
- *   USERDOMAIN: 'EXAMPLE',
- *   SESSIONNAME: 'Console',
- *   TMP: 'C:\Temp',
- *   PROMPT: '$P$G',
- *   PROCESSOR_LEVEL: '6',
- *   LOCALAPPDATA: 'C:\Local',
- *   ...
- * }
- * @see <a href="http://docs.oracle.com/javase/7/docs/api/java/lang/System.html#getenv()">java.lang.System.getenv()</a>
- */
-exports.env = new ScriptableMap(System.getenv());
+_self.__defineGetter__("DENY", function () {
+    return 1;
+});
 
-/**
- * Terminates the current process.
- * @param {Number} status The exit status, defaults to 0.
- */
-exports.exit = function(status) {
-    System.exit(status || 0);
-};
+_self.__defineGetter__("softwareVersion", function () {
+    return devices.getCurrentDevice().osVersion;
+});
+
+_self.__defineGetter__("hardwareId", function () {
+    return devices.getCurrentDevice().hardwareId;
+});
+
+_self.__defineGetter__("language", function () {
+    return deviceSettings.retrieve("system.language");
+});
+
+_self.__defineGetter__("region", function () {
+    return deviceSettings.retrieve("system.region");
+});
+
+module.exports = _self;

@@ -10,7 +10,7 @@ cubism_contextPrototype.gangliaWeb = function(config) {
     if (config.uriPathPrefix) {
       uriPathPrefix = config.uriPathPrefix;
 
-      /* Add leading and trailing slashes, as appropriate. */
+      
       if( uriPathPrefix[0] != '/' ) {
         uriPathPrefix = '/' + uriPathPrefix;
       }

@@ -1,102 +1,126 @@
-var chokidar = require('chokidar');
-var mm = require('minimatch');
+angular.module('a8m.filter-watcher', [])
+  .provider('filterWatcher', function() {
 
-var helper = require('./helper');
-var log = require('./logger').create('watcher');
+    this.$get = ['$window', '$rootScope', function($window, $rootScope) {
 
-var DIR_SEP = require('path').sep;
+      /**
+       * Cache storing
+       * @type {Object}
+       */
+      var $$cache = {};
 
-// Get parent folder, that be watched (does not contain any special globbing character)
-var baseDirFromPattern = function(pattern) {
-  return pattern.replace(/\/[^\/]*\*.*$/, '')           // remove parts with *
-                .replace(/\/[^\/]*[\!\+]\(.*$/, '')     // remove parts with !(...) and +(...)
-                .replace(/\/[^\/]*\)\?.*$/, '') || '/'; // remove parts with (...)?
-};
+      /**
+       * Scope listeners container
+       * scope.$destroy => remove all cache keys
+       * bind to current scope.
+       * @type {Object}
+       */
+      var $$listeners = {};
 
-var watchPatterns = function(patterns, watcher) {
-  // filter only unique non url patterns paths
-  var pathsToWatch = [];
-  var uniqueMap = {};
-  var path;
+      /**
+       * $timeout without triggering the digest cycle
+       * @type {function}
+       */
+      var $$timeout = $window.setTimeout;
 
-  patterns.forEach(function(pattern) {
-    path = baseDirFromPattern(pattern);
-    if (!uniqueMap[path]) {
-      uniqueMap[path] = true;
-      pathsToWatch.push(path);
-    }
+      /**
+       * @description
+       * get `HashKey` string based on the given arguments.
+       * @param fName
+       * @param args
+       * @returns {string}
+       */
+      function getHashKey(fName, args) {
+        return [fName, angular.toJson(args)]
+          .join('#')
+          .replace(/"/g,'');
+      }
+
+      /**
+       * @description
+       * fir on $scope.$destroy,
+       * remove cache based scope from `$$cache`,
+       * and remove itself from `$$listeners`
+       * @param event
+       */
+      function removeCache(event) {
+        var id = event.targetScope.$id;
+        forEach($$listeners[id], function(key) {
+          delete $$cache[key];
+        });
+        delete $$listeners[id];
+      }
+
+      /**
+       * @description
+       * for angular version that greater than v.1.3.0
+       * it clear cache when the digest cycle is end.
+       */
+      function cleanStateless() {
+        $$timeout(function() {
+          if(!$rootScope.$$phase)
+            $$cache = {};
+        });
+      }
+
+      /**
+       * @description
+       * Store hashKeys in $$listeners container
+       * on scope.$destroy, remove them all(bind an event).
+       * @param scope
+       * @param hashKey
+       * @returns {*}
+       */
+      function addListener(scope, hashKey) {
+        var id = scope.$id;
+        if(isUndefined($$listeners[id])) {
+          scope.$on('$destroy', removeCache);
+          $$listeners[id] = [];
+        }
+        return $$listeners[id].push(hashKey);
+      }
+
+      /**
+       * @description
+       * return the `cacheKey` or undefined.
+       * @param filterName
+       * @param args
+       * @returns {*}
+       */
+      function $$isMemoized(filterName, args) {
+        var hashKey = getHashKey(filterName, args);
+        return $$cache[hashKey];
+      }
+
+      /**
+       * @description
+       * store `result` in `$$cache` container, based on the hashKey.
+       * add $destroy listener and return result
+       * @param filterName
+       * @param args
+       * @param scope
+       * @param result
+       * @returns {*}
+       */
+      function $$memoize(filterName, args, scope, result) {
+        var hashKey = getHashKey(filterName, args);
+        //store result in `$$cache` container
+        $$cache[hashKey] = result;
+        // for angular versions that less than 1.3
+        // add to `$destroy` listener, a cleaner callback
+        if(isScope(scope)) {
+          addListener(scope, hashKey);
+        } else {
+          cleanStateless();
+        }
+        return result;
+      }
+
+      return {
+        isMemoized: $$isMemoized,
+        memoize: $$memoize
+      }
+
+    }];
   });
-
-  // watch only common parents, no sub paths
-  pathsToWatch.forEach(function(path) {
-    if (!pathsToWatch.some(function(p) {
-      return p !== path && path.substr(0, p.length + 1) === p + DIR_SEP;
-    })) {
-      watcher.add(path);
-      log.debug('Watching "%s"', path);
-    }
-  });
-};
-
-// Function to test if a path should be ignored by chokidar.
-var createIgnore = function(patterns, excludes) {
-  return function(path, stat) {
-    if (!stat || stat.isDirectory()) {
-      return false;
-    }
-
-    // Check if the path matches any of the watched patterns.
-    if (!patterns.some(function(pattern) {
-      return mm(path, pattern, {dot: true});
-    })) {
-      return true;
-    }
-
-    // Check if the path matches any of the exclude patterns.
-    if (excludes.some(function(pattern) {
-      return mm(path, pattern, {dot: true});
-    })) {
-      return true;
-    }
-
-    return false;
-  };
-};
-
-var onlyWatchedTrue = function(pattern) {
-  return pattern.watched;
-};
-
-var getWatchedPatterns = function(patternObjects) {
-  return patternObjects.filter(onlyWatchedTrue).map(function(patternObject) {
-    return patternObject.pattern;
-  });
-};
-
-exports.watch = function(patterns, excludes, fileList, usePolling) {
-  var watchedPatterns = getWatchedPatterns(patterns);
-  var options = {
-    usePolling: usePolling,
-    ignorePermissionErrors: true,
-    ignoreInitial: true,
-    ignored: createIgnore(watchedPatterns, excludes)
-  };
-  var chokidarWatcher = new chokidar.FSWatcher(options);
-
-  watchPatterns(watchedPatterns, chokidarWatcher);
-
-  var bind = function(fn) {
-    return function(path) {
-      return fn.call(fileList, helper.normalizeWinPath(path));
-    };
-  };
-
-  // register events
-  chokidarWatcher.on('add', bind(fileList.addFile))
-                 .on('change', bind(fileList.changeFile))
-                 .on('unlink', bind(fileList.removeFile));
-
-  return chokidarWatcher;
-};
-
-exports.watch.$inject = ['config.files', 'config.exclude', 'fileList', 'config.usePolling'];
+  

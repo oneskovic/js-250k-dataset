@@ -1,4 +1,3 @@
-
 // test/jam.js - Test the main JAM exports
 (function() {
 

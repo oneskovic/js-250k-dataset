@@ -1,7 +1,3 @@
-// wzin($element1, $element2, someOpts) creates a visible link between the two elements
-// Used to show the relation between an edited message and the input, or between a reply
-//  icon and the replied to message.
-
 var wzin = (function(){
 
 	var nextId = 0;

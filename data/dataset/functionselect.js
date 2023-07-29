@@ -8,7 +8,7 @@ angular.module('vleApp')
       scope: {
         field: '='
       },
-      link: function(scope /*,element, attrs*/) {
+      link: function(scope ) {
         var BIN='bin', RAW='raw', COUNT='count', ANY = 'AUTO';
 
         scope.func = {

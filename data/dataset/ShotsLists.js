@@ -1,4 +1,3 @@
-
 roookies.views.ShotsInnerList = Ext.extend(Ext.List, {
 
     itemTpl: roookies.views.imgTpl(),

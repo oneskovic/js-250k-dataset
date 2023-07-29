@@ -1,9 +1,5 @@
 (function() {
-    /**
-     * @fileoverview
-     * Toolbar의 AlignLeft Icon을 위해 필요한 configuration과 Class Trex.Tool.AlignLeft를 포함
-     *
-     */
+    
     TrexConfig.addTool(
         "alignleft",
         {

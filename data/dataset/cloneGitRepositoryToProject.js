@@ -13,13 +13,7 @@ var filterIgnoredFiles = require('./uploadController').filterIgnoredFiles;
 var addFileFromFileSytemToProject = require('./uploadController')._addFileFromFileSytemToProject;
 var updateFileStructure = require('./fileController')._updateFileStructure;
 
-/**
- * Clone git repository and store it in the file system for later user
- *
- * @param <Object>/<Number>/<String> Project model, id or name
- * @param <String> git repo url
- * @return <Object> return a nativeFileStructure
- */
+
 var cloneGitRepositoryToProject = function (project, userId, gitRepoUrl) {
   if (typeof project !== 'object') throw new Error('project should be a model');
   if (!isGitUrl(gitRepoUrl)) throw new Error('URL provided is not a valid git repository URL');

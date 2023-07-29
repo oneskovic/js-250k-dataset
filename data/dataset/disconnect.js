@@ -1,17 +1,3 @@
-// Disconect the ways at the given node.
-//
-// Optionally, disconnect only the given ways.
-//
-// For testing convenience, accepts an ID to assign to the (first) new node.
-// Normally, this will be undefined and the way will automatically
-// be assigned a new ID.
-//
-// This is the inverse of `iD.actions.Connect`.
-//
-// Reference:
-//   https://github.com/openstreetmap/potlatch2/blob/master/net/systemeD/halcyon/connection/actions/UnjoinNodeAction.as
-//   https://github.com/openstreetmap/josm/blob/mirror/src/org/openstreetmap/josm/actions/UnGlueAction.java
-//
 iD.actions.Disconnect = function(nodeId, newNodeId) {
     var wayIds;
 

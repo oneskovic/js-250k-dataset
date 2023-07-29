@@ -1,14 +1,3 @@
-/*!
- * chai
- * http://chaijs.com
- * Copyright(c) 2011-2013 Jake Luer <jake@alogicalparadox.com>
- * MIT Licensed
- */
-
-/*!
- * Module dependencies.
- */
-
 var AssertionError = require('./error')
   , util = require('./utils')
   , flag = util.flag;

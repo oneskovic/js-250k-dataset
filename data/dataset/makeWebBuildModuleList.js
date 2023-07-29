@@ -1,8 +1,3 @@
-//This file generates a list of modules that can be used in a web build.
-//This file should be called from ant/command line, and the output file
-//needs to be generated before the web build will work.
-
-
 function buildTreeData(/*Object*/obj, /*String*/nodeName){
 	//summary: makes a TreeV3-friendly data structure.
 	

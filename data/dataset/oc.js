@@ -1,7 +1,3 @@
-/* Translators (2009 onwards):
- *  - Cedric31
- */
-
 /**
  * @requires OpenLayers/Lang.js
  */

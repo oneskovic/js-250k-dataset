@@ -1,29 +1,3 @@
-/*
----
-
-name: ActivityIndicator
-
-description:
-
-license: MIT-style license.
-
-authors:
-	- Jean-Philippe Dery (jeanphilippe.dery@gmail.com)
-
-requires:
-	- Control
-
-provides:
-	- ActivityIndicator
-
-...
-*/
-
-/**
- * @see    http://moobilejs.com/doc/latest/Control/ActivityIndicator
- * @author Jean-Philippe Dery (jeanphilippe.dery@gmail.com)
- * @since  0.1.0
- */
 Moobile.ActivityIndicator = new Class({
 
 	Extends: Moobile.Control,

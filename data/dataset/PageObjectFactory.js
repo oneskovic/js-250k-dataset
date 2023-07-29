@@ -1,7 +1,3 @@
-/*!
- * ${copyright}
- */
-
 sap.ui.define(['./Opa',
                'sap/ui/base/Object'],
 	function(Opa, Ui5Object) {

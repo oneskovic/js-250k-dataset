@@ -1,4 +1,3 @@
-/* Cross Browser Support */
     window.requestFileSystem  = window.requestFileSystem || window.webkitRequestFileSystem;
     window.BlobBuilder = window.WebKitBlobBuilder || window.MozBlobBuilder;
     window.URL = window.URL || window.webkitURL;

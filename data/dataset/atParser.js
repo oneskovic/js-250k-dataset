@@ -1,13 +1,9 @@
 var file2modulename = require('../../../tools/build/file2modulename');
-/**
- * Wrapper around traceur that can parse the contents of a file
- */
+
 module.exports = function atParser(AttachCommentTreeVisitor, SourceFile, TraceurParser, traceurOptions, log) {
 
   var service = {
-    /**
-     * The options to pass to traceur
-     */
+    
     traceurOptions: {
       annotations: true,     // parse annotations
       types: true,           // parse types

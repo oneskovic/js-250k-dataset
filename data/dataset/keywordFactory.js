@@ -1,6 +1,3 @@
-/**
-* @desc keyword service, manage keyword list, addition, deletion 
-*/
 Curiosity.factory('keyword', function($rootScope, conf){
 	var keywordObj = {};
 	var keywordArray  = [];

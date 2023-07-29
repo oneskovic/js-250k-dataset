@@ -1,7 +1,3 @@
-/**
- * This panel will overlay when the new patient button is
- * pressed. This is a form that gets user name and shows
-  */
 Ext.define("RaxaEmr.Admin.view.NewProvider", {
     requires: ['Ext.field.Text', 'Ext.field.Number'],
     extend: 'Ext.form.Panel',

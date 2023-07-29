@@ -1,10 +1,3 @@
-/*
-  
-  RSI - cykedev 14/02/2014
-
-  (updated a couple of times since, check git history)
-
- */
 // helpers
 var _ = require('lodash');
 var log = require('../core/log.js');

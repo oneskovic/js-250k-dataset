@@ -1,6 +1,3 @@
-// ================
-// MediaRecorder.js
-
 /**
 * Implementation of https://dvcs.w3.org/hg/dap/raw-file/default/media-stream-capture/MediaRecorder.html
 * The MediaRecorder accepts a mediaStream as input source passed from UA. When recorder starts,

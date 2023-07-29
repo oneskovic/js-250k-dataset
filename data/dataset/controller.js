@@ -1,67 +1,79 @@
-define([
-    ],
-    function(
-    ) {
-        'use strict';
+﻿
+app = angular.module('app', ['breeze.angular'])
 
-        /**
-        *   Abstract controller class.
-        *
-        *   @class 
-        *   @param {context}
-        *   @constructor
-        */
-        var Controller = function(context) {
-            this.context = context;
-            this.device  = context.getGraphicsDevice();
-        };
+/* Defines the "Edmunds" controller
+ * Constructor function relies on Ng injector to provide:
+ *     $scope - context variable for the view to which the view binds
+ *     datacontext - the apps data access facility
+ *     logger - logs controller activities during development
+ */
+app.controller('EdmundsCtrl', function ($scope, datacontext, logger) {
 
-        Controller.prototype = {
-            constructor: Controller,
+    $scope.searchText = "";
+    $scope.makes = [];
+    $scope.getMakes = getMakes;
+    $scope.getModels = getModels;
+    $scope.makeFilter = makeFilter; // Beware: called a lot!
 
-            /**
-            *   All controllers must implement an update method.
-            *
-            *   @method update
-            *   @returns {undefined}
-            */
-            update: function() {
-                throw 'Controller: update() function not implemented.';
-            },
+    $scope.getMakes();
 
-            /**
-            *   This method invokes the callback function, passing in the
-            *   current entity, once for each entity that matches the provided 
-            *   selector.
-            *
-            *   @method filterBy
-            *   @param {selector} A list of components or a group name to filter by.
-            *   @param {callback} Optional callback to call for each matching entity.
-            *   @returns {object} A hashmap of all matching entities
-            */
-            filterBy: function(selector, callback, context) {
-                var entities;
-                if (typeof selector === 'string') {
-                    entities = this.context.filterByGroupName(selector);
-                } else {
-                    entities = this.context.filterByComponents(selector);
-                }
+    //#region private functions
 
-                if (typeof callback === 'function') {
-                    var o, entity;
-                    for (o in entities) {
-                        if (entities.hasOwnProperty(o)) {
-                            entity = entities[o];
-                            callback.call(this, entity);
-                        }
-                    }
-                }
+    function getMakes() {
+        logger.info("Fetching makes from Edmunds service");
+        datacontext.getMakes().then(succeeded).catch(queryFailed);
 
-                return entities;
+        function succeeded(results) {
+            $scope.makes = results;
+            logger.info("Fetched " + results.length + " Makes");
+        }
+    };
+
+    function getModels(make) {
+
+        //  Due to Ng binding delay, the state of make.showModels is the prior state
+        if (make.showModels) {
+            return; // don't bother getting it because switching to "don't show" state
+        } else if (make.models.length > 0) {
+            // already in cache; no need to get them
+            logGetModelResults(true /*from cache*/);
+        } else {
+            getModelsFromEdmunds()
+        }
+
+        function getModelsFromEdmunds() {
+            logger.info("Fetching models from Edmunds service");
+            make.isLoading = true;
+            datacontext.getModels(make)
+                .then(succeeded).catch(queryFailed).finally(done);
+
+            function succeeded(data) {
+                // models automatically link up with makes via fk
+                logGetModelResults(false /*from web*/);
             }
 
-        };
+            function done() {
+                make.isLoading = false;
+            }
+        }
 
-        return Controller;
+        function logGetModelResults(fromCache) {
+            var src = fromCache ? 'from cache' : 'via web service call';
+            logger.info("Fetched "+src+": " + make.models.length + " models for " + make.name);
+        }
+    };
+
+    function makeFilter(make) {
+        var searchText = $scope.searchText;
+        return searchText ?
+            // if there is search text, look for it in the 'niceName'
+            // the property Edmunds intends for filtering; else return true
+            make.niceName.indexOf(searchText.toLowerCase()) >= 0 : true;
+    };
+
+    function queryFailed(error) {
+        logger.error(error.message, "Query failed; please try it again.");
     }
-);
+
+    //#endregion
+});

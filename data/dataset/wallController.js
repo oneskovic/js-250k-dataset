@@ -1,12 +1,6 @@
 'use strict';
 
-/**
- * @ngdoc function
- * @name ppnetApp.controller:WallCtrl
- * @description
- * # WallCtrl
- * Controller of the ppnetApp
- */
+
 angular.module('ppnetApp')
   .controller('WallController', function($scope, ppSyncService, ppnetPostHelper) {
     /* global $ */

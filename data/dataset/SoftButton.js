@@ -1,15 +1,3 @@
-/*
- * Copyright (C) 2011-2013 by NonStop Games
- * Please refer to license.txt for licensing details
- *
- * SoftButton.js
- *
- * A button implemented as a scene graph object.
- * Done so as to fix a lot of input handler nastiness.
- *
- * creation date: 17-07-2012
- */
-
 "use strict";
 
 function SoftButton(image) {

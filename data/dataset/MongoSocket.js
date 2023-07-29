@@ -8,11 +8,7 @@ module.exports = Class({
     this.config = config;
     this.mongoose = mongoose;
   },
-  /**
-   * 连接，虽然mongoose在连接之前会缓存所有的执行命令
-   * 但为了后续切换需要，这里通过Promise来保证连接后才执行命令
-   * @return {[type]} [description]
-   */
+  
   connect: function(){
     if (this.handle) {
       return this.deferred.promise;

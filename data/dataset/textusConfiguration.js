@@ -18,10 +18,7 @@ var config = {
 	}
 };
 
-/**
- * Module to handle reading of configuration, including sensible defaults and the ability to
- * override from the command line.
- */
+
 module.exports = exports = {
 
 	/**

@@ -1,8 +1,3 @@
-/**
- * @license
- * Copyright 2011 http://jqueryui.com/ MIT license.
- */
-
 // From: http://stackoverflow.com/questions/5955343/
 // A JQuery UI patch version is: https://github.com/jquery/jquery-ui/pull/331
 

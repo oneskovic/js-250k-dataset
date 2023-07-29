@@ -1,4 +1,3 @@
-/*global ODSA */
 "use strict";
 // Written by Mohammed Farghally and Cliff Shaffer
 // Radix Sort Analysis

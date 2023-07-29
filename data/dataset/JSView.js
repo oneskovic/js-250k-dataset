@@ -1,7 +1,3 @@
-/*!
- * ${copyright}
- */
-
 // Provides control sap.ui.core.mvc.JSView.
 sap.ui.define(['jquery.sap.global', 'sap/ui/core/library', './View'],
 	function(jQuery, library, View) {

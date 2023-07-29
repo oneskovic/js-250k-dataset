@@ -1,4 +1,3 @@
-/*global require,module*/
 /**
  * Processes icomoon font package to less files
  * @example <caption>Grunt config</caption>
@@ -50,12 +49,12 @@ module.exports = function(grunt) {
 
 		// create variables for icon character
 		aMatch&&aMatch.forEach(function(block){
-			/**/aKey.push(block.replace(rxVars,'$1'));
-//			/**/aCode.push(block.replace(rxVars,'$2').match(/\d+/g).pop());
-			/**/aCode.push(String.fromCharCode(parseInt(block.replace(rxVars,'$2').match(/\d+/g).pop(),10)+12));
-//			/**/aCode.push(JSON.parse('["'+block.replace(rxVars,'$2').match(/\\\d+/g)+'"]'));
-//			/**/aCode.push(String.fromCharCode(parseInt(block.replace(rxVars,'$2').match(/\\\d+/g),16)));
-//			/**/aCode.push(String.fromCharCode(block.replace(rxVars,'$2').match(/\d+/g)));
+			aKey.push(block.replace(rxVars,'$1'));
+//			aCode.push(block.replace(rxVars,'$2').match(/\d+/g).pop());
+			aCode.push(String.fromCharCode(parseInt(block.replace(rxVars,'$2').match(/\d+/g).pop(),10)+12));
+//			aCode.push(JSON.parse('["'+block.replace(rxVars,'$2').match(/\\\d+/g)+'"]'));
+//			aCode.push(String.fromCharCode(parseInt(block.replace(rxVars,'$2').match(/\\\d+/g),16)));
+//			aCode.push(String.fromCharCode(block.replace(rxVars,'$2').match(/\d+/g)));
 			sVars += block.replace(rxVars,'@'+sIconPrefix+'-$1: $2;\n');
 			sRules += block.replace(rxRules,'.'+sIconPrefix+'-$1:before { content: @'+sIconPrefix+'-$1; }\n');
 

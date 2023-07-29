@@ -1,13 +1,5 @@
 (function (enyo, scope) {
-	/**
-	* {@link moon.BodyText} is a simple control for displaying body text in an app.
-	* It is designed to align with other text-based controls.
-	*
-	* @class moon.BodyText
-	* @extends enyo.Control
-	* @ui
-	* @public
-	*/
+	
 	enyo.kind(
 		/** @lends moon.BodyText.prototype */ {
 

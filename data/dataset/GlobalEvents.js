@@ -1,5 +1,3 @@
-// @tag core
-
 /**
  * @class Ext.GlobalEvents
  */

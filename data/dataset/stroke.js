@@ -2,13 +2,7 @@ goog.provide('lime.fill.Stroke');
 
 goog.require('lime.fill.Fill');
 
-/**
-* Stroke 
-* @param {(number|Array.<*>)=} opt_width Stroke width.
-* @param {*=} opt_color Stroke color.
-* @constructor
-* @extends lime.fill.Fill
-*/
+
 lime.fill.Stroke = function(opt_width, opt_color) {
     lime.fill.Fill.call(this);
 

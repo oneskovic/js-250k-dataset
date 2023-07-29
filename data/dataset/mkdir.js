@@ -1,68 +1,75 @@
-var common = require('./common');
-var fs = require('fs');
-var path = require('path');
+var shell = require('..');
 
-// Recursively creates 'dir'
-function mkdirSyncRecursive(dir) {
-  var baseDir = path.dirname(dir);
+var assert = require('assert'),
+    fs = require('fs');
 
-  // Base dir exists, no recursion necessary
-  if (fs.existsSync(baseDir)) {
-    fs.mkdirSync(dir, parseInt('0777', 8));
-    return;
-  }
+shell.config.silent = true;
 
-  // Base dir does not exist, go recursive
-  mkdirSyncRecursive(baseDir);
-
-  // Base dir created, can create dir
-  fs.mkdirSync(dir, parseInt('0777', 8));
+function numLines(str) {
+  return typeof str === 'string' ? str.match(/\n/g).length : 0;
 }
 
-//@
-//@ ### mkdir([options ,] dir [, dir ...])
-//@ ### mkdir([options ,] dir_array)
-//@ Available options:
-//@
-//@ + `p`: full path (will create intermediate dirs if necessary)
-//@
-//@ Examples:
-//@
-//@ ```javascript
-//@ mkdir('-p', '/tmp/a/b/c/d', '/tmp/e/f/g');
-//@ mkdir('-p', ['/tmp/a/b/c/d', '/tmp/e/f/g']); // same as above
-//@ ```
-//@
-//@ Creates directories.
-function _mkdir(options, dirs) {
-  options = common.parseOptions(options, {
-    'p': 'fullpath'
-  });
-  if (!dirs)
-    common.error('no paths given');
+shell.rm('-rf', 'tmp');
+shell.mkdir('tmp');
 
-  if (typeof dirs === 'string')
-    dirs = [].slice.call(arguments, 1);
-  // if it's array leave it as it is
+//
+// Invalids
+//
 
-  dirs.forEach(function(dir) {
-    if (fs.existsSync(dir)) {
-      if (!options.fullpath)
-          common.error('path already exists: ' + dir, true);
-      return; // skip dir
-    }
+shell.mkdir();
+assert.ok(shell.error());
 
-    // Base dir does not exist, and no -p option given
-    var baseDir = path.dirname(dir);
-    if (!fs.existsSync(baseDir) && !options.fullpath) {
-      common.error('no such file or directory: ' + baseDir, true);
-      return; // skip dir
-    }
+var mtime = fs.statSync('tmp').mtime.toString();
+shell.mkdir('tmp'); // dir already exists
+assert.ok(shell.error());
+assert.equal(fs.statSync('tmp').mtime.toString(), mtime); // didn't mess with dir
 
-    if (options.fullpath)
-      mkdirSyncRecursive(dir);
-    else
-      fs.mkdirSync(dir, parseInt('0777', 8));
-  });
-} // mkdir
-module.exports = _mkdir;
+assert.equal(fs.existsSync('/asdfasdf'), false); // sanity check
+shell.mkdir('/asdfasdf/asdfasdf'); // root path does not exist
+assert.ok(shell.error());
+assert.equal(fs.existsSync('/asdfasdf'), false);
+
+//
+// Valids
+//
+
+assert.equal(fs.existsSync('tmp/t1'), false);
+shell.mkdir('tmp/t1'); // simple dir
+assert.equal(shell.error(), null);
+assert.equal(fs.existsSync('tmp/t1'), true);
+
+assert.equal(fs.existsSync('tmp/t2'), false);
+assert.equal(fs.existsSync('tmp/t3'), false);
+shell.mkdir('tmp/t2', 'tmp/t3'); // multiple dirs
+assert.equal(shell.error(), null);
+assert.equal(fs.existsSync('tmp/t2'), true);
+assert.equal(fs.existsSync('tmp/t3'), true);
+
+assert.equal(fs.existsSync('tmp/t1'), true);
+assert.equal(fs.existsSync('tmp/t4'), false);
+shell.mkdir('tmp/t1', 'tmp/t4'); // one dir exists, one doesn't
+assert.equal(numLines(shell.error()), 1);
+assert.equal(fs.existsSync('tmp/t1'), true);
+assert.equal(fs.existsSync('tmp/t4'), true);
+
+assert.equal(fs.existsSync('tmp/a'), false);
+shell.mkdir('-p', 'tmp/a/b/c');
+assert.equal(shell.error(), null);
+assert.equal(fs.existsSync('tmp/a/b/c'), true);
+shell.rm('-Rf', 'tmp/a'); // revert
+
+// multiple dirs
+shell.mkdir('-p', 'tmp/zzza', 'tmp/zzzb', 'tmp/zzzc');
+assert.equal(shell.error(), null);
+assert.equal(fs.existsSync('tmp/zzza'), true);
+assert.equal(fs.existsSync('tmp/zzzb'), true);
+assert.equal(fs.existsSync('tmp/zzzc'), true);
+
+// multiple dirs, array syntax
+shell.mkdir('-p', ['tmp/yyya', 'tmp/yyyb', 'tmp/yyyc']);
+assert.equal(shell.error(), null);
+assert.equal(fs.existsSync('tmp/yyya'), true);
+assert.equal(fs.existsSync('tmp/yyyb'), true);
+assert.equal(fs.existsSync('tmp/yyyc'), true);
+
+shell.exit(123);

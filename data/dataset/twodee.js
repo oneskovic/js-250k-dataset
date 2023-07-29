@@ -1,16 +1,3 @@
-/**
- * Copyright (C) 2009-2011 Klaus Reimer <k@ailis.de>
- * See LICENSE.txt for licensing information.
- * 
- * @use twodee/PolygonNode.js
- * @use twodee/BoundingBox.js
- * @use twodee/Matrix.js
- * @use twodee/Physics.js
- * @use twodee/Polygon.js
- * @use twodee/SceneNode.js
- * @use twodee/Vector.js
- */
-
 /** 
  * @license
  * TwoDee - JavaScript 2D scene graph engine

@@ -1,7 +1,3 @@
-//
-//  Bot
-//  class for performing various twitter actions
-//
 var Twit = require('../lib/twitter');
 
 var Bot = module.exports = function(config) { 

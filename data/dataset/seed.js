@@ -1,5 +1,3 @@
-
-/** @constructor */
 var Seed = function Seed() {};
 
 /** @type {Seed} */

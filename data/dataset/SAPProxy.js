@@ -1,7 +1,3 @@
-/**
-* A proxy for sweep and prune broad-phase.
-* @author saharan
-*/
 OIMO.SAPProxy = function(sap,shape){
     OIMO.Proxy.call( this, shape);
     // Type of the axis to which the proxy belongs to. [0:none, 1:dynamic, 2:static]

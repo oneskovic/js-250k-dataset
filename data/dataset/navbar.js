@@ -1,5 +1,3 @@
-// Copyright (c) Microsoft Corp.  All Rights Reserved. Licensed under the MIT License. See License.txt in the project root for license information.
-
 describe("NavBar control directive tests", function () {
     var testTimeout = 5000;
 

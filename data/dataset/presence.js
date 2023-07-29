@@ -1,4 +1,3 @@
-/* @flow */
 'use strict';
 
 var builder = require('ltx')

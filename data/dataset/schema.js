@@ -1,91 +1,88 @@
-'use strict';
+var Schema = require('../lib/schema');
+var Property = require('../lib/property');
 
-// PostgreSQL Schema Builder & Compiler
-// -------
-module.exports = function(client) {
-
-var inherits = require('inherits');
-var Schema   = require('../../../schema');
-
-// Schema Builder
-// -------
-
-function SchemaBuilder_PG() {
-  this.client = client;
-  Schema.Builder.apply(this, arguments);
-}
-inherits(SchemaBuilder_PG, Schema.Builder);
-
-// Schema Compiler
-// -------
-
-function SchemaCompiler_PG() {
-  this.client = client;
-  this.Formatter = client.Formatter;
-  Schema.Compiler.apply(this, arguments);
-}
-inherits(SchemaCompiler_PG, Schema.Compiler);
-
-// Check whether the current table
-SchemaCompiler_PG.prototype.hasTable = function(tableName) {
-  this.pushQuery({
-    sql: 'select * from information_schema.tables where table_name = ?',
-    bindings: [tableName],
-    output: function(resp) {
-      return resp.rows.length > 0;
-    }
+describe('Schema', function () {
+  describe('when given an object', function () {
+    it('should create properties', function () {
+      var schema = new Schema({ name: { type: 'string' }});
+      schema.props.should.have.property('name');
+    })
+  })
+  
+  describe('.path()', function () {
+    describe('when given a path and an object', function () {
+      it('should create properties', function () {
+        var schema = new Schema();
+        schema.path('name', { type: 'string' });
+        schema.props.should.have.property('name');
+      })
+      
+      it('should support nested properties', function () {
+        var schema = new Schema();
+        schema.path('name', { first: { type: 'string' }});
+        schema.props.should.have.property('name.first');
+      })
+      
+      it('should register validators', function () {
+        var schema = new Schema();
+        schema.path('name', { first: { required: true }});
+        schema.validate({}).errors.should.have.length(1);
+      })
+      
+      it('should return a Property', function () {
+        var schema = new Schema();
+        schema.path('name', { type: 'string' })
+          .should.be.instanceOf(Property)
+          .and.have.property('name', 'name');
+      })
+    })
+  })
+  
+  describe('.validate()', function () {
+    it('should return an array of error messages', function () {
+      var schema = new Schema({ name: { type: 'string' }});
+      var res = schema.validate({ name: 123 });
+      res.errors.should.be.an.Array.and.have.length(1);
+    })
+    
+    it('should return the accepted object', function () {
+      var schema = new Schema({ name: { type: 'string' }});
+      var res = schema.validate({ name: 'name', age: 23 });
+      res.accepted.should.have.not.have.property('age');
+      res.accepted.should.have.property('name', 'name');
+    })
+    
+    describe('with typecasting enabled', function () {
+      it('should typecast before validation', function () {
+        var schema = new Schema({ name: { type: 'string' }});
+        var res = schema.validate({ name: 123 }, { typecast: true });
+        res.errors.should.have.length(0);
+      });
+    });
   });
-};
-
-// Compile the query to determine if a column exists in a table.
-SchemaCompiler_PG.prototype.hasColumn = function(tableName, columnName) {
-  this.pushQuery({
-    sql: 'select * from information_schema.columns where table_name = ? and column_name = ?',
-    bindings: [tableName, columnName],
-    output: function(resp) {
-      return resp.rows.length > 0;
-    }
+  
+  describe('.assert()', function () {
+    it('should throw if validation fails', function () {
+      var schema = new Schema({ name: { type: 'string' }});
+      (function () {
+        schema.assert({ name: 123 });
+      }).should.throw(/failed/);
+    })
+    
+    it('should return the accepted object', function () {
+      var schema = new Schema({ name: { type: 'string' }});
+      var res = schema.assert({ name: 'name', age: 23 });
+      res.should.have.not.have.property('age');
+      res.should.have.property('name', 'name');
+    })
+    
+    describe('with typecasting enabled', function () {
+      it('should typecast before validation', function () {
+        var schema = new Schema({ name: { type: 'string' }});
+        (function () {
+          schema.assert({ name: 123 }, { typecast: true });
+        }).should.not.throw();
+      });
+    });
   });
-};
-
-// Compile a rename table command.
-SchemaCompiler_PG.prototype.renameTable = function(from, to) {
-  this.pushQuery('alter table ' + this.formatter.wrap(from) + ' rename to ' + this.formatter.wrap(to));
-};
-
-SchemaCompiler_PG.prototype.createSchema = function(schemaName) {
-  this.pushQuery('create schema ' + this.formatter.wrap(schemaName));
-};
-
-SchemaCompiler_PG.prototype.createSchemaIfNotExists = function(schemaName) {
-  this.pushQuery('create schema if not exists ' + this.formatter.wrap(schemaName));
-};
-
-SchemaCompiler_PG.prototype.dropSchema = function(schemaName) {
-  this.pushQuery('drop schema ' + this.formatter.wrap(schemaName));
-};
-
-SchemaCompiler_PG.prototype.dropSchemaIfExists = function(schemaName) {
-  this.pushQuery('drop schema if exists ' + this.formatter.wrap(schemaName));
-};
-
-SchemaCompiler_PG.prototype.dropExtension = function(extensionName) {
-  this.pushQuery('drop extension ' + this.formatter.wrap(extensionName));
-};
-
-SchemaCompiler_PG.prototype.dropExtensionIfExists = function(extensionName) {
-  this.pushQuery('drop extension if exists ' + this.formatter.wrap(extensionName));
-};
-
-SchemaCompiler_PG.prototype.createExtension = function(extensionName) {
-  this.pushQuery('create extension ' + this.formatter.wrap(extensionName));
-};
-
-SchemaCompiler_PG.prototype.createExtensionIfNotExists = function(extensionName) {
-  this.pushQuery('create extension if not exists ' + this.formatter.wrap(extensionName));
-};
-
-client.SchemaBuilder = SchemaBuilder_PG;
-client.SchemaCompiler = SchemaCompiler_PG;
-
-};
+})

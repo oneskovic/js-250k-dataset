@@ -1,13 +1,3 @@
-/*
- * jQuery scrollsync Plugin
- * version: 1.0 (30 -Jun-2009)
- * Copyright (c) 2009 Miquel Herrera
- *
- * Dual licensed under the MIT and GPL licenses:
- *   http://www.opensource.org/licenses/mit-license.php
- *   http://www.gnu.org/licenses/gpl.html
- *
- */
 ;(function($){ // secure $ jQuery alias
 
     /**

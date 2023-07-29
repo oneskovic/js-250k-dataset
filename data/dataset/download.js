@@ -1,65 +1,109 @@
-"use strict";
-/**
- * @class Finder command "download".
- * Download selected files.
- * Only for new api
- *
- * @author Dmitry (dio) Levashov, dio@std42.ru
- **/
-Finder.prototype.commands.download = function() {
-	var self   = this,
-		fm     = this.fm,
-		filter = function(hashes) {
-			return $.map(self.files(hashes), function(f) { return f.mime == 'directory' ? null : f });
-		};
+var progress = require('request-progress');
+var request = require('request');
+var Q = require('q');
+var mout = require('mout');
+var retry = require('retry');
+var fs = require('graceful-fs');
+var createError = require('./createError');
 
-	this.shortcuts = [{
-		pattern     : 'shift+enter'
-	}];
+var errorCodes = [
+    'EADDRINFO',
+    'ETIMEDOUT',
+    'ECONNRESET',
+    'ESOCKETTIMEDOUT'
+];
 
-	this.getstate = function() {
-		var sel = this.fm.selected(),
-			cnt = sel.length;
+function download(url, file, options) {
+    var operation;
+    var response;
+    var deferred = Q.defer();
+    var progressDelay = 8000;
 
-		return  !this._disabled && cnt && (!fm.UA.IE || cnt == 1) && cnt == filter(sel).length ? 0 : -1;
-	}
+    options = mout.object.mixIn({
+        retries: 5,
+        factor: 2,
+        minTimeout: 1000,
+        maxTimeout: 35000,
+        randomize: true
+    }, options || {});
 
-	this.exec = function(hashes) {
-		var fm      = this.fm,
-			base    = fm.options.url,
-			files   = filter(hashes),
-			dfrd    = $.Deferred(),
-			iframes = '',
-			cdata   = '',
-			i, url;
+    // Retry on network errors
+    operation = retry.operation(options);
+    operation.attempt(function () {
+        var req;
+        var writeStream;
+        var contentLength;
+        var bytesDownloaded = 0;
 
-		if (this.disabled()) {
-			return dfrd.reject();
-		}
+        req = progress(request(url, options), {
+            delay: progressDelay
+        })
+        .on('response', function (res) {
+            var status = res.statusCode;
 
-		$.each(fm.options.customData || {}, function(k, v) {
-			cdata += '&'+k+'='+v;
-		});
+            if (status < 200 || status >= 300) {
+                return deferred.reject(createError('Status code of ' + status, 'EHTTP'));
+            }
 
-		base += base.indexOf('?') === -1 ? '?' : '&';
+            response = res;
+            contentLength = Number(res.headers['content-length']);
+        })
+        .on('data', function (data) {
+            bytesDownloaded += data.length;
+        })
+        .on('progress', function (state) {
+            deferred.notify(state);
+        })
+        .on('end', function () {
+            // Check if the whole file was downloaded
+            // In some unstable connections the ACK/FIN packet might be sent in the
+            // middle of the download
+            // See: https://github.com/joyent/node/issues/6143
+            if (contentLength && bytesDownloaded < contentLength) {
+                req.emit('error', createError('Transfer closed with ' + (contentLength - bytesDownloaded) + ' bytes remaining to read', 'EINCOMPLETE'));
+            }
+        })
+        .on('error', function (error) {
+            var timeout = operation._timeouts[0];
 
-		for (i = 0; i < files.length; i++) {
-			iframes += '<iframe class="downloader" id="downloader-' + files[i].hash+'" style="display:none" src="'+base + 'cmd=file&target=' + files[i].hash+'&download=1'+cdata+'"/>';
-		}
-		$(iframes)
-			.appendTo('body')
-			.ready(function() {
+            // Reject if error is not a network error
+            if (errorCodes.indexOf(error.code) === -1) {
+                return deferred.reject(error);
+            }
 
-				// remove iframes after some time has passed
-				// 20 sec + 10 sec for each file
-				setTimeout(function() {
-					$(iframes).each(function() {
-						$('#' + $(this).attr('id')).remove();
-					});
-				}, (20000 + (10000 * i)) );
-			});
-		fm.trigger('download', {files : files});
-		return dfrd.resolve(hashes);
-	}
+            // Next attempt will start reporting download progress immediately
+            progressDelay = 0;
 
+            // Check if there are more retries
+            if (operation.retry(error)) {
+                // Ensure that there are no more events from this request
+                req.removeAllListeners();
+                req.on('error', function () {});
+                // Ensure that there are no more events from the write stream
+                writeStream.removeAllListeners();
+                writeStream.on('error', function () {});
+
+                return deferred.notify({
+                    retry: true,
+                    delay: timeout,
+                    error: error
+                });
+            }
+
+            // No more retries, reject!
+            deferred.reject(error);
+        });
+
+        // Pipe read stream to write stream
+        writeStream = req
+        .pipe(fs.createWriteStream(file))
+        .on('error', deferred.reject)
+        .on('close', function () {
+            deferred.resolve(response);
+        });
+    });
+
+    return deferred.promise;
 }
+
+module.exports = download;

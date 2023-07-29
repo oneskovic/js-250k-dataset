@@ -1,11 +1,8 @@
-
 module.exports = exports = remove
 
 exports.usage = 'Removes the node development files for the specified version'
 
-/**
- * Module dependencies.
- */
+
 
 var fs = require('fs')
   , rm = require('rimraf')

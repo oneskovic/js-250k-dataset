@@ -1,93 +1,94 @@
-goog.provide('webfont.UserAgent');
+var Aria = require("../../Aria");
+var UAParser = require('./ua-parser.js');
 
 /**
- * A user agent string representation.
- *
- * @param {string} name
- * @param {webfont.Version} version
- * @param {string} engine
- * @param {webfont.Version} engineVersion
- * @param {string} platform
- * @param {webfont.Version} platformVersion
- * @param {number|undefined} documentMode
- * @param {!webfont.BrowserInfo} browserInfo
- * @constructor
+ * Wraps the use of ua-parser.js to provide its results, and some utilities to analyze them.
  */
-webfont.UserAgent = function(
-    name,
-    version,
-    engine,
-    engineVersion,
-    platform,
-    platformVersion,
-    documentMode,
-    browserInfo) {
-  this.name_ = name;
-  this.version_ = version;
-  this.engine_ = engine;
-  this.engineVersion_ = engineVersion;
-  this.platform_ = platform;
-  this.platformVersion_ = platformVersion;
-  this.documentMode_ = documentMode;
-  this.browserInfo_ = browserInfo;
-};
+module.exports = Aria.classDefinition({
+    $classpath : 'aria.core.useragent.UserAgent',
+    $singleton: true,
 
-goog.scope(function () {
-  var UserAgent = webfont.UserAgent;
+    $constructor : function () {
+        /**
+         * Cache for user agents information.
+         *
+         * @type {Object}
+         */
+        this._cache = {};
+    },
 
-  /**
-   * @return {string}
-   */
-  UserAgent.prototype.getName = function() {
-    return this.name_;
-  };
+    $statics: {
+        /**
+         * Normalizes a string for more flexible matching against others.
+         *
+         * <p>
+         * It turns it lower case and strips all white spaces.
+         * </p>
+         *
+         * @param {String} string The string to normalize
+         *
+         * @return {String} The normalized string.
+         */
+        normalizeName : function(string) {
+            return string.toLowerCase().replace(/\s*/g, '');
+        }
+    },
 
-  /**
-   * @return {webfont.Version}
-   */
-  UserAgent.prototype.getVersion = function() {
-    return this.version_;
-  };
+    $prototype: {
+        /**
+         * Returns the information about the given userAgent.
+         *
+         * <p>
+         * Here is the format of the information object:
+         * <code>
+         * {
+         *     ua // {String} the user agent used to compute the information
+         *     results // {Object} The information object resulting from the processing of UAParser (please refer to https://github.com/faisalman/ua-parser-js)
+         * }
+         * </code>
+         * </p>
+         *
+         * <p>
+         * Note that results are cached, which improves time performances (at the cost of (memory) space).
+         * </p>
+         *
+         * @param {String} userAgent The user agent to use. If none is given, the one from the DOM API is read.
+         *
+         * @return {Object} Information object <em>{ua, results}</em>. See full description for more details.
+         */
+        getUserAgentInfo : function (userAgent) {
+            // -------------------------------------- input arguments processing
 
-  /**
-   * @return {string}
-   */
-  UserAgent.prototype.getEngine = function() {
-    return this.engine_;
-  };
+            if (userAgent == null) {
+                var navigator = Aria.$global.navigator;
+                userAgent = navigator ? navigator.userAgent : "";
+            }
 
-  /**
-   * @return {webfont.Version}
-   */
-  UserAgent.prototype.getEngineVersion = function() {
-    return this.engineVersion_;
-  };
+            // ---------------------------------------------- output computation
 
-  /**
-   * @return {string}
-   */
-  UserAgent.prototype.getPlatform = function() {
-    return this.platform_;
-  };
+            var result;
 
-  /**
-   * @return {webfont.Version}
-   */
-  UserAgent.prototype.getPlatformVersion = function() {
-    return this.platformVersion_;
-  };
+            // ---------------------------------------- early termination: cache
 
-  /**
-   * @return {number|undefined}
-   */
-  UserAgent.prototype.getDocumentMode = function() {
-    return this.documentMode_;
-  };
+            var cacheKey = userAgent.toLowerCase();
+            if (this._cache.hasOwnProperty(cacheKey)) {
+                result = this._cache[cacheKey];
+            }
+            if (result != null) {
+                return result;
+            }
 
-  /**
-   * @return {webfont.BrowserInfo}
-   */
-  UserAgent.prototype.getBrowserInfo = function() {
-    return this.browserInfo_;
-  };
+            // ----------------------------------------------------- computation
+
+            result = {
+                ua: userAgent,
+                results: new UAParser(userAgent).getResult()
+            };
+
+            // ----------------------------------------- finalization and return
+
+            this._cache[cacheKey] = result;
+            return result;
+        }
+    }
 });

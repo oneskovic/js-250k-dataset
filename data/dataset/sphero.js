@@ -1,5 +1,3 @@
-/* jshint node:true */
-
 var events = require('events');
 var serialPort = require('serialport');
 var responseParser = require('./response-parser');

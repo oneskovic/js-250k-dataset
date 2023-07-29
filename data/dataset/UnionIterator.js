@@ -1,4 +1,3 @@
-/*! @license ©2014 Ruben Verborgh - Multimedia Lab / iMinds / Ghent University */
 /* A UnionIterator returns the results from a set of source iterators. */
 
 var Iterator = require('./Iterator');

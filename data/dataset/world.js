@@ -1,6 +1,6 @@
 var po = org.polymaps;
 
-/* Country name -> population (July 2010 Est.). */
+
 var population = tsv("population.tsv")
     .key(function(l) { return l[1]; })
     .value(function(l) { return l[2].replace(/,/g, ""); })

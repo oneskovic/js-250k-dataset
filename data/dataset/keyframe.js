@@ -1,52 +1,66 @@
-OVERRIDE(KEYFRAMES, function(origin) {
-	'use strict';
+(function(){
+    
+    function Keyframe(filterList, time, value) {
+        this.filterList = filterList;
+        this.value = value;
+        this.time = time;
+        this.generated = false;
+    }
 
-	/**
-	 * Animation keyframes class. (destory for IE)
-	 */
-	global.KEYFRAMES = CLASS({
+    Keyframe.prototype = {
+        makeGeneratedClone: function(time) {
+            var keyframe = new Global.Keyframe(this.filterList, time, Global.Utils.clone(this.value));
+            keyframe.generated = true;
+            return keyframe;
+        },
 
-		init : function(inner, self, keyframes) {
-			//REQUIRED: keyframes
+        blend: function(otherKeyframe, position, time) {
+            var self = this,
+                resultKeyframe = this.makeGeneratedClone(time),
+                A = self.value,
+                B = otherKeyframe.value,
+                C = resultKeyframe.value;
+            $.each(this.filterList.filters, function(index, filter) {
+                if (!filter.active || filter.config.isLoading)
+                    return;
+                var filterName = filter.name;
+                C[filterName] = filter.config.blendParams(A[filterName], B[filterName], position);
+            });
+            return resultKeyframe;
+        },
 
-			var
-			// name
-			name = '__KEYFRAMES_' + self.id,
+        getFilterValues: function(filter) {
+            if (!this.value.hasOwnProperty(filter.name))
+                this.value[filter.name] = {};
+            return this.value[filter.name];
+        },
 
-			// start style
-			startStyle,
+        addFilterDefaultValue: function(filter) {
+            this.value[filter.name] = Global.Utils.clone(filter.config.defaultValues());
+        },
 
-			// final style
-			finalStyle,
+        removeFilterValue: function(filter) {
+            delete this.value[filter.name];
+        },
 
-			// get name.
-			getName,
+        updateKeyframeAfterConfigChange: function(filter, configChange) {
+            var filterValues = this.getFilterValues(filter);
+            $.each(configChange.deletedKeys, function(i, name) {
+                delete filterValues[name];
+            });
+            $.each(configChange.addedValues, function(name, value) {
+                if (filterValues.hasOwnProperty(name))
+                    return;
+                filterValues[name] = value;
+            });
+            $.each(configChange.changedValues, function(name, value) {
+                console.log("changed ", filter, name, value);
+                filterValues[name] = value;
+            });
+        }
+    };
 
-			// get start style.
-			getStartStyle,
+    Global.Keyframe = Keyframe;
 
-			// get final style.
-			getFinalStyle;
 
-			EACH(keyframes, function(style, key) {
-				if (key === 'from' || key === '0%') {
-					startStyle = style;
-				} else if (key === 'to' || key === '100%') {
-					finalStyle = style;
-				}
-			});
-
-			self.getName = getName = function() {
-				return name;
-			};
-
-			self.getStartStyle = getStartStyle = function() {
-				return startStyle;
-			};
-
-			self.getFinalStyle = getFinalStyle = function() {
-				return finalStyle;
-			};
-		}
-	});
-});
+})();

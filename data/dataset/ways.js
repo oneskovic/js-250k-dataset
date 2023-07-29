@@ -1,7 +1,3 @@
-/*
- * ways.js
- * Control the flow of the steps
- */
 (function( $, document, window, undefined ) {
 
 	'use strict';

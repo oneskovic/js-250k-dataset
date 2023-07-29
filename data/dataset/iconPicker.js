@@ -1,18 +1,3 @@
-/*
- * Bootstrap 3.0 IconPicker - jQuery plugin for Icon selection
- *
- * Copyright (c) 20013 A. K. M. Rezaul Karim<titosust@gmail.com>
- *
- * Licensed under the MIT license:
- *   http://www.opensource.org/licenses/mit-license.php
- *
- * Project home:
- *   https://github.com/titosust/Bootstrap-icon-picker
- *
- * Version:  1.0.0
- *
- */
-
 (function($) {
 
     $.fn.iconPicker = function( options ) {

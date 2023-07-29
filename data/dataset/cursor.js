@@ -1,110 +1,101 @@
-"use strict";
-/*
-   Copyright (C) 2012 by Jeremy P. White <jwhite@codeweavers.com>
+define(function(require, exports, module) {
 
-   This file is part of spice-html5.
+var dom = require("pilot/dom");
 
-   spice-html5 is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
+var Cursor = function(parentEl) {
+    this.element = dom.createElement("div");
+    this.element.className = "ace_layer ace_cursor-layer";
+    parentEl.appendChild(this.element);
 
-   spice-html5 is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
+    this.cursor = dom.createElement("div");
+    this.cursor.className = "ace_cursor";
 
-   You should have received a copy of the GNU Lesser General Public License
-   along with spice-html5.  If not, see <http://www.gnu.org/licenses/>.
-*/
+    this.isVisible = false;
+};
 
+(function() {
 
-/*----------------------------------------------------------------------------
-**  SpiceCursorConn
-**      Drive the Spice Cursor Channel
-**--------------------------------------------------------------------------*/
-function SpiceCursorConn()
-{
-    SpiceConn.apply(this, arguments);
-}
+    this.setSession = function(session) {
+        this.session = session;
+    };
 
-SpiceCursorConn.prototype = Object.create(SpiceConn.prototype);
-SpiceCursorConn.prototype.process_channel_message = function(msg)
-{
-    if (msg.type == SPICE_MSG_CURSOR_INIT)
-    {
-        var cursor_init = new SpiceMsgCursorInit(msg.data);
-        DEBUG > 1 && console.log("SpiceMsgCursorInit");
-        if (this.parent && this.parent.inputs &&
-            this.parent.inputs.mouse_mode == SPICE_MOUSE_MODE_SERVER)
-        {
-            // FIXME - this imagines that the server actually
-            //          provides the current cursor position,
-            //          instead of 0,0.  As of May 11, 2012,
-            //          that assumption was false :-(.
-            this.parent.inputs.mousex = cursor_init.position.x;
-            this.parent.inputs.mousey = cursor_init.position.y;
+    this.hideCursor = function() {
+        this.isVisible = false;
+        if (this.cursor.parentNode) {
+            this.cursor.parentNode.removeChild(this.cursor);
         }
-        // FIXME - We don't handle most of the parameters here...
-        return true;
-    }
+        clearInterval(this.blinkId);
+    };
 
-    if (msg.type == SPICE_MSG_CURSOR_SET)
-    {
-        var cursor_set = new SpiceMsgCursorSet(msg.data);
-        DEBUG > 1 && console.log("SpiceMsgCursorSet");
-        if (cursor_set.flags & SPICE_CURSOR_FLAGS_NONE)
-        {
-            document.getElementById(this.parent.screen_id).style.cursor = "none";
-            return true;
+    this.showCursor = function() {
+        this.isVisible = true;
+        this.element.appendChild(this.cursor);
+
+        var cursor = this.cursor;
+        cursor.style.visibility = "visible";
+        this.restartTimer();
+    };
+
+    this.restartTimer = function() {
+        clearInterval(this.blinkId);
+        if (!this.isVisible) {
+            return;
         }
 
-        if (cursor_set.flags > 0)
-            this.log_warn("FIXME: No support for cursor flags " + cursor_set.flags);
+        var cursor = this.cursor;
+        this.blinkId = setInterval(function() {
+            cursor.style.visibility = "hidden";
+            setTimeout(function() {
+                cursor.style.visibility = "visible";
+            }, 400);
+        }, 1000);
+    };
 
-        if (cursor_set.cursor.header.type != SPICE_CURSOR_TYPE_ALPHA)
-        {
-            this.log_warn("FIXME: No support for cursor type " + cursor_set.cursor.header.type);
-            return false;
+    this.getPixelPosition = function(onScreen) {
+        if (!this.config || !this.session) {
+            return {
+                left : 0,
+                top : 0
+            };
         }
 
-        this.set_cursor(cursor_set.cursor);
+        var position = this.session.selection.getCursor();
+        var pos = this.session.documentToScreenPosition(position);
+        var cursorLeft = Math.round(pos.column * this.config.characterWidth);
+        var cursorTop = (pos.row - (onScreen ? this.config.firstRowScreen : 0)) *
+            this.config.lineHeight;
 
-        return true;
-    }
+        return {
+            left : cursorLeft,
+            top : cursorTop
+        };
+    };
 
-    if (msg.type == SPICE_MSG_CURSOR_HIDE)
-    {
-        DEBUG > 1 && console.log("SpiceMsgCursorHide");
-        document.getElementById(this.parent.screen_id).style.cursor = "none";
-        return true;
-    }
+    this.update = function(config) {
+        this.config = config;
 
-    if (msg.type == SPICE_MSG_CURSOR_RESET)
-    {
-        DEBUG > 1 && console.log("SpiceMsgCursorReset");
-        document.getElementById(this.parent.screen_id).style.cursor = "auto";
-        return true;
-    }
+        this.pixelPos = this.getPixelPosition(true);
 
-    if (msg.type == SPICE_MSG_CURSOR_INVAL_ALL)
-    {
-        DEBUG > 1 && console.log("SpiceMsgCursorInvalAll");
-        // FIXME - There may be something useful to do here...
-        return true;
-    }
+        this.cursor.style.left = this.pixelPos.left + "px";
+        this.cursor.style.top =  this.pixelPos.top + "px";
+        this.cursor.style.width = config.characterWidth + "px";
+        this.cursor.style.height = config.lineHeight + "px";
 
-    return false;
-}
+        if (this.isVisible) {
+            this.element.appendChild(this.cursor);
+        }
+        
+        if (this.session.getOverwrite()) {
+            dom.addCssClass(this.cursor, "ace_overwrite");
+        } else {
+            dom.removeCssClass(this.cursor, "ace_overwrite");
+        }
+        
+        this.restartTimer();
+    };
 
-SpiceCursorConn.prototype.set_cursor = function(cursor)
-{
-    var pngstr = create_rgba_png(cursor.header.height, cursor.header.width, cursor.data);
-    var curstr = 'url(data:image/png,' + pngstr + ') ' + 
-        cursor.header.hot_spot_x + ' ' + cursor.header.hot_spot_y + ", default";
-    var screen = document.getElementById(this.parent.screen_id);
-    screen.style.cursor = 'auto';
-    screen.style.cursor = curstr;
-    if (window.getComputedStyle(screen, null).cursor == 'auto')
-        SpiceSimulateCursor.simulate_cursor(this, cursor, screen, pngstr);
-}
+}).call(Cursor.prototype);
+
+exports.Cursor = Cursor;
+
+});

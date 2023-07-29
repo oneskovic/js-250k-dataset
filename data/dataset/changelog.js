@@ -1,80 +1,65 @@
-var exec = require('child_process').exec;
-var changelog = require('../lib/changelog');
+var https = require('https'),
+querystring = require('querystring'),
+ejs = require('ejs');
 
+module.exports = function(grunt) {
 
-// TODO: clean this up and write tests for it
-var figureOutGithubRepo = function(githubRepo, pkg) {
+	grunt.registerMultiTask('changelog', 'Updates changelog.md based on GitHub milestones', function() {
+		var done = this.async(),
 
-  //If github repo isn't given, try to read it from the package file
-  if (!githubRepo && pkg) {
-    if (pkg.repository) {
-      githubRepo = pkg.repository.url;
-    } else if (pkg.homepage) {
-      //If it's a github page, but not a *.github.(io|com) page
-      if (pkg.homepage.indexOf('github.com') > -1 &&
-	  !pkg.homepage.match(/\.github\.(com|io)/)) {
-	githubRepo = pkg.homepage;
-      }
-    }
-  }
+		params = querystring.stringify({
+			milestone: this.data.milestone,
+			state: 'closed',
+			per_page: 100
+		}),
 
-  //User could set option eg 'github: "btford/grunt-conventional-changelog'
-  if (githubRepo.indexOf('github.com') === -1) {
-    githubRepo = 'http://github.com/' + githubRepo;
-  }
+		path = '/repos/' + this.data.user + '/' + this.data.repo + '/issues?' + params,
 
-  githubRepo = githubRepo
-      .replace(/^git:\/\//, 'http://') //get rid of git://
-      .replace(/\/$/, '') //get rid of trailing slash
-      .replace(/\.git$/, ''); //get rid of trailing .git
+		buffer = '',
+		self = this;
 
-  return githubRepo;
-};
+		var write = function() {
+			var issues = JSON.parse(buffer),
+			log = '';
 
+			if(grunt.file.exists('changelog.md')) {
+				log = grunt.file.read('changelog.md');
+			};
 
-module.exports = function (grunt) {
+			ejs.renderFile(__dirname + '/../changelog.ejs', {
+				version: self.data.version,
+				date: new Date(Date.now()),
+				issues: issues
+			}, function(e, template) {
 
-  var DESC = 'Generate a changelog from git metadata.';
-  grunt.registerTask('changelog', DESC, function () {
+				if(e) {
+					done(e);
+				}
 
-    var done = this.async();
-    var options = this.options({
-      dest: 'CHANGELOG.md',
-      //false to append
-      prepend: true,
-      //default from package.json
-      github: null,
-      //default value from package.json
-      version: null,
-      // 'sublime -w'
-      editor: null,
-      //default command to figure out last tag. Can be overwritten to match different workflows
-      previousTagCmd: 'git describe --tags --abbrev=0'
-    });
+				grunt.file.write('changelog.md', template + log);
+				done();
 
-    var pkg = grunt.config('pkg') || grunt.file.readJSON('package.json');
-    var githubRepo = figureOutGithubRepo(options.github, pkg);
-    var newVersion = options.version || pkg.version;
+			});
+		},
 
+		req = https.request({
+			hostname: 'api.github.com',
+			path: path
+		}, function(res) {
 
-    // generate changelog
-    changelog.generate(githubRepo, 'v' + newVersion, options.previousTagCmd).then(function(data) {
-      var currentLog = grunt.file.exists(options.dest) ? grunt.file.read(options.dest) : '';
-      grunt.file.write(options.dest, options.prepend ? data + currentLog : currentLog + data);
+			res.on('data', function(data) {
+				buffer += data;
+			});
 
-      if (options.editor) {
-	exec(options.editor + ' ' + options.dest, function(err) {
-	  if (err) {
-	    return grunt.fatal('Can not generate changelog.');
-	  }
+			res.on('end', write);
+		});
 
-	  grunt.log.ok(options.dest + ' updated');
-	  done();
+		req.end();
+
+		req.on('error', function(e) {
+			done(e);
+		});
+
 	});
-      } else {
-	grunt.log.ok(options.dest + ' updated');
-	done();
-      }
-    });
-  });
-};
+
+}

@@ -1,4 +1,3 @@
-// From http://williams.best.vwh.net/avform.htm#Intermediate
 d3.geo.greatCircle = function() {
   var source = d3_geo_greatCircleSource,
       target = d3_geo_greatCircleTarget,

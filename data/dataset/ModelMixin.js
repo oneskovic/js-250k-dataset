@@ -1,4 +1,3 @@
-/* global NGI */
 /* jshint strict: false */
 
 NGI.ModelMixin = (function() {

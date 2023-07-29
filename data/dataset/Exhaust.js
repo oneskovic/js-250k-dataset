@@ -2,13 +2,7 @@ goog.provide('model.Exhaust');
 
 goog.require('model.Entity');
 
-/**
- * @constructor
- * @extends {model.Entity}
- * @param {!Game} game
- * @param {!math.Vector} position
- * @param {!math.Vector} velocity
- */
+
 model.Exhaust = function(game, position, velocity) {
   goog.base(this, game);
 

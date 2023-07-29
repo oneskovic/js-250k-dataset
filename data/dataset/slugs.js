@@ -1,5 +1,3 @@
-// # Slug API
-// RESTful API for the Slug resource
 var canThis      = require('../permissions').canThis,
     dataProvider = require('../models'),
     errors       = require('../errors'),

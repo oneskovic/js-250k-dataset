@@ -1,6 +1,3 @@
-//  Textarea Core UI component
-//  Directus 6.0
-
 //  (c) RANGER
 //  Directus may be freely distributed under the GNU license.
 //  For all details and documentation:

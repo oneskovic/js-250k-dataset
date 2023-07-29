@@ -1,27 +1,3 @@
-
-/**
- * This simple example shows how you can easily pass variables across fibers tree
- * it's very useful when you have concurrent program (http server) which deals with a lot of simultenous requests
- * and you need to maintain the context (e.g. req, res variables) for each local execution stack
- * without passing it through function arguments endlessly
- *
- * In this example, the tree will be looking like:
- *
- * --> Request #1
- *     Fiber #1
- *         someGatewayMethod.future()
- *              Fiber #1.1
- *
- * --> Request #2
- *     Fiber #2
- *         someGatewayMethod.future()
- *              Fiber #2.1
- *
- * So, this program will output:
- * request #1
- * request #2
- */
-
 var Sync = require('..');
 
 var someGatewayMethod = function() {

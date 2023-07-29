@@ -1,89 +1,59 @@
-
-var array  = require('./array');
-var string  = require('./string');
+"use strict";
 
 
+// jshint -W030
 
-/**
- * 判断是否为字符串 数组等等  返回true或false
- */
-exports.isNumber =  function (source) {
-    return '[object Number]' == Object.prototype.toString.call(source);
-};
-var isObject = exports.isObject =  function (source) {
-    return '[object Object]' == Object.prototype.toString.call(source);
-};
-exports.isString = string.isString;
-var isArray = exports.isArray = array.isArray;
+var WaveformData = require("../../../waveform-data.js");
+var constructor = WaveformData.adapters.object;
+var getJSONFakeData = require("../../fixtures").json;
+var expect = require("chai").expect;
 
+describe("WaveformData Object Adapter", function(){
+  var instance;
 
+  it("should have the `fromResponseData` static property.", function(){
+    expect(constructor.fromResponseData).to.be.a('function');
+  });
 
+  it("should return a WaveformDataAdapter instance from `fromResponseData` factory.", function(){
+    var fakeData = getJSONFakeData();
 
+    expect(constructor.fromResponseData(fakeData)).to.be.an('object');
+    expect(constructor.fromResponseData(JSON.stringify(fakeData))).to.be.an('object');
+  });
 
-/**
- * 检查对象属性值，返回不存在的，或不满足要求的
- * @param strict 是否将 null '' 0 false 等都视为无效
- * */
-exports.InvalidAttr = function(obj, attrs, strict){
-    if(typeof obj!=='object'){
-        return true;
-    }
-    if(typeof attrs=='string'){
-        attrs = [attrs];
-    }
-    for(var a in attrs){
-        if(strict ? !obj[attrs[a]] : obj[attrs[a]]===undefined){
-            return attrs[a]; //无效的属性
-        }
-    }
-    return null;
-};
+  beforeEach(function(){
+    instance = constructor.fromResponseData(getJSONFakeData());
+  });
 
+  it("should return a supported version number (1 so far).", function(){
+    expect(instance.version).to.equal(1);
+  });
 
+  it("should contain 8 bits data only (16 is not properly handled yet).", function(){
+    expect(instance.is_8_bit).to.be.true;
+    expect(instance.is_16_bit).to.be.false;
+  });
 
-/**
-* 深层合并两个对象，override表示是否覆盖前面的属性值
-* */
-exports.extend = function(tar, get, override){
-    if(!tar || !get || typeof get!=='object')
-        return;
-    if(typeof get!=='object')
-        tar = {};
-    for(var i in get){
-        if(isObject(get[i])){
-            tar[i] = tar[i] || {};
-            exports.extend(tar[i],get[i],override);
-        }else if(isArray(get[i])){
-            if(override || !tar[i])
-                tar[i] = get[i];
-        }else{
-            if(override || !tar[i])
-                tar[i] = get[i];
-        }
-    }
-};
+  it("should provide the expected sample rate.", function(){
+    expect(instance.sample_rate).to.equal(48000);
+  });
 
-/**
- * 对象的深拷贝！
- * */
-exports.clone = function(jsonObj){
-    var buf;
-    if (jsonObj instanceof Array) {
-        buf = [];
-        var i = jsonObj.length;
-        while (i--) {
-            buf[i] = arguments.callee(jsonObj[i]);
-        }
-        return buf;
-    }else if (typeof jsonObj == "function"){
-        return jsonObj;
-    }else if (jsonObj instanceof Object){
-        buf = {};
-        for (var k in jsonObj) {
-            buf[k] = arguments.callee(jsonObj[k]);
-        }
-        return buf;
-    }else{
-        return jsonObj;
-    }
-};
+  it("should provide the expected scale (samples per pixel).", function(){
+    expect(instance.scale).to.equal(512);
+  });
+
+  it("should return the expected samples length (not the length of the data object)", function(){
+    expect(instance.length).to.equal(10);
+    expect(instance.data.data).to.have.length.of(20);
+  });
+
+  it("should return the proper data index value.", function(){
+    expect(instance.at(0)).to.equal(0);
+    expect(instance.at(8)).to.equal(-5);
+    expect(instance.at(9)).to.equal(7);
+    expect(instance.at(10)).to.equal(0);
+    expect(instance.at(19)).to.equal(2);
+    expect(isNaN(instance.at(20))).to.be.true;
+  });
+});

@@ -1,12 +1,4 @@
 /**
- * Copyright (C) 2009-2011 Klaus Reimer <k@ailis.de>
- * See LICENSE.txt for licensing information.
- * 
- * @require twodee.js
- * @require twodee/SceneNode.js
- */
-
-/**
  * Constructs a new image node.
  * 
  * @param {HTMLImageElement|Image} image

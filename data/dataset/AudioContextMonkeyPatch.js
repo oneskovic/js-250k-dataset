@@ -1,4 +1,3 @@
-// https://github.com/cwilso/AudioContext-MonkeyPatch/blob/gh-pages/AudioContextMonkeyPatch.js
 (function (root, factory) {
   if (typeof exports === 'object') {
     module.exports = factory();

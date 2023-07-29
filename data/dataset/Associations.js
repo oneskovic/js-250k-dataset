@@ -1,8 +1,3 @@
-/**
- * This example shows simple association binding. The orders grid is bound to the orders
- * of the selected customer. The binding statement is able to interpret that orders is an
- * association and can show the orders for our customer.
- */
 Ext.define('KitchenSink.view.binding.Associations', {
     extend: 'Ext.panel.Panel',
     alias: 'widget.binding-associations',

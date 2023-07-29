@@ -1,6 +1,3 @@
-/**
- * This example illustrates a combo box which querys a remote data source.
- */
 Ext.define('KitchenSink.view.form.combobox.RemoteQuery', {
     extend: 'Ext.form.Panel',
     xtype: 'remote-combo',

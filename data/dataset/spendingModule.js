@@ -1,17 +1,3 @@
-/*
-spendingModule.js - A template for modular spending methods for cFIREsim
-Each module object will have a standard set of properties that will allow the main cFIREsim function to properly determine spending for any given year, given this particular spending method. 
-
-Required properties:
-	- fullName - A textual representation of the name of this spending method
-	- calcSpending - this is the primary spending calculation. This must always have the parameters (form, sim, i, j) to represent the input form, the simulation container, i - the current simulation cycle, and j - the current year within the simulation cycle. 
-
-All other properties can support the main calcSpending function
-
-The "form" parameter for each function contains all of the form inputs. This can be seen in the javascript console when a simulation is ran.
-The "sim" parameter for each function is a multi-dimensional array of the simulation results.  sim[0][0] is the first year of the first simulation cycle. sim[9][25] is the 26th year of the 10th simulation cycle.  In crafting a new spending method, sim[i][j] represents the current year, and sim[i][j-1] represents the previous year (if you want to do calculations based on the previous year).
-*/
-
 var SpendingModule = {
     "inflationAdjusted": {
         calcSpending: function(form, sim, i, j) {

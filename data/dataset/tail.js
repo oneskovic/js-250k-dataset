@@ -1,12 +1,3 @@
-/**
- * Node shims.
- *
- * These are meant only to allow
- * mocha.js to run untouched, not
- * to allow running node code in
- * the browser.
- */
-
 process = {};
 process.exit = function(status){};
 process.stdout = {};

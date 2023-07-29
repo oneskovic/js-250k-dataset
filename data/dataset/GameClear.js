@@ -21,11 +21,7 @@ function GameClear(){
 	layer.y = 70;
 	self.addChild(layer);
 	
-	/*if(stageMenu[stage.num].times==0 || stageMenu[stageIndex].times > parseInt(times.text))
-	stageMenu[stageIndex].times = parseInt(times.text);
-	if(stageIndex < stageMenu.length - 1)stageMenu[stageIndex + 1].open = true;
-	window.localStorage.setItem("lufylegend_sudoku_stageMenu", JSON.stringify(stageMenu));
-	*/
+	
 	var rank = new GameRanking();
 	self.addChild(rank);
 	

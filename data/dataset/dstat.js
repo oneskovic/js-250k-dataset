@@ -1,6 +1,3 @@
-/**
- * dstat plugin
- */
 var spawn = require('child_process').spawn;
 var dstat = spawn('dstat', ['-cdlmnpsy','--noheaders','--nocolor','--noupdate']);
 var current = null;

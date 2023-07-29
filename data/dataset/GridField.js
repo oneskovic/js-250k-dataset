@@ -3,9 +3,7 @@
     var Alpaca = $.alpaca;
 
     Alpaca.Fields.GridField = Alpaca.Fields.ArrayField.extend(
-    /**
-     * @lends Alpaca.Fields.GridField.prototype
-     */
+    
     {
         /**
          * @see Alpaca.ControlField#getFieldType

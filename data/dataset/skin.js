@@ -1,5 +1,3 @@
-/* This file is part of the Silver skin for WYMeditor by Scott Edwin Lewis */
-
 jQuery.fn.selectify = function() {
     return this.each(function() {
         jQuery(this).hover(

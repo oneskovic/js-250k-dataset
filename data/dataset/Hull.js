@@ -2,13 +2,7 @@
 
     "use strict";
 
-    /**
-     * @module FreeDraw
-     * @submodule Hull
-     * @author Adam Timberlake
-     * @link https://github.com/Wildhoney/Leaflet.FreeDraw
-     * @constructor
-     */
+    
     L.FreeDraw.Hull = function FreeDrawHull() {};
 
     /**

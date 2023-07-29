@@ -1,31 +1,3 @@
-/**
- *
- * Return true or false if an `<option>` element, or an `<input>` element of type
- * checkbox or radio is currently selected found by given selector.
- *
- * <example>
-    :index.html
-    <select name="selectbox" id="selectbox">
-        <option value="John Doe">John Doe</option>
-        <option value="Layla Terry" selected="selected">Layla Terry</option>
-        <option value="Bill Gilbert">Bill Gilbert"</option>
-    </select>
-
-    :isSelected.js
-    client.isSelected('[value="Layla Terry"]', function(err, isSelected) {
-        console.log(isSelected); // outputs: true
-    });
- * </example>
- *
- * @param   {String}             selector  option element or input of type checkbox or radio
- * @returns {Boolean|Boolean[]}            true if element is selected
- * @callbackParameter error, isSelected
- *
- * @uses protocol/elements, protocol/elementIdSelected
- * @type state
- *
- */
-
 var async = require('async'),
     ErrorHandler = require('../utils/ErrorHandler.js');
 

@@ -1,4 +1,3 @@
-
 var brush = {
   modes: {
     "None": {

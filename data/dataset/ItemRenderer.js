@@ -1,4 +1,3 @@
-/** @module deliteful/list/ItemRenderer */
 define([
 	"dcl/dcl",
 	"requirejs-dplugins/jquery!attributes/classes",

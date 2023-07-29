@@ -1,10 +1,3 @@
-
-/**
- * Filename: js/app/views/ExamplePageView
- *
- * initialises the view
- *
- */
 //
 
 

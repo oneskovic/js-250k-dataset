@@ -1,4 +1,3 @@
-
 var embox2dTest_ropeJoint = function() {
     //constructor
 }

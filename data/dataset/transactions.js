@@ -1,13 +1,3 @@
-/**
- * TRANSACTIONS
- *
- * The transactions service is used to listen to all Ripple network
- * transactions.
- *
- * This obviously won't scale, but it'll do long enough for us (or somebody
- * else) to come up with something better.
- */
-
 var module = angular.module('transactions', ['network']);
 
 module.factory('rpTransactions', ['$rootScope', 'rpNetwork',

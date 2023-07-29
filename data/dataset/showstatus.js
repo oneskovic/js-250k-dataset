@@ -1,15 +1,3 @@
-/*
- * Copyright Neville Burnell
- * See http://github.com/cloudwork/jack/lib/jack/auth/README.md for license
- *
- * Acknowledgements:
- * Inspired by Rack showstatus.rb
- * http://github.com/rack/rack
- *
- * escapeHTML() adapted from the nitro framework
- * http://github.com/gmosx/nitro
- */
-
 var HashP = require("hashp").HashP,
     Request = require("./request").Request,
     HTTP_STATUS_CODES = require("./utils").HTTP_STATUS_CODES,

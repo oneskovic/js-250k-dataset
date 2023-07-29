@@ -1,11 +1,4 @@
 /**
- * Provides core functionality for the handling of stacked numeric axis data for a chart.
- *
- * @module charts
- * @submodule axis-stacked-base
- */
-
-/**
  * StackedImpl contains logic for managing stacked numeric data. StackedImpl is used by the following classes:
  * <ul>
  *      <li>{{#crossLink "StackedAxisBase"}}{{/crossLink}}</li>

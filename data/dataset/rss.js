@@ -1,8 +1,3 @@
-// Podcast Atom/RSS parser. Downloads and extract useful info from a podcast
-// feed and returns the data as easy-to-consume (and minimally changed)
-// JavaScript objects.
-// TODO: Make this less podcast-focused; it would be a useful RSS library
-// in general.
 (function() {
     'use strict';
 

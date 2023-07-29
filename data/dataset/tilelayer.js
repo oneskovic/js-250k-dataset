@@ -1,6 +1,3 @@
-/**
-# LAYER: tile
-*/
 reg('layer', 'tile', function(view, panFrame, container, params) {
     params = cog.extend({
         generator: 'osm',

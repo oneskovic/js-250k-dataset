@@ -1,7 +1,3 @@
-// moment.js locale configuration
-// locale : uzbek (uz)
-// author : Sardor Muminov : https://github.com/muminoff
-
 (function (factory) {
     if (typeof define === 'function' && define.amd) {
         define(['moment'], factory); // AMD

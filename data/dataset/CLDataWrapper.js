@@ -1,11 +1,3 @@
-// Provides a well-abstracted interface for getting and setting values on the WebCL device.
-// Object of this type should be created by Superconductor, since their constructor requires
-// knowledge of the detaisl of how data looks on the device. They should then be given to the
-// user, who should only interact with it via its defined interface.
-// Paramters:
-//	clr: the CLRunner managing this visualization layout
-//	hostBuffer: the TypedArray holding the data on the host
-//	clBuffer: the WebCLBuffer object representing the data on the device
 function CLDataWrapper(clr, hostBuffer, clBuffer) {
 	// mtorok: Note to self: Javascript Proxies would seem to be exactly what we want here -- they
 	// allow one to emulate a whole host of object operations, like property get and set. However,

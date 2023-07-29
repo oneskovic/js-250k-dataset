@@ -1,6 +1,3 @@
-
-
-
 function viralActivation()
 {
     var path = FBTest.getHTTPURLBase()+"firebug/activation/";

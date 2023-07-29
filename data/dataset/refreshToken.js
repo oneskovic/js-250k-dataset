@@ -1,6 +1,3 @@
-/**
- * Module dependencies.
- */
 var utils = require('../utils')
   , TokenError = require('../errors/tokenerror');
 

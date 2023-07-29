@@ -7,7 +7,7 @@ define(function(require, module, exports) {
         var Dialog = imports.Dialog;
         var util = imports.util;
         
-        /***** Initialization *****/
+        
         
         // @todo think about merging this with question.
         

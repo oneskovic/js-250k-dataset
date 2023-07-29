@@ -1,10 +1,4 @@
 /**
-* @author       Richard Davey <rich@photonstorm.com>
-* @copyright    2015 Photon Storm Ltd.
-* @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
-*/
-
-/**
 * The InWorld component checks if a Game Object is within the Game World Bounds.
 * An object is considered as being "in bounds" so long as its own bounds intersects at any point with the World bounds.
 * If the AutoCull component is enabled on the Game Object then it will check the Game Object against the Camera bounds as well.

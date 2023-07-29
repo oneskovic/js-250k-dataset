@@ -7,9 +7,7 @@ var helpers = require("helpers");
 var nSpecifier = require("nTunes-specifier");
 var playlistParser = require("radio-playlist-parser");
 
-/* Here are the custom "handlers" that come packaged with nTunes. These
- * are the most common functionality missing from the standard iTunes API.
- */
+
 module.exports = function(CLASSES) {
   
   // A handler for "file tracks" which first looks up the 'location' of the

@@ -1,75 +1,74 @@
-/*
-	Copyright (c) 2004-2010, The Dojo Foundation All Rights Reserved.
-	Available via Academic Free License >= 2.1 OR the modified BSD license.
-	see: http://dojotoolkit.org/license for details
-*/
+if(!dojo._hasResource["dojox.encoding.tests.bits"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
+dojo._hasResource["dojox.encoding.tests.bits"] = true;
+dojo.provide("dojox.encoding.tests.bits");
+dojo.require("dojox.encoding.bits");
 
-
-if(!dojo._hasResource["dojox.encoding.bits"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
-dojo._hasResource["dojox.encoding.bits"] = true;
-dojo.provide("dojox.encoding.bits");
-
-dojox.encoding.bits.OutputStream = function(){
-	this.reset();
-};
-
-dojo.extend(dojox.encoding.bits.OutputStream, {
-	reset: function(){
-		this.buffer = [];
-		this.accumulator = 0;
-		this.available = 8;
-	},
-	putBits: function(value, width){
-		while(width){
-			var w = Math.min(width, this.available);
-			var v = (w <= width ? value >>> (width - w) : value) << (this.available - w);
-			this.accumulator |= v & (255 >>> (8 - this.available));
-			this.available -= w;
-			if(!this.available){
-				this.buffer.push(this.accumulator);
-				this.accumulator = 0;
-				this.available = 8;
-			}
-			width -= w;
+(function(){
+	var msg1 = "The rain in Spain falls mainly on the plain.";
+	var msg2 = "The rain in Spain falls mainly on the plain.1";
+	var msg3 = "The rain in Spain falls mainly on the plain.ab";
+	var msg4 = "The rain in Spain falls mainly on the plain.!@#";
+	var dcb = dojox.encoding.bits;
+	
+	var s2b = function(s){
+		var b = [];
+		for(var i = 0; i < s.length; ++i){
+			b.push(s.charCodeAt(i));
 		}
-	},
-	getWidth: function(){
-		return this.buffer.length * 8 + (8 - this.available);
-	},
-	getBuffer: function(){
-		var b = this.buffer;
-		if(this.available < 8){ b.push(this.accumulator & (255 << this.available)); }
-		this.reset();
 		return b;
-	}
-});
+	};
 
-dojox.encoding.bits.InputStream = function(buffer, width){
-	this.buffer = buffer;
-	this.width = width;
-	this.bbyte = this.bit = 0;
-};
-
-dojo.extend(dojox.encoding.bits.InputStream, {
-	getBits: function(width){
-		var r = 0;
-		while(width){
-			var w = Math.min(width, 8 - this.bit);
-			var v = this.buffer[this.bbyte] >>> (8 - this.bit - w);
-			r <<= w;
-			r |= v & ~(~0 << w);
-			this.bit += w;
-			if(this.bit == 8){
-				++this.bbyte;
-				this.bit = 0;
-			}
-			width -= w;
+	var b2s = function(b){
+		var s = [];
+		dojo.forEach(b, function(c){ s.push(String.fromCharCode(c)); });
+		return s.join("");
+	};
+	
+	var testOut = function(msg){
+		var a = new dojox.encoding.bits.OutputStream();
+		for(var i = 0; i < msg.length; ++i){
+			var v = msg.charCodeAt(i);
+			var j = Math.floor(Math.random() * 7) + 1;
+			a.putBits(v >>> (8 - j), j);
+			a.putBits(v, 8 - j);
 		}
-		return r;
-	},
-	getWidth: function(){
-		return this.width - this.bbyte * 8 - this.bit;
-	}
-});
+		return b2s(a.getBuffer());
+	};
+
+	var testIn = function(msg){
+		var a = new dojox.encoding.bits.InputStream(s2b(msg), msg.length * 8);
+		var r = [];
+		for(var i = 0; i < msg.length; ++i){
+			var j = Math.floor(Math.random() * 7) + 1;
+			r.push((a.getBits(j) << (8 - j)) | a.getBits(8 - j));
+		}
+		return b2s(r);
+	};
+	
+	var test = function(msg){
+		var a = new dojox.encoding.bits.InputStream(s2b(msg), msg.length * 8);
+		var o = new dojox.encoding.bits.OutputStream();
+		while(a.getWidth() > 0){
+			var w = Math.min(a.getWidth(), 3);
+			o.putBits(a.getBits(w), w);
+		}
+		return b2s(o.getBuffer());
+	};
+
+	tests.register("dojox.encoding.tests.bits", [
+		function testBitsOut1(t){ t.assertEqual(msg1, testOut(msg1)); },
+		function testBitsOut2(t){ t.assertEqual(msg2, testOut(msg2)); },
+		function testBitsOut3(t){ t.assertEqual(msg3, testOut(msg3)); },
+		function testBitsOut4(t){ t.assertEqual(msg4, testOut(msg4)); },
+		function testBitsIn1(t){ t.assertEqual(msg1, testIn(msg1)); },
+		function testBitsIn2(t){ t.assertEqual(msg2, testIn(msg2)); },
+		function testBitsIn3(t){ t.assertEqual(msg3, testIn(msg3)); },
+		function testBitsIn4(t){ t.assertEqual(msg4, testIn(msg4)); },
+		function testBits1(t){ t.assertEqual(msg1, test(msg1)); },
+		function testBits2(t){ t.assertEqual(msg2, test(msg2)); },
+		function testBits3(t){ t.assertEqual(msg3, test(msg3)); },
+		function testBits4(t){ t.assertEqual(msg4, test(msg4)); }
+	]);
+})();
 
 }

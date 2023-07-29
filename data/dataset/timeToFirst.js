@@ -1,10 +1,3 @@
-/**
- * Provides metrics for time to first image, CSS and JS file
- *
- * setMetric('timeToFirstCss')   @desc time it took to receive the last byte of the first CSS @offenders
- * setMetric('timeToFirstJs')    @desc time it took to receive the last byte of the first JS @offenders
- * setMetric('timeToFirstImage') @desc time it took to receive the last byte of the first image @offenders
- */
 'use strict';
 
 exports.version = '0.1';

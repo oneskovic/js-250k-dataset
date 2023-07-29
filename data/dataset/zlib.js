@@ -1,4 +1,3 @@
-
 module.exports = function(binding) {
   var util = require('util');
 

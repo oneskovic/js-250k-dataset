@@ -1,10 +1,3 @@
-/**
- * A physics body
- *
- * @author xeolabs / http://xeolabs.com
- *
- * <p>Documentation at: http://xeolabs.com/articles/scenejs-physics/</p>
- */
 require([
     // Prefix routes to plugin support libs
     "scenejsPluginDeps/physics/physics"

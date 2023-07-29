@@ -1,10 +1,3 @@
-/**
- * @module IRC
- * @main IRC
- *
- * The main entrypoint for the IRC module
- *
- */
 var IRC = (function(IRC) {
 
   /**

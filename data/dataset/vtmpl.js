@@ -1,21 +1,3 @@
-/*
-    author:xinglie.lkf@taobao.com
-    extend:
-
-        parent:{{@magix-tmpl-xxx}}
-        sub:{{#magix-tmpl-xxx}}content{{/magix-tmpl-xxx}}
-
-        parent:{{@magix-tmpl-all}}
-        sub:content
-
-    subtmpl:
-
-        {{@magix-inner-xxx}}
-
-        {{#magix-inner-xxx}}
-        content
-        {{/magix-inner-xxx}}
- */
 KISSY.add('exts/vtmpl', function(S, View) {
     var Base = View.prototype;
     var Load = Base.load;

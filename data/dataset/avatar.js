@@ -1,57 +1,75 @@
-/*
-	Copyright (c) 2004-2010, The Dojo Foundation All Rights Reserved.
-	Available via Academic Free License >= 2.1 OR the modified BSD license.
-	see: http://dojotoolkit.org/license for details
-*/
+if(!dojo._hasResource["dojo.dnd.avatar"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
+dojo._hasResource["dojo.dnd.avatar"] = true;
+dojo.provide("dojo.dnd.avatar");
 
-
-if(!dojo._hasResource["dojox.layout.dnd.Avatar"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
-dojo._hasResource["dojox.layout.dnd.Avatar"] = true;
-dojo.provide("dojox.layout.dnd.Avatar");
-
-dojo.require("dojo.dnd.Avatar");
 dojo.require("dojo.dnd.common");
 
-dojo.declare("dojox.layout.dnd.Avatar", dojo.dnd.Avatar, {
-	// summary:
-	//      An Object, which represents the object being moved in a GridContainer
-	constructor: function(manager, opacity){
-		this.opacity = opacity || 0.9;
-	},
+dojo.dnd.Avatar = function(manager){
+	// summary: an object, which represents transferred DnD items visually
+	// manager: Object: a DnD manager object
+	this.manager = manager;
+	this.construct();
+};
 
+dojo.extend(dojo.dnd.Avatar, {
 	construct: function(){
-		// summary:
-		//		A constructor function. it is separate so it can be (dynamically)
-		//		overwritten in case of need.
-		
-		var source = this.manager.source,
-			node = source.creator ?
+		// summary: a constructor function;
+		//	it is separate so it can be (dynamically) overwritten in case of need
+		var a = dojo.doc.createElement("table");
+		a.className = "dojoDndAvatar";
+		a.style.position = "absolute";
+		a.style.zIndex = 1999;
+		a.style.margin = "0px"; // to avoid dojo.marginBox() problems with table's margins
+		var b = dojo.doc.createElement("tbody");
+		var tr = dojo.doc.createElement("tr");
+		tr.className = "dojoDndAvatarHeader";
+		var td = dojo.doc.createElement("td");
+		td.innerHTML = this._generateText();
+		tr.appendChild(td);
+		dojo.style(tr, "opacity", 0.9);
+		b.appendChild(tr);
+		var k = Math.min(5, this.manager.nodes.length);
+		var source = this.manager.source;
+		for(var i = 0; i < k; ++i){
+			tr = dojo.doc.createElement("tr");
+			tr.className = "dojoDndAvatarItem";
+			td = dojo.doc.createElement("td");
+			var node = source.creator ?
 				// create an avatar representation of the node
-				source._normalizedCreator(source.getItem(this.manager.nodes[0].id).data, "avatar").node :
+				node = source._normalizedCreator(source.getItem(this.manager.nodes[i].id).data, "avatar").node :
 				// or just clone the node and hope it works
-				this.manager.nodes[0].cloneNode(true)
-		;
-
-		dojo.addClass(node, "dojoDndAvatar");
-		
-		node.id = dojo.dnd.getUniqueId();
-		node.style.position = "absolute";
-		node.style.zIndex = 1999;
-		node.style.margin = "0px"
-		node.style.width = dojo.marginBox(source.node).w + "px"
-		
-		// add contructor object params to define it
-		dojo.style(node, "opacity", this.opacity);
-		this.node = node;
+				node = this.manager.nodes[i].cloneNode(true);
+			node.id = "";
+			td.appendChild(node);
+			tr.appendChild(td);
+			dojo.style(tr, "opacity", (9 - i) / 10);
+			b.appendChild(tr);
+		}
+		a.appendChild(b);
+		this.node = a;
 	},
-
+	destroy: function(){
+		// summary: a desctructor for the avatar, called to remove all references so it can be garbage-collected
+		dojo._destroyElement(this.node);
+		this.node = false;
+	},
 	update: function(){
-		// summary: Updates the avatar to reflect the current DnD state.
-		dojo.toggleClass(this.node, "dojoDndAvatarCanDrop", this.manager.canDropFlag);
+		// summary: updates the avatar to reflect the current DnD state
+		dojo[(this.manager.canDropFlag ? "add" : "remove") + "Class"](this.node, "dojoDndAvatarCanDrop");
+		// replace text
+		var t = this.node.getElementsByTagName("td");
+		for(var i = 0; i < t.length; ++i){
+			var n = t[i];
+			if(dojo.hasClass(n.parentNode, "dojoDndAvatarHeader")){
+				n.innerHTML = this._generateText();
+				break;
+			}
+		}
 	},
-
-	_generateText: function(){ /* nada. */ }
-
+	_generateText: function(){
+		// summary: generates a proper text to reflect copying or moving of items
+		return this.manager.nodes.length.toString();
+	}
 });
 
 }

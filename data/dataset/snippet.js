@@ -1,91 +1,85 @@
-/*
----
+/**
+ * @author André König <andre.koenig@posteo.de>
+ *
+ */
 
-script: snippet.js
+'use strict';
 
-description: Utility class for working with Espresso text snippets
+codegrabber.Snippet = (function initialize () {
+    
+    var HTTP = codegrabber.HTTP;
+    var Burnisher = codegrabber.Burnisher;
+    var Hooks = codegrabber.Hooks;
 
-license: MIT license.
+    /**
+     * A remote code snippet which will be fetched, polished
+     * and wrapped into a HTML 'code' element.
+     *
+     * Options:
+     * 
+     *     uri: The URI of the code snippet
+     *     lines: A line range that should be fetched
+     * 
+     * @param {object} options 
+     *
+     */
+    function Snippet (options) {
+        var self = this;
 
-authors:
-- Ian Beck
+        this.uri = options.uri;
+        this.lines = options.lines;
 
-exports:
-- Snippet (class)
+        //
+        // Create the DOM element structure
+        //
+        //     <pre>
+        //         <code></code>
+        //     </pre>
+        // 
+        this.$pre = options.pre;
+        this.$code = document.createElement('code');
+        this.$pre.appendChild(this.$code);
 
-provides:
-- String.toSnippet()
-- String.sanitizedForSnippet()
-- String.log()
+        //
+        // Fetch the remote source file, polish it, embed
+        // the contents into the DOM and execute possible hooks.
+        //
+        HTTP.get(this.uri, function onFetch (err, contents) {
+            if (err) {
+                return console.log('%s: Fetching remote source file failed', codegrabber.name);
+            }
 
-...
-*/
+            contents = self.$$polish(contents);
+            contents = document.createTextNode(contents);
 
-require.global('mootools-server');
-var textContext = require('text_action_context').textContext;
-var TextRecipe = require('text_recipe').TextRecipe;
-var Range = require('range').Range;
+            self.$code.appendChild(contents);
 
-// SNIPPET UTILITIES
-var Snippet = new Class({
-	// Public properties
-	text: '',
-	
-	initialize: function(text) {
-		this.text = text;
-	},
-	
-	snippet: function() {
-		return CETextSnippet.snippetWithString(this.text);
-	},
-	
-	write: function(overwrite, undo_name) {
-		// Overwriting the first selection defaults to true
-		var overwrite = ($type(overwrite) ? overwrite : true);
-		// undo_name is only necessary if overwite == true or is a range
-		// (No way to set an undo name for insert snippet)
-		var undo_name = ($type(undo_name) == 'string' ? undo_name : 'Insert Snippet');
-		if (overwrite !== false) {
-			var recipe = new TextRecipe(undo_name);
-			if ($type(overwrite) != 'boolean') {
-				// User must have passed in a specific range to overwrite
-				var selection = Range.from(overwrite);
-			} else {
-				var selections = textContext.getSelections();
-				// We only want to delete the first range (where we're inserting the snippet)
-				var selection = selections[0];
-			}
-			var insert = null;
-			if (!$type(selections) || selections.length > 1) {
-				// If there are multiple ranges, we need to verify that the cursor will be in the right place after deletions
-				insert = selection.location;
-			}
-			recipe.remove(selection).apply();
-			if ($type(insert)) {
-				textContext.setSelection([insert, 0]);
-			}
-		}
-		return context.insertTextSnippet(this.snippet());
-	},
-	
-	log: function() {
-		system.log(this.text);
-	}
-});
+            Hooks.$$run(self.$pre);
+        });
+    }
 
-exports.Snippet = Snippet;
+    /**
+     * Will polish the content depending on the given options.
+     *
+     * @param  {string} contents The contents that should be polished.
+     * @return {string} The polished content.
+     *
+     */
+    Snippet.prototype.$$polish = function $$polish (contents) {
+        var burnisher = Burnisher.create();
 
-String.implement({
-	
-	toSnippet: function() {
-		return new Snippet(String(this));
-	},
-	
-	sanitizedForSnippet: function() {
-		return this.replace(/(\$|\{|\}|`|\\)/g, '\\$1');
-	},
-	
-	log: function() {
-		system.log(String(this));
-	}
-});
+        if (this.lines) {
+            contents = burnisher.slice(contents, this.lines);
+        }
+
+        return contents;
+    };
+
+    return {
+        create : function create (options) {
+            options = options || {};
+
+            return new Snippet(options);
+        }
+    };
+})();

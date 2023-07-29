@@ -1,6 +1,3 @@
-/**
- * Helper method to create config for testing
- */
 var serverConfig=function(uploadEnabled, registrationEnabled){
 	return{"uploadEnabled":uploadEnabled,"registrationEnabled":registrationEnabled}
 };

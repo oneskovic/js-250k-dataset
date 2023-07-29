@@ -1,10 +1,3 @@
-/**
- * clientTest is incomplete! do not trust it!
- * 
- * @TODO need to complete these tests
- * @author rishabhmhjn
- */
-
 // set this flag to false if you have your solr settings correct
 var skip = true;
 

@@ -1,73 +1,82 @@
-'use strict';
+var module;
 
-var Boom = require('boom');
-var TasksModel = require('../models/Tasks');
+Meteor.startup(function() {
+	// register the tasks module
+	Meteor.call('registerModule', {
+		name: 'tasks',
+		callback_enable: 'enable_tasks_module',
+		callback_disable: 'disable_tasks_module',
+		description: 'Allows other module to register tasks.'
+	}, function(error, module_id) {
+		if (!error) {
 
-function TasksController(database) {
-    this.tasksModel = new TasksModel(database);
+		}
+	});
+
+    module = Modules.findOne({name: 'tasks'});
+
+    // this should only be set if module is active
+    if (module.enabled) {
+        var interval = setInterval(process_tasks, 31000);
+    }
+});
+
+Meteor.methods({
+	enable_tasks_module: function(args) {
+		args = args || {};
+		
+	},
+
+	disable_tasks_module: function(args) {
+		args = args || {};
+
+	}
+});
+
+process_tasks = function() {
+    bound_create_event_log({level:'INFO', tags:['tasks'], message:'Starting to process tasks.'});
+    tasks.process('tasks', 5, function(task, done){
+        var status = global[task.data.callback](task.data.args);
+        if (status == true) {
+            done();
+        } else {
+            done('error running task.');
+        }
+    });
 };
 
-// [GET] /tasks
-TasksController.prototype.index = function(request, reply) {
-    var start = request.query.start;
-    var limit = request.query.limit;
-
-    if (start == null) {
-        start = 0
-    }
-
-    if (limit == null) {
-        limit = start + 9
-    }
-
-    reply(this.tasksModel.getTasks(start, limit));
+check_queue = function(jobname, queue, callback) {
+    tasks.client.sort('q:jobs:' + queue
+      , 'get', 'q:job:*->data'
+      , function(err, jobs) {
+        if (jobs.length > 0) {
+            job_found = false;
+            jobs.forEach(function (job) {
+                var data = JSON.parse(job);
+                if (data.title == jobname) {
+                    job_found = true;
+                }
+            });
+            if (job_found == false) {
+                check_next_queue(jobname, queue, callback);
+            }
+        } else {
+            check_next_queue(jobname, queue, callback);
+        }
+      }
+    );
 };
 
-// [GET] /tasks/{id}
-TasksController.prototype.show = function(request, reply) {
-    try {
-        var id = request.params.id;
-
-        reply(this.tasksModel.getTask(id));
-    } catch (e) {
-        reply(Boom.notFound(e.message));
+check_next_queue = function(jobname, queue, callback) {
+    if (queue == 'delayed') {
+        check_queue(jobname, 'inactive', callback);
+    } else if (queue == 'inactive') {
+        check_queue(jobname, 'active', callback);
+    } else if (queue == 'active') {
+        callback();
     }
+}
+
+job_exists = function(jobname, callback) {
+    check_queue(jobname, 'delayed', callback);
 };
-
-// [POST] /tasks
-TasksController.prototype.store = function(request, reply) {
-    try {
-        var value = request.payload.task;
-
-        reply(this.tasksModel.addTask(value))
-            .created();
-    } catch (e) {
-        reply(Boom.badRequest(e.message));
-    }
-};
-
-// [PUT] /tasks/{id}
-TasksController.prototype.update = function(request, reply) {
-    try {
-        var id = request.params.id;
-        var task = request.payload.task;
-
-        reply(this.tasksModel.updateTask(id, task));
-    } catch (e) {
-        reply(Boom.notFound(e.message));
-    }
-};
-
-// [DELETE] /tasks/{id}
-TasksController.prototype.destroy = function(request, reply) {
-    try {
-        var id = request.params.id;
-
-        this.tasksModel.deleteTask(id);
-        reply().code(204);
-    } catch (e) {
-        reply(Boom.notFound(e.message));
-    }
-};
-
-module.exports = TasksController;

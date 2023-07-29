@@ -1,5 +1,3 @@
-// Javascript Select
-
 function select(target, transmitCommand, uiIndex) {
 					
 	//self awareness

@@ -1,6 +1,3 @@
-// Syntax Optimization
-// -------------------
-
 function optimizeSyntax(stx) {
   var inp = input(stx);
   var res = [];

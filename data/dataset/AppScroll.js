@@ -1,14 +1,3 @@
-/*
- * AppScroll.js
- *
- * Copyright 2013, Jacob Kelley - http://jakiestfu.com/
- * Released under the MIT Licence
- * http://opensource.org/licenses/MIT
- *
- * Github:  https://github.com/jakiestfu/AppScroll
- * Version: 1.0.0
- */
-/*jslint browser: true*/
 /*global define, module, ender*/
 (function(win) {
     'use strict';

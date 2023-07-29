@@ -1,9 +1,3 @@
-/** Import of Visio BPMN diagrams, that have been build with supported stencil sets.
- *  Currently supported: 0MG 0.9, BPT 1.1, Official Visio 2010 BPMN 1.1
- *	Created in the PMP seminar 2010. 
- *  Author: Lauritz Thamsen
- **/
-
 if(!ORYX.Plugins)
 	ORYX.Plugins = new Object();
 

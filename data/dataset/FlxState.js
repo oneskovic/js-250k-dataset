@@ -1,70 +1,50 @@
-/**
- * This is the basic game "state" object - e.g. in a simple game<br>
- * you might have a menu state and a play state.<br>
- * It is for all intents and purpose a fancy FlxGroup.<br>
- * And really, it's not even that fancy.<br>
- * <br>
- * v1.0 Initial version
- * 
- * @version 1.0 - 17/09/2014
- * @author	Adam Atomic
- * @author	ratalaika / ratalaikaGames
- * @class Flixel.FlxState
- */
+FlxState = new Class({
 
-/**
- * Internal constructor, shoudn't be called.
- * @constructor
- */
-Flixel.FlxState = function()
-{
-	Flixel.FlxState.parent.constructor.apply(this);
-};
-extend(Flixel.FlxState, Flixel.FlxGroup);
+	initialize: function() {
+		this.defaultGroup = new FlxGroup();
+		if(FlxState.screen === undefined || FlxState.screen === null) {
+			FlxState.screen = new FlxSprite();
+			FlxState.screen.createGraphic(FlxG.width,FlxG.height,0,true);
+			FlxState.screen.origin.x = FlxState.screen.origin.y = 0;
+			FlxState.screen.antialiasing = true;
+			FlxState.screen.exists = false;
+			FlxState.screen.solid = false;
+			FlxState.screen.fixed = true;
+		}
+	},
 
-/**
- * If the state is saved or not in the stack.
- */
-Flixel.FlxState.saveState = true;
+	create: function() {
+	},
 
-/**
- * This function is called after the game engine successfully switches states. Override this function, NOT the constructor, to initialize or set up your game state. We do NOT recommend overriding the
- * constructor, unless you want some crazy unpredictable things to happen!
- */
-Flixel.FlxState.prototype.create = function()
-{
-};
+	add: function(Core) {
+		return this.defaultGroup.add(Core);
+	},
 
-/**
- * Override this function to do special pre-processing FX like motion blur. You can use scaling or blending modes or whatever you want against <code>FlxState.screen</code> to achieve all sorts of
- * cool FX.
- */
-Flixel.FlxState.prototype.preProcess = function()
-{
-	// Nothing to pre-process initially.
-};
+	preProcess: function() {
+		//FIXME: This somehow causes the screen FlxSprite's _pixels to become null
+		//FlxState.screen.fill(FlxState.bgColor);
+	},
 
-/**
- * This function collides <code>defaultGroup</code> against <code>defaultGroup</code> (basically everything you added to this state).
- */
-Flixel.FlxState.prototype.collide = function()
-{
-	Flixel.FlxG.collide(this);
-};
+	update: function() {
+		this.defaultGroup.update();
+	},
 
-/**
- * Override this function to do special post-processing FX like light bloom. You can use scaling or blending modes or whatever you want against <code>FlxState.screen</code> to achieve all sorts of
- * cool FX.
- */
-Flixel.FlxState.prototype.postProcess = function()
-{
-	// Nothing to post process initially
-};
+	collide: function() {
+		FlxU.collide(this.defaultGroup, this.defaultGroup);
+	},
 
-/**
- * Returns the class name.
- */
-Flixel.FlxState.prototype.toString = function()
-{
-	return "FlxState";
-};
+	render: function() {
+		this.defaultGroup.render();
+	},
+
+	postProcess: function() {
+	},
+
+	destroy: function() {
+		this.defaultGroup.destroy();
+	}
+
+});
+
+//FlxState.screen = new FlxSprite;
+FlxState.bgColor = 0xFFAACEAA;

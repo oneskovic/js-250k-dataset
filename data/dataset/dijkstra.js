@@ -9,14 +9,7 @@
     var distance;
     var unvisited;
 
-    /**
-     * Creates a new node instance.
-     *
-     * @constructor
-     * @private
-     * @param {Number} id Id of the node.
-     * @param {Number} distance Distance from the beginning.
-     */
+    
     function Node(id, distance) {
       this.node = id;
       this.distance = distance;

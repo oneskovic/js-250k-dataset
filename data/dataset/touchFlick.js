@@ -1,18 +1,3 @@
-/**
- * Flick on the touch screen using finger motion events. This flickcommand starts
- * at a particulat screen location.
- *
- * @param {String} ID      ID of the element where the flick starts
- * @param {Number} xoffset the x offset in pixels to flick by
- * @param {Number} yoffset the y offset in pixels to flick by
- * @param {Number} speed   the speed in pixels per seconds
- * @callbackParameter error, response
- *
- * @see  https://code.google.com/p/selenium/wiki/JsonWireProtocol#session/:sessionId/touch/flick
- * @type protocol
- *
- */
-
 var ErrorHandler = require('../utils/ErrorHandler.js');
 
 module.exports = function touchFlick(id, xoffset, yoffset, speed) {

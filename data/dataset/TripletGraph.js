@@ -1,8 +1,3 @@
-/**
- * The very fastest graph for heavy read operations, but uses three indexes
- * TripletGraph (fast, triple indexed) implements DataStore
- */
-
 var getCollection = require('./Graph.js').getCollection;
 var api = exports;
 

@@ -1,112 +1,70 @@
+///import baidu.object;
+///import baidu.lang.isObject;
+///import baidu.lang.isFunction;
+
 /**
- * Baobab Merge
- * =============
+ * 合并源对象的属性到目标对象。
+ * 默认情况下，所有在源对象上的属性都会被非递归地合并到目标对象上
+ * 并且如果目标对象上已有此属性，不会被覆盖
  *
- * A function used to merge updates in the stack.
+ * @name baidu.array.merge
+ * @function
+ * @grammar baidu.array.merge(target, source[, opt_options])
+ *
+ * @param {Function} target 目标对象.
+ * @param {Function} source 源对象.
+ * @param {Object} opt_options optional merge选项.
+ * @config {boolean} overwrite optional 如果为真，源对象属性会覆盖掉目标对象上的已有属性，默认为假.
+ * @config {string[]} whiteList optional 白名单，默认为空，如果存在，只有在这里的属性才会被处理.
+ * @config {boolean} recursive optional 是否递归合并对象里面的object，默认为否.
+ * @return {object} merge后的object.
+ * @see baidu.array.extend
+ * @author berg
  */
-var helpers = require('./helpers.js'),
-    type = require('./type.js');
+(function() {
+var isPlainObject = function(source) {
+        return baidu.lang.isObject(source) && !baidu.lang.isFunction(source);
+    };
 
-// Helpers
-function hasKey(o, key) {
-  return key in (o || {});
+function mergeItem(target, source, index, overwrite, recursive) {
+    if (source.hasOwnProperty(index)) {
+        if (recursive && isPlainObject(target[index])) {
+            // 如果需要递归覆盖，就递归调用merge
+            baidu.object.merge(
+                target[index],
+                source[index],
+                {
+                    'overwrite': overwrite,
+                    'recursive': recursive
+                }
+            );
+        } else if (overwrite || !(index in target)) {
+            // 否则只处理overwrite为true，或者在目标对象中没有此属性的情况
+            target[index] = source[index];
+        }
+    }
 }
 
-function conflict(a, b, key) {
-  return hasKey(a, key) && hasKey(b, key);
-}
+baidu.object.merge = function(target, source, opt_options) {
+    var i = 0,
+        options = opt_options || {},
+        overwrite = options['overwrite'],
+        whiteList = options['whiteList'],
+        recursive = options['recursive'],
+        len;
 
-// Main function
-function merge() {
-  var res = {},
-      current,
-      next,
-      l = arguments.length,
-      i,
-      k;
-
-  for (i = l - 1; i >= 0; i--) {
-
-    // Upper $set/$apply... and conflicts
-    // When solving conflicts, here is the priority to apply:
-    // -- 0) $unset
-    // -- 1) $set
-    // -- 2) $merge
-    // -- 3) $apply
-    // -- 4) $chain
-    if (arguments[i].$unset) {
-      delete res.$set;
-      delete res.$apply;
-      delete res.$merge;
-      res.$unset = arguments[i].$unset;
-    }
-    else if (arguments[i].$set) {
-      delete res.$apply;
-      delete res.$merge;
-      delete res.$unset;
-      res.$set = arguments[i].$set;
-      continue;
-    }
-    else if (arguments[i].$merge) {
-      delete res.$set;
-      delete res.$apply;
-      delete res.$unset;
-      res.$merge = arguments[i].$merge;
-      continue;
-    }
-    else if (arguments[i].$apply){
-      delete res.$set;
-      delete res.$merge;
-      delete res.$unset;
-      res.$apply = arguments[i].$apply;
-      continue;
-    }
-    else if (arguments[i].$chain) {
-      delete res.$set;
-      delete res.$merge;
-      delete res.$unset;
-
-      if (res.$apply)
-        res.$apply = helpers.compose(res.$apply, arguments[i].$chain);
-      else
-        res.$apply = arguments[i].$chain;
-      continue;
-    }
-
-    for (k in arguments[i]) {
-      current = res[k];
-      next = arguments[i][k];
-
-      if (current && type.Object(next)) {
-
-        // $push conflict
-        if (conflict(current, next, '$push')) {
-          if (type.Array(current.$push))
-            current.$push = current.$push.concat(next.$push);
-          else
-            current.$push = [current.$push].concat(next.$push);
+    // 只处理在白名单中的属性
+    if (whiteList && whiteList.length) {
+        len = whiteList.length;
+        for (; i < len; ++i) {
+            mergeItem(target, source, whiteList[i], overwrite, recursive);
         }
-
-        // $unshift conflict
-        else if (conflict(current, next, '$unshift')) {
-          if (type.Array(next.$unshift))
-            current.$unshift = next.$unshift.concat(current.$unshift);
-          else
-            current.$unshift = [next.$unshift].concat(current.$unshift);
+    } else {
+        for (i in source) {
+            mergeItem(target, source, i, overwrite, recursive);
         }
-
-        // No conflict
-        else {
-          res[k] = merge(next, current);
-        }
-      }
-      else {
-        res[k] = next;
-      }
     }
-  }
 
-  return res;
-}
-
-module.exports = merge;
+    return target;
+};
+})();

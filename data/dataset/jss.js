@@ -1,6 +1,3 @@
-// The jss API
-//
-
 var sys = require('sys')
   , path = require('path')
   , events = require('events')

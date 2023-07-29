@@ -1,8 +1,3 @@
-/**
- * @fileoverview html 属性规则工厂
- * @author 张挺 <zhangting@taobao.com>
- *
- */
 KISSY.add('gallery/form/1.2/auth/rule/ruleFactory', function (S, Base, PropertyRule, Rule, undefined) {
     var RuleFactory = function () {
         var self = this;

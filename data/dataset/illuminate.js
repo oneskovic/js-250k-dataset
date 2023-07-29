@@ -1,20 +1,3 @@
-//		Author: Chrissy Clark(fivefourths@gmail.com)
-//		webtypographyforthelonely.com
-//
-//      Illuminate is a function for making ghost typography,
-//      which everyone obviously needs. It currently requires
-//      raphael.js because, quite frankly, scripting animations
-//      with SVG is awful and I don't wanna do it. 
-//
-//      If you scroll to the bottom you can see all of the 
-//      defaults for illuminate. That big honking chunk of string
-//      is the shape paths. Clean, huh? 
-//
-//      call it with:
-//                       ill.init('myTargetedDivId')
-
-
-
 var ill = {
 	 
 	

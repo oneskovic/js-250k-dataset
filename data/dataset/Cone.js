@@ -4,24 +4,7 @@ var extend = require('../internals').extend,
 	Vec3D = require('./Vec3D'),
 	TriangleMesh = require('./mesh/TriangleMesh');
 
-/**
- * @class A geometric definition of a cone (and cylinder as a special case) with
- * support for mesh creation/representation. The class is currently still
- * incomplete in that it doesn't provide any other features than the
- * construction of a cone shaped mesh.
- * @augments toxi.Vec3D
- * @member toxi
- * @param pos
- *            centre position
- * @param dir
- *            direction vector
- * @param rNorth
- *            radius on the side in the forward direction
- * @param rSouth
- *            radius on the side in the opposite direction
- * @param len
- *            length of the cone
- */
+
 
 function err( param ){
 	throw Error("Missing parameter: " + param);

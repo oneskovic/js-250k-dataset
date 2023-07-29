@@ -2,14 +2,7 @@ define(['backbone', 'underscore', '../element'],
 function (Backbone, _, Element) {
     'use strict';
 
-    /**
-     * Element related to only one observations connection to get aggregation
-     * data.
-     * Beware: the element still have a dimensions attribute but it is not taken
-     * into account to set its connections. E.g. the summary element uses the
-     * dimensions attribute to set the value for the text placeholders
-     *
-     */
+    
     var MeasureElement = Element.extend({
 
         /**

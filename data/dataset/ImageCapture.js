@@ -1,4 +1,3 @@
-
 window.ImageCapture = {
     quality: 25,
 

@@ -1,4 +1,3 @@
-//slightly modified code from github.com/brianc/node-postgres
 var EventEmitter = require('events').EventEmitter;
 
 var defaults = require('./defaults');

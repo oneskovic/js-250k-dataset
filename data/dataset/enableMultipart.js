@@ -1,4 +1,3 @@
-// middleware to handle forms with formidable
 'use strict';
 
 var fs = require('fs'),

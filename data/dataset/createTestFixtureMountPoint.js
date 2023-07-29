@@ -1,4 +1,3 @@
-
 //
 // ideally we would create a new canvas for each new test and destroy it when
 // the test is over in order to keep each test clean. However, some browsers

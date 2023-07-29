@@ -10,15 +10,7 @@ define([
     ) {
         'use strict';
 
-        /**
-        *   The Anchor component class.
-        *
-        *   @class 
-        *   @constructor
-        *   @param {x}
-        *   @param {y}
-        *   @param {z}
-        */
+        
         var Anchor = function(x, y, z) {
             Component.call(this);
 

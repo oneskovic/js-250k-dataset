@@ -1,12 +1,7 @@
 define(["./URLResourceProvider", "./BuiltInResourceProvider"], function (URLResourceProvider, BuiltInResourceProvider) {
     "use strict";
 
-    /**
-     * Responsible for loading of resources. Use the Engine object to obtain a reference to this object.
-     * @class ResourceLoader
-     * @namespace kick.core
-     * @constructor
-     */
+    
     return function (engine) {
         var resourceProviders =
                 [

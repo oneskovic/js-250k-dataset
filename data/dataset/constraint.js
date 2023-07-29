@@ -1,4 +1,3 @@
-
 var Constraint = function(options){
     this.points_ = options.points;
 

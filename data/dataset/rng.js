@@ -1,5 +1,3 @@
-// Downloaded from http://www-cs-students.stanford.edu/~tjw/jsbn/ by Jeremy White on 6/1/2012
-
 /*
  * Copyright (c) 2003-2005  Tom Wu
  * All Rights Reserved.

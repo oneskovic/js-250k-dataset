@@ -12,7 +12,7 @@ $.fn.graphsearch = function(opts) {
 
     var showAutocomplete = function(inds) {
       console.log(inds);
-        /* need to clear autocomplete first */
+        
 showActiveField(GS.rels[inds[0]], GS.search[inds[1]]);
 
 /*

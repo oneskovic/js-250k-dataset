@@ -1,7 +1,3 @@
-/**
- * @author sorakasugano
- */
-
 var VideoComponent = ComponeBase.extend({
     init:function(){
         this._super();

@@ -1,11 +1,3 @@
-/*
- * Chrome-Last.fm-Scrobbler MixCloud.com Connector
- *
- * by Stephen Paszt
- *
- * Derived from Pandora module by Jordan Perr, changed DOMSubtreeModified event handler to MutationObserver
- */
-
 /********* Configuration: ***********/
 
 // changes to the DOM in this container will trigger an update.

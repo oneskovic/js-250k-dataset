@@ -1,6 +1,3 @@
-/**
- * @private
- */
 Ext.define('Ext.grid.ViewDropZone', {
     extend: 'Ext.view.DropZone',
 

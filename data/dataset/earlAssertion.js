@@ -18,11 +18,7 @@ quail.lib.wcag2.EarlAssertion = (function () {
     pageUrl = window.location.href;
   }
 
-  /**
-   * Create a new earl assert object
-   * @param {object} base Properties from this object are added to the Assertion
-   *                      and override the default.
-   */
+  
   function Assertion (base) {
     $.extend(this, base, defaultAssertion);
     this.outcome = $.extend({}, this.outcome);

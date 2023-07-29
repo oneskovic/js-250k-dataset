@@ -35,7 +35,7 @@ var QuoteWalker = (function (_super) {
         _super.call(this, syntaxTree, options);
         var quoteMarkString = this.getOptions()[0];
         if (quoteMarkString === "single") {
-            this.quoteMark = 0 /* SINGLE_QUOTES */;
+            this.quoteMark = 0 ;
         }
         else {
             this.quoteMark = 1 /* DOUBLE_QUOTES */;
@@ -55,7 +55,7 @@ var QuoteWalker = (function (_super) {
             var textEnd = textStart + width - 1;
             var firstCharacter = fullText.charAt(textStart);
             var lastCharacter = fullText.charAt(textEnd);
-            if (this.quoteMark === 0 /* SINGLE_QUOTES */) {
+            if (this.quoteMark === 0 ) {
                 if (firstCharacter !== "'" || lastCharacter !== "'") {
                     failure = this.createFailure(position, width, Rule.SINGLE_QUOTE_FAILURE);
                 }

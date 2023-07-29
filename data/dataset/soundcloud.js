@@ -5,7 +5,7 @@ var Plugin     = require("../modules/Plugin");
 var Utils      = require("../modules/Utilities");
 var soundcloud = Object.create(Plugin);
 
-/* allows us to clean arrays of specified values */
+
 Array.prototype.clean = function(deleteValues) {
     for (var i = deleteValues.length - 1; i >= 0; i--) {
         for (var j = 0; j < this.length; j++) {

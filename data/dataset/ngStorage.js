@@ -2,10 +2,7 @@
 
 (function() {
 
-    /**
-     * @ngdoc overview
-     * @name ngStorage
-     */
+    
 
     angular.module('ngStorage', []).
 

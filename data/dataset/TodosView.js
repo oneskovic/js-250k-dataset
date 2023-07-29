@@ -1,121 +1,110 @@
-/*global define */
+define([
+    "backbone",
+    "jquery",
+    "lodash",
+    "modules/view/abstract/BasicView",
+    "modules/TodosCollection",
+    "modules/view/SingleTodoView",
+    "common"
+],
+    function (Backbone, $, _, BasicView, TodosCollection, SingleTodoView, Common) {
+        var TodosView = BasicView.extend({
+            id : "todosPage", // used for template
+            initialize : function () {
+                TodosCollection.unbind();
+                TodosCollection.on('add', this.addOne, this);
+                TodosCollection.on('reset', this.addAllTodos, this);
+                TodosCollection.on('change:completed', this.filterOne, this);
+                TodosCollection.on("filter", this.filterAll, this);
+                TodosCollection.on('all', this.render, this);
+                TodosCollection.fetch();
+            },
+            events : {
+                'keypress #new-todo' : 'createOnEnter',
+                'click #clear-completed' : 'clearCompleted',
+                'change #toggle-all' : 'toggleAllComplete'
+            },
+            getSpecificTemplateValues : function () {
+                return {
+                    'completed' : TodosCollection.completed().length,
+                    'remaining' : TodosCollection.remaining().length,
+                    'isAnyOrOneRemaining' : TodosCollection.remaining().length > 1,
+                    'isAnyCompleted' : TodosCollection.completed().length > 0
+                };
+            },
+            render : function () {
+                this.input = this.$('#new-todo');
+                this.allCheckbox = this.$('#toggle-all')[0];
+                this.$footer = this.$('#footer');
+                var currentFooterHTML = Handlebars.partials['todosStatisticsAndBulkFooter'](this.getSpecificTemplateValues());
+                this.$('#footer').html(currentFooterHTML).trigger("create");
 
-define(function (require) {
-	'use strict';
+                this.$main = this.$('#main');
 
-	// constants
-	var ENTER_KEY = 13;
+                var completed = TodosCollection.completed().length;
+                var remaining = TodosCollection.remaining().length;
 
-	var PageView = require('lavaca/mvc/PageView');
-	var TodosCollectionView = require('app/ui/views/TodosCollectionView');
-	require('rdust!templates/todos');
+                if (TodosCollection.length) {
+                    this.$main.show();
+                    this.$footer.show();
 
-	/**
-	 * Todos view type
-	 * @class app.ui.views.TodosView
-	 * @super Lavaca.mvc.PageView
-	 */
-	var TodosView = PageView.extend(function TodosView() {
-		// Call the super class' constructor
-		PageView.apply(this, arguments);
+                    this.$('#filters li a')
+                        .removeClass('selected')
+                        .filter('[href="#/' + ( Common.TodoFilter || '' ) + '"]')
+                        .addClass('selected');
+                } else {
+                    this.$main.hide();
+                    this.$footer.hide();
+                }
+                this.allCheckbox.checked = !remaining;
+            },
+            addOne : function (todo) {
+                var view = new SingleTodoView({ model : todo });
+                $('#todo-list').append(view.render().el).trigger("create");
+            },
+            addAllTodos : function () {
+                this._super("render", {});
+                this.$('#todo-list').html('');
+                TodosCollection.each(this.addOne, this);
+            },
+            filterOne : function (todo) {
+                todo.trigger("visible");
+            },
+            filterAll : function () {
+                TodosCollection.each(this.filterOne, this);
+            },
+            newAttributes : function () {
+                return {
+                    title : this.input.val().trim(),
+                    order : TodosCollection.nextOrder(),
+                    completed : false
+                };
+            },
+            createOnEnter : function (e) {
+                if (e.which !== Common.ENTER_KEY || !this.input.val().trim()) {
+                    return;
+                }
+                TodosCollection.create(this.newAttributes());
+                this.input.val('');
+            },
+            toggleAllComplete : function () {
+                var wasNoRemainingBefore = TodosCollection.remaining().length > 0;
 
-		// Map collection view to #todo-list
-		this.mapChildView('#todo-list', TodosCollectionView, this.model);
+              TodosCollection.each(function (todo) {
+                    todo.toggle();
+                    todo.save({
+                        'completed' : wasNoRemainingBefore
+                    });
+                });
+                this.delegateEvents(this.events);
+            },
+            clearCompleted : function () {
+                _.each(TodosCollection.completed(), function (todo) {
+                    todo.destroy();
+                });
+            }
+        });
 
-		// Map DOM and model events to event handler functions declared below
-		this.mapEvent({
-			'#new-todo': {
-				keypress: addTodo.bind(this)
-			},
-			'input#toggle-all': {
-				change: toggleAll.bind(this)
-			},
-			'button#clear-completed': {
-				click: removeCompleted.bind(this)
-			},
-			model: {
-				'addItem': modelChange.bind(this),
-				'moveItem': modelChange.bind(this),
-				'removeItem': modelChange.bind(this),
-				'changeItem': modelChange.bind(this)
-			}
-		});
-
-		this.countIsZero = !this.model.count();
-	}, {
-		/**
-		 * @field {String} template
-		 * @default 'example'
-		 * The name of the template used by the view
-		 */
-		template: 'templates/todos',
-
-		/**
-		 * @field {String} className
-		 * @default 'example'
-		 * A class name added to the view container
-		 */
-		className: 'todos'
-	});
-
-	/* ---- Event Handlers ---- */
-
-	// Whenever the model changes, set a timeout that will re-render the view's
-	// template and update the DOM. Clear the timeout with every call to make sure
-	// that the redraw only happens once even if multiple changes are made in the
-	// same run loop
-	function modelChange() {
-		clearTimeout(this.redrawTimeout);
-
-		this.redrawTimeout = setTimeout(function () {
-			var count = this.model.count();
-
-			if (count === 0) {
-				this.countIsZero = true;
-				this.redraw();
-			} else if (this.countIsZero && count) {
-				this.countIsZero = false;
-				this.redraw();
-			} else {
-				this.redraw('#footer, #toggle-all');
-			}
-		}.bind(this));
-	}
-
-	// Create a new Todo when the ENTER
-	// key is pressed
-	function addTodo(e) {
-		var input = e.currentTarget;
-		var val;
-
-		if (e.which === ENTER_KEY) {
-			val = input.value.trim();
-
-			if (val) {
-				this.model.add({
-					id: Date.now(),
-					title: val,
-					completed: false
-				});
-
-				input.value = '';
-			}
-
-			e.preventDefault();
-		}
-	}
-
-	// Set the completion state of all models
-	function toggleAll(e) {
-		this.model.each(function (index, model) {
-			model.set('completed', e.currentTarget.checked);
-		});
-	}
-
-	// Remove all completed Todos
-	function removeCompleted() {
-		this.model.removeCompleted();
-	}
-
-	return TodosView;
-});
+        return TodosView;
+    })
+;

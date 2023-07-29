@@ -1,104 +1,57 @@
-/*
-
-  ## filtering
-
-*/
-define([
-  'angular',
-  'app',
-  'underscore'
-],
-function (angular, app, _) {
-  'use strict';
-
-  var module = angular.module('kibana.panels.filtering', []);
-  app.useModule(module);
-
-  module.controller('filtering', function($scope, datasourceSrv, $rootScope, $timeout, $q) {
-
-    $scope.panelMeta = {
-      status  : "Stable",
-      description : "graphite target filters"
+angular.module('adaptv.adaptStrap', [
+  'adaptv.adaptStrap.utils',
+  'adaptv.adaptStrap.treebrowser',
+  'adaptv.adaptStrap.tablelite',
+  'adaptv.adaptStrap.tableajax',
+  'adaptv.adaptStrap.loadingindicator',
+  'adaptv.adaptStrap.draggable',
+  'adaptv.adaptStrap.infinitedropdown',
+  'adaptv.adaptStrap.alerts'
+])
+  .provider('$adConfig', function () {
+    var iconClasses = this.iconClasses = {
+        expand: 'glyphicon glyphicon-plus-sign',
+        collapse: 'glyphicon glyphicon-minus-sign',
+        loadingSpinner: 'glyphicon glyphicon-refresh ad-spin',
+        firstPage: 'glyphicon glyphicon-fast-backward',
+        previousPage: 'glyphicon glyphicon-backward',
+        nextPage: 'glyphicon glyphicon-forward',
+        lastPage: 'glyphicon glyphicon-fast-forward',
+        sortAscending: 'glyphicon glyphicon-chevron-up',
+        sortDescending: 'glyphicon glyphicon-chevron-down',
+        sortable: 'glyphicon glyphicon-resize-vertical',
+        draggable: 'glyphicon glyphicon-align-justify',
+        selectedItem: 'glyphicon glyphicon-ok',
+        alertInfoSign: 'glyphicon glyphicon-info-sign',
+        alertSuccessSign: 'glyphicon glyphicon-ok',
+        alertWarningSign: 'glyphicon glyphicon-warning-sign',
+        alertDangerSign: 'glyphicon glyphicon-exclamation-sign'
+      },
+      paging = this.paging = {
+        request: {
+          start: 'skip',
+          pageSize: 'limit',
+          page: 'page',
+          sortField: 'sort',
+          sortDirection: 'sort_dir',
+          sortAscValue: 'asc',
+          sortDescValue: 'desc'
+        },
+        response: {
+          itemsLocation: 'data',
+          totalItems: 'pagination.totalCount'
+        },
+        pageSize: 10,
+        pageSizes: [10, 25, 50]
+      }, componentClasses = this.componentClasses = {
+        tableLiteClass: 'table',
+        tableAjaxClass: 'table'
+      };
+    this.$get = function () {
+      return {
+        iconClasses: iconClasses,
+        paging: paging,
+        componentClasses: componentClasses
+      };
     };
-
-    // Set and populate defaults
-    var _d = {
-    };
-    _.defaults($scope.panel,_d);
-
-    $scope.init = function() {
-      // empty. Don't know if I need the function then.
-    };
-
-    $scope.remove = function(templateParameter) {
-      $scope.filter.removeTemplateParameter(templateParameter);
-    };
-
-    $scope.filterOptionSelected = function(templateParameter, option, recursive) {
-      templateParameter.current = option;
-
-      $scope.filter.updateTemplateData();
-
-      return $scope.applyFilterToOtherFilters(templateParameter)
-        .then(function() {
-          // only refresh in the outermost call
-          if (!recursive) {
-            $scope.dashboard.refresh();
-          }
-        });
-    };
-
-    $scope.applyFilterToOtherFilters = function(updatedTemplatedParam) {
-      var promises = _.map($scope.filter.templateParameters, function(templateParam) {
-        if (templateParam === updatedTemplatedParam) {
-          return;
-        }
-        if (templateParam.query.indexOf(updatedTemplatedParam.name) !== -1) {
-          return $scope.applyFilter(templateParam);
-        }
-      });
-
-      return $q.all(promises);
-    };
-
-    $scope.applyFilter = function(templateParam) {
-      return datasourceSrv.default.metricFindQuery($scope.filter, templateParam.query)
-        .then(function (results) {
-          templateParam.editing = undefined;
-          templateParam.options = _.map(results, function(node) {
-            return { text: node.text, value: node.text };
-          });
-
-          if (templateParam.includeAll) {
-            var allExpr = '{';
-            _.each(templateParam.options, function(option) {
-              allExpr += option.text + ',';
-            });
-            allExpr = allExpr.substring(0, allExpr.length - 1) + '}';
-            templateParam.options.unshift({text: 'All', value: allExpr});
-          }
-
-          // if parameter has current value
-          // if it exists in options array keep value
-          if (templateParam.current) {
-            var currentExists = _.findWhere(templateParam.options, { value: templateParam.current.value });
-            if (currentExists) {
-              return $scope.filterOptionSelected(templateParam, templateParam.current, true);
-            }
-          }
-
-          return $scope.filterOptionSelected(templateParam, templateParam.options[0], true);
-        });
-    };
-
-    $scope.add = function() {
-      $scope.filter.addTemplateParameter({
-        type      : 'filter',
-        name      : 'filter name',
-        editing   : true,
-        query     : 'metric.path.query.*',
-      });
-    };
-
   });
-});

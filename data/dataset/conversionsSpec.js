@@ -1,6 +1,3 @@
-/**
- * Created by jlikness on 9/27/2014.
- */
 describe("Conversions", function() {
 
     var conversions;

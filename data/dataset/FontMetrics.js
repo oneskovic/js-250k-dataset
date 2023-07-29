@@ -1,11 +1,6 @@
 "use strict";
 
-/**
- * A simple wrapper for system fonts to provide
- * @param {String} family Font Family (same as in CSS)
- * @param {Number} size Size in px
- * @constructor
- */
+
 var FontMetrics = function(family, size) {
   this._family = family || (family = "Monaco, 'Courier New', Courier, monospace");
   this._size = parseInt(size) || (size = 12);

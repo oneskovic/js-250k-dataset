@@ -1,93 +1,107 @@
-dojo.provide("dojox.xmpp.UserService");
+/**
+ * @module alfresco/services/UserService
+ * @extends module:alfresco/core/Core
+ * @mixes module:alfresco/core/CoreXhr
+ * @mixes module:alfresco/core/NotificationUtils
+ * @author Dave Draper
+ */
+define(["dojo/_base/declare",
+        "alfresco/core/Core",
+        "alfresco/core/CoreXhr",
+        "alfresco/core/NotificationUtils",
+        "dojo/request/xhr",
+        "dojo/json",
+        "dojo/_base/lang",
+        "service/constants/Default"],
+        function(declare, AlfCore, AlfXhr, NotificationUtils, xhr, JSON, lang, AlfConstants) {
+   
+   return declare([AlfCore, AlfXhr, NotificationUtils], {
+      
+      /**
+       * An array of the i18n files to use with this widget.
+       * 
+       * @instance
+       * @type {object[]}
+       * @default [{i18nFile: "./i18n/UserService.properties"}]
+       */
+      i18nRequirements: [{i18nFile: "./i18n/UserService.properties"}],
+      
+      /**
+       * Sets up the subscriptions for the UserService
+       * 
+       * @instance 
+       * @param {array} args The constructor arguments.
+       */
+      constructor: function alf_services_UserService__constructor(args) {
+         lang.mixin(this, args);
+         this.alfSubscribe("ALF_UPDATE_USER_STATUS", lang.hitch(this, "updateUserStatus"));
+      },
+      
+      /**
+       * Handles XHR posting to a new user status mesage to the server. 
+       * 
+       * @instance
+       * @param {object} data The payload containing the user status to post.
+       */
+      updateUserStatus: function alf_services_UserService__updateUserStatus(data) {
+         var _this = this,
+             url = AlfConstants.URL_SERVICECONTEXT + "components/profile/userstatus";
+         this.serviceXhr({url : url,
+                          data: data,
+                          method: "POST",
+                          successCallback: this.userStatusUpdateSuccess,
+                          failureCallback: this.userStatusUpdateFailure,
+                          callbackScope: this});
+      },
+      
+      /**
+       * This handles successfully completed requests to update the user status.
+       * 
+       * @instance
+       * @param {object} response The response from the request
+       * @param {object} originalRequestConfig The configuration passed on the original request
+       */
+      userStatusUpdateSuccess: function alf_services_UserService__userStatusUpdateSuccess(response, originalRequestConfig) {
+         // NOTE: The current update status API does NOT include the updated status message in the
+         //       response. Ideally it would be nice to change this such that it does to ensure
+         //       that the users status is correctly reflected. However, we will include the user
+         //       status property here in the publication payload and set it to null to indicate
+         //       that it is unknown. This is done because the UserStatus widget (at the time of 
+         //       writing the only subscriber to this publication is coded to handle status updates
+         //       that DO include a status message.
+         this.alfLog("log", "User Status Update Success", response);
+         if (typeof response == "string")
+         {
+            var response = JSON.parse(this.cleanupJSONResponse(response));
+         }
 
-dojo.declare("dojox.xmpp.UserService", null, {
-	constructor: function(xmppService){
-		this.session= xmppService;
-	},
+         // Display a success message...
+         this.displayMessage(this.message("message.status.success"));
 
-	getPersonalProfile: function(){
-		var req={
-			id: this.session.getNextIqId(),
-			type: 'get'
-		}
-		var request = new dojox.string.Builder(dojox.xmpp.util.createElement("iq",req,false));
-		request.append(dojox.xmpp.util.createElement("query",{xmlns:"jabber:iq:private"},false));
-		request.append(dojox.xmpp.util.createElement("sunmsgr",{xmlsns:'sun:xmpp:properties'},true));
-		request.append("</query></iq>");
-
-		var def = this.session.dispatchPacket(request.toString(),"iq",req.id);
-		def.addCallback(this, "_onGetPersonalProfile");
-	},
-
-	setPersonalProfile: function(props){
-		var req={
-			id: this.session.getNextIqId(),
-			type: 'set'
-		}			
-		
-		var request = new dojox.string.Builder(dojox.xmpp.util.createElement("iq",req,false));
-		request.append(dojox.xmpp.util.createElement("query",{xmlns:"jabber:iq:private"},false));
-		request.append(dojox.xmpp.util.createElement("sunmsgr",{xmlsns:'sun:xmpp:properties'},false));
-
-		for (var key in props){
-			request.append(dojox.xmpp.util.createElement("property",{name: key},false));
-			request.append(dojox.xmpp.util.createElement("value",{},false));
-			request.append(props[key]);
-			request.append("</value></props>");
-		}
-		
-		request.append("</sunmsgr></query></iq>");
-
-		var def = this.session.dispatchPacket(request.toString(), "iq", req.id);
-		def.addCallback(this, "_onSetPersonalProfile");
-	},
-
-	_onSetPersonalProfile: function(response){
-		if(response.getAttribute('type')=='result'){
-			this.onSetPersonalProfile(response.getAttribute('id'));
-		}else if(response.getAttribute('type')=='error'){
-			var err = this.session.processXmppError(response);
-			this.onSetPersonalProfileFailure(err);
-		}
-	},
-
-	onSetPersonalProfile: function(id){},
-	onSetPersonalProfileFailure: function(err){},
-
-	_onGetPersonalProfile: function(profile){
-		if (profile.getAttribute('type')=='result'){
-			props = {};
-
-			if (profile.hasChildNodes()){
-				var queryNode = profile.firstChild;
-				if ((queryNode.nodeName=="query")&&(queryNode.getAttribute('xmlns')=='jabber:iq:private')){
-					var sunNode = queryNode.firstChild;
-					if ((sunNode.nodeName=='query')&&(sunNode.getAttributes('xmlns')=='sun:xmpp:properties')){
-						for (var i=0; i<sunNode.childNodes.length;i++){
-							var n = sunNode.childNodes[i];
-							if(n.nodeName == 'property'){
-								var name = n.getAttribute('name');
-								var val = n.firstChild || "";
-								props[name]=val;
-							}
-						}
-					}
-				}
-				this.onGetPersonalProfile(props);
-			}
-		}else if (profile.getAttribute('type')=='error'){
-			var err = this.session.processXmppError(profile);
-			this.onGetPersonalProfileFailure(err);
-		}
-
-		return profile;
-	},
-
-	onGetPersonalProfile: function(profile){
-		//console.log("UserService::onGetPersonalProfile() ", profile);
-	},
-
-	onGetPersonalProfileFailure: function(err){
-		//console.log("UserService::onGetPersonalProfileFailure() ", err);
-	}
+         this.alfPublish("ALF_USER_STATUS_UPDATED", {
+            userStatus: originalRequestConfig.data.status,
+            userStatusTime: response.userStatusTime.iso8601
+         });
+      },
+      
+      /**
+       * This handles failed attempts to update the user status.
+       * 
+       * @instance
+       * @param {object} response The response from the request
+       * @param {object} originalRequestConfig The configuration passed on the original request
+       */
+      userStatusUpdateFailure: function alf_services_UserService__userStatusUpdateFailure(response, originalRequestConfig) {
+         this.alfLog("log", "User Status Update Failure", response);
+         if (typeof response == "string")
+         {
+            var response = JSON.parse(this.cleanupJSONResponse(response));
+         }
+         
+         // Display a failure message...
+         this.displayMessage(this.message("message.status.failure"));
+         
+         this.alfPublish("ALF_USER_STATUS_UPDATE_FAILURE", response);
+      }
+   });
 });

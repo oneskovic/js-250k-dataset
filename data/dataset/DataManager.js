@@ -1,8 +1,3 @@
-/**
- * User: kgoulding
- * Date: 4/10/12
- * Time: 10:11 PM
- */
 (function () { // self-invoking function
     SAS.DataManager = function () {
         var _self = this;

@@ -1,6 +1,3 @@
-/**
- * @author thatcher
- */
 (function($, $$, $S){
 
     var log,

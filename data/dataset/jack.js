@@ -1,7 +1,3 @@
-/**
- * Internal dependencies.
- */
-
 var util = require('./util');
 
 /**

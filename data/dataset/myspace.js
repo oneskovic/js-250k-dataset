@@ -1,11 +1,3 @@
-/*
- * Chrome-Last.fm-Scrobbler MySpace.com "new interface" Connector
- *
- * Stephen Paszt
- *
- * Derived from Pandora module by Jordan Perr and previous module by Ed Rackham
- */
-
 /********* Configuration: ***********/
 
 // changes to the DOM in this container will trigger an update.

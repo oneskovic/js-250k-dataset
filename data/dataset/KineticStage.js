@@ -6,9 +6,7 @@ var Kinetic = require('kinetic');
 var KineticBaseMixin = require('./KineticBaseMixin');
 var KineticContainerMixin = require('./KineticContainerMixin');
 
-/**
- * Core Kinetic stage.
- */
+
 var Stage = React.createClass({
   displayName: 'Stage',
 

@@ -7,13 +7,7 @@ goog.require('net.Protocol');
 goog.require('net.Protocol.S2CPacketType');
 goog.require('views.View');
 
-/**
- * @constructor
- * @extends {views.View}
- * @param {!Object} loginData
- * @param {!net.Protocol} protocol
- * @param {function(!Object.<string, !Object>, !Object, !Object.<number, number>, !Array.<!Object>)} successCb
- */
+
 views.LoginView = function(loginData, protocol, successCb) {
   goog.base(this);
 

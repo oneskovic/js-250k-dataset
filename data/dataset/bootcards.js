@@ -2,11 +2,7 @@ var bootcards = bootcards || {};
 
 bootcards._isXS = null;
 
-/*
- * Get the Bootstrap enviroment we're in.
- * Found at http://stackoverflow.com/questions/14441456/how-to-detect-which-device-view-youre-on-using-twitter-bootstrap-api/15150381#15150381
- * Function writen by Raphael_ (http://stackoverflow.com/users/1661358/raphael)
- */
+
 bootcards.findBootstrapEnvironment = function() {
     var envs = ["ExtraSmall", "Small", "Medium", "Large"];
     var envValues = ["xs", "sm", "md", "lg"];

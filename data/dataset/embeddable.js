@@ -1,4 +1,3 @@
-/*global Lab, $, _gaq, Embeddable: true, AUTHORING: true */
 /*jshint boss:true */
 
 // Strawman setting for telling the interactive to be in "author mode",

@@ -1,10 +1,3 @@
-/*
- * installed.js: Commands related to working with installed systems.
- *
- * (C) 2010, Nodejitsu Inc.
- *
- */
-
 var fs = require('fs'),
     path = require('path'),
     spawn = require('child_process').spawn,

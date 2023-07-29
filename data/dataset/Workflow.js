@@ -1,6 +1,3 @@
-/**
- * Model representing a Staff object
- */
 Ext.define('CarTracker.model.Workflow', {
     extend: 'CarTracker.model.Base',    
     idProperty: 'WorkflowID',

@@ -1,7 +1,3 @@
-/**
- * @author xuld
- */
-
 //#include ui/core/base.js
 
 /**

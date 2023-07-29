@@ -1,4 +1,3 @@
-// Here we hold all the interactions with the blockchain.
 var BLOCKCHAIN = new function () {
   
   this.retrieveBalance = function(address, callback) {

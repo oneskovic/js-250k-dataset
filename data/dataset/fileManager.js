@@ -1,4 +1,3 @@
-//region includes
 var fs = require("fs");
 var url = require('url');
 var imageMagick = require('imagemagick');

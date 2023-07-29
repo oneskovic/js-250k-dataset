@@ -1,76 +1,57 @@
-openerp.unleashed.module('web_unleashed', function(base, _, Backbone){
-    
-    var _super = Backbone.Model.prototype;
-    
-    /*
-     * @class
-     * @module      web_unleashed
-     * @name        State
-     * @classdesc   manage the state of a view, useful to keep the state persistent by using URL parameters
-     * @mixes       Backbone.Model
-     * 
-     * @author Michel Meyer <michel[at]zazabe.fr>
-     */
-    var State = Backbone.Model.extend({
-        
-        /*
-         * @property {Object} defaults URL parameters used by default
-         */
-        defaults: {
-            action: null,
-            menu_id: null,
-            model: null,
-            view_type: null
-        },
-        
-        /*
-         * @abstract
-         * Link some object with the state manager 
-         */
-        link: function(){
-        },
-        
-        /*
-         * @abstract
-         * Bind linked object events with the state and apply changes to the State model to push URL parameters 
-         */
-        bind: function(){
-        },
-        
-        /*
-         * @abstract
-         * Unbind listeners on linked objects 
-         */
-        unbind: function(){
-        },
-        
-        /*
-         * @abstract
-         * Configure linked object based on the current state
-         * @returns {jQuery.Deferred.promise} 
-         */
-        process: function(){
-            this.set($.bbq.getState());
-            this.push();
-            return $.when();
-        },
-        
-        /*
-         * @abstract
-         * Fire the "change" event to push the current state 
-         */
-        push: function(){
-            this.trigger('change', this);
-        },
-        
-        /*
-         * Destroy the state model and remove all listeners 
-         */
-        destroy: function(){
-            this.unbind();
-            _super.destroy.apply(this, arguments);
-        }
-    });
+var _clientIdCounter = 0;
 
-    base.models('State', State);
+
+/**
+ * Keep track of the state of the client instances.
+ *
+ * Entry structure:
+ *   _clientMeta[client.id] = {
+ *     instance: client,
+ *     elements: [],
+ *     handlers: {}
+ *   };
+ */
+var _clientMeta = {};
+
+
+/**
+ * Keep track of the ZeroClipboard clipped elements counter.
+ */
+var _elementIdCounter = 0;
+
+
+/**
+ * Keep track of the state of the clipped element relationships to clients.
+ *
+ * Entry structure:
+ *   _elementMeta[element.zcClippingId] = [client1.id, client2.id];
+ */
+var _elementMeta = {};
+
+
+/**
+ * Keep track of the state of the mouse event handlers for clipped elements.
+ *
+ * Entry structure:
+ *   _mouseHandlers[element.zcClippingId] = {
+ *     mouseover:  function(event) {},
+ *     mouseout:   function(event) {},
+ *     mouseenter: function(event) {},
+ *     mouseleave: function(event) {},
+ *     mousemove:  function(event) {}
+ *   };
+ */
+var _mouseHandlers = {};
+
+
+/**
+ * Extending the ZeroClipboard configuration defaults for the Client module.
+ */
+_extend(_globalConfig, {
+
+  // Setting this to `false` would allow users to handle calling
+  // `ZeroClipboard.focus(...);` themselves instead of relying on our
+  // per-element `mouseover` handler.
+  autoActivate: true
+
 });

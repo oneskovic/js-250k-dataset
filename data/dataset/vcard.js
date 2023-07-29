@@ -1,12 +1,3 @@
-/* 
-Plugin to implement the vCard extension. 
-http://xmpp.org/extensions/xep-0054.html
-
-Authors:
-Nathan Zorn (nathan.zorn@gmail.com)
-Adán Sánchez de Pedro Crespo (adansdpc@waalt.com)
-
-*/
 /* jslint configuration: */
 /* global document, window, setTimeout, clearTimeout, console,
     XMLHttpRequest, ActiveXObject,

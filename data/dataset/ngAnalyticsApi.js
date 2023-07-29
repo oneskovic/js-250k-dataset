@@ -1,5 +1,3 @@
-// Call the init method with sessionId
-
 angular.module('analyticsApi', [], function($provide) { 
     $provide.factory('analyticsApiService', ['$http', '$timeout', 
         function($http, $timeout){

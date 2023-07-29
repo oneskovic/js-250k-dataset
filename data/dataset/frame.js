@@ -1,65 +1,132 @@
+define([
+        'jquery',
+        'angular'
+    ], function(
+        jQuery,
+        angular
+    ) {
+'use strict';
 
-/*!
- * Stylus - stack - Frame
- * Copyright(c) 2010 LearnBoost <dev@learnboost.com>
- * MIT Licensed
- */
+return ['wdpImageHelper', function(wdpImageHelper) {
+    return {
+        link: function($scope, element, attrs) {
+            var $current = null;
+            var create = function(newPhoto) {
+                // Create an img tag, then set its dimensions according to frame's.
+                // At last, fade it in after the image resource being fully loaded.
+                var $image = angular.element('<img>');
+                $image
+                    .data('photo', newPhoto)
+                    .data('width', newPhoto.orientation % 180 === 0 ? newPhoto.width : newPhoto.height)
+                    .data('height', newPhoto.orientation % 180 === 0 ? newPhoto.height : newPhoto.width)
+                    .data('rotation', 0)
+                    .attr('src', newPhoto.thumbnail_path);
+                layout($image);
+                wdpImageHelper.preload(newPhoto.path).then(function() {
+                    $image
+                        .attr('src', newPhoto.path)
+                        .data('rotation', $image.data('rotation') + newPhoto.orientation)
+                        .data('width', newPhoto.width)
+                        .data('height', newPhoto.height)
+                        .css({
+                            transition: 'none',
+                            transform: 'rotate(' + $image.data('rotation') + 'deg)'
+                        });
+                        layout($image);
+                });
 
-/**
- * Module dependencies.
- */
+                return $image;
+            };
+            var destroy = function($image) {
+                return $image.stop().fadeOut(200).promise().done(function() {
+                    $image.remove();
+                });
+            };
+            var layout = function($image) {
+                var horizontal = $image.data('rotation') % 180 === 0;
+                var photo = $image.data('photo');
+                // var frameWidth = element.width();
+                // var frameHeight = element.height();
+                var frameWidth = angular.element(window).width() - 90 * 2;
+                var frameHeight = angular.element(window).height() - 30 - 80;
+                var imageWidth = horizontal ? $image.data('width') : $image.data('height');
+                var imageHeight = horizontal ? $image.data('height') : $image.data('width');
+                var widthScale = imageWidth / frameWidth;
+                var heightScale = imageHeight / frameHeight;
+                var scale = Math.max(widthScale, heightScale);
+                if (scale > 1) {
+                    imageWidth = imageWidth / scale;
+                    imageHeight = imageHeight / scale;
+                }
+                var offsetX = (frameWidth - (horizontal ? imageWidth : imageHeight)) / 2;
+                var offsetY = (frameHeight - (horizontal ? imageHeight : imageWidth)) / 2;
+                $image.css({
+                    position: 'absolute',
+                    width: horizontal ? imageWidth : imageHeight,
+                    height: horizontal ? imageHeight : imageWidth,
+                    left: offsetX,
+                    top: offsetY
+                });
+            };
+            var relayoutAll = function() {
+                element.children('img').each(function() {
+                    layout(angular.element(this));
+                });
+            };
 
-var Scope = require('./scope');
+            // Watching $scope via 'photo' attribute to update images
+            $scope.$watch(attrs.photo, function(newPhoto) {
+                // Destroy current image tag first.
+                // The tag may not be removed immediately, for sake of fading out may take some
+                // time.
+                var promise = null;
+                if ($current) {
+                    promise = destroy($current);
+                }
+                // Create a new img tag, then append it to DOM.
+                if (newPhoto) {
+                    $current = create(newPhoto);
+                    $current.hide().appendTo(element);
+                    if (promise) {
+                        promise.done(function() {
+                            $current.fadeIn(200);
+                        });
+                    }
+                    else {
+                        $current.show();
+                    }
+                }
+            });
 
-/**
- * Initialize a new `Frame` with the given `block`.
- *
- * @param {Block} block
- * @api private
- */
+            // Relayout triggering timming.
+            // 1. When parent container resized.
+            // 2. When parent container shown.
+            $scope.$on('resize', relayoutAll);
+            $scope.$on('open',   relayoutAll);
+            $scope.$on('show', function() {
+                element.css('visibility', 'visible');
+            })
+            $scope.$on('hide', function() {
+                element.css('visibility', 'hidden');
+            });
 
-var Frame = module.exports = function Frame(block) {
-  this._scope = false === block.scope
-    ? null
-    : new Scope;
-  this.block = block;
-};
-
-/**
- * Return this frame's scope or the parent scope
- * for scope-less blocks.
- *
- * @return {Scope}
- * @api public
- */
-
-Frame.prototype.__defineGetter__('scope', function(){
-  return this._scope || this.parent.scope;
+            $scope.$on('rotate', function() {
+                // Error-tolerate
+                if (!$current) {
+                    return;
+                }
+                // Counter Clock-Wise, same as the icon.
+                var rotation = $current.data('rotation') - 90;
+                $current
+                    .data('rotation', rotation)
+                    .css({
+                        transform: 'rotate(' + rotation + 'deg)',
+                        transition: '-webkit-transform 0.2s'
+                    });
+                // After rotation, need relayout to guarantee the image still fix to the viewport.
+                layout($current);
+            });
+        }
+    };
+}];
 });
-
-/**
- * Lookup the given local variable `name`.
- *
- * @param {String} name
- * @return {Node}
- * @api private
- */
-
-Frame.prototype.lookup = function(name){
-  return this.scope.lookup(name)
-};
-
-/**
- * Custom inspect.
- *
- * @return {String}
- * @api public
- */
-
-Frame.prototype.inspect = function(){
-  return '[Frame '
-    + (false === this.block.scope
-        ? 'scope-less'
-        : this.scope.inspect())
-    + ']';
-};

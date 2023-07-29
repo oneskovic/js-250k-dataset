@@ -1,9 +1,3 @@
-/**
- * User: seb
- * Date: 10/5/12
- * Time: 5:15 PM
- * To change this template use File | Settings | File Templates.
- */
 var xmlrpc = require('xmlrpc');
 
 var ep = module.exports = function() {

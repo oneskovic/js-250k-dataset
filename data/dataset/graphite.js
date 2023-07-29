@@ -1,25 +1,3 @@
-/*
- * graphite.js: Stream responsible for sending metrics on data events to graphite.
- *
- * @obazoud
- *
- * Important: set mulitplex to false to create only one Graphite client
- *
- * godot.createServer({
- *   type: 'tcp',
- *   multiplex: false,
- *   reactors: [
- *     godot.reactor()
- *       .graphite({
- *         url: 'plaintext://carbon.hostedgraphite.com:2003',
- *         prefix: 'xxxx.godot',
- *        })
- *       .console()
- *   ]
- * }).listen(1337);
- *
- */
-
 var utile = require('utile'),
     graphite = require('graphite'),
     ReadWriteStream = require('../common/read-write-stream');

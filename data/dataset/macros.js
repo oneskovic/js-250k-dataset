@@ -1,10 +1,3 @@
-/*
- * macros.js: Test macros for the forever module
- *
- * (C) 2010 Nodejitsu Inc.
- * MIT LICENCE
- *
- */
  
 var assert = require('assert'),
     path = require('path'),

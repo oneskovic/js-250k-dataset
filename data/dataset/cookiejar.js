@@ -2,9 +2,7 @@ var CookieJar = Class.create();
 
 CookieJar.prototype = {
 
-  /**
-  * Prepend before all cookie names to differentiate them.
-  */
+  
   prependString: "__CJ_",
 
   /**

@@ -8,11 +8,7 @@ var ArrayExpression = module.exports = Base.extend({
     this.type = 'ArrayExpression';
   },
 
-  /**
-   * push a new value in the array
-   * @param  {String} arg New value as a string
-   * @return {this}
-   */
+  
   push: function (arg) {
     arg = valueFactory.create(arg);
     this.nodes.forEach(function (node) {
@@ -21,11 +17,7 @@ var ArrayExpression = module.exports = Base.extend({
     return this;
   },
 
-  /**
-   * unshift a new value in the array
-   * @param  {String} arg New value as a string
-   * @return {this}
-   */
+  
   unshift: function (arg) {
     arg = valueFactory.create(arg);
     this.nodes.forEach(function (node) {

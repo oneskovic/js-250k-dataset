@@ -1,8 +1,3 @@
-/**
- * User: KGoulding
- * Date: 9/18/12
- * Time: 3:36 PM
- */
 (function () { // self-invoking function
     /**
      * @class SAS.ActionCellContentDialog

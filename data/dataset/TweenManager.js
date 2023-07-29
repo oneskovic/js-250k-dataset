@@ -1,5 +1,3 @@
-/// <reference path="../../../Scripts/endgate.d.ts" />
-// Wrap in module to keep code out of global scope
 var Tweening;
 (function (Tweening) {
     var TweenManager = (function () {

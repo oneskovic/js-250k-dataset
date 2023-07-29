@@ -1,27 +1,3 @@
-/*******************************************************************************
-NAME                     ALBERS CONICAL EQUAL AREA 
-
-PURPOSE:	Transforms input longitude and latitude to Easting and Northing
-		for the Albers Conical Equal Area projection.  The longitude
-		and latitude must be in radians.  The Easting and Northing
-		values will be returned in meters.
-
-PROGRAMMER              DATE
-----------              ----
-T. Mittan,       	Feb, 1992
-
-ALGORITHM REFERENCES
-
-1.  Snyder, John P., "Map Projections--A Working Manual", U.S. Geological
-    Survey Professional Paper 1395 (Supersedes USGS Bulletin 1532), United
-    State Government Printing Office, Washington D.C., 1987.
-
-2.  Snyder, John P. and Voxland, Philip M., "An Album of Map Projections",
-    U.S. Geological Survey Professional Paper 1453 , United State Government
-    Printing Office, Washington D.C., 1989.
-*******************************************************************************/
-
-
 Proj4js.Proj.aea = {
   init : function() {
 
@@ -60,8 +36,7 @@ Proj4js.Proj.aea = {
     this.rh = this.a * Math.sqrt(this.c - this.ns0 * this.qs0)/this.ns0;
   },
 
-/* Albers Conical Equal Area forward equations--mapping lat,long to x,y
-  -------------------------------------------------------------------*/
+
   forward: function(p){
 
     var lon=p.x;

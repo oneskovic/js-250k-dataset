@@ -1,4 +1,3 @@
-// dataServices
 define(['app'], function (app) {
     app.factory('Pictures', function ($http, $q, $log) {
         var feed_url = "http://ycpi.api.flickr.com/services/feeds/photos_public.gne?format=json&jsoncallback=JSON_CALLBACK&tags=";

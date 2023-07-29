@@ -1,51 +1,115 @@
-/*
- * Paper.js - The Swiss Army Knife of Vector Graphics Scripting.
- * http://paperjs.org/
- *
- * Copyright (c) 2011 - 2014, Juerg Lehni & Jonathan Puckey
- * http://scratchdisk.com/ & http://jonathanpuckey.com/
- *
- * Distributed under the MIT license. See LICENSE file for details.
- *
- * All rights reserved.
- */
+var setupMode = (process.argv.indexOf('--setup') !== -1);
+var debugMode = (process.argv.indexOf('--debug') !== -1);
 
-// This file uses PrePro to preprocess the paper.js source code on the fly in
-// the browser, avoiding the step of having to manually preprocess it after each
-// change. This is very useful during development of the library itself.
-if (typeof window === 'object') {
-    // Browser based loading through PrePro:
-    if (!window.include) {
-        var scripts = document.getElementsByTagName('script');
-        var src = scripts[scripts.length - 1].getAttribute('src');
-        // Assume that we're loading browser.js from a root folder, either
-        // through dist/paper-full.js, or directly through src/load.js, and
-        // match root as all the parts of the path that lead to that folder.
-        var root = src.match(/^(.*\/)\w*\//)[1];
-        // First load the PrePro's browser.js file, which provides the include()
-        // function for the browser.
-        document.write('<script type="text/javascript" src="' + root
-                + 'node_modules/prepro/lib/browser.js"></script>');
-        // Now that we have include(), load this file again, which will execute
-        // the lower part of the code the 2nd time around.
-        document.write('<script type="text/javascript" src="' + root
-                + 'src/load.js"></script>');
-    } else {
-        include('options.js');
-        include('paper.js');
-    }
-} else {
-    // Node based loading through PrePro:
-    var prepro = require('prepro/lib/node.js');
-    // Include deafult browser options.
-    // Step out and back into src in case this is loaded from dist/paper-node.js
-    prepro.include('../src/options.js');
-    // Override node specific options.
-    prepro.setOptions({
-        environment: 'node',
-        legacy: false,
-        version: 'dev'
+module.exports = function (server,app,appName) {
+
+    app.debugMode = debugMode;
+
+    var silenceLog = function (e) {
+        if (!debugMode)
+            e.stopPropagation = true;
+    };
+    app.prependListener('log',silenceLog);
+
+    app.setConfig({
+        "servername": "*",
+        "cache": true,
+
+        "import": [
+            "../../blongular/config/",
+            "../../blongular/classes/",
+            "../../blongular/models/",
+            "../../blongular/setup/",
+            "../../blongular/editor/modules/",
+            "../../blongular/editor/resources/",
+            "../../blongular/editor/controllers/",
+            "../../blongular/editor/rest/",
+            "../../blongular/editor/"
+        ],
+
+        "components": {
+            // Blongular Server
+            "blongular": {
+                "class": "BlongularServer"
+            },
+
+            // DbConnection configuration (remove comment to enable)
+            "database": {
+                "class": "DbConnection",
+                "alias": "db",
+                "engine": "mongo",
+                "address": "127.0.0.1",
+                "port": 27017,
+                "database": "blongular"
+            }
+        }
     });
-    // Load Paper.js library files.
-    prepro.include('../src/paper.js');
-}
+
+    app.importFromConfig();
+    app.getComponent('classCompiler').run();
+    app.getConfig().import = [];
+    console.log(app.c);
+    app.preloadComponents();
+
+    server.getComponent('http').attachModule(appName,app);
+    var blongular = app.getComponent('blongular');
+
+    app.once('ready', function () {
+
+        app.express.use(require('method-override')('X-HTTP-Method-Override'));
+
+        app.getEvent('log').removeListener(silenceLog);
+
+        var port = server.getComponent('http').getConfig('listen') || 27890;
+        var self = app;
+
+        // Moment
+        self.moment=require('moment');
+
+        // Debug MongoDB
+        if (self.db.getConfig('debug') || debugMode)
+            self.db.dataObject.driver.set('debug',true);
+
+        // DB Connection Message
+        self.db.once('connect',function (e,err,conn) {
+            if (err)
+            {
+                self.e.log('Failed to connect to DATABASE.');
+                self.setupMode = true;
+            }
+
+            if (self.setupMode)
+                self.e.log('Running on SETUP mode.');
+            else
+                self.e.log('BLONGULAR is ready.');
+
+            self.e.log('Access your blongular at http://127.0.0.1:'+port+'/');
+        });
+
+        // Block request if not ready.
+        self.prependListener('newRequest',function (e,req,resp) {
+            if (!self.db.connected && !self.setupMode)
+            {
+                resp.statusCode = 503;
+                resp.end();
+            } else
+                e.next();
+        });
+
+    });
+
+    app.m={};
+
+    app.setupMode = app.setupMode || setupMode;
+
+    for (m in server.m)
+    {
+        app.getModel();
+        app.m[m] = function () {
+            var model = server.m[m]();
+            model.blongular = blongular;
+            return model;
+        }
+    }
+
+};

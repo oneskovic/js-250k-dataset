@@ -1,5 +1,3 @@
-//* @public
-
 /**
 	Populates a string template with data values.
 

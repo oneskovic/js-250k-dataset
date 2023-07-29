@@ -1,4 +1,3 @@
-//* @protected
 enyo.windows.browserAgent = {
 	open: function(inOpener, inUrl, inName, inAttributes, inWindowInfo) { 
 		// do the really good thing on browsers

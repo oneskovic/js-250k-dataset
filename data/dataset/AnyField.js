@@ -3,13 +3,9 @@
     var Alpaca = $.alpaca;
 
     Alpaca.Fields.AnyField = Alpaca.ControlField.extend(
-    /**
-     * @lends Alpaca.Fields.AnyField.prototype
-     */
+    
     {
-        /**
-         * @see Alpaca.Field#getFieldType
-         */
+        
         getFieldType: function() {
             return "any";
         },

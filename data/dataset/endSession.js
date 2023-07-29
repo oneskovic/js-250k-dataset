@@ -7,9 +7,7 @@ module.exports = function(done) {
     var that = this;
 
     async.waterfall([
-        /**
-         * if screenwidth was set, get back to old resolution
-         */
+        
         function(cb) {
             if (!that.self.defaultScreenDimension) {
                 return cb();

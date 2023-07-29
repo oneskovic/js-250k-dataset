@@ -1,4 +1,3 @@
-/*global describe, beforeEach, module, inject, it, spyOn, expect, $ */
 describe('uiScrollfix', function () {
   'use strict';
 

@@ -1,9 +1,3 @@
-/*
-Language: Vim Script
-Author: Jun Yang <yangjvn@126.com>
-Description: full keyword and built-in from http://vimdoc.sourceforge.net/htmldoc/
-*/
-
 function(hljs) {
   return {
     lexemes: /[!#@\w]+/,

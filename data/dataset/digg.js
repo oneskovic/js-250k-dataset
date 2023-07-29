@@ -1,21 +1,3 @@
-/**
- * =============================================================================
- * Demo of Facebook Connect automated login with Nightwatch.js.
- * The test navigates to digg.com and tries to perform a Facebook connect login.
- *
- * This test requires a fbcredentials.json file to be placed in the same
- * folder, containing the facebook username and password in the form below:
- * -----
- * {
- *   "username" : "",
- *   "password" : ""
- * }
- * -----
- * The test only works if you have the permissions ALREADY enabled for digg.com
- * in your facebook account.
- * =============================================================================
- */
-
 module.exports = {
   disabled : true,
 

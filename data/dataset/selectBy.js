@@ -1,4 +1,3 @@
-/*jshint expr: true*/
 describe('selectBy', function() {
 
     before(h.setup());

@@ -1,12 +1,3 @@
-/*
- *
- * Description:
- * This script creates a directory and sends that as an argument to a spawned process (capture.cpp).
- * Then, it sends a request to capture a frame with file name of current time at a given interval.
- * Lastly, when (capture.cpp) responds with the file name (meaning save completed), it reads the file
- * and then emits the content to the Node.js server in base64 (string) format.
- *
- */
 var spawn = require('child_process').spawn, util = require('util'), request = require('request'), EventEmitter = require('events').EventEmitter, fs = require('fs'), path = require('path'), CONFIG = require('./config'), logger = require('./logger').create(CONFIG), orutils = require('./orutils'), moment = require('moment');   
 var OpenROVCamera = function (options) {
   var camera = new EventEmitter();

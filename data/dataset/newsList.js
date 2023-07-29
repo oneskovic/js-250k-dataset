@@ -1,11 +1,3 @@
-/**
- * @author: youxiachai
- * @Date: 13-7-5
- * @version: 1.0
- * To change this template use File | Settings | File Templates.
- */
-
-
 var app = app || {};
 
 

@@ -1,4 +1,3 @@
-/*global debug: false*/
 /*global Editor: false*/
 
 Editor.Actions.actionMap.translateSelectedObjectsInAxis =

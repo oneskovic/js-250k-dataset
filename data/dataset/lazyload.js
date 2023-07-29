@@ -1,1 +1,141 @@
-/** * @author xuld *///#include dom/base.js//#include fx/animate.jsvar Lazyload = Base.extend({		placeholder: null,		duration: 300,		effect: 'opacity',		onLoad: null,		event: 'scroll',		offset: 0,		update: function(){		if(this.targets.length === 0)			return;					var left = [];		this.targets.forEach(function(value){			var container = Dom.get(this.container) || document,				containerPos = container.getPosition(),				containerRight = containerPos.add(container.getSize());			if(this.isInView(value, containerPos, containerRight)){				this.load(value);				} else {				left.push(value);				}		}, this);				this.targets = left;	},		isInView: function(img, containerPos, containerRight){		var pos = img.getPosition(),			size = img.getSize(),			right = pos.add(size);		return Math.max(pos.x, containerPos.x) <= Math.min(right.x, containerRight.x) &&			Math.max(pos.y, containerPos.y) <= Math.min(right.y, containerRight.y);	},		getSrc: function (img) {	  return img.getAttr('data-src');	},		load: function(img){				if(Dom.get(img).dataField().imageLoaded)			return;				var me = this, proxy = new Image();				proxy.onload = function(){						img.hide().setAttr('src', proxy.src).show(me.effect,me.duration, me.onLoad && function () {				me.onLoad(img);			});						img.dataField().imageLoaded = true;		};		proxy.src = me.getSrc(img);	},		init: function(img){		if(this.placeholder && !img.getAttr('src')){			img.setAttr('src', this.placeholder);		}				var container = Dom.get(this.container || window);						if(this.event === 'scroll'){			container.on('scroll', this.update, this);			new Dom(window).on('resize', this.update, this);		} else {			img.on(this.event, function(){				this.load(img);			}, this);		}	},		constructor: function(targets, options){		Object.extend(this, options);				this.targets = [];				targets.forEach(function(value){			value = Dom.get(value);			this.init(value);			this.targets.push(value);		}, this);		this.update();			}	});DomList.implement({		lazyload: function (options) {		new Lazyload(this, options);		return this;	}	});
+define(['./debounce', './event'], function () {
+    // TODO: skip load invisible element
+    var debounce = $.debounce;
+    // cache computing rect avoid re-layout
+    var cacheId = 0;
+    var boudingClientRectCache = {};
+
+    function LazyLoad(elements, options) {
+        this.elements = elements;
+        this.options = options;
+        this.handler =  options.handler;
+        this.container = options.container;
+        this.$container = $(options.container);
+        this.onScroll = debounce($.proxy(this.onScroll, this), options.defer, false);
+        this.onResize = debounce($.proxy(this.onResize, this), options.defer, false)
+    }
+
+    LazyLoad.DEFAULTS = {
+        start: true,
+        attribute: 'data-lazy',
+        defer: 300,
+        handler: function (el, lazyData){
+            el.setAttribute("src", lazyData);
+        },
+        container: window   // container should with -webkit-overflow-scrolling: touch style
+    };
+
+    LazyLoad.prototype = {
+        start: function(){
+            this.status = 1;
+            setTimeout(function(){
+                if(!this.inited){
+                    this.inited = true;
+                    this.containerHeight = this.getContainerHeight();
+                    $(window).on('resize', this.onResize);
+                    this.$container.on('scroll', this.onScroll);
+                }
+
+                this.onScroll();
+            }.bind(this), this.options.defer)
+        },
+
+        add: function(elements){
+            elements = $(elements).get();
+            this.elements = this.elements.concat(elements)
+        },
+
+        getContainerHeight: function(){
+            var container = this.container;
+            // if container is window object
+            if(container.document){
+                return window.innerHeight;
+            }else{
+                var style = window.getComputedStyle(container);
+                // that equal container.offsetHeight
+                return parseInt(style.height) + parseInt(style.paddingTop) + parseInt(style.paddingBottom) + parseInt(style.marginTop) + parseInt(style.marginBottom);
+            }
+        },
+
+        onResize: function(evt){
+            if(!this.status) return;
+            this.containerHeight = this.getContainerHeight();
+            boudingClientRectCache = {};
+            this.onScroll();
+        },
+
+        onScroll: function (evt){
+            if(!this.status) return;
+            var elements = this.elements;
+            var el;
+            var lazyData;
+            for(var i=0, l=elements.length; i< l; i++){
+                el = elements[i];
+                el.cacheId = el.cacheId || ++cacheId;
+                if (el && this.elementInViewport(el)) {
+
+                    if(!(lazyData = el.lazyData)){
+                        lazyData = el.getAttribute(this.options.attribute);
+                        // cache value
+                        el.lazyData = lazyData;
+                    }
+
+                    if (lazyData) this.handler(el, lazyData);
+                    elements.splice(i, 1, null);
+                }
+            }
+
+            this.elements = elements.filter(function(v){return v});
+        },
+
+        elementInViewport: function (el) {
+            var container = this.container;
+            var id = el.cacheId;  // cached by id
+            var rect = boudingClientRectCache[id] || $(el).offset();
+            var scrollY = this.containerHeight;
+
+            if(container.document){
+                scrollY += (container.scrollY || container.pageYOffset);
+            }else{
+                scrollY += (container.scrollTop || window.scrollY ) + (container.offsetTop || window.pageYOffset);
+            }
+
+            boudingClientRectCache[id] = rect;
+            return (rect.top >= 0 && rect.top <= scrollY ) || (rect.bottom >= 0 && rect.bottom <= scrollY);
+        },
+
+        pause: function(){
+            this.status = 0
+        },
+
+        destory: function(){
+            this.$container.off('scroll', this.onScroll);
+            $(window).off('resize', this.onResize);
+            boudingClientRectCache = {};
+            this.status = 0;
+            this.elements = null;
+            this.container = null;
+            this.$container = null;
+        }
+    };
+
+    $.LazyLoad = LazyLoad;
+
+    $.fn.lazyload = function(option) {
+        var elements = this.get();
+        var options = $.extend({}, LazyLoad.DEFAULTS, typeof option == 'object' && option);
+
+        var $container = $(options.container);
+        // assume it's a origin node
+        options.container = $container[0];
+        var data  = $container.data('lazyload');
+        if (!data) {
+            data = new LazyLoad(elements, options);
+            $container.data('lazyload', data)
+        }
+        if (typeof option == 'string') data[option]();
+        else if (options.start) data.start();
+
+        return data;
+    };
+});

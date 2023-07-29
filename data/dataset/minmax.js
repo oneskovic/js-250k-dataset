@@ -1,17 +1,3 @@
-/*
-    cssx/shim/minmax
-    (c) copyright 2010, unscriptable.com
-    author: john
-
-    LICENSE: see the LICENSE.txt file. If file is missing, this file is subject to the AFL 3.0
-    license at the following url: http://www.opensource.org/licenses/afl-3.0.php.
-
-    This cssx plugin fixes lack of min/max height/width in IE6 and limited support in IE7.
-
-    We're using cssx-min-height (et al) because IE will block min-height (et al) from
-    currentStyle in many cases.
-
-*/
 (function (global, doc) {
 
 	define({

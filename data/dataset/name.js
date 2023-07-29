@@ -1,8 +1,6 @@
 (function () {
 
-    /**
-     * The default state core singleton for {@link SceneJS.Name} nodes
-     */
+    
     var defaultCore = {
         type:"name",
         stateId:SceneJS._baseStateId++,

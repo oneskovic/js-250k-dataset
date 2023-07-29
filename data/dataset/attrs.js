@@ -2,11 +2,7 @@
 
 var Node = require('./node');
 
-/**
- * Initialize a `Attrs` node.
- *
- * @api public
- */
+
 
 var Attrs = module.exports = function Attrs() {
   this.attributeNames = [];

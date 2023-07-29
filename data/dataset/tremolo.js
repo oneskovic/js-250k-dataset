@@ -1,8 +1,3 @@
-// VexFlow - Music Engraving for HTML5
-// Author: Mike Corrigan <corrigan@gmail.com>
-//
-// This class implements tremolo notation.
-
 /**
  * @constructor
  */

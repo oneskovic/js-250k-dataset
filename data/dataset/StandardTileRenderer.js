@@ -1,7 +1,3 @@
-/*!
- * ${copyright}
- */
-
 sap.ui.define(['jquery.sap.global', './TileRenderer', 'sap/ui/core/ValueStateSupport'],
 	function(jQuery, TileRenderer, ValueStateSupport) {
 	"use strict";

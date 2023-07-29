@@ -1,7 +1,3 @@
-/**
- * This test creates a new object and then when the test is restarted the 
- * test will check to make sure it is in the same state
- */
 tests([
 	function loadAndCheckState(){
 		var persistenceTestObject = load("TestClass/[?name='persistenceTest1']")[0];

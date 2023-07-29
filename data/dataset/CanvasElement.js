@@ -1,4 +1,3 @@
-/*global YAHOO,WireIt,G_vmlCanvasManager,document */
 (function () {
    
    // Shortcuts

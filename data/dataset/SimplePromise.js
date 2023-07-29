@@ -1,14 +1,3 @@
-/*
- * Modular - JavaScript AMD Framework
- * Copyright 2013 Dan Phillimore (asmblah)
- * http://asmblah.github.com/modular/
- *
- * Implements the AMD specification - see https://github.com/amdjs/amdjs-api/wiki/AMD
- *
- * Released under the MIT license
- * https://github.com/asmblah/modular/raw/master/MIT-LICENSE.txt
- */
-
 /*global define */
 define([
     'js/util'

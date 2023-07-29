@@ -1,11 +1,3 @@
-/*
- * grunt-gallerytmpl
- * https://github.com/etaoux/brix
- *
- * Copyright (c) 2012 左莫
- * Licensed under the MIT license.
- */
-
 module.exports = function(grunt) {
     // Grunt utilities.
     var task = grunt.task;

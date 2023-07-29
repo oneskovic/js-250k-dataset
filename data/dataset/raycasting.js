@@ -1,13 +1,3 @@
-/**
-* @author       Chris Campbell <iforce2d@gmail.com>
-* @author       Richard Davey <rich@photonstorm.com>
-* @copyright    2015 Photon Storm Ltd.
-* @license      {@link http://choosealicense.com/licenses/no-license/|No License}
-* 
-* @description  This example requires the Phaser Box2D Plugin to run.
-*               For more details please see http://phaser.io/shop/plugins/box2d
-*/
-
 var game = new Phaser.Game(800, 600, Phaser.CANVAS, 'phaser-example', { preload: preload, create: create, render: render });
 
 function preload() {

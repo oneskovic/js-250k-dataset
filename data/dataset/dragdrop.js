@@ -1,9 +1,3 @@
-/**
- * Native drag 'n drop handling for Cloud9
- *
- * @copyright 2010, Ajax.org B.V.
- */
-
 define(function(require, exports, module) {
 
 var ide  = require("core/ide");

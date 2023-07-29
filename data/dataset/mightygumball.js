@@ -1,4 +1,3 @@
-/* mightygumball.js */
 /*
  * get the content of a JSON file using Ajax 
  *

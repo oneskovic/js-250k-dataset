@@ -1,9 +1,7 @@
 var AWS = require('../core');
 
 AWS.util.update(AWS.SQS.prototype, {
-  /**
-   * @api private
-   */
+  
   setupRequestListeners: function setupRequestListeners(request) {
     request.addListener('build', this.buildEndpoint);
 
@@ -18,9 +16,7 @@ AWS.util.update(AWS.SQS.prototype, {
     }
   },
 
-  /**
-   * @api private
-   */
+  
   verifySendMessageChecksum: function verifySendMessageChecksum(response) {
     if (!response.data) return;
 
@@ -35,9 +31,7 @@ AWS.util.update(AWS.SQS.prototype, {
     }
   },
 
-  /**
-   * @api private
-   */
+  
   verifySendMessageBatchChecksum: function verifySendMessageBatchChecksum(response) {
     if (!response.data) return;
 
@@ -65,9 +59,7 @@ AWS.util.update(AWS.SQS.prototype, {
     }
   },
 
-  /**
-   * @api private
-   */
+  
   verifyReceiveMessageChecksum: function verifyReceiveMessageChecksum(response) {
     if (!response.data) return;
 
@@ -87,9 +79,7 @@ AWS.util.update(AWS.SQS.prototype, {
     }
   },
 
-  /**
-   * @api private
-   */
+  
   throwInvalidChecksumError: function throwInvalidChecksumError(response, ids, message) {
     response.error = AWS.util.error(new Error(), {
       retryable: true,
@@ -100,23 +90,17 @@ AWS.util.update(AWS.SQS.prototype, {
     });
   },
 
-  /**
-   * @api private
-   */
+  
   isChecksumValid: function isChecksumValid(checksum, data) {
     return this.calculateChecksum(data) === checksum;
   },
 
-  /**
-   * @api private
-   */
+  
   calculateChecksum: function calculateChecksum(data) {
     return AWS.util.crypto.md5(data, 'hex');
   },
 
-  /**
-   * @api private
-   */
+  
   buildEndpoint: function buildEndpoint(request) {
     var url = request.httpRequest.params.QueueUrl;
     if (url) {

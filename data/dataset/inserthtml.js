@@ -1,4 +1,3 @@
-///import core
 /**
  * @description 插入内容
  * @name baidu.editor.execCommand

@@ -1,6 +1,3 @@
-/**
- * Base class for pretty printing for expectation results.
- */
 jasmine.PrettyPrinter = function() {
   this.ppNestLevel_ = 0;
 };

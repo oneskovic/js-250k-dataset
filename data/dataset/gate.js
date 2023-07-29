@@ -1,8 +1,3 @@
-// Limit number of concurrent function executions (to cLimit number).
-// Limited calls are queued. Optionaly maximum queue length can also be
-// controlled with qLimit value, any calls that would reach over that limit
-// would be discarded (its promise would resolve with "Too many calls" error)
-
 'use strict';
 
 var toPosInt   = require('es5-ext/number/to-pos-integer')

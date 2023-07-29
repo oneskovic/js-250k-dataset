@@ -1,138 +1,118 @@
-//[
-// Copyright (c) 2011, Richard Miller-Smith & David Hammond.
-// All rights reserved. Redistribution and use in source and binary forms, 
-// with or without modification, are permitted provided that the following 
-// conditions are met:
-//
-//     * Redistributions of source code must retain the above copyright
-//       notice, this list of conditions and the following disclaimer.
-//     * Redistributions in binary form must reproduce the above
-//       copyright notice, this list of conditions and the following
-//       disclaimer in the documentation and/or other materials provided
-//       with the distribution.
-//     * Neither the name of the ignite.js project, nor the names of its
-//       contributors may be used to endorse or promote products derived
-//       from this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-//]
+(function () {
+	"use strict";
+	/*global grammar _ */
 
-var igniteTest = require('../../ignite').test.igniteTest,
-    Diagram = require('../../ignite').Diagram ;
+	function Diagram() {
+		this.title   = undefined;
+		this.actors  = [];
+		this.signals = [];
+	}
 
-var t = new igniteTest(module) ;
+	Diagram.prototype.getActor = function(alias) {
+		var s = /^(.+) as (\S+)$/i.exec(alias.trim());
+		var name;
+		if (s) {
+			name  = s[1].trim();
+			alias = s[2].trim();
+		} else {
+			name = alias.trim();
+		}
 
-var readCount = 0, writeCount = 0 ;
+		name = name.replace(/\\n/gm, "\n");
 
-function toDraw (fire, fpath) {
-  var cooked ;
-  
-  this.states = {
-      "Exists": {
-        "entry": function () {
-          fire.path.exists(fpath) ;
-        },
-        "actions": {
-          "exists": function (exists) {
-            if (!exists) {
-              return "@error" ;
-            } else {
-              return "Read" ;
-            }
-          },
-          
-          "self": "@self"
-        }
-      },
-      
-      "Read": {
-        "entry": function () {
-          fire.fs.readFile(fpath) ;
-        },
-        "exit": function () {
-          readCount += 1 ;
-        },
-        "actions": {
-          "readFile.done": "Process",
-          "readFile.err": "@error",
-          "inttest": function () {
-            return null ;
-          }
-        }
-      },
-      "Process": {
-        "guard": function (raw) {
-          if (raw.length === 0) {
-            return "@exit" ;
-          }
-        },
-        "work": function (raw) {
-          cooked = String(raw).replace(/var(?=\s)/g, 'bar') ;
-          return ["done", cooked] ;
-        },
-        "actions": {
-          "done": "Transient",
-          "err": function (err) {
-            if (err) {
-              return "@error" ;
-            }
-            return "Write" ;
-          },
-          "other": function (abc) {
-            if (abc) {
-              return "Write" ;
-            }
-          }
-        }
-      },
-      "Transient": {
-        "entry": function () {
-          return "Mapper" ;
-        }
-      },
-      "Mapper": {
-        map: "fs.readFile",
-        actions: {
-          "map.done": "Write",
-          "map.err": "@error"
-        }
-      },
-      "Write": {
-        "entry": function () {
-          fire.fs.writeFile(path.join("tmp", fpath.replace(/\.js$/, ".bar")), cooked) ;
-        },
-        "exit": function () {
-          writeCount += 1 ;
-        },
-        "actions": {
-          "writeFile.done": "@exit",
-          "writeFile.err": "@error"
-        }
-      }
-  } ;
-  return "Exists" ;
-};
+		var i, actors = this.actors;
+		for (i in actors) {
+			if (actors[i].alias == alias)
+				return actors[i];
+		}
+		i = actors.push( new Diagram.Actor(alias, name, actors.length) );
+		return actors[ i - 1 ];
+	};
 
-t.regSM(toDraw, { fs: require('fs') }) ;
+	Diagram.prototype.setTitle = function(title) {
+		this.title = title;
+	};
 
-t.expressoAdd("toDraw draw json", function (beforeExit, jsmFactory) {
-  var graph = new Diagram(jsmFactory), text ;
-  text = graph.processAndWrite("tmp/sm1.json", {processor: "json"}) ;
-//      util.debug(text) ;
-  }) ;
+	Diagram.prototype.addSignal = function(signal) {
+		this.signals.push( signal );
+	};
 
-t.expressoAdd("toDraw draw dot", function (beforeExit, jsmFactory) {
-  var graph = new Diagram(jsmFactory), text ;
-  text = graph.processAndWrite("tmp/sm1.dot") ;
-//      util.debug(text) ;
-  }) ;
+	Diagram.Actor = function(alias, name, index) {
+		this.alias = alias;
+		this.name  = name;
+		this.index = index;
+	};
+
+	Diagram.Signal = function(actorA, signaltype, actorB, message) {
+		this.type       = "Signal";
+		this.actorA     = actorA;
+		this.actorB     = actorB;
+		this.linetype   = signaltype & 3;
+		this.arrowtype  = (signaltype >> 2) & 3;
+		this.message    = message;
+	};
+
+	Diagram.Signal.prototype.isSelf = function() {
+		return this.actorA.index == this.actorB.index;
+	};
+
+	Diagram.Note = function(actor, placement, message) {
+		this.type      = "Note";
+		this.actor     = actor;
+		this.placement = placement;
+		this.message   = message;
+
+		if (this.hasManyActors() && actor[0] == actor[1]) {
+			throw new Error("Note should be over two different actors");
+		}
+	};
+
+	Diagram.Note.prototype.hasManyActors = function() {
+		return _.isArray(this.actor);
+	};
+
+	Diagram.LINETYPE = {
+		SOLID  : 0,
+		DOTTED : 1
+	};
+
+	Diagram.ARROWTYPE = {
+		FILLED  : 0,
+		OPEN    : 1
+	};
+
+	Diagram.PLACEMENT = {
+		LEFTOF  : 0,
+		RIGHTOF : 1,
+		OVER    : 2
+	};
+
+	/** The following is included by jspp */
+	/*> ../build/grammar.js */
+
+	/**
+	 * jison doesn't have a good exception, so we make one
+	 */
+	function ParseError(message, hash) {
+		_.extend(this, hash);
+
+		this.name = "ParseError";
+		this.message = (message || "");
+	}
+	ParseError.prototype = new Error();
+	Diagram.ParseError = ParseError;
+
+	grammar.parseError = function(message, hash) {
+		throw new ParseError(message, hash);
+	};
+
+	Diagram.parse = function(input) {
+		grammar.yy = new Diagram();
+
+		return grammar.parse(input);
+	};
+
+	// Expose this class externally
+	this.Diagram = Diagram;
+
+}).call(this);

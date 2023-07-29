@@ -1,7 +1,3 @@
-/**
- * @fileoverview HTML and other information about a figure's content payload.
- */
-
 goog.provide('treesaver.layout.FigureSize');
 
 goog.require('treesaver.dom');

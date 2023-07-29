@@ -1,4 +1,3 @@
-// get slides whose date are between scope.start and scope.end
 app.filter('period', function() {
     return function(input, scope) {
         var out = [];

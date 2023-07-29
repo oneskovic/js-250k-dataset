@@ -1,7 +1,3 @@
-/**
- * @name views.powerRankings
- * @namespace Power Rankings based on player ratings, stats, team performance
- */
 define(["dao", "globals", "ui", "core/team", "lib/bluebird", "lib/jquery", "lib/underscore", "lib/knockout", "util/bbgmView", "util/helpers"], function (dao, g, ui, team, Promise, $, _, ko, bbgmView, helpers) {
     "use strict";
 

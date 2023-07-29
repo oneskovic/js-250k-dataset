@@ -1,7 +1,3 @@
-//= require ext_extensions/DataTip
-//= require ext_extensions/xActionColumn
-//= require_self
-
 Ext.ns('Talho.ux'); // using Talho.ux to not overly polute the Talho namespace, used primarily for declaring tab initializers
 
 Talho.ux.UserSelectionGrid = Ext.extend(Ext.Panel, {

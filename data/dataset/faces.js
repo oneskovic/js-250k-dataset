@@ -1,9 +1,7 @@
 define(function(require, exports, module) {
 'use strict';
 
-/**
- * Dependencies
- */
+
 
 var FaceView = require('views/face');
 var View = require('view');

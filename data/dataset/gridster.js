@@ -1,6 +1,6 @@
 'use strict';
 
-/* global browser */
+
 /* global element */
 /* global by */
 

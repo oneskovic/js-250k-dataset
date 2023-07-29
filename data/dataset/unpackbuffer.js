@@ -1,5 +1,3 @@
-// unpack for static buffer
-	
 // TODO: use as fallback only if v0.5+ fuffer is not available
 // TODO: remove duplicate code
 var argument_length = {};

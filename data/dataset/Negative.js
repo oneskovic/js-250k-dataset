@@ -1,7 +1,3 @@
-/**
- * A 3D column chart with negative values.
- * Tapping or hovering a column will highlight it.
- */
 Ext.define('KitchenSink.view.charts.bar3d.Negative', {
     extend: 'Ext.Panel',
     xtype: 'bar-negative-3d',

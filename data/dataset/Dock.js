@@ -1,28 +1,3 @@
-/*
- ---
-
- name: Dock
-
- script: dock.js
-
- description: MUI.Dock - Creates a toolbar dock control.
-
- copyright: (c) 2011 Contributors in (/AUTHORS.txt).
-
- license: MIT-style license in (/MIT-LICENSE.txt).
-
- requires:
- - Core/Element
- - Core/Class
- - Core/Options
- - Core/Events
- - MUI
- - MUI.Core
-
- provides: [MUI.Dock]
- ...
- */
-
 MUI.Dock = new NamedClass('MUI.Dock', {
 
 	Implements: [Events, Options],

@@ -1,25 +1,3 @@
-/**
- *
- * Wait for an element (selected by css selector) for the provided amount of
- * milliseconds to be (in)visible. If multiple elements get queryied by given
- * selector, it returns true (or false if reverse flag is set) if at least one
- * element is visible.
- *
- * This function checks for visibility using window.getComputedStyle. An
- * element will be considered invisible if its visibility is 'none', its
- * display is 'hidden', its opacity is 0 or its x/y coordinates are not
- * within the viewport.
- *
- * @param {String}   selector element to wait for
- * @param {Number=}  ms       time in ms (default: 500)
- * @param {Boolean=} reverse  if true it waits for the opposite (default: false)
- * @callbackParameter error, isVisible
- *
- * @uses protocol/selectorExecuteAsync, protocol/timeoutsAsyncScript
- * @type utility
- *
- */
-
 var async = require('async'),
     isVisibleFunc = require('../helpers/_isVisible.js'),
     ErrorHandler = require('../utils/ErrorHandler.js');

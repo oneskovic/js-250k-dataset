@@ -1,5 +1,3 @@
-/// This code is licensed under the MIT License.  See LICENSE for more details.
-
 /// Does the environment support web workers?  If not, let's fake it.
 if (!Worker) {
     ///NOTE: IE8 needs onmessage to be created first, IE9 cannot, IE7- do not care.

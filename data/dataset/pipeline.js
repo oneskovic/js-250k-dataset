@@ -1,62 +1,116 @@
-/**
- * grunt/pipeline.js
- *
- * The order in which your css, javascript, and template files should be
- * compiled and linked from your views and static HTML files.
- *
- * (Note that you can take advantage of Grunt-style wildcard/glob/splat expressions
- * for matching multiple files.)
- */
+'use strict';
 
+var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? obj : { 'default': obj }; };
 
+var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } };
 
-// CSS files to inject in order
-//
-// (if you're using LESS with the built-in default config, you'll want
-//  to change `assets/styles/importer.less` instead.)
-var cssFilesToInject = [
-  'styles/**/*.css'
-];
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-
-// Client-side javascript files to inject in order
-// (uses Grunt-style wildcard/glob/splat expressions)
-var jsFilesToInject = [
-
-  // Dependencies like sails.io.js, jQuery, or Angular
-  // are brought in here
-  'js/dependencies/**/*.js',
-
-  // All of the rest of your client-side js files
-  // will be injected here in no particular order.
-  'js/**/*.js'
-];
-
-
-// Client-side HTML templates are injected using the sources below
-// The ordering of these templates shouldn't matter.
-// (uses Grunt-style wildcard/glob/splat expressions)
-//
-// By default, Sails uses JST templates and precompiles them into
-// functions for you.  If you want to use jade, handlebars, dust, etc.,
-// with the linker, no problem-- you'll just want to make sure the precompiled
-// templates get spit out to the same file.  Be sure and check out `tasks/README.md`
-// for information on customizing and installing new tasks.
-var templateFilesToInject = [
-  'templates/**/*.html'
-];
-
-
-
-// Prefix relative paths to source files so they point to the proper locations
-// (i.e. where the other Grunt tasks spit them out, or in some cases, where
-// they reside in the first place)
-module.exports.cssFilesToInject = cssFilesToInject.map(function(path) {
-  return '.tmp/public/' + path;
+Object.defineProperty(exports, '__esModule', {
+  value: true
 });
-module.exports.jsFilesToInject = jsFilesToInject.map(function(path) {
-  return '.tmp/public/' + path;
-});
-module.exports.templateFilesToInject = templateFilesToInject.map(function(path) {
-  return 'assets/' + path;
-});
+
+var _core = require('core-js');
+
+var _core2 = _interopRequireWildcard(_core);
+
+function createResult(ctx, next) {
+  return {
+    status: next.status,
+    context: ctx,
+    output: next.output,
+    completed: next.status == COMPLETED
+  };
+}
+
+var COMPLETED = 'completed';
+exports.COMPLETED = COMPLETED;
+var CANCELLED = 'cancelled';
+exports.CANCELLED = CANCELLED;
+var REJECTED = 'rejected';
+exports.REJECTED = REJECTED;
+var RUNNING = 'running';
+
+exports.RUNNING = RUNNING;
+
+var Pipeline = (function () {
+  function Pipeline() {
+    _classCallCheck(this, Pipeline);
+
+    this.steps = [];
+  }
+
+  _createClass(Pipeline, [{
+    key: 'withStep',
+    value: function withStep(step) {
+      var run, steps, i, l;
+
+      if (typeof step == 'function') {
+        run = step;
+      } else if (step.isMultiStep) {
+        steps = step.getSteps();
+        for (i = 0, l = steps.length; i < l; i++) {
+          this.withStep(steps[i]);
+        }
+
+        return this;
+      } else {
+        run = step.run.bind(step);
+      }
+
+      this.steps.push(run);
+
+      return this;
+    }
+  }, {
+    key: 'run',
+    value: function run(ctx) {
+      var index = -1,
+          steps = this.steps,
+          next,
+          currentStep;
+
+      next = function () {
+        index++;
+
+        if (index < steps.length) {
+          currentStep = steps[index];
+
+          try {
+            return currentStep(ctx, next);
+          } catch (e) {
+            return next.reject(e);
+          }
+        } else {
+          return next.complete();
+        }
+      };
+
+      next.complete = function (output) {
+        next.status = COMPLETED;
+        next.output = output;
+        return Promise.resolve(createResult(ctx, next));
+      };
+
+      next.cancel = function (reason) {
+        next.status = CANCELLED;
+        next.output = reason;
+        return Promise.resolve(createResult(ctx, next));
+      };
+
+      next.reject = function (error) {
+        next.status = REJECTED;
+        next.output = error;
+        return Promise.reject(createResult(ctx, next));
+      };
+
+      next.status = RUNNING;
+
+      return next();
+    }
+  }]);
+
+  return Pipeline;
+})();
+
+exports.Pipeline = Pipeline;

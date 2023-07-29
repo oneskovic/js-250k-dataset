@@ -1,5 +1,3 @@
-// Copyright (c) 2013 David Gallardo Moreno. All rights reserved.
-
 /**
  * @fileoverview Spine SkeletalAnimation descriptor.
  * @see http://esotericsoftware.com/spine-json-format/

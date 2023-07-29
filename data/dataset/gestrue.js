@@ -1,10 +1,3 @@
-/*
- * ------------------------------------------
- * 手势基类实现文件
- * @version  1.0
- * @author   genify(caijf@corp.netease.com)
- * ------------------------------------------
- */
 /** @module util/gestrue/gestrue */
 NEJ.define([
     'base/klass',

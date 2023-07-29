@@ -6,13 +6,7 @@
     .directive("statusTable", StatusTableDirective );
 
 
-  /**
-   * StatusTableDirective Directive
-   * Simple directive to display the animation chain progress in a table
-   *
-   * @returns {{restrict: string, scope: {progress: string}, template: string, link: Function}}
-   * @constructor
-   */
+  
   function StatusTableDirective() {
 
     return {

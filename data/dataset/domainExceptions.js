@@ -1,9 +1,3 @@
-/**
-* This is a dictionary containing all of the domains that user may want to 
-* make an exception for. The key is the url to trigger a popup and
-* the value is an array where index 0 is the domain to whitelist if the user wishes to login.
-* Index 1 is the English name of the service.
-**/
 require.scopes["domainExceptions"] = (function() {
 
 var exports = {};

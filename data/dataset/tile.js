@@ -1,4 +1,3 @@
-
 // single namespace export
 var Tiles = {};
 

@@ -1,4 +1,3 @@
-//a steal for the filesystem
 (function() {
 	var oldWindow = function() {
 		return (function() {

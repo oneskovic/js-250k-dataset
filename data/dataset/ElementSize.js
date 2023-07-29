@@ -1,6 +1,3 @@
-/**
- * @private
- */
 Ext.define('Ext.event.publisher.ElementSize', {
 
     extend: 'Ext.event.publisher.Publisher',

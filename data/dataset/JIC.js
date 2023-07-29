@@ -1,15 +1,3 @@
-/*!
- * JIC JavaScript Library v1.1
- * https://github.com/brunobar79/J-I-C/
- *
- * Copyright 2012, Bruno Barbieri
- * Dual licensed under the MIT or GPL Version 2 licenses.
- *
- * Date: Sat Mar 24 15:11:03 2012 -0200
- */
-
-
-
 /**
  * Create the jic object.
  * @constructor

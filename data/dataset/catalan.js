@@ -1,13 +1,3 @@
-/* Catalan keyboard layouts
- * contains layout: 'catalan-qwerty'
- *
- * To use:
- *  Point to this js file into your page header: <script src="layouts/catalan.js" type="text/javascript"></script>
- *  Initialize the keyboard using: $('input').keyboard({ layout: 'catalan-qwerty' });
- *
- * license for this file: WTFPL, unless the source layout site has a problem with me using them as a reference
- */
-
 /* based on http://ascii-table.com/keyboard.php/173-1 */
 jQuery.keyboard.layouts['catalan-qwerty'] = {
 	'name' : 'catalan-qwerty',

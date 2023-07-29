@@ -1,10 +1,3 @@
-/*
-* Copyright (c) 2012, Leon Sorokin
-* All rights reserved. (MIT Licensed)
-*
-* pxChkr.js - pixel checker for pXY.js
-*/
-
 function pxChkr(cfg, pxy) {
 	this.cfg = JSON.parse(JSON.stringify(cfg));		// quick deep copy
 	this.pxy = pxy;

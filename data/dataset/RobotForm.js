@@ -1,13 +1,3 @@
-/*********************************************
- *  Copyright (c) 2013-2014 Chris Houseknecht
- *
- *  RobotForm.js
- *
- *  Demonstrate some of the things you can do with angular-forms to 
- *  generate clean, consistent forms in your app.
- *  
- */
-
 'use strict';
 
 angular.module('RobotFormDefinition', [])

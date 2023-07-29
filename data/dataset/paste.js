@@ -1,13 +1,7 @@
 "use strict";
 
 module.exports = function(gr) {
-  /**
-   *  paste
-   *
-   *  @param {Canvas} src
-   *  @param {int}    [x=0]
-   *  @param {int}    [y=0]
-   */
+  
   gr.Canvas.addMethod("paste", function(src, x, y) {
     x = x|0;
     y = y|0;

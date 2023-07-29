@@ -1,5 +1,3 @@
-// utility for enc
-
 'use strict';
 
 var consts = require('./consts'),

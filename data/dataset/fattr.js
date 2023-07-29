@@ -3,7 +3,7 @@ var fs = require("fs"),
 	
 fs.existsSync = fs.existsSync || pth.existsSync;
 
-module.exports = function(/*String*/path) {
+module.exports = function(path) {
 
     var _path = path || "",
         _permissions = 0,
@@ -26,8 +26,8 @@ module.exports = function(/*String*/path) {
         _obj.directory = _stat.isDirectory();
         _obj.mtime = _stat.mtime;
         _obj.atime = _stat.atime;
-        _obj.executable = !!(1 & parseInt ((_stat.mode & parseInt ("777", 8)).toString (8)[0]));
-        _obj.readonly = !!(2 & parseInt ((_stat.mode & parseInt ("777", 8)).toString (8)[0]));
+        _obj.executable = !!(1 & parseInt ((_stat.mode & parseInt ("777", 8)).to (8)[0]));
+        _obj.readonly = !!(2 & parseInt ((_stat.mode & parseInt ("777", 8)).to (8)[0]));
         _obj.hidden = pth.basename(_path)[0] === ".";
     } else {
         console.warn("Invalid path: " + _path)
@@ -68,7 +68,7 @@ module.exports = function(/*String*/path) {
 
         },
 
-        toString : function() {
+        to : function() {
            return '{\n' +
                '\t"path" : "' + _path + ",\n" +
                '\t"isDirectory" : ' + _obj.directory + ",\n" +

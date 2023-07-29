@@ -1,8 +1,3 @@
-
-//数组
-
-
-
 //数组去重
 exports.unique = function(ary)
 {

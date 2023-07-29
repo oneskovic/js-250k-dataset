@@ -3,38 +3,7 @@ var request = require('request'),
     rdv     = require('rendezvous'),
     tocsv   = require('./tocsv');
 
-/**
- * Request metrics from Cube considering the given expression and options.
- *   >> GET /1.0/metric/get?expression={expression}
- *                        &start={options.start}
- *                        &stop={options.stop}
- *                        &limit={options.limit}
- *                        &step={options.step}
- *
- * Callback will be called with the result converted to format as argument.
- *
- *
- * @param  {String}        expression        - cube metric expression
- * @param  {Object}        options
- *         {String}        options.host      - evaluator host-name
- *         {String|Date}   options.[start]   - start date for metrics, can be a `rendezvous`
- *                                             expression
- *         {String|Date}   options.[stop]    - stop date for metrics, can be a `rendezvous`
- *                                             expression
- *         {String}        options.[over]    - a `rendezvous.duration` expression. Time window
- *                                             over which the event will be fetched. The missing
- *                                             start or stop option will be deduced from this'
- *         {String|Number} options.[limit]   - maximum number of metric to fetch. Can be a
- *                                             `rendezvous.duration` expression : the numeric
- *                                             value will be deduced according to step
- *         {String}        options.step      - metric reolution exprimed as number or as
- *                                             `rendezvous.duration\'. As reminder, Cube supports
- *                                             5 resolutions : 10s, 1m, 5m, 1h and 1d.
- *         {String}        options.[format]  - `json` or `csv`. If not supplied json-parsed data
- *         {Boolean}       options.[inverse] - inverse date format in csv : mm/dd/yy to dd/mm/yy
- *
- * @param  {Function}      cb                - callback to be executed when request completed
- */
+
 module.exports = function(expression, options, cb) {
   var query = buildQuery(expression, options);
 

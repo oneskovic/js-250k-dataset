@@ -1,19 +1,3 @@
-/*
-QUnitAdapter
-Version: 1.1.0
-
-Run qunit tests using JS Test Driver
-
-This provides almost the same api as qunit.
-
-Tests must run sychronously, which means no use of stop and start methods.
-You can use jsUnit Clock object to deal with timeouts and intervals:
-http://googletesting.blogspot.com/2007/03/javascript-simulating-time-in-jsunit.html
-
-The qunit #main DOM element is not included. If you need to do any DOM manipulation
-you need to set it up and tear it down in each test.
-
-*/
 (function() {
 
 	if(!(window.equiv)) {

@@ -1,120 +1,95 @@
-'use strict';
+var debug = require('debug')('wpcom:category');
 
-var mongoose = require('mongoose'),
-	async = require('async'),
-	Schema = mongoose.Schema,
-	ObjectId = Schema.ObjectId;
+/**
+ * Category methods
+ *
+ * @param {String} [slug]
+ * @param {String} sid site id
+ * @param {WPCOM} wpcom
+ * @api public
+ */
 
-var categorySchema = new Schema({
-	id: ObjectId,
-	title: String,
-	name: {
-		type: String,
-		unique: true
-	},
-	dek: String,
-	content: String,
-	author: {
-		type: ObjectId,
-		ref: 'User'
-	},
-	primaryasset: {
-		type: ObjectId,
-		ref: 'Asset'
-	},
-	createdat: {
-		type: Date,
-		'default': Date.now
-	},
-	updatedat: {
-		type: Date,
-		'default': Date.now
-	},
-	contenttypes: [{
-		type: ObjectId,
-		ref: 'Contenttype'
-	}],
-	parent: [{
-		type: ObjectId,
-		ref: 'Category',
-		index: true
-	}], //http://docs.mongodb.org/manual/tutorial/model-tree-structures-with-child-references/
-	//http://www.codeproject.com/Articles/521713/Storing-Tree-like-Hierarchy-Structures-With-MongoD
-	attributes: Schema.Types.Mixed,
-	contenttypeattributes: Schema.Types.Mixed,
-	extensionattributes: Schema.Types.Mixed,
-	random: Number
-});
+function Category(slug, sid, wpcom) {
+  if (!sid) {
+    throw new Error('`side id` is not correctly defined');
+  }
 
-categorySchema.pre('save', function (next, done) {
-	// var badname = new RegExp(/\badmin\b|\bconfig\b|\bprofile\b|\bindex\b|\bcreate\b|\bdelete\b|\bdestroy\b|\bedit\b|\btrue\b|\bfalse\b|\bupdate\b|\blogin\b|\blogut\b|\bdestroy\b|\bwelcome\b|\bdashboard\b/i);
-	if (this.name !== undefined && this.name.length < 1) {
-		done(new Error('Tag title is too short'));
-	}
-	// else if (this.name !== undefined && badname.test(this.name)) {
-	// 	done(new Error('Tag title(' + this.name + ') is a reserved word invalid'));
-	// }
-	else {
-		next();
-	}
-});
+  if (!(this instanceof Category)) {
+    return new Category(slug, sid, wpcom);
+  }
 
-categorySchema.methods.getChildren = function (getTagChildrenCallback) {
-	var currentTag = {
-			title: this.title,
-			name: this.name,
-			_id: this._id,
-			childDocs: this.childDocs
-		},
-		Category = mongoose.model('Category');
+  this.wpcom = wpcom;
+  this._sid = sid;
+  this._slug = slug;
+}
 
-	var getChildDocuments = function (documentobj, callbackGetChildDocuments) {
-		console.log('check for children for: ', documentobj.name);
-		var query = {
-			parent: {
-				$in: [documentobj._id]
-			}
-		};
+/**
+ * Set category `slug`
+ *
+ * @param {String} slug
+ * @api public
+ */
 
-		Category.find(query).select('name title content').exec(function (err, children) {
-			if (err) {
-				callbackGetChildDocuments(err, null);
-			}
-			else {
-				documentobj.childDocs = children;
-				callbackGetChildDocuments(null, documentobj);
-			}
-		});
-	};
-
-	getChildDocuments(currentTag, function (err, updatedCurrentDoc) {
-		currentTag = updatedCurrentDoc;
-		if (currentTag.childDocs.length > 0) {
-			async.each(
-				currentTag.childDocs,
-				function (child, asynccallback) {
-					child.getChildren(function (err, updatedchild) {
-						for (var x in currentTag.childDocs) {
-							if (currentTag.childDocs[x].name === updatedchild.name) {
-								currentTag.childDocs[x] = updatedchild;
-							}
-						}
-						asynccallback(err);
-					});
-				},
-				function (err) {
-					if (err) {
-						getTagChildrenCallback(err, null);
-					}
-					else {
-						getTagChildrenCallback(null, currentTag);
-					}
-				});
-		}
-		else {
-			getTagChildrenCallback(err, currentTag);
-		}
-	});
+Category.prototype.slug = function (slug) {
+  this._slug = slug;
 };
 
-module.exports = categorySchema;
+/**
+ * Get category
+ *
+ * @param {Object} [query]
+ * @param {Function} fn
+ * @api public
+ */
+
+Category.prototype.get = function (query, fn) {
+  var path = '/sites/' + this._sid + '/categories/slug:' + this._slug;
+  return this.wpcom.req.get(path, query, fn);
+};
+
+/**
+ * Add category
+ *
+ * @param {Object} [query]
+ * @param {Object} body
+ * @param {Function} fn
+ * @api public
+ */
+
+Category.prototype.add = function (query, body, fn) {
+  var path = '/sites/' + this._sid + '/categories/new';
+  return this.wpcom.req.post(path, query, body, fn);
+};
+
+/**
+ * Edit category
+ *
+ * @param {Object} [query]
+ * @param {Object} body
+ * @param {Function} fn
+ * @api public
+ */
+
+Category.prototype.update = function (query, body, fn) {
+  var path = '/sites/' + this._sid + '/categories/slug:' + this._slug;
+  return this.wpcom.req.put(path, query, body, fn);
+};
+
+/**
+ * Delete category
+ *
+ * @param {Object} [query]
+ * @param {Function} fn
+ * @api public
+ */
+
+Category.prototype['delete'] = Category.prototype.del = function (query, fn) {
+  var path = '/sites/' + this._sid + '/categories/slug:' + this._slug + '/delete';
+  return this.wpcom.req.del(path, query, fn);
+};
+
+/**
+ * Expose `Category` module
+ */
+
+module.exports = Category;

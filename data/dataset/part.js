@@ -1,8 +1,3 @@
-
-/**
- * Module dependencies.
- */
-
 var utils = require('./utils');
 var Stream = require('stream').Stream;
 var mime = require('mime');

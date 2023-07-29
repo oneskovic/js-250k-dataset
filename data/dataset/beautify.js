@@ -1,6 +1,3 @@
-/**
- * (c) 2013 Rob Wu <rob@robwu.nl>
- */
 var beautify = (function(){
     // Detect URL of current script.
     // Note: Does not work if loaded asynchronously.

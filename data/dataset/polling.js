@@ -1,52 +1,72 @@
-var WebKit = require('../');
 var expect = require('expect.js');
-var fs = require('fs');
-var join = require('path').join;
+var eio = require('../../');
 
+describe('arraybuffer', function() {
+  this.timeout(30000);
 
-describe("long polling", function suite() {
-	it("should idle before server sends message", function(done) {
-		this.timeout(6000);
-		var engine = require('engine.io');
-		var server = require('http').createServer(function(req, res) {
-			res.statusCode = 200;
-			if (req.url == "/engine.io.js") {
-				fs.readFile(join(__dirname, '../node_modules/engine.io-client/engine.io.js'), function(err, buf) {
-					if (err) console.error(err);
-					res.end(buf);
-				});
-			} else {
-				var script = function() {
-					var socket = new eio.Socket("ws://localhost:8019/", {transports:['polling']});
-					socket.on("open", function() {
-						socket.on("message", function(data) {
-							window.mymessage = data;
-						});
-						socket.on("close", function(){});
-					});
-				}.toString();
-				res.end('<html><script type="text/javascript" src="/engine.io.js"></script><script type="text/javascript">('+script+')();</script><body>test</body></html>');
-			}
-		}).listen(8019);
-		var engineServer = engine.attach(server);
-		var sent = false;
-		engineServer.on('connection', function (socket) {
-			setTimeout(function() {
-				sent = true;
-				socket.send("some server data");
-			}, 3000);
-		});
-		WebKit().load("http://localhost:8019", {stall:2000}).wait('idle', function(err) {
-			this.run('window.mymessage', function(err, data) {
-				expect(data).to.not.be.ok();
-				setTimeout(function() {
-					expect(sent).to.be.ok();
-					server.close();
-					engineServer.close();
-					done();
-				}, 2000);
-			});
-		});
-	});
+  it('should be able to receive binary data when bouncing it back (polling)', function(done) {
+    var binaryData = new Int8Array(5);
+    for (var i = 0; i < 5; i++) {
+      binaryData[i] = i;
+    }
+    var socket = new eio.Socket({ transports: ['polling'] });
+    socket.on('open', function() {
+      socket.send(binaryData);
+      socket.on('message', function (data) {
+        if (data === 'hi') return;
+
+        expect(data).to.be.an(ArrayBuffer);
+        expect(new Int8Array(data)).to.eql(binaryData);
+        socket.close();
+        done();
+      });
+    });
+  });
+
+  it('should be able to receive binary data and a multibyte utf-8 string (polling)', function(done) {
+    var binaryData = new Int8Array(5);
+    for (var i = 0; i < 5; i++) {
+      binaryData[i] = i;
+    }
+
+    var msg = 0;
+    var socket = new eio.Socket({ transports: ['polling'] });
+    socket.on('open', function() {
+      socket.send(binaryData);
+      socket.send('cash money €€€');
+      socket.on('message', function (data) {
+        if (data === 'hi') return;
+
+        if (msg == 0) {
+          expect(data).to.be.an(ArrayBuffer);
+          expect(new Int8Array(data)).to.eql(binaryData);
+          msg++;
+        } else {
+          expect(data).to.be('cash money €€€');
+          socket.close();
+          done();
+        }
+      });
+    });
+  });
+
+  it('should be able to receive binary data when forcing base64 (polling)', function(done) {
+    var binaryData = new Int8Array(5);
+    for (var i = 0; i < 5; i++) {
+      binaryData[i] = i;
+    }
+    var socket = new eio.Socket({ forceBase64: true });
+    socket.on('open', function() {
+      socket.send(binaryData);
+      socket.on('message', function (data) {
+        if (typeof data === 'string') return;
+
+        expect(data).to.be.an(ArrayBuffer);
+        var ia = new Int8Array(data);
+        expect(ia).to.eql(binaryData);
+        socket.close();
+        done();
+      });
+    });
+  });
 });
-

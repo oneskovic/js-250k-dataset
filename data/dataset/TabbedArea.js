@@ -1,4 +1,4 @@
-define(function (require, exports, module) {/** @jsx React.DOM */
+define(function (require, exports, module) {
 
 var React = require('react');
 var BootstrapMixin = require('./BootstrapMixin');

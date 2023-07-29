@@ -1,5 +1,3 @@
-/*globals define,app,RowView*/
-
 define( [
     'lodash',
     'src/views/BaseView', 'src/utils/crud'

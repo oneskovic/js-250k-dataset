@@ -1,11 +1,3 @@
-/**
- * Copyright (c) 2013 Yahoo! Inc. All rights reserved.
- *
- * Copyrights licensed under the MIT License. See the accompanying LICENSE file
- * for terms.
- */
-
-
 var assert = require('assert');
 var u      = require('underscore');
 var Path   = require('./Path.js');

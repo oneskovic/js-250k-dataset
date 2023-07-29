@@ -1,8 +1,4 @@
 /**
-  This object contains methods and data to translate an in-log role(class) name to something human readable.
-*/
-
-/**
   Gets the role information for the given role name from the log.
   If not found, false is returned.
   @param role string from the log file.

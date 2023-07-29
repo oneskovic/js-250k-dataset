@@ -5,9 +5,7 @@ var _prototypeProperties = function (child, staticProps, instanceProps) {
   if (instanceProps) Object.defineProperties(child.prototype, instanceProps);
 };
 
-/**
- * Example of a provider which can be configured at runtime in a `config()` block with the `setPrefix()` method.
- */
+
 var StatesProvider = (function () {
   function StatesProvider() {
     this.prefix = "You are";

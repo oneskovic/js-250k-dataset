@@ -4,12 +4,7 @@ define([
   var DragAndDrop = function (handler) {
     var $document = $(document);
 
-    /**
-     * attach Drag and Drop Events
-     *
-     * @param {Object} layoutInfo - layout Informations
-     * @param {Object} options
-     */
+    
     this.attach = function (layoutInfo, options) {
       if (options.airMode || options.disableDragAndDrop) {
         // prevent default drop event
@@ -21,12 +16,7 @@ define([
       }
     };
 
-    /**
-     * attach Drag and Drop Events
-     *
-     * @param {Object} layoutInfo - layout Informations
-     * @param {Object} options
-     */
+    
     this.attachDragAndDropEvent = function (layoutInfo, options) {
       var collection = $(),
           $editor = layoutInfo.editor(),

@@ -1,10 +1,3 @@
-/*
- * Nodester :: Open Source Node.JS PaaS
- * chroot.js 
- * @license GNU Affero
- * @latestUpdate: 30-03-2012
- */
-
 (function() {
   var lib = require('./lib.js');
   var path = require('path');

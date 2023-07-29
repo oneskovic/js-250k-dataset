@@ -1,20 +1,3 @@
-/********************************************
- *
- * Label Control
- *
- * Darren Hurst
- * BroadStreet Mobile
- * Created, July 23 2012
- *
- *
- * setTitle
- *   title = control line above title
- *
- * setLabel
- *  takes label text or HTML
- *
- */
-
 define(['underscore', 'backbone',
         'controls/viewController/childView'
 ], function(_, Backbone,ChildView) {

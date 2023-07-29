@@ -1,9 +1,3 @@
-/*
-Language: GLSL
-Description: OpenGL Shading Language
-Author: Sergey Tikhomirov <me@stikhomirov.com>
-*/
-
 function(hljs) {
   return {
     keywords: {

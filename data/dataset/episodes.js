@@ -1,7 +1,3 @@
-/** 
- * @namespace 
- * @description Episode data
- */
 Wolf.Episodes = [
     { 
         name : "Escape from Wolfenstein",

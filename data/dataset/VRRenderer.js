@@ -22,7 +22,7 @@ THREE.VRRenderer = function(renderer, hmd) {
         };
     }
 
-    self.FovPortToProjection = function(fov, rightHanded /* = true */ , zNear /* = 0.01 */ , zFar /* = 10000.0 */ ) {
+    self.FovPortToProjection = function(fov, rightHanded  , zNear /* = 0.01 */ , zFar /* = 10000.0 */ ) {
         rightHanded = rightHanded === undefined ? true : rightHanded;
         zNear = zNear === undefined ? 0.01 : zNear;
         zFar = zFar === undefined ? 10000.0 : zFar;
@@ -50,7 +50,7 @@ THREE.VRRenderer = function(renderer, hmd) {
         return mobj;
     }
 
-    self.FovToProjection = function(fov, rightHanded /* = true */ , zNear /* = 0.01 */ , zFar /* = 10000.0 */ ) {
+    self.FovToProjection = function(fov, rightHanded  , zNear /* = 0.01 */ , zFar /* = 10000.0 */ ) {
         var fovPort = {
             upTan: Math.tan(fov.upDegrees * Math.PI / 180.0),
             downTan: Math.tan(fov.downDegrees * Math.PI / 180.0),

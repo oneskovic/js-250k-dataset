@@ -1,8 +1,3 @@
-/* Sparklr
- * Main backend entry
- * Loads the workers
- */
-
 var cluster = require("cluster");
 var log = require("./log");
 

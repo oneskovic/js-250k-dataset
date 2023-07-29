@@ -1,4 +1,3 @@
-/*global define*/
 define(['Ti/_/declare', 'Ti/_/lang'], function (declare, lang) {
 
 	// This is the amount of space the finger is allowed drift until the gesture is no longer considered a tap

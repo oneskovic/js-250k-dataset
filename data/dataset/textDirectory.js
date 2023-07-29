@@ -1,7 +1,7 @@
 dojo.provide("dojo.cal.textDirectory");
 dojo.require("dojo.string");
 
-dojo.cal.textDirectory.Property = function(/*String*/line){
+dojo.cal.textDirectory.Property = function(line){
 // summary: parses a single line from an iCalendar text/directory file
 // and creates an object with four named values; name, group, params
 // and value. name, group and value are strings containing the original
@@ -46,7 +46,7 @@ dojo.cal.textDirectory.Property = function(/*String*/line){
 }
 
 
-dojo.cal.textDirectory.tokenise = function(/*String*/text){
+dojo.cal.textDirectory.tokenise = function(text){
 // summary: parses text into an array of properties.
 
 	// normlize to one property per line and parse

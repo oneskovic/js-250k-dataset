@@ -1,27 +1,10 @@
-/**
- * @name sandbox
- */
 (function (sb) {
 
 var amdModules = {},
     currentModule,
     currentRequire;
 
-/**
- * RequireJS & AMD-style define
- *
- * (function (require) {
- *     var define = require.define;
- *
- *     define(["a"], function (a) {
- *          return a + 2;
- *     });
- * })
- *
- * @param name
- * @param deps
- * @param module
- */
+
 var define = function (name, deps, module) {
     switch (arguments.length) {
         case 1: // define(function () {})

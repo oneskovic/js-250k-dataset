@@ -12,13 +12,7 @@ ig.module(
         var _c = ig.CONFIG;
         var _ut = ig.utils;
 
-        /**
-         * Eating ability.
-         * @class
-         * @extends ig.AbilityMelee
-         * @memberof ig
-         * @author Collin Hover - collinhover.com
-         */
+        
         ig.AbilityEat = ig.global.AbilityEat = ig.AbilityMelee.extend( /**@lends ig.AbilityEat.prototype */ {
 
             /**

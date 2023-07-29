@@ -1,8 +1,3 @@
-/**
- * Adds css prefixes depending on user's browser
- * @return {Object} CSS prefixed properties
- * @author Juan David Andrade <juandavidandrade@gmail.com>
- */
 var Prefixr = (function() {
   var _cssProperties = {
     textShadow: "textShadow",

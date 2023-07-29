@@ -1,16 +1,3 @@
-/*!
- * visibly - v0.7 Page Visibility API Polyfill
- * http://github.com/addyosmani
- * Copyright (c) 2011-2014 Addy Osmani
- * Dual licensed under the MIT and GPL licenses.
- *
- * Methods supported:
- * visibly.onVisible(callback)
- * visibly.onHidden(callback)
- * visibly.hidden()
- * visibly.visibilityState()
- * visibly.visibilitychange(callback(state));
- */
 // https://raw.githubusercontent.com/addyosmani/visibly.js/5b271d2cf71dd21805b7dc0ded7ef97ac764307e/visibly.js
 ;(function () {
 

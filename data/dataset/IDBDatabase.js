@@ -1,78 +1,112 @@
-/*
-interface IDBDatabase : EventTarget {
-    readonly        attribute DOMString          name;
-    readonly        attribute unsigned long long version;
-    readonly        attribute DOMStringList      objectStoreNames;
-    IDBObjectStore  createObjectStore (DOMString name, optional IDBObjectStoreParameters optionalParameters);
-    void            deleteObjectStore (DOMString name);
-    IDBTransaction  transaction ((DOMString or sequence<DOMString>) storeNames, optional IDBTransactionMode mode = "readonly");
-    void            close ();
-                    attribute EventHandler       onabort;
-                    attribute EventHandler       onerror;
-                    attribute EventHandler       onversionchange;
-};
-*/
+'use strict';
+(function(idbModules){
 
-IDBDatabase = function () {};
-IDBDatabase.prototype = new EventTarget();
+    /**
+     * IDB Database Object
+     * http://dvcs.w3.org/hg/IndexedDB/raw-file/tip/Overview.html#database-interface
+     * @constructor
+     */
+    function IDBDatabase(db, name, version, storeProperties){
+        this.__db = db;
+        this.__closed = false;
+        this.version = version;
+        this.name = name;
+        this.onabort = this.onerror = this.onversionchange = null;
 
-/**
- * @type {string}
- */
-IDBDatabase.prototype.name = "";
+        this.__objectStores = {};
+        this.objectStoreNames = new idbModules.util.StringList();
+        for (var i = 0; i < storeProperties.rows.length; i++) {
+            var store = new idbModules.IDBObjectStore(storeProperties.rows.item(i));
+            this.__objectStores[store.name] = store;
+            this.objectStoreNames.push(store.name);
+        }
+    }
 
-/**
- * @type {number}
- */
-IDBDatabase.prototype.version = 0;
+    /**
+     * Creates a new object store.
+     * @param {string} storeName
+     * @param {object} createOptions
+     * @returns {IDBObjectStore}
+     */
+    IDBDatabase.prototype.createObjectStore = function(storeName, createOptions){
+        if (arguments.length === 0) {
+            throw new TypeError("No object store name was specified");
+        }
+        if (this.__objectStores[storeName]) {
+            throw idbModules.util.createDOMException("ConstraintError", "Object store \"" + storeName + "\" already exists in " + this.name);
+        }
+        this.__versionTransaction.__assertVersionChange();
 
-/**
- * @type {DOMStringList}
- */
-IDBDatabase.prototype.objectStoreNames = new DOMStringList();
+        createOptions = createOptions || {};
+        /** @name IDBObjectStoreProperties **/
+        var storeProperties = {
+            name: storeName,
+            keyPath: createOptions.keyPath || null,
+            autoInc: !!createOptions.autoIncrement,
+            indexList: {}
+        };
+        var store = new idbModules.IDBObjectStore(storeProperties, this.__versionTransaction);
+        idbModules.IDBObjectStore.__createObjectStore(this, store);
+        return store;
+    };
 
-/**
- * @param {string} name
- * @param {object} [optionalParameters]
- * @param {string|Array} [optionalParameters.keyPath=null]
- * @param {boolean} [optionalParameters.autoIncrement=false]
- * @returns {IDBObjectStore}
- */
-IDBDatabase.prototype.createObjectStore = function (name, optionalParameters) {
-  return new IDBObjectStore();
-};
+    /**
+     * Deletes an object store.
+     * @param {string} storeName
+     */
+    IDBDatabase.prototype.deleteObjectStore = function(storeName){
+        if (arguments.length === 0) {
+            throw new TypeError("No object store name was specified");
+        }
+        var store = this.__objectStores[storeName];
+        if (!store) {
+            throw idbModules.util.createDOMException("NotFoundError", "Object store \"" + storeName + "\" does not exist in " + this.name);
+        }
+        this.__versionTransaction.__assertVersionChange();
 
-/**
- * @param name
- * @returns {void}
- */
-IDBDatabase.prototype.deleteObjectStore = function (name) {};
+        idbModules.IDBObjectStore.__deleteObjectStore(this, store);
+    };
 
-/**
- * @param {string|Array} storeNames
- * @param {string} [mode='readonly']
- * @return {IDBTransaction}
- */
-IDBDatabase.prototype.transaction = function (storeNames, mode) {
-  return new IDBTransaction();
-};
+    IDBDatabase.prototype.close = function(){
+        this.__closed = true;
+    };
 
-/**
- * @returns {void}
- */
-IDBDatabase.prototype.close = function () {};
+    /**
+     * Starts a new transaction.
+     * @param {string|string[]} storeNames
+     * @param {string} mode
+     * @returns {IDBTransaction}
+     */
+    IDBDatabase.prototype.transaction = function(storeNames, mode){
+        if (this.__closed) {
+            throw idbModules.util.createDOMException("InvalidStateError", "An attempt was made to start a new transaction on a database connection that is not open");
+        }
 
-/**
- * @type {Function(Event)}
- */
-IDBDatabase.prototype..onabort = null;
+        if (typeof mode === "number") {
+            mode = mode === 1 ? IDBTransaction.READ_WRITE : IDBTransaction.READ_ONLY;
+            idbModules.DEBUG && console.log("Mode should be a string, but was specified as ", mode);
+        }
+        else {
+            mode = mode || IDBTransaction.READ_ONLY;
+        }
 
-/**
- * @type {Function(Event)}
- */
-IDBDatabase.prototype.onerror = null;
+        if (mode !== IDBTransaction.READ_ONLY && mode !== IDBTransaction.READ_WRITE) {
+            throw new TypeError("Invalid transaction mode: " + mode);
+        }
 
-/**
- * @type {Function(Event)}
- */
-IDBDatabase.prototype.onversionchange = null;
+        storeNames = typeof storeNames === "string" ? [storeNames] : storeNames;
+        if (storeNames.length === 0) {
+            throw idbModules.util.createDOMException("InvalidAccessError", "No object store names were specified");
+        }
+        for (var i = 0; i < storeNames.length; i++) {
+            if (!this.objectStoreNames.contains(storeNames[i])) {
+                throw idbModules.util.createDOMException("NotFoundError", "The \"" + storeNames[i] + "\" object store does not exist");
+            }
+        }
+
+        var transaction = new idbModules.IDBTransaction(this, storeNames, mode);
+        return transaction;
+    };
+    
+    idbModules.IDBDatabase = IDBDatabase;
+}(idbModules));

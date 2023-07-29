@@ -1,7 +1,3 @@
-// ****************************************
-// Fetch metric data.
-// Depending on the metric, different files may be fetched.
-// ****************************************
 function fetchAccuracy(m) {
     if (metricConfig[m].accuracy) {
         return $.get("data/metric/" + m + "-accuracy.json");

@@ -1,5 +1,3 @@
-/*! Index.js
- *************************************/
 (function () {
    "use strict";
    ko.sync.KeyMap = function(store, observableArray) {

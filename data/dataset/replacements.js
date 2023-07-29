@@ -1,16 +1,3 @@
-// Simple typographyc replacements
-//
-// '' → ‘’
-// "" → “”. Set '«»' for Russian, '„“' for German, empty to disable
-// (c) (C) → ©
-// (tm) (TM) → ™
-// (r) (R) → ®
-// +- → ±
-// (p) (P) -> §
-// ... → … (also ?.... → ?.., !.... → !..)
-// ???????? → ???, !!!!! → !!!, `,,` → `,`
-// -- → &ndash;, --- → &mdash;
-//
 'use strict';
 
 // TODO:

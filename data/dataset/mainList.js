@@ -1,11 +1,3 @@
-/**
-* mainList.js
-* This is the main list page (first tab)
-*
-* Giv Parvaneh <giv@givp.org> 2010
-* This code is free to use by all
-*/
-
 Titanium.include('globals.js');
 Titanium.include('data.js');
 

@@ -1,9 +1,3 @@
-/*
-*templateRender.js 通用模版输出模块，让jade或者ejs或者其他模版支持静态化html缓存
-*
-*exports  fn(view, ispage, fn)
-*
-*/
 var RestUtils = require('./RestUtils'),
 	fs = require('fs'),
 	outerror = require('./Outerror'),

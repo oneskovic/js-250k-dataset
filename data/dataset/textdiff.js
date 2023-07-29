@@ -1,4 +1,3 @@
-
 var ko = require('knockout');
 var components = require('ungit-components');
 

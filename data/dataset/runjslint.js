@@ -1,5 +1,3 @@
-/*jslint laxbreak: true */
-
 var fs, vm, sandbox, jslintCore = 'jslint-core.js';
 
 if (typeof require !== 'undefined') {

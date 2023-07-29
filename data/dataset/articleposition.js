@@ -1,11 +1,6 @@
 goog.provide('treesaver.ui.ArticlePosition');
 
-/**
- * Representation of the position of an article within a document.
- * @constructor
- * @param {!number} index The index of the article, or fallback in case anchor is specified.
- * @param {string=} anchor Identifier by which an article can be referenced. If not used, or not found, index is used.
- */
+
 treesaver.ui.ArticlePosition = function(index, anchor) {
   this.index = index;
   this.anchor = anchor;
@@ -14,7 +9,7 @@ treesaver.ui.ArticlePosition = function(index, anchor) {
 goog.scope(function() {
   var ArticlePosition = treesaver.ui.ArticlePosition;
 
-  /** @type {number} */
+  
   ArticlePosition.prototype.index;
 
   /** @type {string|undefined} */

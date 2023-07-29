@@ -1,10 +1,3 @@
-/*!
- * clickstream v2.2.0
- * http://blivesta.github.io/clickstream/
- * Licensed under MIT
- * Copyright 2013-2014 blivesta
- * 
- */
 (function($) {
   var namespace = "clickstream";
   var methods = {

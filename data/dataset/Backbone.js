@@ -1,6 +1,3 @@
-// Baucis examples using Backbone
-// ==============================
-
 (function () {
 
   // A utility function for easily making requests to a Baucis API.  Supply Baucis

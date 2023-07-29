@@ -1,6 +1,3 @@
-//
-// # NativeSubscribeQueue
-//
 var assert = require('assert');
 var EventEmitter = require('events').EventEmitter;
 var cluster = require('cluster');

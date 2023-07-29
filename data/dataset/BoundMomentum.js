@@ -1,11 +1,3 @@
-/**
- * @private
- *
- * This easing is typically used for {@link Ext.scroll.Scroller}. It's a combination of
- * {@link Ext.fx.easing.Momentum} and {@link Ext.fx.easing.Bounce}, which emulates deceleration when the animated element
- * is still within its boundary, then bouncing back (snapping) when it's out-of-bound.
- */
-
 Ext.define('Ext.fx.easing.BoundMomentum', {
     extend: 'Ext.fx.easing.Abstract',
 

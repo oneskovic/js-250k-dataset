@@ -1,7 +1,3 @@
-/**
- * @Author 刚子 写于 二零一一年十月
- * @Website移动WEB开发社区 http://html5mobi.com 
- */
 Ext.define('html5mobi.view.DiscussionsPotoItem', {
     extend: 'Ext.dataview.DataItem',
     xtype : 'discussions_poto_item',

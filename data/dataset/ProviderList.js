@@ -1,5 +1,3 @@
-/*global ares, enyo*/
-
 enyo.kind({
 	name: "ProviderList",
 	kind: "FittableRows",

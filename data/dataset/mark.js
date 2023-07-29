@@ -1,84 +1,74 @@
-// Process ==highlighted text==
+var test = require("tap").test
+var glob = require('../')
+process.chdir(__dirname)
 
-'use strict';
+test("mark, no / on pattern", function (t) {
+  glob("a/*", {mark: true}, function (er, results) {
+    if (er)
+      throw er
+    var expect = [ 'a/abcdef/',
+                   'a/abcfed/',
+                   'a/b/',
+                   'a/bc/',
+                   'a/c/',
+                   'a/cb/' ]
 
-module.exports = function del(state, silent) {
-  var found,
-      pos,
-      stack,
-      max = state.posMax,
-      start = state.pos,
-      lastChar,
-      nextChar;
+    if (process.platform !== "win32")
+      expect.push('a/symlink/')
 
-  if (state.src.charCodeAt(start) !== 0x3D/* = */) { return false; }
-  if (silent) { return false; } // don't run any pairs in validation mode
-  if (start + 4 >= max) { return false; }
-  if (state.src.charCodeAt(start + 1) !== 0x3D/* = */) { return false; }
-  if (state.level >= state.options.maxNesting) { return false; }
+    t.same(results, expect)
+    t.end()
+  })
+})
 
-  lastChar = start > 0 ? state.src.charCodeAt(start - 1) : -1;
-  nextChar = state.src.charCodeAt(start + 2);
+test("mark=false, no / on pattern", function (t) {
+  glob("a/*", function (er, results) {
+    if (er)
+      throw er
+    var expect = [ 'a/abcdef',
+                   'a/abcfed',
+                   'a/b',
+                   'a/bc',
+                   'a/c',
+                   'a/cb' ]
 
-  if (lastChar === 0x3D/* = */) { return false; }
-  if (nextChar === 0x3D/* = */) { return false; }
-  if (nextChar === 0x20 || nextChar === 0x0A) { return false; }
+    if (process.platform !== "win32")
+      expect.push('a/symlink')
+    t.same(results, expect)
+    t.end()
+  })
+})
 
-  pos = start + 2;
-  while (pos < max && state.src.charCodeAt(pos) === 0x3D/* = */) { pos++; }
-  if (pos !== start + 2) {
-    // sequence of 3+ markers taking as literal, same as in a emphasis
-    state.pos += pos - start;
-    if (!silent) { state.pending += state.src.slice(start, pos); }
-    return true;
-  }
+test("mark=true, / on pattern", function (t) {
+  glob("a/*/", {mark: true}, function (er, results) {
+    if (er)
+      throw er
+    var expect = [ 'a/abcdef/',
+                    'a/abcfed/',
+                    'a/b/',
+                    'a/bc/',
+                    'a/c/',
+                    'a/cb/' ]
+    if (process.platform !== "win32")
+      expect.push('a/symlink/')
+    t.same(results, expect)
+    t.end()
+  })
+})
 
-  state.pos = start + 2;
-  stack = 1;
-
-  while (state.pos + 1 < max) {
-    if (state.src.charCodeAt(state.pos) === 0x3D/* = */) {
-      if (state.src.charCodeAt(state.pos + 1) === 0x3D/* = */) {
-        lastChar = state.src.charCodeAt(state.pos - 1);
-        nextChar = state.pos + 2 < max ? state.src.charCodeAt(state.pos + 2) : -1;
-        if (nextChar !== 0x3D/* = */ && lastChar !== 0x3D/* = */) {
-          if (lastChar !== 0x20 && lastChar !== 0x0A) {
-            // closing '=='
-            stack--;
-          } else if (nextChar !== 0x20 && nextChar !== 0x0A) {
-            // opening '=='
-            stack++;
-          } // else {
-            //  // standalone ' == ' indented with spaces
-            // }
-          if (stack <= 0) {
-            found = true;
-            break;
-          }
-        }
-      }
-    }
-
-    state.parser.skipToken(state);
-  }
-
-  if (!found) {
-    // parser failed to find ending tag, so it's not valid emphasis
-    state.pos = start;
-    return false;
-  }
-
-  // found!
-  state.posMax = state.pos;
-  state.pos = start + 2;
-
-  if (!silent) {
-    state.push({ type: 'mark_open', level: state.level++ });
-    state.parser.tokenize(state);
-    state.push({ type: 'mark_close', level: --state.level });
-  }
-
-  state.pos = state.posMax + 2;
-  state.posMax = max;
-  return true;
-};
+test("mark=false, / on pattern", function (t) {
+  glob("a/*/", function (er, results) {
+    if (er)
+      throw er
+    var expect = [ 'a/abcdef/',
+                   'a/abcfed/',
+                   'a/b/',
+                   'a/bc/',
+                   'a/c/',
+                   'a/cb/' ]
+    if (process.platform !== "win32")
+      expect.push('a/symlink/')
+    t.same(results, expect)
+    t.end()
+  })
+})

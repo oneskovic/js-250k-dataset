@@ -1,7 +1,4 @@
 /**
- * @defgroup js_pages_search
- */
-/**
  * @file js/pages/search/SearchFormHandler.js
  *
  * Copyright (c) 2000-2013 John Willinsky

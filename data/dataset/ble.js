@@ -1,11 +1,3 @@
-/**
- * @ngdoc service
- * @name ngCordovaMocks.cordovaBLE
- *
- * @description
- * A service for ble features
- * in an app build with ngCordova.
-**/
 ngCordovaMocks.factory('$cordovaBLE', ['$q', '$timeout', function($q, $timeout) {
 	var deviceScan = {
     "name": "Test Device",

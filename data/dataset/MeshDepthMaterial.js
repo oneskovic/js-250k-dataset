@@ -1,19 +1,3 @@
-/**
- * @author mrdoob / http://mrdoob.com/
- * @author alteredq / http://alteredqualia.com/
- *
- * parameters = {
- *  opacity: <float>,
- *
- *  blending: THREE.NormalBlending,
- *  depthTest: <bool>,
- *  depthWrite: <bool>,
- *
- *  wireframe: <boolean>,
- *  wireframeLinewidth: <float>
- * }
- */
-
 /*
 ///MeshDepthMaterial方法根据参数parameters创建基于相机远近裁切面自动变换亮度(明暗度)的mesh(网格)的材质类型,离相机越近,材质越亮(白),离相机越远,材质越暗(黑).
 ///parameters参数的格式看上面.MeshDepthMaterial对象的功能函数采用,定义构造的函数原型对象来实现.大部分属性方法继承自材质的基类Material.

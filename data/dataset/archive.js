@@ -1,22 +1,7 @@
-/*
- * archive.js: Upload an archive into Rackspace Cloud Files
- *
- * (C) 2013 Rackspace, Ken Perkins
- * MIT LICENSE
- *
- */
-
 var fs = require('fs'),
     filed = require('filed');
 
-/**
- * Client.extract
- *
- * @description Upload an archive and instruct Rackspace to extract files to given location
- *
- * @param {object}          options     options for this extraction request
- * @param {Function}        callback    the callback for the extraction
- */
+
 exports.extract = function(options, callback) {
   var extractOpts, apiStream, inputStream;
   

@@ -1,7 +1,3 @@
-/**
- * Created by Luke on 2015/2/26.
- */
-
 /*
 优先队列(priority queue)
 

@@ -1,5 +1,3 @@
-//Orders handler
-
 function OrderManager(){
 
 };

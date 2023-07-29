@@ -1,4 +1,3 @@
-
 // url : http://www.sencha.com/forum/showthread.php?193512-Slider-unexpected-behaviour-when-using-minValue-maxValue
 Ext.define('Override.slider.Slider', {
     override : 'Ext.slider.Slider',

@@ -1,7 +1,3 @@
-/* This View creates the Game Board that joins all the cubes.  It contains the
-main cube which is the game board, the destroyer cube which can move around the 
-game board to remove small cubes and the small cubes which are targets for the 
-destroyer cube to remove*/
 define(function(require, exports, module) {
   var View          = require('famous/core/View');
   var Modifier      = require('famous/core/Modifier');

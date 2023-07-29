@@ -1,11 +1,3 @@
-// IE Spell Implementation for XINHA
-//Client-side spell check plugin
-//This implements the API for ieSpell, which is owned by Red Egg Software 
-//For more info about ieSpell, go to http://www.iespell.com/index.htm
-// Distributed under the same terms as Xinha itself.
-// This notice MUST stay intact for use (see license.txt).
-
-
 function ClientsideSpellcheck(editor) {
   this.editor = editor;
 

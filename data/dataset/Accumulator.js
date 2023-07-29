@@ -1,55 +1,47 @@
-/**
- * MouseSync
- * ------------
- *
- * Famo.us syncs default to track two-dimensional movement,
- * but can be passed as optional direction parameter to restrict
- * movement to a single axis.
- *
- * In this example, we create a MouseSync but only track the x-axis
- * changes on mouse drag.
- *
- */
 define(function(require, exports, module) {
-    var Engine    = require("famous/core/Engine");
-    var MouseSync = require("famous/inputs/MouseSync");
-    var Surface   = require("famous/core/Surface");
-    var Accumulator = require("famous/inputs/Accumulator");
+    var EventHandler = require('../core/EventHandler');
+    var Transitionable = require('../transitions/Transitionable');
 
-    var mainContext = Engine.createContext();
+    
+    function Accumulator(value, eventName) {
+        if (eventName === undefined) eventName = 'update';
 
-    var update = 0;
+        this._state = (value && value.get && value.set)
+            ? value
+            : new Transitionable(value || 0);
 
-    var x = 0;
-    var y = 0;
-    var position = [x, y];
+        this._eventInput = new EventHandler();
+        EventHandler.setInputHandler(this, this._eventInput);
 
-    var mouseSync = new MouseSync();
-    var accumulator = new Accumulator(position);
+        this._eventInput.on(eventName, _handleUpdate.bind(this));
+    }
 
-    Engine.pipe(mouseSync);
-    mouseSync.pipe(accumulator);
+    function _handleUpdate(data) {
+        var delta = data.delta;
+        var state = this.get();
 
-    var contentTemplate = function() {
-        return "<div>Update Count: " + update + "</div>" +
-               "<div>Accumulated distance: " + accumulator.get() + "</div>";
+        if (delta.constructor === state.constructor){
+            var newState = (delta instanceof Array)
+                ? [state[0] + delta[0], state[1] + delta[1]]
+                : state + delta;
+            this.set(newState);
+        }
+    }
+
+    
+    Accumulator.prototype.get = function get() {
+        return this._state.get();
     };
 
-    var surface = new Surface({
-        size: [undefined, undefined],
-        classes: ["grey-bg"],
-        content: contentTemplate()
-    });
+    /**
+     * Basic setter
+     *
+     * @method set
+     * @param value {Number|Array} new value
+     */
+    Accumulator.prototype.set = function set(value) {
+        this._state.set(value);
+    };
 
-    mouseSync.on("start", function() {
-        accumulator.set([x,y]);
-        surface.setContent(contentTemplate());
-    });
-
-    mouseSync.on("update", function() {
-        update++;
-        surface.setContent(contentTemplate());
-    });
-
-    mainContext.add(surface);
+    module.exports = Accumulator;
 });

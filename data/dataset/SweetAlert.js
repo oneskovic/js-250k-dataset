@@ -1,10 +1,3 @@
-/**
-@fileOverview
-
-@toc
-
-*/
-
 'use strict';
 
 angular.module('oitozero.ngSweetAlert', [])

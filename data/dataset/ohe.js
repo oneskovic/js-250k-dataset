@@ -1,5 +1,3 @@
-/*globals angular */
-
 (function () {
     angular.module('ohe', ['app.templates', 'messages', 'channels', 'nav',
     ['$httpProvider', function ($httpProvider) {

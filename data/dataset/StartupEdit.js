@@ -57,7 +57,7 @@ Ext.define('PVE.qemu.StartupEdit', {
     extend: 'PVE.window.Edit',
 
     initComponent : function() {
-	/*jslint confusion: true */
+	
 
 	var me = this;
 

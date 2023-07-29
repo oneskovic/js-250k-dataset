@@ -1,12 +1,3 @@
-/* Latvian keyboard layouts
- * contains layout: 'latvian-qwerty'
- *
- * To use:
- *  Point to this js file into your page header: <script src="layouts/latvian.js" type="text/javascript"></script>
- *  Initialize the keyboard using: $('input').keyboard({ layout: 'latvian-qwerty' });
- *
- * license for this file: WTFPL, unless the source layout site has a problem with me using them as a reference
- */
 jQuery.keyboard.layouts['latvian-qwerty'] = {
 	'name' : 'latvian-qwerty',
 	'lang' : ['lv'],

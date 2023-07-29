@@ -1,9 +1,3 @@
-/*global obelisk:true*/
-
-/*
- * AbstractPrimitive
- */
-
 (function (obelisk) {
     "use strict";
 

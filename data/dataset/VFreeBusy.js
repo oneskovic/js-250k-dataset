@@ -1,10 +1,3 @@
-/*
- * @package jsDAV
- * @subpackage VObject
- * @copyright Copyright(c) 2013 Mike de Boer. <info AT mikedeboer DOT nl>
- * @author Mike de Boer <info AT mikedeboer DOT nl>
- * @license http://github.com/mikedeboer/jsDAV/blob/master/LICENSE MIT License
- */
 "use strict";
 
 var jsVObject_Component = require("./../component");

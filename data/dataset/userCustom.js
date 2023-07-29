@@ -45,7 +45,7 @@ define([
 	userCustom.onSaveSettings = function(newConfig, event) {
 		newConfig.code = utils.getInputValue("#textarea-usercustom-code");
 		try {
-			/*jshint evil: true */
+			
 			eval(newConfig.code);
 		}
 		catch(e) {
@@ -57,7 +57,7 @@ define([
 
 	userCustom.onInit = function() {
 		try {
-			/*jshint evil: true */
+			
 			eval(userCustom.config.code);
 		}
 		catch(e) {

@@ -1,5 +1,5 @@
 'use strict';
-/*global require, process, after*/
+
 
 var winston = require('winston');
 

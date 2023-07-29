@@ -1,7 +1,3 @@
-//@prepros-prepend modernizr.js
-//@prepros-prepend picturefill.js
-//@prepros-prepend jquery.js
-
 jQuery(document).ready(function($){
 
   // Touch friendly expanded nav

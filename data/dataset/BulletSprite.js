@@ -6,19 +6,7 @@ goog.require('math.Vector');
 goog.require('graphics.Drawable');
 goog.require('graphics.Layer');
 
-/**
- * @constructor
- * @extends {model.projectile.Bullet}
- * @implements {graphics.Drawable}
- * @param {!Game} game
- * @param {!model.player.Player} owner
- * @param {number} level
- * @param {!math.Vector} position
- * @param {!math.Vector} velocity
- * @param {number} lifetime
- * @param {number} damage
- * @param {number} bounceCount
- */
+
 model.projectile.BulletSprite = function(game, owner, level, position, velocity, lifetime, damage, bounceCount) {
   goog.base(this, game, owner, level, position, velocity, lifetime, damage, bounceCount);
 

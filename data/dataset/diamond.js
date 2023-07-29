@@ -1,79 +1,51 @@
-define(['dojo/_base/declare',
-           'dojo/_base/lang',
-           './Box'],
-       function(declare,
-           lang,
-           Box) {
-           
-return declare(Box, {
-    
-    renderBox: function( context, viewInfo, feature, top, overallHeight, parentFeature, style ) {
-        
-        var left  = viewInfo.block.bpToX( feature.get('start') );
-        var width = viewInfo.block.bpToX( feature.get('end') ) - left;
-        //left = Math.round( left );
-        //width = Math.round( width );
+var shapeStyle  = require("./style.coffee")
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+// Draws "square" and "circle" shapes using svg:rect
+//------------------------------------------------------------------------------
+module.exports = function(vars,selection,enter,exit) {
 
-        style = style || lang.hitch( this, 'getStyle' );
+  //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  // Initialize check scale on enter and exit.
+  //----------------------------------------------------------------------------
+  function init(paths){
+    paths.attr("d", d3.svg.symbol().type("diamond").size(10))
+  }
+  
+  //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  // Change scale of check on update.
+  //---------------------------------------------------------------------------
+  function update(paths){
+    paths.attr("d", d3.svg.symbol().type("diamond").size(function(d){
+      var smaller_dim = Math.min(d.d3plus.width, d.d3plus.height);
+      return d3.scale.pow().exponent(2)(smaller_dim/2);
+    }))
+  }
 
-        var height = this._getFeatureHeight( viewInfo, feature );
-        if( ! height )
-            return;
-        if( height != overallHeight )
-            top += Math.round( (overallHeight - height)/2 );
+  //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  // "paths" Enter
+  //----------------------------------------------------------------------------
+  enter.append("path").attr("class","d3plus_data")
+    .call(init)
+    .call(shapeStyle,vars)
 
-        // background
-        var bgcolor = style( feature, 'color' );
-        if( bgcolor ) {
-            context.fillStyle = bgcolor;
-            context.beginPath();
-            context.moveTo(left,top+height/2);
-            context.lineTo(left + Math.max(1,width)/2,top);
-            context.lineTo(left+Math.max(1,width),top+height/2);
-            context.lineTo(left + Math.max(1,width)/2,top+height);
-            context.closePath();
-            context.fill();
-        }
-        else {
-            context.clearRect( left, top, Math.max(1,width), height );
-        }
+  //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  // "paths" Update
+  //----------------------------------------------------------------------------
+  selection.selectAll("path.d3plus_data")
+    .data(function(d) {
+      return [d];
+    })
 
-        // foreground border
-        var borderColor, lineWidth;
-        if( (borderColor = style( feature, 'borderColor' )) && ( lineWidth = style( feature, 'borderWidth')) ) {
-            if( width > 3 ) {
-                context.lineWidth = lineWidth;
-                context.strokeStyle = borderColor;
+  if (vars.draw.timing) {
+    selection.selectAll("path.d3plus_data")
+      .transition().duration(vars.draw.timing)
+        .call(update)
+        .call(shapeStyle,vars)
+  }
+  else {
+    selection.selectAll("path.d3plus_data")
+      .call(update)
+      .call(shapeStyle,vars)
+  }
 
-                // need to stroke a smaller rectangle to remain within
-                // the bounds of the feature's overall height and
-                // width, because of the way stroking is done in
-                // canvas.  thus the +0.5 and -1 business.
-                //context.stroke();
-                context.beginPath();
-                context.moveTo(left,top+height/2);
-                context.lineTo(left + Math.max(1,width)/2,top);
-                context.lineTo(left+Math.max(1,width),top+height/2);
-                context.lineTo(left + Math.max(1,width)/2,top+height);
-                context.closePath();
-                context.stroke();
-            }
-            else {
-                context.globalAlpha = lineWidth*2/width;
-                context.fillStyle = borderColor;
-                context.beginPath();
-                context.moveTo(left,top+height/2);
-                context.lineTo(left + Math.max(1,width)/2,top);
-                context.lineTo(left+Math.max(1,width),top+height/2);
-                context.lineTo(left + Math.max(1,width)/2,top+height);
-                context.closePath();
-                context.fill();
-                context.globalAlpha = 1;
-
-            }
-
-        }
-    }
-
-});
-});
+}

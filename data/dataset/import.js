@@ -1,68 +1,82 @@
+(function(){
 
-/*!
- * Stylus - Import
- * Copyright(c) 2010 LearnBoost <dev@learnboost.com>
- * MIT Licensed
- */
+	Meteor.methods({
+		parse: function(string){
+			var parsed = new parseSRT(string);
+			return parsed.parseSRT(); 
+		}
+	});
 
-/**
- * Module dependencies.
- */
+  // Constructor
+  var parseSRT = function(string) {
+    this.string = string; 
+    this.subtitles = [];
+  }
 
-var Node = require('./node');
+  /**
+   * METHODS
+   */
+  
+  _.extend(parseSRT.prototype, {
 
-/**
- * Initialize a new `Import` with the given `expr`.
- *
- * @param {Expression} expr
- * @api public
- */
+    trim : function(val) {
+      return val.replace(/^\s*|\s*$/g, "");
+    },
 
-var Import = module.exports = function Import(expr, once){
-  Node.call(this);
-  this.path = expr;
-  this.once = once || false;
-};
+    hmsToSeconds : function(string) {
+      var parts = string.split(':')
+        , hours = Number(parts[0]) * 3600
+        , minutes = Number(parts[1]) * 60
+        , seconds = Number(parts[2].replace(',', '.'));
 
-/**
- * Inherit from `Node.prototype`.
- */
+      return hours + minutes + seconds;
+    },
 
-Import.prototype.__proto__ = Node.prototype;
+     parseSRT : function(){
+      // first split at empty line-break and make array of each subtitle
+      var self = this
+        , captions = self.string.split('\n\n');
 
-/**
- * Return a clone of this node.
- *
- * @return {Node}
- * @api public
- */
+      _.each(captions, function(cap, i){
+        var part = cap.split('\n')
+          , sub = {};
 
-Import.prototype.clone = function(parent){
-  var clone = new Import();
-  clone.path = this.path.nodeName ? this.path.clone(parent, clone) : this.path;
-  clone.once = this.once;
-  clone.mtime = this.mtime;
-  clone.lineno = this.lineno;
-  clone.column = this.column;
-  clone.filename = this.filename;
-  return clone;
-};
+        // remove any extra newlines or empty space
+        var filteredParts = _.reject(part, function(p){
+          if (!p.match(/\S/))
+           return true
+        })
 
-/**
- * Return a JSON representation of this node.
- *
- * @return {Object}
- * @api public
- */
+        if (! _.isEmpty(filteredParts)) {
 
-Import.prototype.toJSON = function(){
-  return {
-    __type: 'Import',
-    path: this.path,
-    once: this.once,
-    mtime: this.mtime,
-    lineno: this.lineno,
-    column: this.column,
-    filename: this.filename
-  };
-};
+          // TEXT -------
+          sub.text = '';
+
+          // Assume that everything after the time is text.
+          // If its in on a separate line, create a newline
+          var length = filteredParts.length;
+          for (var x = 2; x < length; x++) {
+            sub.text = sub.text + self.trim(filteredParts[x]);
+            if (x !== length - 1)
+              sub.text = sub.text + '\n'
+          }
+
+          // Only perform and push if text isn't empty
+          if (sub.text.length > 0) {
+            var times = filteredParts[1].split('-->');
+
+            sub.startTime = self.hmsToSeconds(self.trim(times[0]));
+            sub.endTime = self.hmsToSeconds(self.trim(times[1]));
+
+            self.subtitles.push(sub);
+          }
+        }
+      }); 
+
+      return self.subtitles; 
+
+    },
+
+  })
+
+})()

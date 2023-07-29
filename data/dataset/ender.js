@@ -1,9 +1,3 @@
-/*!
-  * Ender: open module JavaScript framework (client-lib)
-  * copyright Dustin Diaz & Jacob Thornton 2011-2012 (@ded @fat)
-  * http://ender.no.de
-  * License MIT
-  */
 (function (context) {
 
   // a global object for node.js module compatiblity

@@ -1,11 +1,3 @@
-/*
- * jquery.socialshareprivacy.js
- *
- * Copyright (c) 2012 Mathias Panzenböck
- *
- * is released under the MIT License http://www.opensource.org/licenses/mit-license.php
- *
- */
 (function ($, undefined) {
 	"use strict";
 

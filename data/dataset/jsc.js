@@ -1,5 +1,3 @@
-/*jshint boss:true, evil:true */
-
 // usage:
 //   jsc ${env_home}/jsc.js -- ${file} "$(cat ${file})" "{option1:true,option2:false} ${env_home}"
 var env_home = '';

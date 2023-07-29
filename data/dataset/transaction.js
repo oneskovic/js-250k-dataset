@@ -1,64 +1,118 @@
-// Copyright 2013 SAP AG.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// http: //www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing,
-// software distributed under the License is distributed on an
-// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
-// either express or implied. See the License for the specific
-// language governing permissions and limitations under the License.
-'use strict';
+QUnit.module('Transaction', {
+    setup: function() {
+        App.Post = BD.Model.extend({
+            title: BD.attr('string'),
+            state: BD.attr('string')
+        });
+        App.Post.reopenClass({
+            supportsBulkSave: true
+        });
+        BD.store.loadMany(App.Post, [
+            {
+                id: 101,
+                title: 'Dirty secrets',
+                state: 'hidden'
+            },
+            {
+                id: 102,
+                title: 'Testacular sounds like Testicular',
+                state: 'hidden'
+            }
+        ]);
+    },
+    teardown: function() {
+        BD.store.reset();
+    }
+});
 
-var util = require('../util');
-var EventEmitter = require('events').EventEmitter;
-var ErrorLevel = require('./common/ErrorLevel');
-var debug = util.debuglog('hdbtx');
+test('Check AJAX options for transaction for model that supports bulk updates', function() {
+    expect(3);
+    var post1 = App.Post.find(101);
+    var post2 = App.Post.find(102);
+    BD.ajax = function(hash) {
+        equal(hash.type, 'PATCH');
+        equal(hash.url, '/posts');
+        deepEqual(JSON.parse(hash.data), {
+            posts: [
+                {
+                    _clientId: post1.clientId,
+                    id: 101,
+                    state: 'public'
+                },
+                {
+                    _clientId: post2.clientId,
+                    id: 102,
+                    state: 'public'
+                }
+            ]
+        });
+    };
+    BD.transaction()
+        .add(post1, {
+            properties: {
+                state: 'public'
+            }
+        })
+        .add(post2, {
+            properties: {
+                state: 'public'
+            }
+        })
+        .commit();
+});
 
-module.exports = Transaction;
+test('Transaction for model that supports bulk updates', function() {
+    expect(9);
+    var post1 = App.Post.find(101);
+    var post2 = App.Post.find(102);
+    var req = fakeAjax(200);
+    BD.transaction()
+        .add(post1, {
+            properties: {
+                state: 'public'
+            }
+        })
+        .add(post2, {
+            properties: {
+                state: 'public'
+            }
+        })
+        .commit()
+        .success(function() {
+            ok(true, 'Success should be fired once');
+        });
+    equal(post1.get('isDirty'), false);
+    equal(post1.get('state'), 'hidden');
+    equal(post2.get('isDirty'), false);
+    equal(post2.get('state'), 'hidden');
+    req.respond();
+    equal(post1.get('isDirty'), false);
+    equal(post1.get('state'), 'public');
+    equal(post2.get('isDirty'), false);
+    equal(post2.get('state'), 'public');
+});
 
-util.inherits(Transaction, EventEmitter);
-
-function Transaction() {
-  EventEmitter.call(this);
-
-  this.autoCommit = true;
-  this.kind = 'none';
-  this.error = undefined;
-}
-
-Transaction.prototype.setAutoCommit = function setAutoCommit(autoCommit) {
-  this.autoCommit = autoCommit;
-};
-
-Transaction.prototype.setFlags = function setFlags(flags) {
-  debug(flags);
-  if (flags.committed) {
-    this.emit('end', true, this.kind);
-    this.kind = 'none';
-  }
-  if (flags.rolledBack) {
-    this.emit('end', false, this.kind);
-    this.kind = 'none';
-  }
-  if (flags.writeTransactionStarted) {
-    this.kind = 'write';
-    this.emit('new', this.kind);
-  }
-  if (flags.noWriteTransactionStarted) {
-    this.kind = 'read';
-    this.emit('new', this.kind);
-  }
-  if (flags.sessionClosingTransactionErrror) {
-    this.error = new Error(
-      'A transaction error occured that implies the session must be terminated.'
-    );
-    this.error.code = 'EHDBTX';
-    this.error.level = ErrorLevel.FATAL;
-    this.error.fatal = true;
-    this.emit('error', this.error);
-  }
-};
+test('saveRecords() transaction shortcut', function() {
+    expect(9);
+    var post1 = App.Post.find(101);
+    var post2 = App.Post.find(102);
+    var req = fakeAjax(200);
+    BD
+        .saveRecords([post1, post2], {
+            properties: {
+                state: 'public'
+            }
+        })
+        .success(function() {
+            ok(true, 'Success should be fired once');
+        });
+    equal(post1.get('isDirty'), false);
+    equal(post1.get('state'), 'hidden');
+    equal(post2.get('isDirty'), false);
+    equal(post2.get('state'), 'hidden');
+    req.respond();
+    equal(post1.get('isDirty'), false);
+    equal(post1.get('state'), 'public');
+    equal(post2.get('isDirty'), false);
+    equal(post2.get('state'), 'public');
+});

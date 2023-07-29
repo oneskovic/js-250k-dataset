@@ -1,6 +1,3 @@
-/*
- *
- */
 r360.RouteSegment = function(segment){      
 
     var that             = this;

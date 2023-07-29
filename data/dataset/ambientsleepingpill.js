@@ -1,8 +1,3 @@
-/*
- * Chrome-Last.fm-Scrobbler ambientsleepingpill.com Connector by Malachi Soord
- *                (based on George Pollard's Bandcamp connector)
- * v0.1
- */
 'use strict';
 
 var lastTrack = null;

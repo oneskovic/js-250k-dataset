@@ -1,8 +1,3 @@
-/**
- * Stripe visual effects class
- *
- * Copyright (C) 2010-2011 Nikolay Nemshilov
- */
 Billboard.Fx.Stripe = new Class(Billboard.Fx, {
 
   directions: ['down', 'up', 'left', 'right'],

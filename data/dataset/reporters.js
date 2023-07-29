@@ -1,4 +1,3 @@
-
 var Mocha  = require('mocha');
 var Base   = require('mocha').reporters.Base;
 

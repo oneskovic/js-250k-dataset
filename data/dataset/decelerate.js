@@ -1,10 +1,3 @@
-/*
- * ------------------------------------------
- * 减速动画实现文件
- * @version  1.0
- * @author   genify(caijf@corp.netease.com)
- * ------------------------------------------
- */
 /** @module util/animation/decelerate */
 NEJ.define([
     'base/global',

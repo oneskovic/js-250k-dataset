@@ -7,11 +7,7 @@ goog.require('goog.events.Event');
 goog.require('goog.events.EventType');
 goog.require('views.View');
 
-/**
- * @constructor
- * @extends {views.View}
- * @param {!Game} game
- */
+
 views.ScoreboardView = function(game) {
   goog.base(this);
 

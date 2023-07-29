@@ -1,4 +1,3 @@
-/** @namespace */
 Opt = {
   /**
    * Get commandline option values.

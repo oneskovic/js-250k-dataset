@@ -22,21 +22,7 @@ define([
   var cos = Math.cos;
   var abs = Math.abs;
 
-  /**
-   * Creates an Arc
-   *
-   * @constructor
-   * @name Arc
-   * @memberOf module:path
-   * @extends module:path.SpecialAttrPath
-   * @param {Number} x The x coordinate of the center of the circle
-   * @param {Number} y The y coordinate of the center of the circle
-   * @param {Number} radius The arc's circle's radius
-   * @param {Number} startAngle Start angle (radians) of the arc
-   * @param {Number} endAngle End angle (radians) of the arc
-   * @param {Boolean} [antiClockwise=false] Whether or not to progress in an
-   *  anti-clockwise fashion
-   */
+  
   function Arc(x, y, radius, startAngle, endAngle, antiClockwise) {
 
     SpecialAttrPath.call(this, {
@@ -57,7 +43,7 @@ define([
 
   }
 
-  /** @lends module:path.Arc.prototype **/
+  
   var proto = Arc.prototype = Object.create(SpecialAttrPath.prototype);
 
   /**

@@ -1,62 +1,75 @@
-/* Hey, let's be friends! http://twitter.com/pubnub */
-// -----------------------------------------------------------------------
-// SOUNDS
-// -----------------------------------------------------------------------
-var sound = (function(){
-    var soundbank = {}
-    ,   tracker   = 0
-    ,   p         = PUBNUB;
-
-    function stop(audio) {
-        if (!audio) return;
-        audio.pause();
-        reset(audio);
+// Sounds ----------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+function SoundPlayer(max, dir, sounds) {
+    var that = this;
+    
+    // IE9 doesn't expose the Audio object... idiots...
+    if (typeof Audio === 'undefined') {  
+        window.Audio = function() {
+            return document.createElement('audio');
+        };
     }
-
-    function reset(audio) {
-        try       { audio.currentTime = 0.0 }
-        catch (e) { }
+    
+    // Sounds 
+    this.enabled = true;
+    this.soundType = (new Audio()).canPlayType('audio/mp3') ? 'mp3' : 'ogg';
+    this.soundFiles = sounds;
+    this.soundDirectory = dir;
+    this.soundMax = max;
+    
+    // Preload
+    this.sounds = {};
+    for(var i = 0; i < this.soundFiles.length; i++) {
+        this.sounds[this.soundFiles[i]] = [];
+        this.Sound(this.soundFiles[i], 0.0);
     }
+}
 
-    return {
-        play : function( sound, data, duration ) {
-            sound += tracker++;
-            var audio = soundbank[sound] || (function(){
-                var audio = soundbank[sound] = p.create('audio');
-
-                p.css( audio, { display : 'none' } );
-
-                p.attr( audio, 'prelaod', 'auto' );
-                p.attr( audio, 'autoplay', 'true' );
-
-                audio.innerHTML = p.supplant(
-                    "<source src={data}>",
-                    { data : data }
-                );
-
-                p.search('body')[0].appendChild(audio);
-
-                return audio;
-            })();
-
-            stop(audio);
-            audio.load();
-            audio.play();
-
-            // Play a Set Portion of Audio
-            clearTimeout(audio.timer);
-            if (duration) audio.timer = setTimeout( function() {
-                stop(audio);
-                p.search('body')[0].removeChild(audio);
-            }, duration + 150 );
-        },
-        stop : function(sound) {
-            stop(soundbank[sound]);
-        },
-        stopAll : function() {
-            p.each( soundbank, function( _, audio ) {
-                stop(audio);
-            } );
+SoundPlayer.prototype.play = function(snd) {
+    if (!this.enabled) {
+        return;
+    }
+    
+    var sounds = this.sounds[snd];
+    for(var i = 0; i < sounds.length; i++) {
+        if (sounds[i]._isReady && !sounds[i]._isPlaying) {
+            sounds[i]._isPlaying = true;
+            sounds[i].volume = 0.5;
+            sounds[i].play();
+            return true;
         }
-    };
-})();
+    }
+    if (sounds.length < this.soundMax) {
+        this.Sound(snd, 0.5);
+    }
+};
+
+SoundPlayer.prototype.Sound = function(snd, volume) {
+    var a = new Audio();
+    a._isReady = false;
+    a._isPlaying = false;
+    
+    a.addEventListener('ended', function() {
+        this._isPlaying = false;
+    }, false);
+    
+    a.addEventListener('error', function() {
+        this._isPlaying = false;
+    }, false);
+    
+    a.addEventListener('empty', function() {
+        this._isPlaying = false;
+    }, false);
+    
+    a.volume = volume;
+    a.addEventListener('canplay', function() {
+        this._isReady = true;
+        if (this.volume > 0.0) {
+            this._isPlaying = true;
+            a.play();
+        }
+    }, false);
+    a.src = this.soundDirectory + '/' + snd + '.' + this.soundType;
+    this.sounds[snd].push(a);
+};
+

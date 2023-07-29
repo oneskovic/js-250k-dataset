@@ -1,10 +1,3 @@
-// Timer Bar - Version 1.2
-// Author: Brian Gosselin of http://scriptasylum.com
-// RELEASE INFO:
-// V 1.0 - INTIAL RELEASE
-// V 1.1 - CHANGED THE action() FUNCTION SO HIDING THE BAR IS SELECTABLE.
-// V 1.2 - ADDED FUNCTIONALITY TO CONTROL WHEN YOU CLICK THE TIMERBAR.
-
 var loadedcolor='darkgray' ;       // PROGRESS BAR COLOR
 var unloadedcolor='lightgrey';     // COLOR OF UNLOADED AREA
 var bordercolor='navy';            // COLOR OF THE BORDER

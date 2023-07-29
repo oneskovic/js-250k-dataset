@@ -1,89 +1,69 @@
-var events = require('events'),
-    util = require('util'),
-    common = require('../common'),
-    Transport = require('./transport').Transport;
+var JSONStream = require('..')
+var from       = require('from')
+var assert     = require('assert')
+var probe      = require('probe-stream')({interval: 1000})
 
+var letters = '.pyfgcrlaoeuidhthtnsqjbmwvmbbkjqAOFEXACGOBQRCBK>RCMORPKGPOCRKB'
+
+function randWord (l) {
+  var s = ''
+  l = l || 1000
+  while (l --)
+    s = letters.substring(~~(Math.random()*letters.length))
+  return s
+}
+
+function randObj (d) {
+  if (0 >= d) return []
+  return {
+      row: d,
+      timestamp: Date.now(),
+      date: new Date(),
+      thing: Math.random() < 0.3 ? {} : randObj(d - 1),
+      array: [Math.random(), Math.random(), Math.random()],
+      object: {
+        A: '#'+Math.random(),
+        B: randWord(),
+        C: Math.random() < 0.1 ? {} : randObj(d - 1)
+      }
+    }
+}
+
+var objs = []
+var l = 6
+while(l --)
+  objs.push(new Buffer(JSON.stringify(randObj(l * 3))))
+
+//console.log('objs', objs)
+
+//return
+var I = 0
+from(function (i, next) {
+    if(i > 1000) return this.emit('data', ']'), this.emit('end')
+    if(!i) this.emit('data', '[\n')
+    I = i
+    this.emit('data', objs[~~(Math.random()*objs.length)])
+    this.emit('data', '\n,\n')
+
+//    if(i % 1000) return true
+    process.nextTick(next)
+  })
+//  .pipe(process.stdout)
+
+//  .pipe(JSONStream.stringify())
+//  .on('data', console.log)
+  .pipe(probe.createProbe())
+  .pipe(JSONStream.parse())
+//  .on('end', probe.end.bind(probe))
+
+//  .pipe(fs.createWriteStream('/tmp/test-reverse'))
 //
-// ### function Memory (options)
-// #### @options {Object} Options for this instance.
-// Constructor function for the Memory transport object responsible
-// for persisting log messages and metadata to a memory array of messages.
-//
-var Memory = exports.Memory = function (options) {
-  Transport.call(this, options);
-  options = options || {};
 
-  this.errorOutput = [];
-  this.writeOutput = [];
-
-  this.json        = options.json        || false;
-  this.colorize    = options.colorize    || false;
-  this.prettyPrint = options.prettyPrint || false;
-  this.timestamp   = typeof options.timestamp !== 'undefined' ? options.timestamp : false;
-  this.showLevel   = options.showLevel === undefined ? true : options.showLevel;
-  this.label       = options.label       || null;
-  this.depth       = options.depth       || null;
-
-  if (this.json) {
-    this.stringify = options.stringify || function (obj) {
-      return JSON.stringify(obj, null, 2);
-    };
-  }
-};
-
-//
-// Inherit from `winston.Transport`.
-//
-util.inherits(Memory, Transport);
-
-//
-// Expose the name of this Transport on the prototype
-//
-Memory.prototype.name = 'memory';
-
-//
-// ### function log (level, msg, [meta], callback)
-// #### @level {string} Level at which to log the message.
-// #### @msg {string} Message to log
-// #### @meta {Object} **Optional** Additional metadata to attach
-// #### @callback {function} Continuation to respond to when complete.
-// Core logging method exposed to Winston. Metadata is optional.
-//
-Memory.prototype.log = function (level, msg, meta, callback) {
-  if (this.silent) {
-    return callback(null, true);
-  }
-
-  var self = this,
-      output;
-
-  output = common.log({
-    colorize:    this.colorize,
-    json:        this.json,
-    level:       level,
-    message:     msg,
-    meta:        meta,
-    stringify:   this.stringify,
-    timestamp:   this.timestamp,
-    prettyPrint: this.prettyPrint,
-    raw:         this.raw,
-    label:       this.label,
-    depth:       this.depth,
-    formatter:   this.formatter,
-    humanReadableUnhandledException: this.humanReadableUnhandledException
-  });
-
-  if (level === 'error' || level === 'debug') {
-    this.errorOutput.push(output);
-  } else {
-    this.writeOutput.push(output);
-  }
-
-  self.emit('logged');
-  callback(null, true);
-};
-
-Memory.prototype.clearLogs = function () {
-  this.errorOutput = [];
-  this.writeOutput = [];
-};
+setInterval(function () {
+  var mem = process.memoryUsage()
+  console.log(mem, I)
+  if(mem.heapUsed > 200000000)
+    throw new Error('too much memory used')
+  console.log(mem)
+}, 1e3)
+//*/

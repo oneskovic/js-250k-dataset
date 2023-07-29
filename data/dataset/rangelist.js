@@ -1,5 +1,3 @@
-/* bender-tags: editor,unit,dom */
-
 ( function() {
 	'use strict';
 

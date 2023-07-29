@@ -1,7 +1,3 @@
-/**
- * Module dependencies
- */
-
 var _			= require('lodash'),
 	includeAll	= require('include-all'),
 	Err			= require('./errors');

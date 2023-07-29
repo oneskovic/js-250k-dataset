@@ -1,8 +1,5 @@
 'use strict';
-/*
-  jQuery deparam is an extraction of the deparam method from Ben Alman's jQuery BBQ
-  http://benalman.com/projects/jquery-bbq-plugin/
-*/
+
 var $ = require("jquery");
 $.deparam = function (params, coerce) {
 var obj = {},

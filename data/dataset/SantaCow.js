@@ -1,13 +1,3 @@
-/*
- * Copyright (C) 2011-2013 by NonStop Games
- * Please refer to license.txt for licensing details
- * 
- * SantaCow.js
- *
- * Similar to cow, but more Christmas looking
- * Also negative score if destroyed
- */
-
 function SantaCow(){
 	Enemy.call(this);
 

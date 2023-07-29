@@ -1,10 +1,3 @@
-/*
- * Nude.js - Nudity detection with Javascript and HTMLCanvas
- * 
- * Author: Patrick Wied ( http://www.patrick-wied.at )
- * Version: 0.1  (2010-11-21)
- * License: MIT License
- */
 (function(){
 
 	var nude = (function(){

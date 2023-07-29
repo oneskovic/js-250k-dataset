@@ -1,20 +1,3 @@
-/**
- * OutlineControlsWidget is a set of controls for an {@link OO.ui.OutlineSelectWidget outline select widget}.
- * Controls include moving items up and down, removing items, and adding different kinds of items.
- * ####Currently, this class is only used by {@link OO.ui.BookletLayout BookletLayouts}.####
- *
- * @class
- * @extends OO.ui.Widget
- * @mixins OO.ui.GroupElement
- * @mixins OO.ui.IconElement
- *
- * @constructor
- * @param {OO.ui.OutlineSelectWidget} outline Outline to control
- * @param {Object} [config] Configuration options
- * @cfg {Object} [abilities] List of abilties
- * @cfg {boolean} [abilities.move=true] Allow moving movable items
- * @cfg {boolean} [abilities.remove=true] Allow removing removable items
- */
 OO.ui.OutlineControlsWidget = function OoUiOutlineControlsWidget( outline, config ) {
 	// Allow passing positional parameters inside the config object
 	if ( OO.isPlainObject( outline ) && config === undefined ) {

@@ -1,13 +1,6 @@
 "use strict";
 
-/*
- * SirTrevor.Submittable
- * --
- * We need a global way of setting if the editor can and can't be submitted,
- * and a way to disable the submit button and add messages (when appropriate)
- * We also need this to be highly extensible so it can be overridden.
- * This will be triggered *by anything* so it needs to subscribe to events.
- */
+
 
 var $ = require('jquery');
 var utils = require('../utils');

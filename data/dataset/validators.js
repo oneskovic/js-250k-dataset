@@ -1,75 +1,81 @@
-var check = require('validator');
+'use strict';
 
-var utils = require('./util');
+var index = require('./index');
+var parse = require('./parse');
+var association = require('./association');
 
-exports.isPort = function(value, baton) {
-  value = parseInt(value, 10);
+function compareBuilder (compare) {
+  return function factory (value) {
+    var fixed = parse(value);
 
-  if (value < 1 || value > 65535) {
-    throw new Error('Value out of range [1,65535]');
-  }
+    return function validate (date) {
+      var cal = index.find(value);
+      var left = parse(date);
+      var right = fixed || cal && cal.getMoment();
+      if (!right) {
+        return true;
+      }
+      if (cal) {
+        association.add(this, cal);
+      }
+      return compare(left, right);
+    };
+  };
+}
 
-  return value;
-};
+function rangeBuilder (how, compare) {
+  return function factory (start, end) {
+    var dates;
+    var len = arguments.length;
 
-
-exports.isV1UUID = function(str) {
-  if (!str.match(/^[A-Fa-f0-9]{8}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{12}$/)) {
-    throw new Error('Invalid UUID');
-  } else if ((parseInt(str.charAt(19), 16) & 12) !== 8) {
-    throw new Error('Unsupported UUID variant');
-  } else if (str.charAt(14) !== '1') {
-    throw new Error('UUID is not version 1');
-  }
-
-  return str;
-};
-
-exports.isHostname = function(value) {
-  var labels;
-
-  if (!check.isFQDN(value)) {
-    return false;
-  }
-
-  if (value.length > 255) {
-    return false;
-  }
-
-  labels = value.split('.');
-
-  for (i=0; i < labels.length; i++) {
-    if (labels[i].length > 63) {
-      return false;
+    if (Array.isArray(start)) {
+      dates = start;
+    } else {
+      if (len === 1) {
+        dates = [start];
+      } else if (len === 2) {
+        dates = [[start, end]];
+      }
     }
-  }
 
-  return true;
-};
+    return function validate (date) {
+      return dates.map(expand.bind(this))[how](compare.bind(this, date));
+    };
 
-/**
- * Verify that the provided array or object has between min and max number of
- * elements.
- * @param {Object} value Object or array to validate.
- * @param {Number} min Minimum number of elements.
- * @param {Number} max Maximum number of elements.
- */
-exports.numItems = function(value, min, max) {
-  var len, type = utils.typeOf(value);
+    function expand (value) {
+      var start, end;
+      var cal = index.find(value);
+      if (cal) {
+        start = end = cal.getMoment();
+      } else if (Array.isArray(value)) {
+        start = value[0]; end = value[1];
+      } else {
+        start = end = value;
+      }
+      if (cal) {
+        association.add(cal, this);
+      }
+      return {
+        start: parse(start).startOf('day').toDate(),
+        end: parse(end).endOf('day').toDate()
+      };
+    }
+  };
+}
 
-  if (type === 'array') {
-    len = value.length;
-  }
-  else if (type === 'object') {
-    len = Object.keys(value).length;
-  }
-  else {
-    throw new Error('value must either be a array or an object');
-  }
+var afterEq  = compareBuilder(function (left, right) { return left >= right; });
+var after    = compareBuilder(function (left, right) { return left  > right; });
+var beforeEq = compareBuilder(function (left, right) { return left <= right; });
+var before   = compareBuilder(function (left, right) { return left  < right; });
 
-  if (len < min || len > max) {
-    throw new Error('Object needs to have between ' + min + ' and ' + max + ' items');
-  }
+var except   = rangeBuilder('every', function (left, right) { return right.start  > left || right.end  < left; });
+var only     = rangeBuilder('some',  function (left, right) { return right.start <= left && right.end >= left; });
 
-  return value;
+module.exports = {
+  afterEq: afterEq,
+  after: after,
+  beforeEq: beforeEq,
+  before: before,
+  except: except,
+  only: only
 };

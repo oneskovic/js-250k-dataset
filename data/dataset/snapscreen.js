@@ -1,6 +1,3 @@
-///import core
-///commandsName  snapscreen
-///commandsTitle  截屏
 /**
  * 截屏插件
  */

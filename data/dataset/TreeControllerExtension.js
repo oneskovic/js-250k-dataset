@@ -1,7 +1,3 @@
-/**
- * Additional tree utils
- *
- */
 dojo.provide("dojo.widget.TreeControllerExtension");
 
 dojo.declare(

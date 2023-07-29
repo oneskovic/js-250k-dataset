@@ -7,14 +7,7 @@ var utils = require('../utils'),
 
 module.exports = checkWatchSupport;
 
-/**
- * Runs tests to see if the version of `find` being run supports searching by
- * seconds using `-mtime -1s -print`. Note that this function **modifies** the
- * config being passed in.
- *
- * @param  {Object}   config   reference to config that's *updated* inside
- * @param  {Function} ready once the monitor checks are complete, call ready
- */
+
 function checkWatchSupport(config, callback) {
   if (checkComplete) {
     return callback(config);

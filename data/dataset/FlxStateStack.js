@@ -1,15 +1,4 @@
 /**
- * This class manages a stack of states used in order to allow<br>
- * a stack trace. This will be useful so the back key in Android<br>
- * devices act as a real back key.<br>
- * <br>
- * v1.0 Initial version
- * 
- * @version 1.0 - 17/09/2014
- * @author	ratalaika / ratalaikaGames
- */
-
-/**
  * Class constructor.
  */
 Flixel.plugin.FlxStateStack = function()

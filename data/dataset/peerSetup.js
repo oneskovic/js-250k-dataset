@@ -1,8 +1,5 @@
 var registered = false;
-/**
- * Establish a connection with the server. Only can be run once.
- * @param  {Object} options Parameters. Possible keys: host, port, config, debug.
- */
+
 nodetron.registerWithServer = function(options){
   if (typeof options === 'undefined' || typeof options.host === 'undefined') {
     throw new Error('Host not specified!');

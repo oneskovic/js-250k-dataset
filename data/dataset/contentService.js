@@ -1,4 +1,3 @@
-//TODO: add a userService and a sessionService
 var mongoose = require('mongoose'),
     Content = mongoose.model('Content');
 

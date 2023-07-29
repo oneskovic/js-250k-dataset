@@ -1,10 +1,6 @@
 define(function (require, exports, module) {
 
-/**
- * 表单提交
- *
- * @module Form
- */
+
 
 'use strict';
 

@@ -1,7 +1,3 @@
-/**
- * dependencies
- */
-
 var each = require('each');
 var events = require('event');
 var find = require('find');
@@ -9,11 +5,7 @@ var type = require('type');
 var dom = require('../../util/dom');
 var debug = require('debug')('recurly:pricing:attach');
 
-/**
- * bind a dom element to pricing values
- *
- * @param {HTMLElement} el
- */
+
 
 exports.attach = function (el) {
   var self = this;

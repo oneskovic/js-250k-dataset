@@ -1,13 +1,3 @@
-
-/********************************************
- *
- * Deliver an inspirational message to
- * the team every Monday morning
- *
- * Author : Greg Tracy @gregtracy
- *
- ********************************************/
-
 var cronJob = require('cron').CronJob;
 var logme = require('logme');
 var Stuart = require('../../stuart');

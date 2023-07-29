@@ -2,10 +2,7 @@
 
 tutao.provide('tutao.entity.sys.RegistrationVerifyDomainDataPost');
 
-/**
- * @constructor
- * @param {Object=} data The json data to store in this entity.
- */
+
 tutao.entity.sys.RegistrationVerifyDomainDataPost = function(data) {
   if (data) {
     this.updateData(data);

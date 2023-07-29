@@ -6,11 +6,7 @@ define(function(require) {
       Translation = require('lavaca/util/Translation');
   require('rdust!templates/search');
 
-  /**
-   * @class app.ui.SearchView
-   * @super app.ui.BaseView
-   * Example view type
-   */
+  
   var SearchView = BaseView.extend(function() {
     BaseView.apply(this, arguments);
     this.mapEvent({

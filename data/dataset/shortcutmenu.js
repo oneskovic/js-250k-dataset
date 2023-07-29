@@ -1,7 +1,3 @@
-///import core
-///commands       弹出菜单
-// commandsName  popupmenu
-///commandsTitle  弹出菜单
 /**
  * 弹出菜单
  * @function

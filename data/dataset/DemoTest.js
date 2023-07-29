@@ -1,13 +1,3 @@
-/* ************************************************************************
-
-   Copyright:
-
-   License:
-
-   Authors:
-
-************************************************************************ */
-
 /**
  * This class demonstrates how to define unit tests for your application.
  *

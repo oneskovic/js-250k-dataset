@@ -1,111 +1,129 @@
-(function(){
+(function(forp, $){
 
-  function getLayoutScroll(layout, element){
-    var scroll = element.__layoutScroll__ = element.__layoutScroll__ || Object.defineProperty(element, '__layoutScroll__', {
-      value: {
-        last: element.scrollTop
-      }
-    }).__layoutScroll__;
-    var now = element.scrollTop,
-        buffer = layout.scrollBuffer;
-    scroll.max = scroll.max || Math.max(now + buffer, buffer);
-    scroll.min = scroll.min || Math.max(now - buffer, buffer);
-    return scroll;
-  }
+    
+    forp.Layout = function($container, viewMode)
+    {
+        var self = this;
+        forp.Decorator.call(this, $container);
+        $container.attr("id", "forp");
 
-  function maxContent(layout){
-    layout.setAttribute('content-maximizing', null);
-  }
+        this.mainpanel = null;
+        this.nav = null;
+        this.viewMode = viewMode; // fixed, embedded
 
-  function minContent(layout){
-    layout.removeAttribute('content-maximized');
-    layout.removeAttribute('content-maximizing');
-  }
+        this.conf = {
+            fixed : {
+                size : function() {
+                    self.$.attr("style", "");
+                    self.getConsole().$
+                        .attr(
+                            "style",
+                            "height: " + (self.$.height()-45) + "px"
+                        );
 
-  function evaluateScroll(event){
-    var layout = event.currentTarget;
-    if (layout.hideTrigger == 'scroll' && !event.currentTarget.hasAttribute('content-maximizing')) {
+                    if( self.getConsole()
+                            .hasSidebar()
+                    ) {
+                        self.getConsole()
+                            .getSidebar().$
+                            .attr(
+                                "style",
+                                "height: " + (self.$.height()-45) + "px"
+                                );
+                    }
+                    if(window.onresize == null) {
+                        window.onresize = function(e) {
+                            self.size();
+                        }
+                    }
+                },
+                reduce : function() {
+                    self.$.attr(
+                        "style",
+                        "height: 45px"
+                    );
+                }
+            }
+            , embedded : {
+                size : function() {
+                    self.$.attr(
+                        "style",
+                        "height: 100%"
+                    );
+                    self.getConsole().$
+                        .attr(
+                            "style",
+                            "height: " + (self.$.height()-45) + "px"
+                        );
+                    if( self.getConsole()
+                            .hasSidebar()
+                    ) {
+                        self.getConsole()
+                            .getSidebar().$
+                            .attr(
+                                "style",
+                                "height: " + (self.$.height()-45) + "px"
+                                );
+                    }
+                },
+                reduce : function() { return false }
+            }
+        };
 
-      var target = event.target;
-      if (layout.scrollTarget ? xtag.matchSelector(target, layout.scrollTarget) : target.parentNode == layout){
-        var now = target.scrollTop,
-            buffer = layout.scrollBuffer,
-            scroll = getLayoutScroll(layout, target);
+        this.setViewMode = function(viewMode)
+        {
+            this.viewMode = viewMode;
+            return this;
+        };
 
-        if (now > scroll.last) {
-          scroll.min = Math.max(now - buffer, buffer);
-        } else if (now < scroll.last) {
-          scroll.max = Math.max(now + buffer, buffer);
-        }
+        this.getMainPanel = function()
+        {
+            if(!this.mainpanel) {
+                this.mainpanel = (new forp.MainPanel(this)).appendTo(this);
+            }
+            return this.mainpanel;
+        };
 
-        if (!layout.maxcontent) {
-          if (now > scroll.max && !layout.hasAttribute('content-maximized')) {
-            maxContent(layout);
-          } else if (now < scroll.min) {
-            minContent(layout);
-          }
-        }
+        this.getNav = function()
+        {
+            if(!this.nav) {
+                this.nav = (new forp.Nav()).appendTo(this);
+            }
+            return this.nav;
+        };
 
-        scroll.last = now;
-      }
-    }
-  }
+        this.getConsole = function()
+        {
+            return this.getMainPanel().getConsole();
+        };
 
-  xtag.register('x-layout', {
-    events: {
-      scroll: evaluateScroll,
-      transitionend: function(e){
-        var node = e.target;
-        if (this.hasAttribute('content-maximizing') && node.parentNode == this && (node.nodeName.toLowerCase() == 'header' || node.nodeName.toLowerCase() == 'footer')) {
-          this.setAttribute('content-maximized', null);
-          this.removeAttribute('content-maximizing');
-        }
-      },
-      'tap:delegate(section)': function(e){
-        var layout = e.currentTarget;
-        if (layout.hideTrigger == 'tap' && !layout.maxcontent && this.parentNode == layout) {
-          if ((layout.hasAttribute('content-maximizing') || layout.hasAttribute('content-maximized'))) {
-            minContent(layout);
-          } else {
-            maxContent(layout);
-          }
-        }
-      },
-      'mouseout': function(e){
-        if (this.hideTrigger == 'hover' && !this.maxcontent && !this.hasAttribute('content-maximized') && (!e.relatedTarget || !this.contains(e.relatedTarget))) {
-          maxContent(this);
-        }
-      },
-      'mouseover': function(e){
-        if (this.hideTrigger == 'hover' && !this.maxcontent && (this.hasAttribute('content-maximized') || this.hasAttribute('content-maximizing')) && (this == e.relatedTarget || !this.contains(e.relatedTarget))) {
-          minContent(this);
-        }
-      }
-    },
-    accessors: {
-      scrollTarget: {
-        attribute: { name: 'scroll-target' }
-      },
-      scrollBuffer: {
-        attribute: { name: 'scroll-buffer' },
-        get: function(){
-          return Number(this.getAttribute('scroll-buffer')) || 80;
-        }
-      },
-      hideTrigger: {
-        attribute: { name: 'hide-trigger' }
-      },
-      maxcontent: {
-        attribute: { boolean: true },
-        set: function(value){
-          if (value) {
-            maxContent(this);
-          } else if (!this.hasAttribute('content-maximizing')) {
-            minContent(this);
-          }
-        }
-      }
-    }
-  });
+        this.open = function()
+        {
+            this.$.class("forp-" + this.viewMode);
+            return this;
+        };
 
-})();
+        this.size = function() {
+            return (this.conf[this.viewMode].size() !== false);
+        };
+
+        this.reduce = function() {
+            return (self.conf[self.viewMode].reduce() !== false);
+        };
+
+        this.compact = function(callback)
+        {
+            this.$
+                .attr("style", "")
+                .empty()
+                .class("forp-" + this.viewMode + "-compact");
+
+            this.nav = null;
+            this.mainpanel = null;
+
+            callback();
+
+            return this;
+        };
+    };
+})(forp, jMicro);

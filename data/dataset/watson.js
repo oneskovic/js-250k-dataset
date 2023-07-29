@@ -1,9 +1,3 @@
-/*
- * Copyright (c) 2012 Michael Owens. Licensed via The MIT License.
- *
- * Simple API Wrapper for the AT&T Speech API
- */
-
 // !Dependencies
 var fs = require('fs'),
 	request = require('request');

@@ -8,9 +8,7 @@ global.loadService = function(functionName) {
     return require(path.join(config.base_path, 'services', functionName + config.script_ext));
 };
 
-/**
- * 初始化sequelize,通常为mysql。
- */
+
 if (config.mysql_config) {
     Sequelize = require('sequelize');
     global.sequelize = sequelize = new Sequelize(config.mysql_config.database, config.mysql_config.username, config.mysql_config.password, {

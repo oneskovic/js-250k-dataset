@@ -1,23 +1,3 @@
-/*
----
-description: proxy between any DOM element and a video element,  displays the loading progress of the video
-
-license: GNU GPL
-
-authors:
-- Clément Hallet
-
-requires:
-- MooPlay
-- progressbar: *
-- more/1.2.4: [Slider]
-
-provides: 
-- MooPlay.Control.LoadProgress
-
-...
-*/
-
 MooPlay.Control.LoadProgress = new Class({
     
     options: {

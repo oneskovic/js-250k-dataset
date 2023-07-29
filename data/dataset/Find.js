@@ -1,80 +1,103 @@
-/**
- * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
- * Build: `lodash modularize modern exports="node" -o ./modern/`
- * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
- * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
- * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- * Available under MIT license <http://lodash.com/license>
- */
-var createCallback = require('../functions/createCallback'),
-    forOwn = require('../objects/forOwn');
+Ext.define('Meetcha.view.Find', {
+    extend: 'Ext.form.Panel',
+    requires: ['Ext.field.Slider', 'Ext.field.Text', 'Ext.field.Checkbox', 'Ext.form.FieldSet', 'Ext.field.Toggle'],
+    alias: 'widget.settingsfind',
+    config: {
+        geoEnabled: false,
+        flex: 1,
+        items: [{
+            xtype: 'fieldset',
+            defaults: {
+                'labelWidth': '40%',
+                'labelCls': 'setting-label'
+            },
+            items: [{
+                xtype: 'togglefield',
+                value: 1,
+                name: 'Location',
+                label: 'Use Current Location',
+                itemId: 'useLocation',
+                listeners: {
+                    change: function() {
+                        var setting = this.getValue(),
+                            form = this.up('settingsfind'),
+                            zip = form.down('zipcode');
+                        if (setting == 1) {
+                            zip.disable();
+                        } else {
+                            zip.enable();
+                        }
+                        form.fireEvent('changedSetting');
+                    },
+                    painted: function() {
+                        var form = this.up('settingsfind');
 
-/**
- * Iterates over elements of a collection, returning the first element that
- * the callback returns truey for. The callback is bound to `thisArg` and
- * invoked with three arguments; (value, index|key, collection).
- *
- * If a property name is provided for `callback` the created "_.pluck" style
- * callback will return the property value of the given element.
- *
- * If an object is provided for `callback` the created "_.where" style callback
- * will return `true` for elements that have the properties of the given object,
- * else `false`.
- *
- * @static
- * @memberOf _
- * @alias detect, findWhere
- * @category Collections
- * @param {Array|Object|string} collection The collection to iterate over.
- * @param {Function|Object|string} [callback=identity] The function called
- *  per iteration. If a property name or object is provided it will be used
- *  to create a "_.pluck" or "_.where" style callback, respectively.
- * @param {*} [thisArg] The `this` binding of `callback`.
- * @returns {*} Returns the found element, else `undefined`.
- * @example
- *
- * var characters = [
- *   { 'name': 'barney',  'age': 36, 'blocked': false },
- *   { 'name': 'fred',    'age': 40, 'blocked': true },
- *   { 'name': 'pebbles', 'age': 1,  'blocked': false }
- * ];
- *
- * _.find(characters, function(chr) {
- *   return chr.age < 40;
- * });
- * // => { 'name': 'barney', 'age': 36, 'blocked': false }
- *
- * // using "_.where" callback shorthand
- * _.find(characters, { 'age': 1 });
- * // =>  { 'name': 'pebbles', 'age': 1, 'blocked': false }
- *
- * // using "_.pluck" callback shorthand
- * _.find(characters, 'blocked');
- * // => { 'name': 'fred', 'age': 40, 'blocked': true }
- */
-function find(collection, callback, thisArg) {
-  callback = createCallback(callback, thisArg, 3);
+                        if (form.getGeoEnabled()) {
+                            this.enable();
+                        } else {
+                            //Make it clear that zipcode should be used.
+                            this.disable();
+                            this.setValue(0);
+                            form.down('#zipcode').enable();
+                        }
+                    }
+                }
+            }, {
+                xtype: 'textfield',
+                name: 'ZipCode',
+                itemId: 'zipcode',
+                label: 'Zip Code',
+                value: '94063',
+                listeners: {
+                    change: function() {
+                        var form = this.up('settingsfind');
+                        form.fireEvent('changedSetting', this.parent);
+                    },
+                    painted: function() {
+                        var form = this.up('settingsfind');
+                        if (form.down('#useLocation').getValue() == 1) {
+                            this.disable();
+                        } else {
+                            this.enable();
+                        }
+                    }
+                }
+            }, {
+                xtype: 'sliderfield',
+                name: 'Distance',
+                value: 25,
+                minValue: 0,
+                maxValue: 100,
+                labelAlign: 'top',
+                listeners: {
+                    // I think this is a bug and incorrectly being pass params
+                    // field, slider, thumb, newValue, oldValue
+                    change: function(args) {
+                        var newValue = args[1][2];
+                        this.setLabel("Distance (" + newValue + " miles)");
+                        var form = this.up('settingsfind');
+                        form.fireEvent('changedSetting', form);
+                    },
+                    painted: function(field) {
+                        this.setLabel("Distance (" + field.getValue() + " miles)");
+                    }
+                }
+            }]
+        }]
+    },
+    /*
+     * Hopefully will be unnecessary soon.
+     */
+    getModelValuesFromForm: function() {
+        var me = this,
+            values = me.getValues();
 
-  var index = -1,
-      length = collection ? collection.length : 0;
-
-  if (typeof length == 'number') {
-    while (++index < length) {
-      var value = collection[index];
-      if (callback(value, index, collection)) {
-        return value;
-      }
-    }
-  } else {
-    var result;
-    forOwn(collection, function(value, index, collection) {
-      if (callback(value, index, collection)) {
-        result = value;
-        return false;
-      }
-    });
-    return result;
-  }
-}
-
-module.exports = find;
+        return {
+            'Distance': values.Distance[0],
+            'Time': values.Time ? values.Time[0] : null,
+            'ZipCode': values.ZipCode,
+            'Location': values.Location[0],
+            'Interests': values.Interests ? values.Interests : null
+        };
+    },
+});

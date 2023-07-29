@@ -1,5 +1,3 @@
-//Only injecting this script into the top window (no frames)
-
 var __rdioRemote = {
 	simplify: null,
 	player: null,

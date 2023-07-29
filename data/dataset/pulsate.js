@@ -1,16 +1,5 @@
 define('jqueryui/effects/pulsate', ['jquery','jqueryui/effects/core'], function (jQuery) {
-/*!
- * jQuery UI Effects Pulsate @VERSION
- *
- * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT or GPL Version 2 licenses.
- * http://jquery.org/license
- *
- * http://docs.jquery.com/UI/Effects/Pulsate
- *
- * Depends:
- *	jquery.effects.core.js
- */
+
 (function( $, undefined ) {
 
 $.effects.pulsate = function(o) {

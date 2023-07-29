@@ -1,6 +1,3 @@
-/**
- * This example illustrates how to use the grouping feature of the Grid.
- */
 Ext.define('KitchenSink.view.grid.GroupedGrid', {
     extend: 'Ext.grid.Panel',
     xtype: 'grouped-grid',

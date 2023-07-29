@@ -6,19 +6,7 @@ define([
     'use strict';
 
     return angular.module('superdesk.dragdrop.directives', [])
-        /**
-         * sdSortable creates a container in which contained items can be sortable by drag/drop.
-         *
-         * Usage:
-         * <div sd-sortable data-update="update" data-placeholder="placeholder"></div>
-         *
-         * Params:
-         * @scope {function} update - function to call when sort is updated.
-         * This function should accept an array of item indexes.
-         *
-         * @scope {string} placeholder - css class name for placeholder box
-         * displayed during sorting.
-         */
+        
         .directive('sdSortable', [function() {
             return {
                 scope: {update: '=', placeholder: '='},

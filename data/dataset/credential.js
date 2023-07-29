@@ -1,4 +1,3 @@
-// credential.js
 /*
  * Copyright (c) 2014 3 Round Stones Inc., Some Rights Reserved
  *

@@ -1,8 +1,3 @@
-/*
-	Backstrapp Mediator.
-	Drawn on heavily from Addy Osmani's 'Aura' code.
-	This is the application Brain.
-*/
 define(['jquery', 'util'], 
 
 function ($, _) {

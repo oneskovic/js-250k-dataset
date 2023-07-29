@@ -1,7 +1,5 @@
 ({
-    /**
-     * Dynamically create component on server and verify labels in markup of created component are present.
-     */
+    
     testNewLabelsInDynamicComponent:{
         test:function(cmp){
             $A.componentService.newComponentAsync(

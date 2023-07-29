@@ -1,4 +1,3 @@
-
 nv.models.distribution = function() {
   "use strict";
   //============================================================

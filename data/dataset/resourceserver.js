@@ -1,5 +1,3 @@
-// Implements an in-memory resource server
-
 module.exports = {
     listen: function (port) {
 

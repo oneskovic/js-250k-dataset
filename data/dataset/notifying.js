@@ -1,7 +1,3 @@
-/**
- * This should wrap data stores that connect to a central repository, in order
- * to distribute data change notifications to all store subscribers.
- */
 var getChildHub = require("tunguska/hub").getChildHub,
 	when = require("promised-io/promise").when;
 

@@ -10,12 +10,7 @@ var Angular = require('./analyzer/Angular');
 var libraries;
 
 var proto = {
-  /**
-   * Creates a new Inspector with `config` as its configuration
-   * saved in `this` as `entryPoint`
-   * @param {Object} options
-   * @chainable
-   */
+  
   create: function (options) {
     var displayName = options.displayName || options.entryPoint;
     var Constructor = options.remote ? RemoteInspector : Inspector;

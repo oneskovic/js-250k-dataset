@@ -1,8 +1,3 @@
-/* Notes:
- * - History management is currently done using window.location.hash.  This could easily be changed to use Push State instead.
- * - jQuery dependency for now. This could also be easily removed.
- */
-
 function PageSlider(container) {
 
     var container = container,

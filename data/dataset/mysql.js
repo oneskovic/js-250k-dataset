@@ -1,56 +1,90 @@
-var _       = require('lodash'),
-    config  = require('../../../config/index'),
+'use strict';
 
-    // private
-    doRawAndFlatten,
+var util = require('util');
+var assert = require('assert');
 
-    // public
-    getTables,
-    getIndexes,
-    getColumns,
-    checkPostTable;
-
-doRawAndFlatten = function doRaw(query, flattenFn) {
-    return config.database.knex.raw(query).then(function (response) {
-        return _.flatten(flattenFn(response));
-    });
+var Mysql = function() {
+  this.output = [];
+  this.params = [];
 };
 
-getTables = function getTables() {
-    return doRawAndFlatten('show tables', function (response) {
-        return _.map(response[0], function (entry) { return _.values(entry); });
-    });
+var Postgres = require(__dirname + '/postgres');
+
+util.inherits(Mysql, Postgres);
+
+Mysql.prototype._myClass = Mysql;
+
+Mysql.prototype._quoteCharacter = '`';
+
+Mysql.prototype._arrayAggFunctionName = 'GROUP_CONCAT';
+
+Mysql.prototype._getParameterPlaceholder = function() {
+  return '?';
 };
 
-getIndexes = function getIndexes(table) {
-    return doRawAndFlatten('SHOW INDEXES from ' + table, function (response) {
-        return _.pluck(response[0], 'Key_name');
-    });
+Mysql.prototype._getParameterValue = function(value) {
+  if (Buffer.isBuffer(value)) {
+    value = 'x' + this._getParameterValue(value.toString('hex'));
+  } else {
+    value = Postgres.prototype._getParameterValue.call(this, value);
+  }
+  return value;
 };
 
-getColumns = function getColumns(table) {
-    return doRawAndFlatten('SHOW COLUMNS FROM ' + table, function (response) {
-        return _.pluck(response[0], 'Field');
-    });
+Mysql.prototype.visitReturning = function() {
+  throw new Error('MySQL does not allow returning clause.');
 };
 
-// This function changes the type of posts.html and posts.markdown columns to mediumtext. Due to
-// a wrong datatype in schema.js some installations using mysql could have been created using the
-// data type text instead of mediumtext.
-// For details see: https://github.com/TryGhost/Ghost/issues/1947
-checkPostTable = function checkPostTable() {
-    return config.database.knex.raw('SHOW FIELDS FROM posts where Field ="html" OR Field = "markdown"').then(function (response) {
-        return _.flatten(_.map(response[0], function (entry) {
-            if (entry.Type.toLowerCase() !== 'mediumtext') {
-                return config.database.knex.raw('ALTER TABLE posts MODIFY ' + entry.Field + ' MEDIUMTEXT');
-            }
-        }));
-    });
+Mysql.prototype.visitForShare = function() {
+  throw new Error('MySQL does not allow FOR SHARE clause.');
 };
 
-module.exports = {
-    checkPostTable: checkPostTable,
-    getTables:  getTables,
-    getIndexes: getIndexes,
-    getColumns: getColumns
+Mysql.prototype.visitCreate = function(create) {
+  var result = Mysql.super_.prototype.visitCreate.call(this, create);
+  var engine = this._queryNode.table._initialConfig.engine;
+  var charset = this._queryNode.table._initialConfig.charset;
+
+  if ( !! engine) {
+    result.push('ENGINE=' + engine);
+  }
+
+  if ( !! charset) {
+    result.push('DEFAULT CHARSET=' + charset);
+  }
+
+  return result;
 };
+
+Mysql.prototype.visitRenameColumn = function(renameColumn) {
+  var dataType = renameColumn.nodes[1].dataType || renameColumn.nodes[0].dataType;
+  assert(dataType, 'dataType missing for column ' + (renameColumn.nodes[1].name || renameColumn.nodes[0].name || '') +
+    ' (CHANGE COLUMN statements require a dataType)');
+  return ['CHANGE COLUMN ' + this.visit(renameColumn.nodes[0]) + ' ' + this.visit(renameColumn.nodes[1]) + ' ' + dataType];
+};
+
+Mysql.prototype.visitInsert = function(insert) {
+  var result = Postgres.prototype.visitInsert.call(this, insert);
+  if (result[2] === 'DEFAULT VALUES') {
+    result[2] = '() VALUES ()';
+  }
+  return result;
+};
+
+Mysql.prototype.visitIndexes = function(node) {
+  var tableName = this.visit(this._queryNode.table.toNode())[0];
+
+  return "SHOW INDEX FROM " + tableName;
+};
+
+Mysql.prototype.visitBinary = function(binary) {
+  if (binary.operator === '@@') {
+    var self = this;
+    var text = '(MATCH ' + this.visit(binary.left) + ' AGAINST ';
+    text += this.visit(binary.right);
+    text += ')';
+    return [text];
+  }
+  return Mysql.super_.prototype.visitBinary.call(this, binary);
+}
+
+module.exports = Mysql;

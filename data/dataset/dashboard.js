@@ -1,97 +1,74 @@
-var dashboard = (function () {
-    var configs = {
-        CONTEXT: "/"
-    };
-    var routes = new Array();
-    var log = new Log();
-    var db;
-    var common = require("/modules/common.js");
-    var sqlscripts = require('/sqlscripts/mysql.js');
-    
-    var module = function (dbs) {
-        db = dbs;
-        //mergeRecursive(configs, conf);
-    };
-
-    function mergeRecursive(obj1, obj2) {
-        for (var p in obj2) {
-            try {
-                // Property in destination object set; update its value.
-                if (obj2[p].constructor == Object) {
-                    obj1[p] = MergeRecursive(obj1[p], obj2[p]);
-                } else {
-                    obj1[p] = obj2[p];
-                }
-            } catch (e) {
-                // Property in destination object not set; create it and set its value.
-                obj1[p] = obj2[p];
-            }
-        }
-        return obj1;
-    }
-
-    // prototype
-    module.prototype = {
-        constructor: module,
-        
-        getDeviceCountByOS: function(ctx){      	 	 
-          	var tenantID = common.getTenantID();
-          	var finalResult = db.query(sqlscripts.devices.select2, tenantID);
-                       
-            
-            
-            if(finalResult.length == 0){
-            	finalResult =  [{"label" : "No Data", "devices": 0,  "data" : 100}];
-            }
-            
-            return finalResult;
-            
-            
-               
-        },
-        
-        
-        
-        getDeviceCountByOwnership: function(ctx){
-            var tenantID = common.getTenantID();
-            var allDeviceCount = db.query(sqlscripts.devices.select3, tenantID);
-	        var allByodCount = db.query(sqlscripts.devices.select4, tenantID);
-	        var finalResult =  [{"label" : "Personal", "devices": allByodCount[0].count,  "data" : allByodCount[0].count}, {"label" : "Corporate", "devices": allDeviceCount[0].count - allByodCount[0].count, "data" : allDeviceCount[0].count - allByodCount[0].count}];   
-            
-                 
-            if(allDeviceCount[0].count == 0){
-            	finalResult =  [{"label" : "No Data", "devices": 0,  "data" : 100}];
-            }
-           
-           	
-            return finalResult;            
-      
-        },
-        
-        
-        
-        
-         getAndroidDeviceCountByOwnership: function(ctx){
-            var tenantID = common.getTenantID();
-            var allDeviceCount = db.query(sqlscripts.devices.select3, tenantID);
-	        var allByodCount = db.query(sqlscripts.devices.select4, tenantID);
-	        var finalResult =  [{"label" : "Personal", "data" : allByodCount[0].count}, {"label" : "Corporate", "data" : allDeviceCount[0].count - allByodCount[0].count}];   
-            
-            if(allDeviceCount[0].count == 0){
-            	finalResult =  [{"label" : "No Data", "devices": 0,  "data" : 100}];
-            }
-            
-            
-            
-            return finalResult;            
-      
-        }
-        
-        
-        
-        
-        
-    };
-    return module;
-})();
+window.onload = function()
+{
+	this.popup_collection = new Popup('widget_collection');
+	this.popup_dilution = new Popup('widget_dilution');
+	this.popup_inoculation = new Popup('widget_inoculation');
+	this.popup_incubation_1 = new Popup('widget_incubation_1');
+	this.popup_identification = new Popup('widget_identification');
+	
+	increment(document.getElementById("user_points"), 0, 1337, 1000);
+	increment(document.getElementById("group_biostrikesg_points"), 0, 9777, 1000);
+	increment(document.getElementById("group_lobservatoire_points"), 0, 1425, 1000);
+	
+	var chart_agar_data =
+	{
+		labels: [],
+		datasets : [
+			{
+				fillColor : "rgba(172,194,132,0.4)",
+				strokeColor : "#ACC26D",
+				pointColor : "#fff",
+				pointStrokeColor : "#9DB86D",
+				data : []
+			}
+		]
+	};
+	
+	var chart_ecoli_data =
+	{
+		labels: [],
+		datasets : [
+			{
+				fillColor : "rgba(172,194,132,0.4)",
+				strokeColor : "#ACC26D",
+				pointColor : "#fff",
+				pointStrokeColor : "#9DB86D",
+				data : []
+			}
+		]
+	};
+	
+	var chart_analysis_data =
+	{
+		labels: [],
+		datasets : [
+			{
+				fillColor : "rgba(172,194,132,0.4)",
+				strokeColor : "#ACC26D",
+				pointColor : "#fff",
+				pointStrokeColor : "#9DB86D",
+				data : []
+			}
+		]
+	};
+	
+	var y = 0;
+	
+	for (var i = 0; i < 20; i ++)
+	{
+		chart_agar_data.labels.push("");
+		chart_agar_data.datasets[0].data.push(y += Math.random() * 10 - 5);
+		chart_ecoli_data.labels.push("");
+		chart_ecoli_data.datasets[0].data.push(y += Math.random() * 10 - 5);
+		chart_analysis_data.labels.push("");
+		chart_analysis_data.datasets[0].data.push(y += Math.random() * 10 - 5);
+	}
+	
+	var chart_agar = document.getElementById('chart_agar').getContext('2d');
+	new Chart(chart_agar).Line(chart_agar_data);
+	var chart_ecoli = document.getElementById('chart_ecoli').getContext('2d');
+	new Chart(chart_ecoli).Line(chart_ecoli_data);
+	var chart_analysis = document.getElementById('chart_analysis').getContext('2d');
+	new Chart(chart_analysis).Line(chart_analysis_data);
+};
 

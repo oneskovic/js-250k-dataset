@@ -1,6 +1,3 @@
-/*jslint
-    onevar: false, undef: true, newcap: true, nomen: false, es5: true,
-    regexp: true, plusplus: true, bitwise: true, browser: true, indent: 4 */
 /*global require, module, console, process */
 (function () {
     var api = require('./blitz/api'),

@@ -1,7 +1,3 @@
-//Copyright (C) 2011 by Allain Lalonde (allain@machete.ca)
-//
-//See the file LICENSE.txt for copying permission.
-
 window.ConceptMapUI = function(targetID, conceptMap, layout) {
   var _this = this;
   var invalidPaint = true;

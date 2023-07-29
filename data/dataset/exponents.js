@@ -1,7 +1,6 @@
 $.extend(KhanUtil, {
 
-    /* fraction math-format function called with defraction enabled, which is always
-     * what is used in the exponent exercises. */
+    
 
     frac: function(n, d) {
         return KhanUtil.fraction(n, d, true, true, false, false);

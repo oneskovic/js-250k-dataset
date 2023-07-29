@@ -1,14 +1,3 @@
-/**
- * Default Zine JavaScript Driver File
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- * Part of the Zine core framework. Provides default script
- * functions for the base templates.
- *
- * :copyright: (c) 2010 by the Zine Team, see AUTHORS for more details.
- * :license: BSD, see LICENSE for more details.
- */
-
 var Zine = {
   TRANSLATIONS : {},
   PLURAL_EXPR : function(n) { return n == 1 ? 0 : 1; },

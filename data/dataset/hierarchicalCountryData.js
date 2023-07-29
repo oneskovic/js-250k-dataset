@@ -1,4 +1,3 @@
-/* jshint maxlen: 150 */
 define([], function () {
 	var items = [
 		{ id: 'AF', name: 'Africa', type: 'continent', population: '900 million', area: '30,221,532 sq km',

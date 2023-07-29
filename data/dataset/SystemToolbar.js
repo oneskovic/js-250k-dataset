@@ -1,9 +1,3 @@
-/**
- * System Toolbar.
- *
- * UI element containing the clock and window switcher.
- */
-
 var SystemToolbar = {
 
   /**

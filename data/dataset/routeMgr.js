@@ -2,7 +2,7 @@ var runnable = function(sumeru){
     
     var routerMap = [];
     
-    var addRouter = function(obj /*, obj1, obj2..*/){
+    var addRouter = function(obj ){
         var rule;
         for (var i = 0, l = arguments.length; i < l; i++){
             rule = arguments[i];

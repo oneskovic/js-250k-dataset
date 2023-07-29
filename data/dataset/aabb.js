@@ -1,7 +1,3 @@
-/**
-* An axis-aligned bounding box.
-* @author saharan
-*/
 OIMO.AABB = function(minX,maxX,minY,maxY,minZ,maxZ){
     this.minX=minX || 0;
     this.maxX=maxX || 0;
@@ -23,11 +19,7 @@ OIMO.AABB.prototype = {
         this.minZ=minZ;
         this.maxZ=maxZ;
     },
-    /**
-    * Set this AABB to the combined AABB of aabb1 and aabb2.
-    * @param   aabb1
-    * @param   aabb2
-    */
+    
     combine:function(aabb1,aabb2){
         this.minX = (aabb1.minX<aabb2.minX) ? aabb1.minX : aabb2.minX;
         this.maxX = (aabb1.maxX>aabb2.maxX) ? aabb1.maxX : aabb2.maxX;

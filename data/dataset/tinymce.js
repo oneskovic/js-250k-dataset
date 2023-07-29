@@ -1,5 +1,3 @@
-// TinyMCE helper, checks to see if TinyMCE editors in the given form are dirty
-
 (function($){
 	// Create a new object, with an isDirty method
 	var tinymce = {

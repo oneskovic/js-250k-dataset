@@ -3,17 +3,7 @@
   var Event = YAHOO.util.Event;
   var lang = YAHOO.lang;
   
-  /**
- * Create a multi autocomplete field customized
- * @class inputEx.MultiAutoCompleteCustom
- * @extends inputEx.MultiAutoComplete
- * @constructor
- * @param {Object} options Added options:
- * <ul>
- *	  <li>maxItems: the number of Items</li>
- *	  <li>maxItemsAlert: a function executed when the maxItems is reach</li>
- * </ul>
- */
+  
   
 inputEx.MultiAutoCompleteCustom = function(options) {
   this.maxItems = options.maxItems;	

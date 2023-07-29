@@ -1,12 +1,3 @@
-
-/**
- * Build file for r.js; allows for making a production mode when desired.
- *
- * 'requirejs' must be installed as a global module via npm, and then this 
- * file passed as an argument to the requirejs CLI program, e.g.:
- *
- *    r.js -o production.js
- */
 ({
 
   baseUrl: './',

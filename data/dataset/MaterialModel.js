@@ -1,11 +1,3 @@
-/**
- * @class THREEFAB.MaterialModel
- *
- * @author itooamaneatguy / http://kadrmasconcepts.com/blog/
- * @description Sets up material model for the right hand material panel.
- *
- */
-
 THREEFAB.MaterialModel = Backbone.Model.extend({
 
 	materialList: [

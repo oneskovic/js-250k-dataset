@@ -1,7 +1,3 @@
-/*
- * This is a collection of well known SMTP service providers
- */
-
 module.exports = {
     "Gmail":{
         transport: "SMTP",

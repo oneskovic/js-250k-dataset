@@ -1,32 +1,3 @@
-/**
-A control designed to crop a zoomable, pannable image.
-
-onCrop returns the paramaters necessary to crop the image
-
-
-	{
-		suggestedXtop: left pixel start of the cropped image
-		suggestedYtop: top pixel start of the cropped image
-		suggestedScale: zoom%
-		suggestedXsize: rounded X size of the cropped image
-		suggestedYsize: rounded Y size of the cropped image
-		sourceWidth: original image width
-		sourceHeight: original image height
-		sourceImage: absolute path to the image
-		focusX: center of the cropped image in relation to width
-		focusY: center of the cropped image in relation to height
-	}
-
-Use a CroppableImage like so:
-
-	{kind: "VFlexBox", components: [
-		{kind: "CroppableImage" src:"image.jpg", flex:1, onCrop "cropHandler"},
-		{kind: "Button", onclick:"crop"}
-	]}
-
-	crop: function() { this.$.croppableImage.getCropParams() }
-*/
-
 enyo.kind({
 	name:"enyo.CroppableImage",
 	kind:"enyo.ScrollingImage",

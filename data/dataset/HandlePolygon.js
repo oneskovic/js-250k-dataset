@@ -1,10 +1,3 @@
-/**
- * zrender
- *
- * @author Kener (@Kener-林峰, kener.linfeng@gmail.com)
- *
- * shape类：handlePolygon，dataRange手柄
- */
 define(function (require) {
     var Base = require('zrender/shape/Base');
     var PolygonShape = require('zrender/shape/Polygon');

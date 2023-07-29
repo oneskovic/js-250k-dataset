@@ -1,17 +1,3 @@
-/**
- *
- * Wait for an object in the DOM (selected by given selector) for the provided amount of
- * milliseconds. The callback is called with false if the object isn't found.
- *
- * @param {String} selector element to wait for
- * @param {Number} ms       time in ms
- * @callbackParameter error
- *
- * @uses protocol/implicitWait, protocol/element
- * @type utility
- *
- */
-
 var async = require('async'),
     ErrorHandler = require('../utils/ErrorHandler.js');
 

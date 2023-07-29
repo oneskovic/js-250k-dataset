@@ -1,91 +1,44 @@
-TEST('PARALLEL', function(ok) {
-	'use strict';
+/**
+ * @name sandbox
+ */
+(function (sb) {
 
-	var
-	// data
-	data = {},
+function parallel(method, items, callback) {
+    var i = 0,
+        j = 0,
+        c = items.length,
+        results = [],
+        ready;
 
-	// count
-	count = 0,
-	
-	// sum
-	sum = 0;
+    var readyFactory = function (index) {
+        return function (data) {
+            // keep the order
+            results[index] = data;
+            j++;
+            if (j >= c) {
+                callback.apply(sb.global, results);
+            }
+        }
+    };
 
-	PARALLEL([
+    for (; i < c; i++) {
+        ready = readyFactory(i);
+        method(items[i], ready)/*if ($P.PROMISE) {*/.then(ready, ready)/*}*/;
+    }
+}
 
-	// func1
-	function(done) {
-
-		setTimeout(function() {
-
-			data.a = 1;
-
-			done();
-		}, 100);
-	},
-
-	// func2
-	function(done) {
-
-		setTimeout(function() {
-
-			data.b = 2;
-
-			done();
-		}, 100);
-	},
-
-	// func3
-	function(done) {
-
-		setTimeout(function() {
-
-			data.c = 3;
-
-			done();
-		}, 100);
-	},
-
-	// done
-	function() {
-		ok(CHECK_ARE_SAME([data, {
-			a : 1,
-			b : 2,
-			c : 3
-		}]));
-	}]);
-
-	PARALLEL(3, [
-
-	// func1
-	function(i, done) {
-
-		setTimeout(function() {
-
-			count += 1;
-
-			done();
-		}, 100);
-	},
-
-	function() {
-		ok(count === 3);
-	}]);
-	
-	PARALLEL([1, 2, 3], [
-
-	// func1
-	function(value, done) {
-
-		setTimeout(function() {
-
-			sum += value;
-
-			done();
-		}, 100);
-	},
-
-	function() {
-		ok(sum === 6);
-	}]);
+    /**
+     * @event *:request-parallel parallel module request for require.async(['a', 'b', 'c']) etc
+     *
+     * @param {Array}    moduleNames list of modules to init
+     * @param {Function} callback    this callback will be called when module inited
+     * @param {Function} method      method to call for init
+     *
+     * @retuns yes empty environment
+     */
+sb.on('*:request-parallel', function (moduleNames, callback, method) {
+    parallel(method, moduleNames, callback);
+    return [];
 });
+
+}(sandbox));

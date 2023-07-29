@@ -1,56 +1,42 @@
-SVG.Image = SVG.invent({
-  // Initialize node
-  create: 'image'
+/**
+ * @name sandbox
+ */
+(function (sb) {
+    /**
+     * Loads any image
+     *
+     * @param {String|Array} moduleName path to file
+     * @param {Function}     [callback]   callback(result) undefined on error HTMLImageElement on success
+     */
+    sb.require.image = function (moduleName, callback) {
+        var replacement = sb.trigger('*:request-off-package', moduleName, callback, 'image'), // [[returnResult, moduleName, module, true], callback, type]
+            returnResult = replacement[0][0];
 
-  // Inherit from
-, inherit: SVG.Shape
+        if (replacement[0][3]) { // isReturnASAP
+            return returnResult;
+        }
 
-  // Add class methods
-, extend: {
-    // (re)load image
-    load: function(url) {
-      if (!url) return this
+        var module = replacement[0][2];
 
-      var self = this
-        , img  = document.createElement('img')
-      
-      /* preload image */
-      img.onload = function() {
-        var p = self.doc(SVG.Pattern)
+        callback = replacement[1];
+        moduleName = replacement[0][1];
 
-        /* ensure image size */
-        if (self.width() == 0 && self.height() == 0)
-          self.size(img.width, img.height)
+/*if ($P.WORKER || $P.NODE) {*///#JSCOVERAGE_IF 0/*}*/
+        var img = new Image();
+        /*if ($P.IE) {*/var cleanup = function () {try {delete img.onload; delete img.onerror;} catch (err) {img.onload = img.onerror = sb.noop;}};/*}*/
+        img.onload = function () {
+            callback(sb.register(moduleName, img));
+            /*if ($P.IE) {*/cleanup();/*}*/
+        };
+        img.onerror = function () {
+            sb.trigger('*:request-error', moduleName, module);
+            callback();
+            /*if ($P.IE) {*/cleanup();/*}*/
+        };
+        img.src = moduleName;
 
-        /* ensure pattern size if not set */
-        if (p && p.width() == 0 && p.height() == 0)
-          p.size(self.width(), self.height())
-        
-        /* callback */
-        if (typeof self._loaded === 'function')
-          self._loaded.call(self, {
-            width:  img.width
-          , height: img.height
-          , ratio:  img.width / img.height
-          , url:    url
-          })
-      }
+        return returnResult;
+/*if ($P.WORKER || $P.NODE) {*///#JSCOVERAGE_ENDIF/*}*/
+    };
 
-      return this.attr('href', (img.src = this.src = url), SVG.xlink)
-    }
-    // Add loade callback
-  , loaded: function(loaded) {
-      this._loaded = loaded
-      return this
-    }
-  }
-  
-  // Add parent method
-, construct: {
-    // Create image element, load image and set its size
-    image: function(source, width, height) {
-      return this.put(new SVG.Image).load(source).size(width || 0, height || width || 0)
-    }
-  }
-
-})
+}(sandbox));

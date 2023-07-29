@@ -1,8 +1,3 @@
-/**
- * A event recognizer created to recognize swipe movements from the edge of a container.
- *
- * @private
- */
 Ext.define('Ext.event.recognizer.EdgeSwipe', {
     extend: 'Ext.event.recognizer.Swipe',
 

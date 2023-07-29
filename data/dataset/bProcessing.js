@@ -1,4 +1,3 @@
-// DATA_TEMPLATE: empty_table
 oTest.fnStart( "bProcessing" );
 
 /* It's actually a bit hard to set this one due to the fact that it will only be shown

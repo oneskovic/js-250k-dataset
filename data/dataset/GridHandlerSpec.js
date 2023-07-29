@@ -1,4 +1,3 @@
-/*global jasmine: true, describe: true, beforeEach: true, it: true, expect: true, spyOn: true */
 (function() {
   'use strict';
 

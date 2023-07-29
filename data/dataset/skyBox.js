@@ -1,10 +1,3 @@
-/**
- * @fileoverview Object collects a group of Components that define an object and its behaviors
- * 
- * @author Tony Parisi
- */
-
-
 goog.require('Vizi.Prefabs');
 
 Vizi.Prefabs.Skybox = function(param)

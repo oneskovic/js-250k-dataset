@@ -1,9 +1,3 @@
-// canvasDrawr originally from Mike Taylr  http://miketaylr.com/
-// Tim Branyen massaged it: http://timbranyen.com/
-// and i did too. with multi touch.
-// and boris fixed some touch identifier stuff to be more specific.
-// and then added pointer events.
-
 var CanvasDrawr = function(options) {
   // grab canvas element
   var canvas = document.getElementById(options.id),

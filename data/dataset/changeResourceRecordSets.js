@@ -5,11 +5,7 @@ var
   aws = require('../aws'),
   _ = require('../util');
 
-/**
- * POST ChangeResourceRecordSets
- *
- * @param   {Object}  args
- */
+
 var Request = module.exports.Request = function(args) {
   route53.Request.call(this, args, 'POST');
 

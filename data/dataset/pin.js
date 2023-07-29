@@ -1,6 +1,3 @@
-/*
- Pins
-*/
 var Pin = Class.create();
 Pin.extend({
     initialize: function(){

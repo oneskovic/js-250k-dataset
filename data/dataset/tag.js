@@ -1,148 +1,130 @@
-// Copyright 2007 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+var should = require('should');
+var assert = require('assert');
+var muk = require('muk');
+var path = require('path');
+var fs = require('fs');
 
-/**
- * @fileoverview DOM pattern to match a tag.
- *
- * @author robbyw@google.com (Robby Walker)
- */
-
-goog.provide('goog.dom.pattern.Tag');
-
-goog.require('goog.dom.pattern');
-goog.require('goog.dom.pattern.AbstractPattern');
-goog.require('goog.dom.pattern.MatchType');
-goog.require('goog.object');
+global.APP_PATH = path.normalize(__dirname + '/../App');
+global.RESOURCE_PATH = path.normalize(__dirname + '/../www')
+process.execArgv.push('--no-app');
+require(path.normalize(__dirname + '/../../index.js'));
 
 
-/**
- * Pattern object that matches an tag.
- *
- * @param {string|RegExp} tag Name of the tag.  Also will accept a regular
- *     expression to match against the tag name.
- * @param {goog.dom.TagWalkType} type Type of token to match.
- * @param {Object=} opt_attrs Optional map of attribute names to desired values.
- *     This pattern will only match when all attributes are present and match
- *     the string or regular expression value provided here.
- * @param {Object=} opt_styles Optional map of CSS style names to desired
- *     values. This pattern will only match when all styles are present and
- *     match the string or regular expression value provided here.
- * @param {Function=} opt_test Optional function that takes the element as a
- *     parameter and returns true if this pattern should match it.
- * @constructor
- * @extends {goog.dom.pattern.AbstractPattern}
- */
-goog.dom.pattern.Tag = function(tag, type, opt_attrs, opt_styles, opt_test) {
-  if (goog.isString(tag)) {
-    this.tag_ = tag.toUpperCase();
-  } else {
-    this.tag_ = tag;
-  }
-
-  this.type_ = type;
-
-  this.attrs_ = opt_attrs || null;
-  this.styles_ = opt_styles || null;
-  this.test_ = opt_test || null;
+var Http = thinkRequire('Http');
+var http = require('http');
+var req = new http.IncomingMessage();
+req.headers = { 
+  'x-real-ip': '127.0.0.1',
+  'x-forwarded-for': '127.0.0.1',
+  'host': 'meinv.ueapp.com',
+  'x-nginx-proxy': 'true',
+  'connection': 'close',
+  'cache-control': 'max-age=0',
+  'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+  'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.153 Safari/537.36',
+  'accept-encoding': 'gzip,deflate,sdch',
+  'accept-language': 'zh-CN,zh;q=0.8,en;q=0.6,ja;q=0.4,nl;q=0.2,zh-TW;q=0.2'
 };
-goog.inherits(goog.dom.pattern.Tag, goog.dom.pattern.AbstractPattern);
+req.method = 'GET';
+req.httpVersion = '1.1';
+req.url = '/index/index/name/welefen?test=welefen&value=1111';
+var res = new http.ServerResponse(req);
+var instance = Http(req, res).run();
 
 
-/**
- * The tag to match.
- *
- * @type {string|RegExp}
- * @private
- */
-goog.dom.pattern.Tag.prototype.tag_;
-
-
-/**
- * The type of token to match.
- *
- * @type {goog.dom.TagWalkType}
- * @private
- */
-goog.dom.pattern.Tag.prototype.type_;
-
-
-/**
- * The attributes to test for.
- *
- * @type {Object}
- * @private
- */
-goog.dom.pattern.Tag.prototype.attrs_ = null;
-
-
-/**
- * The styles to test for.
- *
- * @type {Object}
- * @private
- */
-goog.dom.pattern.Tag.prototype.styles_ = null;
-
-
-/**
- * Function that takes the element as a parameter and returns true if this
- * pattern should match it.
- *
- * @type {Function}
- * @private
- */
-goog.dom.pattern.Tag.prototype.test_ = null;
-
-
-/**
- * Test whether the given token is a tag token which matches the tag name,
- * style, and attributes provided in the constructor.
- *
- * @param {Node} token Token to match against.
- * @param {goog.dom.TagWalkType} type The type of token.
- * @return {goog.dom.pattern.MatchType} <code>MATCH</code> if the pattern
- *     matches, <code>NO_MATCH</code> otherwise.
- */
-goog.dom.pattern.Tag.prototype.matchToken = function(token, type) {
-  // Check the direction and tag name.
-  if (type == this.type_ &&
-      goog.dom.pattern.matchStringOrRegex(this.tag_, token.nodeName)) {
-    // Check the attributes.
-    if (this.attrs_ &&
-        !goog.object.every(
-            this.attrs_,
-            goog.dom.pattern.matchStringOrRegexMap,
-            token)) {
-      return goog.dom.pattern.MatchType.NO_MATCH;
-    }
-    // Check the styles.
-    if (this.styles_ &&
-        !goog.object.every(
-            this.styles_,
-            goog.dom.pattern.matchStringOrRegexMap,
-            token.style)) {
-      return goog.dom.pattern.MatchType.NO_MATCH;
-    }
-
-    if (this.test_ && !this.test_(token)) {
-      return goog.dom.pattern.MatchType.NO_MATCH;
-    }
-
-    // If we reach this point, we have a match and should save it.
-    this.matchedNode = token;
-    return goog.dom.pattern.MatchType.MATCH;
-  }
-
-  return goog.dom.pattern.MatchType.NO_MATCH;
-};
+describe('Tag', function(){
+  it('tag list', function(done){
+    instance.then(function(http){
+      var tags = C('tag');
+      var tagKeys = Object.keys(tags);
+      [
+        'app_init','form_parse','path_info','resource_check',
+        'resource_output','route_check','app_begin','action_init',
+        'view_init','view_template','view_parse','view_filter',
+        'view_end','action_end','app_end','content_write'
+      ].forEach(function(item){
+        assert.equal(tagKeys.indexOf(item) > -1, true);
+      })
+      done();
+    })
+  })
+  it('closeDbConnect', function(done){
+    instance.then(function(http){
+      var closeDbConnect = C('tag').app_end[0];
+      closeDbConnect();
+      C('auto_close_db', true);
+      closeDbConnect();
+      C('auto_close_db', false)
+      done();
+    })
+  })
+  describe('jsonParse', function(){
+    it('jsonParse empty', function(done){
+      instance.then(function(http){
+        var jsonParse = C('tag').form_parse[0];
+        jsonParse(http);
+        assert.deepEqual(http.post, {})
+        done();
+      })
+    })
+    it('jsonParse post_json_content_type is string', function(done){
+      instance.then(function(http){
+        var type = C('post_json_content_type');
+        C('post_json_content_type', 'application/json')
+        var jsonParse = C('tag').form_parse[0];
+        jsonParse(http);
+        assert.deepEqual(http.post, {})
+        C('post_json_content_type', type)
+        done();
+      })
+    })
+    it('jsonParse payload empty', function(done){
+      instance.then(function(http){
+        http.contentType = 'application/json';
+        http.payload = '';
+        var jsonParse = C('tag').form_parse[0];
+        jsonParse(http);
+        assert.deepEqual(http.post, {})
+        done();
+      })
+    })
+    it('jsonParse payload has data', function(done){
+      instance.then(function(http){
+        http.contentType = 'application/json';
+        http.payload = '{"name":"welefen"}';
+        var jsonParse = C('tag').form_parse[0];
+        jsonParse(http)
+        //console.log(http.post)
+        assert.deepEqual(http.post, {name: 'welefen'})
+        done();
+      })
+    })
+    it('jsonParse payload error data', function(done){
+      instance.then(function(http){
+        http.contentType = 'application/json';
+        http.payload = '{name:"welefen"}';
+        http.post = {};
+        var jsonParse = C('tag').form_parse[0];
+        jsonParse(http)
+        //console.log(http.post)
+        assert.deepEqual(http.post, {})
+        done();
+      })
+    })
+  })
+  describe('resourceOutput', function(){
+    it('resourceOutput', function(done){
+      instance.then(function(http){
+        var resourceOutput = C('tag').resource_output[0];
+        var flag = false;
+        http.res.end = function(){
+           if (!flag) {
+            flag = true;
+            done();
+           }
+        }
+        resourceOutput(http, __filename);
+      })
+    })
+  })
+})

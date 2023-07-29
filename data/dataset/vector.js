@@ -2,11 +2,7 @@ goog.provide('math.Vector');
 
 goog.require('goog.asserts');
 
-/**
- * @constructor
- * @param {number} x
- * @param {number} y
- */
+
 math.Vector = function(x, y) {
   /**
    * @type {number}

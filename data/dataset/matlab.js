@@ -1,8 +1,3 @@
-/*
-Language: Matlab
-Author: Denis Bardadym <bardadymchik@gmail.com>
-*/
-
 function(hljs) {
   return {
     defaultMode: {

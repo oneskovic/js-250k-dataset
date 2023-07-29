@@ -1,4 +1,3 @@
-/* testing basic session establishment */
 var test = require('tape');
 var PeerConnection = require('../rtcpeerconnection');
 

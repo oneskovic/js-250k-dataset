@@ -1,6 +1,3 @@
-/**
- * @author Mikael Emtinger
- */
 //--- Texture Vertex Shader ---
 
 THREE.WebGLShaderDefinitions.shadowVolumeVertex = (function() {

@@ -3,11 +3,7 @@
 tutao.provide('tutao.tutanota.util.FileUtils');
 
 
-/**
- * Reads the content of the given file as a UTF8 string.
- * @param {File} file The file to load.
- * @return {Promise.<string, Error>} Resolves to the loaded file content as string, rejects if the loading fails.
- */
+
 tutao.tutanota.util.FileUtils.readLocalFileContentAsUtf8 = function(file) {
     return new Promise(function(resolve, reject) {
         var reader = new FileReader();

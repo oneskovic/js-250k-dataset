@@ -1,9 +1,3 @@
-/**
- * @class Ext.layout.component.Draw
- * @private
- *
- */
-
 Ext.define('Ext.layout.component.Draw', {
 
     /* Begin Definitions */

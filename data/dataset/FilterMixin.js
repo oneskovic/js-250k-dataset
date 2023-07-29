@@ -1,11 +1,4 @@
-  /**
-    @mixin
-    <p>The FilterMixin provides support for common options used across 
-    various <code>Filter</code> implementations.  This object should not be 
-    used directly.</p>
-
-    @name ejs.FilterMixin
-    */
+  
   ejs.FilterMixin = function (type) {
 
     var filter = {};

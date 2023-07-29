@@ -1,5 +1,5 @@
 'use strict';
-/*global $ */
+
 /*jshint camelcase: false*/
 angular.module('RedhatAccess.cases').controller('RequestManagementEscalationModal', [
     '$scope',

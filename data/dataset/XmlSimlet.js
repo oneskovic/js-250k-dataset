@@ -1,6 +1,3 @@
-/**
- * This class simulates XML-based requests.
- */
 Ext.define('Ext.ux.ajax.XmlSimlet', {
     extend: 'Ext.ux.ajax.DataSimlet',
     alias: 'simlet.xml',

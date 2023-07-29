@@ -1,108 +1,52 @@
-var assert = require('assert')
-var util = require('util')
-var config = require('../config')
-var unio = require('../lib/unio')
-var helper = require('./helper')
+'use strict';
 
-describe('unio - Twitter API', function () {
+var _ = require('underscore');
+var Twit = require('twit');
+var twitConfig = require('./config').twitter; // this is just a hash of credentials
+var T = new Twit(twitConfig);
 
-    it('GET /search/tweets resource', function (done) {
-        var client = unio()
+exports.search = search;
+exports.cachedSearch = cachedSearch;
 
-        var params = {
-            q: 'banana',
-            oauth: config.twitter.oauth
-        }
+/*** straight search against Twitter ***/
 
-        client
-            .use('twitter')
-            .get('search/tweets', params, function (err, res, reply) {
-                assert.equal(err, null)
-                assert.equal(res.statusCode, 200)
-                helper.twitter.validateSearchReply(reply)
+function search(query, cb) {
+  console.log('running twitter search: ' + JSON.stringify(query));
 
-                done()
-            })
-    })
+  T.get('search/tweets', query, function(err, reply) {
 
-    it('POST /statuses/destroy/:id resource', function (done) {
-        
-        // post a tweet so we can then delete it
-        exports.postTweet(function (err, tweet) {
-            assert.equal(err, null)
-            assert(tweet)
+    if (err) { return cb(err); }
 
-            var testTweetIdStr = tweet.id_str
-            assert(testTweetIdStr)
-            
-            var client = unio()
+    var result = _.map(reply.statuses, function(status) {
+      var created = new Date(status.created_at);
+      return { user: status.user.screen_name, created: created, text: status.text };
+    });
 
-            var params = {
-                id: testTweetIdStr,
-                oauth: config.twitter.oauth
-            }
-
-            client
-                .use('twitter')
-                .post('statuses/destroy/:id', params, function (err, res, reply) {
-                    assert.equal(err, null, 'error: '+util.inspect(err, true, 10, true))
-
-                    var errMsg = 'statusCode: '+res.statusCode+'. res.body: '+res.body
-
-                    assert.equal(res.statusCode, 200, errMsg)
-                    helper.twitter.validateTweet(reply)
-
-                    done()
-                })
-        })
-    }) 
-
-    it('GET /geo/id/:place_id resource', function (done) {
-        var client = unio()
-
-        var params = {
-            place_id: 'df51dec6f4ee2b2c',
-            oauth: config.twitter.oauth
-        }
-
-        client
-            .use('twitter')
-            .get('geo/id/:place_id', params, function (err, res, reply) {
-                assert.equal(err, null, 'error: '+util.inspect(err, true, 10, true))
-
-                var errMsg = 'statusCode: '+res.statusCode+'. res.body: '+res.body
-
-                assert.equal(res.statusCode, 200, errMsg)
-                helper.twitter.validatePlace(reply)
-
-                done()
-            })
-    })
-})
-
-/**
- * Post a tweet, then pass control to `cb`.
- * 
- * @param  {Function} cb    completion callback: function (err, tweet) {...}
- */
-exports.postTweet = function (cb) {
-    var client = unio()
-
-    var params = {
-        status: 'tweeting using unio :)',
-        oauth: config.twitter.oauth
-    }
-
-    client
-        .use('twitter')
-        .post('statuses/update', params, function (err, res, reply) {
-            if (err) return cb(err)
-
-            assert.equal(res.statusCode, 200)
-            helper.twitter.validateTweet(reply)
-            assert.equal(reply.text, params.status)
-
-            return cb(null, reply)
-        })
+    cb(err, result);
+  });
 }
 
+
+/*** wrap Twitter search with a cache ***/
+
+var volos = require('./volos');
+var cache = volos.Cache.create('twitter', { ttl: 5000, encoding: 'utf8' });
+
+function cachedSearch(query, cb) {
+  var key = JSON.stringify(query);
+
+  cache.get(key, function(err, reply) {
+
+    if (reply) {
+      console.log('returning response from cache');
+      cb(null, reply, true);
+
+    } else {
+
+      search(query, function(err, reply) {
+        if (!err) { cache.set(key, JSON.stringify(reply)); }
+        cb(err, reply);
+      });
+    }
+  });
+}

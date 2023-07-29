@@ -1,4 +1,3 @@
-/* global angular */
 angular.module('storm.directives')
 
 .directive('stInputFocus', ['$timeout', 'Navigation', function($timeout, Navigation) {

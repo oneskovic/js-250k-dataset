@@ -1,74 +1,71 @@
-var request = require('request');
-var tidy = require('../htmltidy');
+module.exports = (function(Super, assertClient) {
 
-// demo pool
-function Pool(opts, size) {
-
-  var count = 0;
-  var queue = [];
-
-  log();
-
-  function log() {
-    if (count || queue.length)
-      console.log('pool: ' + count + ' working ' + queue.length + ' waiting');
-    else
-      console.log('pool: empty');
-  }
-
-  function close() {
-    count--;
-    log();
-    if (queue.length > 0)
-      create(queue.shift());
-  }
-
-  function create(cb) {
-    count++;
-    var worker = tidy.createWorker(opts);
-    worker.on('close', close);
-    cb(worker);
-    log();
-  }
-
-  this.aquire = function(cb) {
-    if (count < size)
-      create(cb);
-    else
-      queue.push(cb);
+  /**
+   * Pool
+   * @param {Object} options
+   * @api public
+   */
+  function Pool(name) {
+    this.name = name;
+    this.clients = [];
+    Super.call(this);
   };
 
-}
+  /**
+   * Inherit Super.prototype
+   */
+  Pool.prototype = Object.create(Super.prototype);
 
-// released several requests with small time shift
-// but using only 3 workers simultaneous
-// help keep server resources under control
+  /**
+   * Attach a client
+   * @param {Client} client
+   * @return {Pool}
+   * @api public
+   */
+  Pool.prototype.attach = function(client) {
+    if (-1 === this.clients.indexOf(assertClient(client))) {
+      this.clients.push(assertClient(client));
+      this.emit('attach', client);
+      client.emit('attach', this);
+      client.pool = this;
+    }
+    return this;
+  };
 
-var QUEUE_SIZE = 3;
+  /**
+   * Detach a client
+   * @param {Client} client
+   * @return {Pool}
+   * @api public
+   */
+  Pool.prototype.detach = function(client) {
+    var index = this.clients.indexOf(assertClient(client));
+    if (-1 < index) {
+      this.clients.splice(index, 1);
+      this.emit('detach', client);
+      client.emit('detach', this);
+      client.pool = null;
+    }
+    return this;
+  };
 
-var TIDY_OPTS = {
-  indent: true,
-  breakBeforeBr: true,
-  fixUri: true,
-  wrap: 0
-};
-
-var pool = new Pool(TIDY_OPTS, QUEUE_SIZE);
-
-var r = 1;
-var a = 1;
-
-function doRequest() {
-  console.log('tidy: request ' + r + ' started');
-  if (r++ < 10) setTimeout(doRequest, 100);
-    pool.aquire(function(worker) {
-      console.log('tidy: worker ' +  a++ + ' aquired');
-      request.get('http://www.yahoo.com/').pipe(worker);
+  /**
+   * Write to clients
+   * @return {Pool}
+   * @api public
+   */
+  Pool.prototype.write = function(data) {
+    this.clients.forEach(function(client) {
+        client.write(data);
     });
-}
-doRequest();
+    return this;
+  };
 
+  /**
+   * Exports
+   */
+  return {
+    Pool: Pool
+  };
 
-
-
-
+})(require('events').EventEmitter, require('./client').assert);

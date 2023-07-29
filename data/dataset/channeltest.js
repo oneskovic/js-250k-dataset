@@ -1,4 +1,3 @@
-/* jshint undef: true, strict:false, trailing:false, unused:false, -W110 */
 /* global require, exports, console, process, module, describe, it, expect, jasmine*/
 
 angular.module('test',['indx'])

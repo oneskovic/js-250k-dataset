@@ -1,4 +1,3 @@
-// Constants
 var baseUrl = "https://my.slack.com";
 var view = "view.html";
 var width = 1100;

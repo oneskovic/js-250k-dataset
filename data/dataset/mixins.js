@@ -1,9 +1,3 @@
-/**
- * Baobab React Mixins
- * ====================
- *
- * Compilation of react mixins designed to deal with cursors integration.
- */
 var Combination = require('./combination.js'),
     type = require('./type.js');
 

@@ -1,8 +1,3 @@
-/* Test Crossfire commands
- * This test case just sends all the commands from the client to the server,
- * and checks to see if the server gets a request. The contents or correctness
- * of the responses are not tested here.
- */
 function runTest() {
     FBTest.sysout("commandsTest.started");
 

@@ -1,16 +1,3 @@
-/* CouchDB (and friends) plugin for Fermata, with preliminary support for change events and default base URL.
-
-Example use:
-    <script src="fermata.js"></script>
-    <script src="plugins/couchdb.js"></script>
-    <script>
-        var db = fermata.couchdb()('dev');      // db() === "http://localhost:5984/dev"
-        fermata.plugins.couchdb.watchChanges(db, 50000, function (r) {
-            console.log("Got change results:", r);
-        });
-    </script>
-*/
-
 var fermata;
 (function () {
     var plugin = function (transport, url) {

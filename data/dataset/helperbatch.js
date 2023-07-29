@@ -1,4 +1,3 @@
-
 var slice = Array.prototype.slice
 
   , reHelperFuncHead = /vash\.helpers\.([^= ]+?)\s*=\s*function([^(]*?)\(([^)]*?)\)\s*{/

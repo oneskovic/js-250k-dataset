@@ -1,8 +1,3 @@
-/*!
- * ${copyright}
- */
-
-// Provides control sap.m.ActionListItem.
 sap.ui.define(['jquery.sap.global', './ListItemBase', './library', 'sap/ui/core/EnabledPropagator'],
 	function(jQuery, ListItemBase, library, EnabledPropagator) {
 	"use strict";

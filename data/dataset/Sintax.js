@@ -1,8 +1,3 @@
-/**
- * Sintax - An extremely lightweight Javascript syntax highlighter.
- * Highlights the text within <pre>'s on document load. Just include
- * and it'll do it's job.
- */
 var Sintax = {
 	highlight: function(pre) {
 		if(pre) pre.innerHTML = Sintax.syntaxHighlight(pre.textContent || pre.textContent);

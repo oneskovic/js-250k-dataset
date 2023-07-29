@@ -1,6 +1,3 @@
-/**
- * @private
- */
 Ext.define('Ext.layout.component.field.FieldContainer', {
 
     /* Begin Definitions */

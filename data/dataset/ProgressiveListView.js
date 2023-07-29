@@ -1,11 +1,3 @@
-// -------------------------------------------------------------------------- \\
-// File: ProgressiveListView.js                                               \\
-// Module: CollectionViews                                                    \\
-// Requires: View, ListView.js, TrueVisibleRect.js                            \\
-// Author: Neil Jenkins                                                       \\
-// License: © 2010-2014 FastMail Pty Ltd. MIT Licensed.                       \\
-// -------------------------------------------------------------------------- \\
-
 "use strict";
 
 ( function ( NS ) {

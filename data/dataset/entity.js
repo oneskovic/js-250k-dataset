@@ -1,57 +1,87 @@
+dreamengine.registerModule('Entity')
+	.defines(function() {
+		dreamengine.Entity = function(game, name, x, y) {
+			
+			var game = game;
 
-module.exports = User;
 
-function User(id, socket) {
-  var _socket     = socket;
-  var _id         = parseInt(id);
-  var _followers  = { };
 
-  var me = {
-    id: _id,
-    followers: followers,
-    follow: follow,
-    removeFollower: removeFollower,
-    setFollower: setFollower,
-    unfollow: unfollow,
-    send: send,
-    toString: toString
-  };
+			/*------------------------------
+			 * Properties
+			 *------------------------------*/
+			this.name = (name != undefined) ? name : 'Unnamed Entity';
+			this.namePrepend = '';
+			this.nameAppend = '';
+			this.debug = false;
+			this.pos = new dreamengine.vector();
+			this.size = new dreamengine.dimension(10,10);
+			this.event = new dreamengine.event();
+			
+			/*------------------------------
+			 * Constructor
+			 *------------------------------*/
+			this.pos.x = (x != undefined) ? x : 0;
+			this.pos.y = (y != undefined) ? y : 0;
 
-  return me;
+			/*------------------------------
+			 * Methods
+			 *------------------------------*/
+			this.updateComponents = function() {
+				this.event.trigger('updateComponents_pre');
+				for (var i in this.components) {
+					var component = this.components[i];
+					if (typeof component.update == 'function') {
+						component.update();
+					}
+				}
+				this.event.trigger('updateComponents_post');
+			}
 
-  function followers() {
-    return Object.keys(_followers).map(function(indice) {
-      return _followers[indice];
-    });
-  }
+			this.renderComponents = function(g) {
+				this.event.trigger('renderComponents_pre', [g]);
+				for (var i in this.components) {
+					var component = this.components[i];
+					if (typeof component.render == 'function') {
+						component.render(g);
+					}
+				}
+				this.event.trigger('renderComponents_post', [g]);
+			}
 
-  function follow(user) {
-    user.setFollower(me);
-  }
+			this.renderDebug = function(g, force) {
+				this.event.trigger('renderDebug_pre', [g]);
+				if (this.debug || force == true) {
+					var x = this.pos.x - (this.size.width / 2);
+					var y = this.pos.y - (this.size.height / 2);
 
-  function setFollower(user) {
-    _followers[user.id] = user;
-  }
+					//draw transparent box
+					g.globalAlpha = 0.3;
+					g.fillStyle = 'white';
+					g.fillRect(x, y, this.size.width, this.size.height);
 
-  function unfollow(user) {
-    user.removeFollower(me);
-  }
+					//draw name
+					y -= this.size.height+10;
+					g.globalAlpha = 1;
+					g.fillText(this.namePrepend + this.name + this.nameAppend, x, y);
+				}
+				this.event.trigger('renderDebug_post', [g]);
+			}
 
-  function removeFollower(user) {
-    delete _followers[user.id];
-  }
+			this.update = function() {
+				this.event.trigger('update_pre');
+				this.updateComponents();
+				this.event.trigger('update_post');
+			}
 
-  function send(payload) {
-    _socket.write(payload);
-  }
+			this.render = function(g) {
+				this.event.trigger('render_pre', [g]);
+				this.renderComponents(g);
+				this.renderDebug(g);
+				this.event.trigger('render_post', [g]);
+			}
 
-  function toString() {
-    return [ _id ].join(" ")
-  }
 
-}
-
-User.NULL = new User('N/A', { write: noop });
-function noop(payload, cb) {
-  if(typeof cb === 'function') cb();
-}
+			//fire init event
+			dreamengine.event.event.trigger('entity.create', [this]);
+		};
+	});

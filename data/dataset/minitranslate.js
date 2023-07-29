@@ -1,14 +1,3 @@
-/**
- * minitranslate.js
- * http://bryce.io/minitranslate
- * minitranslate.herokuapp.com
- *
- * @version
- * 1.1.3 (Sept 6 2014)
- *
- * @license
- * The MIT license.
- */
 function mt(mt_lib, div) {
   if ((div.innerHTML !== '' || div.value !== '') && (mt_lib.length > 0 && div.getAttribute("class") !== "mt-ignore")) {
     if (div.children.length > 0) {

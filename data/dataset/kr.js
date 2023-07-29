@@ -1,7 +1,3 @@
-// moment.js language configuration
-// language : korean (kr)
-// author : Kyungwook, Park : https://github.com/kyungw00k
-
 // This language config was incorrectly named 'kr' instead of 'ko'.
 // In version 2.0.0, this will be deprecated and you should use 'ko' instead.
 (function () {

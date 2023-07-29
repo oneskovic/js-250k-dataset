@@ -1,6 +1,3 @@
-/**
- * Show one season
- */
 DuckieTV.controller('SidepanelSeasonCtrl', function(season, episodes, SceneNameResolver, EpisodeAiredService, $scope, $filter) {
     this.season = season;
     this.episodes = episodes;

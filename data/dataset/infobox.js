@@ -1,4 +1,3 @@
-
 cdb.geo.ui.InfoBox = cdb.core.View.extend({
 
   className: 'cartodb-infobox',

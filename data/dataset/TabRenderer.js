@@ -3,10 +3,7 @@ goog.provide('bootstrap.TabRenderer');
 goog.require('goog.ui.TabRenderer');
 goog.require('goog.ui.registry');
 
-/**
- * @constructor
- * @extends {goog.ui.TabRenderer}
- */
+
 bootstrap.TabRenderer = function() {
     goog.ui.TabRenderer.call(this);
 };

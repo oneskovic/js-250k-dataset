@@ -1,10 +1,5 @@
 "use strict"
-/**
- * @class  elFinder command "rm"
- * Delete files
- *
- * @author Dmitry (dio) Levashov
- **/
+
 elFinder.prototype.commands.rm = function() {
 	
 	this.shortcuts = [{

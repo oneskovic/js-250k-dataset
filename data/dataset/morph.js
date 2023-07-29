@@ -1,8 +1,3 @@
-
-/**
- * Module dependencies.
- */
-
 var fs = require('fs');
 var parallel = require('array-parallel');
 

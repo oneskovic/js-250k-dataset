@@ -1,12 +1,3 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
-/**
- * @constructor
- * @extends {WebInspector.DialogDelegate}
- * @param {function(string)} callback
- */
 WebInspector.AddSourceMapURLDialog = function(callback)
 {
     WebInspector.DialogDelegate.call(this);

@@ -1,132 +1,123 @@
-
-//trims the leading and trailing blanks from a given string 
-function Trim(strToTrim){
-	while(strToTrim.charAt(0)==' '){	
-		strToTrim = strToTrim.substring(1,strToTrim.length);
+dojo.provide("dojo.lang.func");
+dojo.require("dojo.lang.common");
+dojo.lang.hitch = function (thisObject, method) {
+	var args = [];
+	for (var x = 2; x < arguments.length; x++) {
+		args.push(arguments[x]);
 	}
-	while(strToTrim.charAt(strToTrim.length-1)==' '){	
-		strToTrim = strToTrim.substring(0,strToTrim.length-1);
-	}
-	return strToTrim;
-}
-
-/*
-Validates the e-mail address from an input.
-The parameter is the input object, in format: document.formName.inputName.
-*/
-function ValidateEmailAddress(objEmail) {
-	var strEmail = Trim(objEmail.value);
-	if (strEmail == ""){
-		alert("Please fill in the E-mail field.");
-		objEmail.focus();
-		return false;
-	} else {
-		// checking "@" character:
-		if (strEmail.indexOf("@")==-1) {
-			alert("Error:\nE-mail field must contain @ character for an e-mail address.");
-			objEmail.focus();
-			return false;
-
-		} else {
-			// "@" cannot be the first character:
-			if (strEmail.indexOf("@")==0) {
-				alert("Error:\n@ cannot be the first character for an e-mail address.");
-				objEmail.focus();
-				return false;
-			} else {
-				// Caracterul "@" sa nu fie ultimul:
-				if (strEmail.lastIndexOf("@") == strEmail.length-1) {
-					alert("Error:\n@ cannot be the last character for an e-mail address.");
-					objEmail.focus();
-					return false;
+	var fcn = (dojo.lang.isString(method) ? thisObject[method] : method) || function () {
+	};
+	return function () {
+		var ta = args.concat([]);
+		for (var x = 0; x < arguments.length; x++) {
+			ta.push(arguments[x]);
+		}
+		return fcn.apply(thisObject, ta);
+	};
+};
+dojo.lang.anonCtr = 0;
+dojo.lang.anon = {};
+dojo.lang.nameAnonFunc = function (anonFuncPtr, thisObj, searchForNames) {
+	var nso = (thisObj || dojo.lang.anon);
+	if ((searchForNames) || ((dj_global["djConfig"]) && (djConfig["slowAnonFuncLookups"] == true))) {
+		for (var x in nso) {
+			try {
+				if (nso[x] === anonFuncPtr) {
+					return x;
 				}
 			}
-			
-			// "@" can appear only once:
-			var emailSplited=strEmail.split("@");
-			if (emailSplited.length>2) {
-				alert("Error:\n@ can be appear only once for an e-mail address.");
-				objEmail.focus();
-				return false;
-			}
-			
-			// "." must be present:
-			if (strEmail.indexOf(".")==-1) {
-				alert("Error:\nCharacter . must appear at least once for an e-mail address.");
-				objEmail.focus();
-				return false;
-			} else {
-				// "." cannot be the first character:
-				if (strEmail.indexOf(".")==0) {
-					alert("Error:\nCharacter . cannot be the first for an e-mail address.");
-					objEmail.focus();
-					return false;
-				} else {
-					// "." cannot be the last character:
-					if (strEmail.lastIndexOf(".")==strEmail.length-1) {
-						alert("Error:\nCharacter . cannot be the last for an e-mail address.");
-						objEmail.focus();
-						return false;
-					}
-				}
-				
-				// "." cannot appear one after another.
-				if (strEmail.indexOf("..")>-1) {
-					alert("Error:\nInvalid e-mail address.");
-					objEmail.focus();
-					return false;
-				}
-				
-				// "@." or ".@" cannot appear:
-				if ((strEmail.indexOf("@.")>-1) || (strEmail.indexOf(".@")>-1)) {
-					alert("Error:\nInvalid e-mail address.");
-					objEmail.focus();
-					return false;
-				}
-				
-				// Sa nu contina alte caractere decat litere (mari si mici), cifre, @ , . , - si _
-				var carValide=new String("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@.-_");
-				var carEmail=new String("");
-				for (var i=0; i<strEmail.length; i++) {
-					carEmail = "" + strEmail.substring(i, i+1);
-					if (carValide.indexOf(carEmail) == "-1") {
-						alert("Error:\nInvalid e-mail address.\nPlease use only digits, letters,  _   .  -");
-						objEmail.focus();
-						return false;
-					}
-				}
+			catch (e) {
 			}
 		}
 	}
-	return true;
-}
-
-var headerHeight = 168;
-var footerHeight = 60;
-var nsFix = 0;
-
-function GetTDHeight(){
-	if (ns6){
-		contHeight = window.innerHeight - headerHeight - footerHeight - 8;
-	} else if (ns){
-		contHeight = window.innerHeight - headerHeight - footerHeight - 8 - nsFix;
-	} else {
-		contHeight = document.body.clientHeight - headerHeight - footerHeight - 8;
+	var ret = "__" + dojo.lang.anonCtr++;
+	while (typeof nso[ret] != "undefined") {
+		ret = "__" + dojo.lang.anonCtr++;
 	}
-	document.write("<TD height=" + contHeight + " valign=top>");
-}
-
-function GetTableHeight(){
-	if (ns6){
-		contHeight = window.innerHeight - headerHeight - footerHeight - 312;
-	} else if (ns){
-		contHeight = window.innerHeight - headerHeight - footerHeight - 93 - nsFix;
-	} else {
-		contHeight = document.body.clientHeight - headerHeight - footerHeight;
+	nso[ret] = anonFuncPtr;
+	return ret;
+};
+dojo.lang.forward = function (funcName) {
+	return function () {
+		return this[funcName].apply(this, arguments);
+	};
+};
+dojo.lang.curry = function (thisObj, func) {
+	var outerArgs = [];
+	thisObj = thisObj || dj_global;
+	if (dojo.lang.isString(func)) {
+		func = thisObj[func];
 	}
-	document.write("<TABLE width=650 cellspacing=0 cellpadding=0 border=0 height=" + contHeight + ">");
-}
+	for (var x = 2; x < arguments.length; x++) {
+		outerArgs.push(arguments[x]);
+	}
+	var ecount = (func["__preJoinArity"] || func.length) - outerArgs.length;
+	function gather(nextArgs, innerArgs, expected) {
+		var texpected = expected;
+		var totalArgs = innerArgs.slice(0);
+		for (var x = 0; x < nextArgs.length; x++) {
+			totalArgs.push(nextArgs[x]);
+		}
+		expected = expected - nextArgs.length;
+		if (expected <= 0) {
+			var res = func.apply(thisObj, totalArgs);
+			expected = texpected;
+			return res;
+		} else {
+			return function () {
+				return gather(arguments, totalArgs, expected);
+			};
+		}
+	}
+	return gather([], outerArgs, ecount);
+};
+dojo.lang.curryArguments = function (thisObj, func, args, offset) {
+	var targs = [];
+	var x = offset || 0;
+	for (x = offset; x < args.length; x++) {
+		targs.push(args[x]);
+	}
+	return dojo.lang.curry.apply(dojo.lang, [thisObj, func].concat(targs));
+};
+dojo.lang.tryThese = function () {
+	for (var x = 0; x < arguments.length; x++) {
+		try {
+			if (typeof arguments[x] == "function") {
+				var ret = (arguments[x]());
+				if (ret) {
+					return ret;
+				}
+			}
+		}
+		catch (e) {
+			dojo.debug(e);
+		}
+	}
+};
+dojo.lang.delayThese = function (farr, cb, delay, onend) {
+	if (!farr.length) {
+		if (typeof onend == "function") {
+			onend();
+		}
+		return;
+	}
+	if ((typeof delay == "undefined") && (typeof cb == "number")) {
+		delay = cb;
+		cb = function () {
+		};
+	} else {
+		if (!cb) {
+			cb = function () {
+			};
+			if (!delay) {
+				delay = 0;
+			}
+		}
+	}
+	setTimeout(function () {
+		(farr.shift())();
+		cb();
+		dojo.lang.delayThese(farr, cb, delay, onend);
+	}, delay);
+};
 
-
-
-//-->

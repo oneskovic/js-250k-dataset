@@ -1,8 +1,3 @@
-// Unit tests. Run with mocha.
-
-/*global describe:true it:true */
-
-
 var should = require('should')
   , schemaValidator = require('../lib/suites/draft-04')
   , core = require('../lib/suites/draft-04/core.js')

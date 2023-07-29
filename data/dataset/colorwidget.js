@@ -1,8 +1,3 @@
-//>>excludeStart("jqmBuildExclude", pragmas.jqmBuildExclude);
-//>>description: Common functionality for widgets dealing with color
-//>>label: colorwidget
-//>>group: Forms
-
 define( [
 	"jquery",
 	"jqm/jquery.mobile.core",

@@ -1,5 +1,3 @@
-// Copyright 2012 Mark Cavage, Inc.  All rights reserved.
-
 var assert = require('assert-plus');
 var bunyan = require('bunyan');
 
@@ -31,6 +29,13 @@ function auditLogger(options) {
                                 if (!req)
                                         return (false);
 
+                                var timers = {};
+                                (req.timers || []).forEach(function (time) {
+                                        var t = time.time;
+                                        var _t = Math.floor((1000000 * t[0]) +
+                                                            (t[1] / 1000));
+                                        timers[time.name] = _t;
+                                });
                                 return ({
                                         method: req.method,
                                         url: req.url,
@@ -39,7 +44,8 @@ function auditLogger(options) {
                                         trailers: req.trailers,
                                         version: req.version,
                                         body: options.body === true ?
-                                                req.body : undefined
+                                                req.body : undefined,
+                                        timers: timers
                                 });
                         },
                         res: function auditResponseSerializer(res) {
@@ -74,7 +80,7 @@ function auditLogger(options) {
                 var obj = {
                         remoteAddress: req.connection.remoteAddress,
                         remotePort: req.connection.remotePort,
-                        req_id: req.id,
+                        req_id: req.getId(),
                         req: req,
                         res: res,
                         err: err,

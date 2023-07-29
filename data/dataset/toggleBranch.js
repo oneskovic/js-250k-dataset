@@ -1,4 +1,3 @@
-/* See license.txt for terms of usage */
 /*global define:1*/
 
 define([

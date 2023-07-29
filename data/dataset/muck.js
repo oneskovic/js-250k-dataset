@@ -1,4 +1,3 @@
-//jQuery.noConflict();
 jQuery(document).ajaxSend(function(event, request, settings) {
   request.setRequestHeader("Accept", "text/javascript");
   request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");

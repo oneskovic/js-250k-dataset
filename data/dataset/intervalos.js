@@ -1,8 +1,3 @@
-/**
- * @subject Intervals
- * @author ttakamoto@ciandt.com
- */
-
 // Structural object to be added in the global scope.
 var global = {
   // for debugging purpose of states.

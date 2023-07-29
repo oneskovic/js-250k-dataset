@@ -1,11 +1,3 @@
-// Takes a 64x64 pixel svg and strips it to be used as an
-// icon:
-// 1. Remove the sodipodi and inkscape attributes
-// 2. remove the explicit height and width
-// 3. Add a viewBox
-// 4. Strip out metadata
-// 5. Remove style attributes
-
 var libxmljs = require('libxmljs');
 var fs = require('fs');
 

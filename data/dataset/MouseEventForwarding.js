@@ -1,8 +1,3 @@
-/**
- * @author Nigel (Animal) White
- * @contributor Shea Frederick - http://www.vinylfox.com
- * <p>Override to allow mouse event forwarding through masking layers - .</p>
- */
 Ext.override(Ext.Element, (function(){
     var doc = document,
         SCROLLLEFT = 'scrollLeft',

@@ -1,64 +1,101 @@
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+var path = require('path');
+var fs = require('fs');
+var moment = require('moment');
+var metrics = require('./metrics');
+var optimist = require('optimist');
+var Table = require('cli-table');
+var check = require('check-types');
 
-"use strict";
+var getGitLog = require('ggit').log;
+var getFileRevision = require('ggit').fileRevision;
 
-module.metadata = {
-  "stability": "unstable",
-  "engines": {
-    "Firefox": "*"
-  }
+var config = {
+	filename: '',
+	report: '',
+	commits: 30
 };
 
-/*
- * Requiring hosts so they can subscribe to client messages
- */
-require('./host/host-bookmarks');
-require('./host/host-tags');
-require('./host/host-query');
+function run(options) {
+	check.verifyObject(options, 'missing options');
+	check.verifyString(options.filename, 'missing input filename');
+	config.filename = options.filename;
+	config.report = options.report || path.basename(options.filename) + '.complexityHistory.json';
+	config.commits = options.commits || config.commits;
+	getGitLog(options.filename, config.commits, 
+		writeComplexityHistory.bind(null, options.filename));
+}
 
-const { Cc, Ci } = require('chrome');
-const { Class } = require('../core/heritage');
-const { events, send } = require('../addon/events');
-const { defer, reject, all } = require('../core/promise');
-const { uuid } = require('../util/uuid');
-const { flatten } = require('../util/array');
-const { has, extend, merge, pick } = require('../util/object');
-const { emit } = require('../event/core');
-const { defer: async } = require('../lang/functional');
-const { EventTarget } = require('../event/target');
-const {
-  urlQueryParser, createQuery, createQueryOptions
-} = require('./utils');
+function writeComplexityHistory(filename, commits) {
+	check.verifyString(filename, 'missing filename');
+	check.verifyArray(commits, 'expected commits');
 
-/*
- * Constant used by nsIHistoryQuery; 0 is a history query
- * https://developer.mozilla.org/en-US/docs/XPCOM_Interface_Reference/nsINavHistoryQueryOptions
- */
-const HISTORY_QUERY = 0;
+	filename = filename.replace(/\\/g, '/');
+	console.log('fetching revisions for', filename, 'for', commits.length, 'revisions');
+	var titles = ['Date', 'LOC', 'Cyclomatic', 'Halstead', 'Author'];
+	var rows = [];
+	commits.forEach(function (revision) {
+		getFileRevision(revision.commit, filename, function (contents) {
+			var report = metrics.getSourceComplexity(contents);
+			check.verifyObject(report, 'missing report for', filename, 'commit', revision.commit);
 
-let search = function query (queries, options) {
-  queries = [].concat(queries);
-  let emitter = EventTarget();
-  let queryObjs = queries.map(createQuery.bind(null, HISTORY_QUERY));
-  let optionsObj = createQueryOptions(HISTORY_QUERY, options);
+			rows.push([revision.date, 
+				report.aggregate.complexity.sloc.logical,
+				report.aggregate.complexity.cyclomatic, 
+				+report.aggregate.complexity.halstead.difficulty.toFixed(0),
+				revision.author,
+				revision.description]);
+			if (rows.length === commits.length) {
+				writeComplexityReport(filename, titles, rows);
+			}
+		});
+	});
+}
 
-  // Can remove after `Promise.jsm` is implemented in Bug 881047,
-  // which will guarantee next tick execution
-  async(() => {
-    send('sdk-places-query', {
-      query: queryObjs,
-      options: optionsObj
-    }).then(results => {
-      results.map(item => emit(emitter, 'data', item));
-      emit(emitter, 'end', results);
-    }, reason => {
-      emit(emitter, 'error', reason);
-      emit(emitter, 'end', []);
-    });
-  })();
+function writeComplexityReport(filename, titles, rows) {
+	check.verifyString(filename, 'expected filename');
+	check.verifyArray(titles, 'expected titles array');
+	check.verifyArray(rows, 'expected rows array');
+	var comparison = function(a, b) {
+		var first = a[0];
+		var second = b[0];
+		if (first < second) {
+			return -1;
+		} else if (first > second) {
+			return 1;
+		} else {
+			return 0;
+		}
+	};
+	rows.sort(comparison);
+	rows = rows.map(function (row) {
+		row[0] = row[0].format("YYYY/MM/DD HH:mm:ss");
+		return row;
+	});
 
-  return emitter;
-};
-exports.search = search;
+	var table = new Table({
+		head: titles
+	});
+	rows.forEach(function(row) {
+		table.push(row.slice(0, 5));
+	});
+	console.log(table.toString());
+
+	var report = rows.map(function (row) {
+		return {
+			date: row[0],
+			loc: row[1],
+			cyclomatic: row[2],
+			halstead: row[3],
+			author: row[4],
+			description: row[5]
+		};
+	});
+	var fileReport = {
+		filename: filename,
+		complexityHistory: report
+	};
+	fs.writeFileSync(config.report, JSON.stringify(fileReport, null, 2), "utf-8");
+	console.log("Saved report text", config.report);
+}
+
+module.exports.run = run;

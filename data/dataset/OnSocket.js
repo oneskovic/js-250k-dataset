@@ -1,14 +1,5 @@
 define([''], function() {
-	/** Internal Events: 
-			Socket:Close(CloseEvent)
-			Socket:Error(ErrorEvent)
-			Socket:Open(OpenEvent)
-			Socket:SyntaxError(Error)
-
-	WebSocket messages follows the syntax: {e: String, args: Array}
-	where `e` is the event and args is a array of arguments
-
-	**/
+	
 
 	var OnSocket = function(url){
 		var webSocket = null;

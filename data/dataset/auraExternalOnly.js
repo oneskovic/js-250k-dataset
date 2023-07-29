@@ -1,6 +1,3 @@
-/**
- * JSDoc plugin to dump out JSON
- */
 var fs = require('jsdoc/fs'),
     path = require('jsdoc/path');
 

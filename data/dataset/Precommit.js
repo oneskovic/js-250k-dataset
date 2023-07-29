@@ -1,9 +1,3 @@
-/*
- * Nodelint [VERSION]
- * [DATE]
- * A fork of tav's nodelint (http://github.com/tav/nodelint)
- * Corey Hart @ http://www.codenothing.com
- */
 var Nodelint = global.Nodelint,
 	Color = Nodelint.Color,
 	bold = Color.bold,

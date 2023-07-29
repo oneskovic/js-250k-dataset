@@ -1,6 +1,3 @@
-/**
-# T5.Geo.Bing
-*/
 T5.Geo.Bing = (function() {
     var imageUrls = {},
         logoUrl, 

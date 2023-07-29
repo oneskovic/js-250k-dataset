@@ -1,6 +1,6 @@
 'use strict';
 
-/* global Meteor: true */
+
 var gs = Meteor.gameSpace = Meteor.gameSpace || {};
 
 /**

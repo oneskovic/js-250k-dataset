@@ -2,9 +2,7 @@
 
   "use strict";
 
-  /**
-   * Infinite scroll view
-   */
+  
   cantas.views.InfiniteScrollView = cantas.views.BaseView.extend({
 
     id: _.uniqueId('infinite-scroll-'),

@@ -1,7 +1,3 @@
-/**
- * Drag'n'Drop utilities
- */
-
 var DragManager = (function() {
 	// private interface
 	var dragItem = null;

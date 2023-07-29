@@ -1,5 +1,3 @@
-/*global enyo, ares */
-
 enyo.kind({
 	name: "DocumentToolbar",
 	kind:"FittableRows",

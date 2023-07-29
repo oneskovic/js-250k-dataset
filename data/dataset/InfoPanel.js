@@ -1,11 +1,3 @@
-/**
- * @class Ext.chooser.InfoPanel
- * @extends Ext.panel.Panel
- * @author Ed Spencer
- * 
- * This panel subclass just displays information about an image. We have a simple template set via the tpl property,
- * and a single function (loadRecord) which updates the contents with information about another image.
- */
 Ext.define('Ext.chooser.InfoPanel', {
     extend: 'Ext.panel.Panel',
     alias : 'widget.infopanel',

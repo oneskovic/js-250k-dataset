@@ -1,10 +1,3 @@
-/*:nodoc:*
- * class ActionSubparsers
- *
- * Support the creation of such sub-commands with the addSubparsers()
- *
- * This class inherited from [[Action]]
- **/
 'use strict';
 
 var util = require('util');

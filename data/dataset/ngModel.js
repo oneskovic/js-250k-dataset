@@ -15,9 +15,7 @@ xtForm.directive('ngModel', function (xtFormConfig, $rootScope, $interpolate, $d
                 setTouchedFn,
                 validationStrategyFn;
 
-            /**
-             * Active the directive
-             */
+            
             function activate() {
 
                 setTouchedFn = ngModel.$setTouched || setTouchedPolyfill;

@@ -70,9 +70,7 @@ var getDocs = function (folder) {
   return docs;
 };
 
-/**
- * doxmate的版本号
- */
+
 exports.version = require('../package.json').version;
 
 /**

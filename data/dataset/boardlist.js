@@ -1,5 +1,3 @@
-// User Default View
-
 (function ($, _, Backbone) {
   "use strict";
 

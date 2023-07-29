@@ -1,28 +1,3 @@
-/**
- * @class
-<pre>
-This is a lightly modified version of Kevin Jones' JavaScript
-library Data.Dump. To download the original visit:
-    <a href="http://openjsan.org/doc/k/ke/kevinj/Data/Dump/">http://openjsan.org/doc/k/ke/kevinj/Data/Dump/</a>
-
-AUTHORS
-
-The Data.Dump JavaScript module is written by Kevin Jones 
-(kevinj@cpan.org), based on Data::Dump by Gisle Aas (gisle@aas.no),
-based on Data::Dumper by Gurusamy Sarathy (gsar@umich.edu).
-
-COPYRIGHT
-
-Copyright 2007 Kevin Jones. Copyright 1998-2000,2003-2004 Gisle Aas.
-Copyright 1996-1998 Gurusamy Sarathy.
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the Perl Artistic License
-
-See http://www.perl.com/perl/misc/Artistic.html
-</pre>
- * @static
- */
 Dumper = {
   /** @param [...] The objects to dump. */
   dump: function () {

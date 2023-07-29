@@ -1,12 +1,3 @@
-/**
- * Checkboxes editor
- *
- * Renders a <ul> with given options represented as <li> objects containing checkboxes
- *
- * Requires an 'options' value on the schema.
- *  Can be an array of options, a function that calls back with the array of options, a string of HTML
- *  or a Backbone collection. If a collection, the models must implement a toString() method
- */
 Form.editors.Checkboxes = Form.editors.Select.extend({
 
   tagName: 'ul',

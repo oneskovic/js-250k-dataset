@@ -1,96 +1,68 @@
-var HOSTNAME = 'localhost';
-var PORT = 3000;
-function OPENID_ENDPOINT() {
-  return "http://"+HOSTNAME+":"+PORT+"/login";
-}
-function OPENID_USER_ENDPOINT(username) {
-  return "http://"+HOSTNAME+":"+PORT+"/users/"+username.toLowerCase();
-}
+var assert = require('assert')
+var bitcoin = require('../../')
+var blockchain = new (require('cb-helloblock'))('testnet')
 
-var express = require('express');
-var OpenIDProvider = require('../index.js');
+describe('bitcoinjs-lib (advanced)', function () {
+  it('can sign a Bitcoin message', function () {
+    var keyPair = bitcoin.ECPair.fromWIF('5KYZdUEo39z3FPrtuX2QbbwGnNP5zTd7yyr2SC1j299sBCnWjss')
+    var message = 'This is an example of a signed message.'
 
-//create new openidprovider
-var oidp = new OpenIDProvider(OPENID_ENDPOINT(), {
-  association_expires: 60,
-  checkid_params: 'oidp'
-});
-//create new express app
-var app = express();
-app.use(express.cookieParser());
-app.use(express.urlencoded());
-app.use('/login', oidp.middleware());
+    var signature = bitcoin.message.sign(keyPair, message)
+    assert.equal(signature.toString('base64'), 'G9L5yLFjti0QTHhPyFrZCT1V/MMnBtXKmoiKDZ78NDBjERki6ZTQZdSMCtkgoNmp17By9ItJr8o7ChX0XxY91nk=')
+  })
 
-//home page handler
-app.get('/', function(req, res, next) {
-  res.header('Content-Type', 'text/html');
-  res.end('<!DOCTYPE html>\n'
-        + '<html>\n'
-        + ' <head>\n'
-        + '   <title>OpenID Provider</title>\n'
-        + '   <link rel="openid2.provider" href="' + OPENID_ENDPOINT() + '">\n' //this line is important. It tells the openid consumer where to find the provider.
-        + ' </head>\n'
-        + ' <body>\n'
-        + '   <h1>Homepage for the openid provider</h1>\n'
-        + '   <p>By specifying the link "openid2.provider" in the head section, an openid consumer can find the provider from the root of a website</p>\n'
-        + ' </body>\n'
-        + '</html>\n');
-});
+  it('can verify a Bitcoin message', function () {
+    var address = '1HZwkjkeaoZfTSaJxDw6aKkxp45agDiEzN'
+    var signature = 'HJLQlDWLyb1Ef8bQKEISzFbDAKctIlaqOpGbrk3YVtRsjmC61lpE5ErkPRUFtDKtx98vHFGUWlFhsh3DiW6N0rE'
+    var message = 'This is an example of a signed message.'
 
-//openid login handler
-app.all('/login', function(req, res, next) {
-  //the user is trying to log in
-  if(req.body.username && req.cookies.oidpSession) {
-    res.clearCookie('oidpSession');
-    var username = req.body.username || req.query.username
-    var oidpSession = JSON.parse(req.cookies.oidpSession); //use the stored info to create a url which the user will use to return to the openid consumer
-    res.redirect(303, oidp.checkid_setup_complete(oidpSession, OPENID_USER_ENDPOINT(username)));
-    res.end();
-    return;
-  }
-  //an openid request was made
-  if(req.oidp) {
-    //The user is not logged in so we need to store the openid information until a user has logged in.
-    //this info could instead be stored in a session.
-    res.cookie('oidpSession', JSON.stringify(req.oidp), {
-      expires: new Date(Date.now() + 2*60*1000),
-      path: '/'
-    });
-  }
-  //and show the standard user login page
-  res.header('Content-Type', 'text/html');
-  res.end('<!DOCTYPE html>\n'
-        + '<html>\n'
-        + ' <head>\n'
-        + '   <title>OpenID Provider | Login</title>\n'
-        + '   <link rel="openid2.provider" href="' + OPENID_ENDPOINT() + '">\n' //this line is important. It tells the openid consumer where to find the provider.
-        + ' </head>\n'
-        + ' <body>\n'
-        + '   <h1>Login to node-openid-provider</h1>\n'
-        + '   <form method="post">\n'
-        + '     <input type="text" name="username" value="Chris">\n'
-        + '     <button type="submit">Login</button>\n'
-        + '   </form>\n'
-        + ' </body>\n'
-        + '</html>\n');
-});
+    assert(bitcoin.message.verify(address, signature, message))
+  })
 
-//user page handler
-app.get('/users/:username', function(req, res, next) {
-  res.header('Content-Type', 'text/html');
-  res.end('<!DOCTYPE html>\n'
-        + '<html>\n'
-        + ' <head>\n'
-        + '   <title>OpenID Provider | User Page</title>\n'
-        + '   <link rel="openid2.provider" href="' + OPENID_ENDPOINT() + '">\n' //this line is important. It tells the openid consumer where to find the provider.
-        + '   <link rel="openid2.local_id" href="' + OPENID_USER_ENDPOINT(req.params.username) + '">\n' //this line is used in the openid authentication confirmation process.
-        + ' </head>\n'
-        + ' <body>\n'
-        + '   <h1>User page for the openid provider</h1>\n'
-        + '   <p>By specifying the link "openid2.local_id" in the head section, an openid consumer can find the provider and automatically determine which user wants to authenticate</p>\n'
-        + ' </body>\n'
-        + '</html>\n');
-});
+  it('can create an OP_RETURN transaction', function (done) {
+    this.timeout(20000)
 
-app.listen(PORT);
-console.log("Listening on port " + PORT);
+    var keyPair = bitcoin.ECPair.makeRandom({
+      network: bitcoin.networks.testnet
+    })
+    var address = keyPair.getAddress().toString()
+
+    blockchain.addresses.__faucetWithdraw(address, 2e4, function (err) {
+      if (err) return done(err)
+
+      blockchain.addresses.unspents(address, function (err, unspents) {
+        if (err) return done(err)
+
+        var tx = new bitcoin.TransactionBuilder()
+        var data = new Buffer('bitcoinjs-lib')
+        var dataScript = bitcoin.scripts.nullDataOutput(data)
+
+        var unspent = unspents.pop()
+
+        tx.addInput(unspent.txId, unspent.vout)
+        tx.addOutput(dataScript, 1000)
+        tx.sign(0, keyPair)
+
+        var txBuilt = tx.build()
+
+        blockchain.transactions.propagate(txBuilt.toHex(), function (err) {
+          if (err) return done(err)
+
+          // check that the message was propagated
+          blockchain.transactions.get(txBuilt.getId(), function (err, transaction) {
+            if (err) return done(err)
+
+            var actual = bitcoin.Transaction.fromHex(transaction.txHex)
+            var dataScript2 = actual.outs[0].script
+            var data2 = dataScript2.chunks[1]
+
+            assert.deepEqual(dataScript, dataScript2)
+            assert.deepEqual(data, data2)
+
+            done()
+          })
+        })
+      })
+    })
+  })
+})

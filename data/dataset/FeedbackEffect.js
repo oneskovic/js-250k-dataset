@@ -2,13 +2,7 @@ define(["Tone/core/Tone", "Tone/effect/Effect", "Tone/signal/Signal", "Tone/sign
 
 	"use strict";
 	
-	/**
-	 * 	@class  Feedback Effect (a sound loop between an audio source and its own output)
-	 *
-	 *  @constructor
-	 *  @extends {Tone.Effect}
-	 *  @param {number|Object} [initialFeedback=0.125] the initial feedback value
-	 */
+	
 	Tone.FeedbackEffect = function(){
 
 		var options = this.optionsObject(arguments, ["feedback"]);

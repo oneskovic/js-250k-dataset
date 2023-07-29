@@ -1,11 +1,3 @@
-/*! Ajax-Include - v0.1.0 - 2012-10-23
-* http://filamentgroup.com/lab/ajax_includes_modular_content/
-* Copyright (c) 2012 @scottjehl, Filament Group, Inc.; Licensed MIT */
-
-/*! Ajax-Include - v0.1.0 - 2012-08-17
-* http://filamentgroup.com/lab/ajax_includes_modular_content/
-* Copyright (c) 2012 @scottjehl, Filament Group, Inc.; Licensed MIT */
-
 <!-- CUSTOM: Added callback function -->
 (function( $, undefined ){
 	$.fn.ajaxInclude = function( options, callback ) {

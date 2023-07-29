@@ -1,8 +1,3 @@
-//=========================
-// Collada.js
-// import from collada file
-//=========================
-
 define(function(require, exports, module){
 
 	var colladaLoader = new THREE.ColladaLoader();

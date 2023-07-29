@@ -1,111 +1,74 @@
-/**
- * @fileOverview Methods for handling older Exhibit attribute styles. Only
- *     load if the page-based config seems to contain a namespace / attributes
- *     that reflect the old style (e.g., ex:role) instead of the new style.
- * @author <a href="mailto:ryanlee@zepheira.com">Ryan Lee</a>
- */
+'use strict';
 
-/**
- * @namespace
- */
-Exhibit.Backwards.Attributes = {
-    "prefix": "ex:"
+var common = require('../common.js');
+var v6 = require('./constants.js');
+
+
+exports.isValid = function () {
+  return this.valid;
 };
 
-/**
- * Call to switch Exhibit into backwards compatibility mode for Exhibit
- * attributes.
- * @static
+/*
+ * Returns true if the given address is in the subnet of the current address
  */
-Exhibit.Backwards.Attributes.enable = function() {
-    Exhibit.Backwards.enabled.Attributes = true;
-    Exhibit.getAttribute = Exhibit.Backwards.Attributes.getAttribute;
-    Exhibit.extractOptionsFromElement = Exhibit.Backwards.Attributes.extractOptionsFromElement;
-    Exhibit.isExhibitAttribute = Exhibit.Backwards.Attributes.isExhibitAttribute;
-    Exhibit.makeExhibitAttribute = Exhibit.Backwards.Attributes.makeExhibitAttribute;
-    Exhibit.extractAttributeName = Exhibit.Backwards.Attributes.extractAttributeName;
-};
+exports.isInSubnet = common.isInSubnet;
 
-/**
- * A backwards compatible mechanism for retrieving an Exhibit attribute value.
- * @static
- * @param {jQuery|Element} elmt
- * @param {String} name
- * @param {String} splitOn
- * @returns {String|Array}
+/*
+ * Returns true if the address is correct, false otherwise
  */
-Exhibit.Backwards.Attributes.getAttribute = function(elmt, name, splitOn) {
-    var value, i, values;
+exports.isCorrect = common.isCorrect(v6.BITS);
 
-    try {
-        value = Exhibit.jQuery(elmt).attr(name);
-        if (typeof value === "undefined" || value === null || value.length === 0) {
-            value = Exhibit.jQuery(elmt).attr(Exhibit.Backwards.Attributes.prefix+name);
-            if (typeof value === "undefined" || value === null || value.length === 0) {
-                return null;
-            }
-        }
-        if (typeof splitOn === "undefined" || splitOn === null) {
-            return value;
-        }
-        values = value.split(splitOn);
-        for (i = 0; i < values.length; i++) {
-            values[i] = values[i].trim();
-        }
-        return values;
-    } catch(e) {
-        return null;
-    }
-};
-
-/**
- * A backwards compatible mechanism for retrieving all Exhibit attributes
- * on an element.
- * @static
- * @param {Element} elmt
- * @returns {Object}
+/*
+ * Returns true if the address is in the canonical form, false otherwise
  */
-Exhibit.Backwards.Attributes.extractOptionsFromElement = function(elmt) {
-    var opts, attrs, i, name, value;
-    opts = {};
-    attrs = elmt.attributes;
-    for (i in attrs) {
-        if (attrs.hasOwnProperty(i)) {
-            name = attrs[i].nodeName;
-            value = attrs[i].nodeValue;
-            if (name.indexOf(Exhibit.Backwards.Attributes.prefix) === 0) {
-                name = name.substring(Exhibit.Backwards.Attributes.prefix.length);
-            }
-            opts[name] = value;
-        }
-    }
-    return opts;
-};
+exports.isCanonical = common.falseIfInvalid(function () {
+  return this.addressMinusSuffix === this.canonicalForm();
+});
 
-/**
- * @static
- * @param {String} name
- * @returns {Boolean}
+/*
+ * Returns true if the address is a link local address, false otherwise
  */
-Exhibit.Backwards.Attributes.isExhibitAttribute = function(name) {
-    var prefix = Exhibit.Backwards.Attributes.prefix;
-    return name.length > prefix.length
-        && name.startsWith(prefix);
-};
+exports.isLinkLocal = common.falseIfInvalid(function () {
+  // Zeroes are required, i.e. we can't check isInSubnet with 'fe80::/10'
+  if (this.getBitsBase2(0, 64) ===
+    '1111111010000000000000000000000000000000000000000000000000000000') {
+    return true;
+  }
 
-/**
- * @static
- * @param {String} name
- */
-Exhibit.Backwards.Attributes.extractAttributeName = function(name) {
-    return name.substr(Exhibit.Backwards.Attributes.prefix.length);
-};
+  return false;
+});
 
-/**
- * @static
- * @param {String} name
- * @returns {String}
+/*
+ * Returns true if the address is a multicast address, false otherwise
  */
-Exhibit.Backwards.Attributes.makeExhibitAttribute = function(name) {
-    return Exhibit.Backwards.Attributes.prefix + name;
-};
+exports.isMulticast = common.falseIfInvalid(function () {
+  return this.getType() === 'Multicast';
+});
+
+/*
+ * Returns true if the address is a v4-in-v6 address, false otherwise
+ */
+exports.is4 = common.falseIfInvalid(function () {
+  return this.v4;
+});
+
+/*
+ * Returns true if the address is a Teredo address, false otherwise
+ */
+exports.isTeredo = common.falseIfInvalid(function () {
+  return this.isInSubnet(new this.constructor('2001::/32'));
+});
+
+/*
+ * Returns true if the address is a 6to4 address, false otherwise
+ */
+exports.is6to4 = common.falseIfInvalid(function () {
+  return this.isInSubnet(new this.constructor('2002::/16'));
+});
+
+/*
+ * Returns true if the address is a loopback address, false otherwise
+ */
+exports.isLoopback = common.falseIfInvalid(function () {
+  return this.getType() === 'Loopback';
+});

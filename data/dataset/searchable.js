@@ -1,5 +1,3 @@
-/*globals SCUI */
-
 SCUI.Searchable = {  
   isSearchable: YES,
   

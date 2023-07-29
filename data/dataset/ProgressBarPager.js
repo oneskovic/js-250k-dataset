@@ -1,6 +1,3 @@
-/**
- * This example demonstrates using a custom paging display.
- */
 Ext.define('KitchenSink.view.grid.ProgressBarPager', {
     extend: 'Ext.grid.Panel',
     

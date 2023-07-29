@@ -1,6 +1,3 @@
-/**
- *   Create display state chunk type for draw and pick render of renderTarget
- */
 SceneJS_ChunkFactory.createChunkType({
 
     type: "renderTarget",

@@ -1,6 +1,4 @@
-  /** 
-   * Gets a scheduler that schedules work as soon as possible on the current thread.
-   */
+  
   var currentThreadScheduler = Scheduler.currentThread = (function () {
     var queue;
 

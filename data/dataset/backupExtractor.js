@@ -1,16 +1,6 @@
 var Transform = require('stream').Transform;
 
-/*
-* This is a utility used to extract the backup of a speciifc site from the main
-* backup file. For effeciency reasons we only backup the entire firebase, we don't
-* split it per site.
-*
-* This utility uses streams and JSON parsers to parse out only the part we need
-* for a specific site.
-*
-* @params keyArray an array describing the top level key we want to extract. E.g.
-*                  ['buckets', 'test', key, 'dev'], will extract buckets.test.key.dev
-*/
+
 module.exports.getParser = function(keyArray) {
   var parser = new Transform();
   var level = 0;

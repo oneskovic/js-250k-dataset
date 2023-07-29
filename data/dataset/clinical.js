@@ -1,4 +1,3 @@
-/* jshint undef: true, strict:false, trailing:false, unused:false */
 /* global require, exports, console, process, module, L, angular, _, jQuery, $, d3 */
 
 (function() {

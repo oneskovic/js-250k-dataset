@@ -1,12 +1,7 @@
-
 if (typeof(DeviceInfo) != 'object')
     DeviceInfo = {};
 
-/**
- * This represents the PhoneGap API itself, and provides a global namespace for accessing
- * information about the state of PhoneGap.
- * @class
- */
+
 PhoneGap = {
     queue: {
         ready: true,

@@ -1,4 +1,3 @@
-/*! @license ©2014 Ruben Verborgh - Multimedia Lab / iMinds / Ghent University */
 /* A CountExtractor extracts count metadata from a triple stream. */
 
 var MetadataExtractor = require('./MetadataExtractor'),

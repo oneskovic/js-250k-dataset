@@ -1,6 +1,3 @@
-/**
- * This example shows navigation tabs docked to the side.
- */
 Ext.define('KitchenSink.view.tab.SideNavigationTabs', {
     extend: 'Ext.tab.Panel',
     xtype: 'side-navigation-tabs',

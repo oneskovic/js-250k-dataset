@@ -1,11 +1,3 @@
-/*
- * Ext JS Library 0.30
- * Copyright(c) 2006-2009, Ext JS, LLC.
- * licensing@extjs.com
- * 
- * http://extjs.com/license
- */
-
  Ext.sql.AirConnection = Ext.extend(Ext.sql.Connection, {
 	// abstract methods
     open : function(db){

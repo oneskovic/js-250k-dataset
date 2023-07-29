@@ -1,19 +1,3 @@
-/**
- * PageLayouts are used within {@link OO.ui.BookletLayout booklet layouts} to create pages that users can select and display
- * from the booklet's optional {@link OO.ui.OutlineSelectWidget outline} navigation. Pages are usually not instantiated directly,
- * rather extended to include the required content and functionality.
- *
- * Each page must have a unique symbolic name, which is passed to the constructor. In addition, the page's outline
- * item is customized (with a label, outline level, etc.) using the #setupOutlineItem method. See
- * {@link OO.ui.BookletLayout BookletLayout} for an example.
- *
- * @class
- * @extends OO.ui.PanelLayout
- *
- * @constructor
- * @param {string} name Unique symbolic name of page
- * @param {Object} [config] Configuration options
- */
 OO.ui.PageLayout = function OoUiPageLayout( name, config ) {
 	// Allow passing positional parameters inside the config object
 	if ( OO.isPlainObject( name ) && config === undefined ) {

@@ -1,4 +1,3 @@
-/*jshint expr:true */
 describe('SettingsCollection', function() {
   beforeEach(function() {
     helper.suspendLocalStorage();

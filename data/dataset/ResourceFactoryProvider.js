@@ -6,12 +6,7 @@ define( [ 'angular', 'underscore', 'inflection', '../module' ], function( ng, _,
   .provider( 'ResourceFactory', [
     function () {
 
-      /**
-       * @ngdoc service
-       * @name ngSeed.services:$resourceFactory
-       * @description
-       * A service used to generate and register resources.
-       */
+      
 
       /**
        * @ngdoc function

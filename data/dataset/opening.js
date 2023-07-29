@@ -2,7 +2,7 @@ var should = require('should');
 var opening = require('../lib/opening');
 var day = require('../lib/tools/millis').day;
 
-/*global describe, it*/
+
 
 
 function iso(millis) {

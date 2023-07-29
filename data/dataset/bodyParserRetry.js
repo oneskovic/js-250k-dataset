@@ -1,8 +1,6 @@
 module.exports = function (sails) {
 
-	/**
-	 * Module dependencies
-	 */
+	
 
 	var util		= require( '../util' );
 

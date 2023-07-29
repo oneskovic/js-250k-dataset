@@ -1,10 +1,3 @@
-/**
- * Defines a CartesianChart's vertical or horizontal axis.
- *
- * @namespace YAHOO.widget
- * @class Axis
- * @constructor
- */
 YAHOO.widget.Axis = function()
 {
 };

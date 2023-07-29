@@ -1,15 +1,7 @@
 dojo.provide("dojox.charting.Series");
 
 dojo.require("dojox.charting.Element");
-/*=====
-dojox.charting.__SeriesCtorArgs = function(plot){
-	//	summary:
-	//		An optional arguments object that can be used in the Series constructor.
-	//	plot: String?
-	//		The plot (by name) that this series belongs to.
-	this.plot = plot;
-} 
-=====*/
+
 dojo.declare("dojox.charting.Series", dojox.charting.Element, {
 	//	summary:
 	//		An object representing a series of data for plotting on a chart.

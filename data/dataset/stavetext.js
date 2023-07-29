@@ -1,8 +1,3 @@
-// VexFlow - Music Engraving for HTML5
-// Copyright Mohit Muthanna 2010
-//
-// Author Taehoon Moon 2014
-
 /**
  * @constructor
  */

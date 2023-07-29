@@ -1,12 +1,4 @@
-  /**
-    @mixin
-    <p>The SuggesterMixin provides support for the base setting of all suggesters. 
-    This object should not be used directly.</p>
-
-    @name ejs.SuggesterMixin
   
-    @param {String} name The name of the suggester.
-    */
   ejs.SuggesterMixin = function (name) {
   
     var suggest = {};

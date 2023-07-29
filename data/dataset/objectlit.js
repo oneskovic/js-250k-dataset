@@ -1,5 +1,3 @@
-/*global describe, expect, it, jasmine */
-
 describe('object literals', function() {
     describe('When a child of an objlit has no @name or @memberof tags', function() {
         var docSet = jasmine.getDocSetFromFile('test/fixtures/objectlit.js');

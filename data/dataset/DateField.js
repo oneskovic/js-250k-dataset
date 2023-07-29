@@ -1,16 +1,6 @@
 (function() {	
    var lang = YAHOO.lang, Event = YAHOO.util.Event, Dom = YAHOO.util.Dom;
-/**
- * A Date Field. 
- * @class inputEx.DateField
- * @extends inputEx.StringField
- * @constructor
- * @param {Object} options Add the folowing options: 
- * <ul>
- *	   <li>dateFormat: Editor format (the one which is presented to the user) default to 'm/d/Y'</li>
- *		<li>valueFormat: if falsy, the field will return a javascript Date instance. Otherwise, this format will be used for input parsing/output formatting</li>
- * </ul>
- */
+
 inputEx.DateField = function(options) {
 	inputEx.DateField.superclass.constructor.call(this,options);
 };

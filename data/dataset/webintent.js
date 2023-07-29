@@ -1,8 +1,3 @@
-/**
- * cordova Web Intent plugin
- * Copyright (c) Boris Smus 2010
- *
- */
 var WebIntent = function() { 
 
 };

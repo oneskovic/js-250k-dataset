@@ -1,9 +1,3 @@
-/**
- * Listens for events on the [element] and notifies the [listener]
- * if an undock event has been invoked.  An undock event is invoked
- * when the user clicks on the event and drags is beyond the
- * specified [thresholdPixels]
- */
 dockspawn.UndockInitiator = function(element, listener, thresholdPixels)
 {
     if (!thresholdPixels)

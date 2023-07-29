@@ -1,131 +1,106 @@
-(function($, angular, window) {
+angular.module('ngMock').config(function ($provide) {
+  $provide.decorator('$q', function ($delegate, $rootScope) {
+    $delegate.flush = function() {
+      $rootScope.$digest();
+    };
 
-
-    beforeEach(function() {
-        $(".temp").remove();
-        $(":jqmData(role='page')").remove();
-        $.mobile.pageContainer = $("body");
-        $.mobile.firstPage = $();
-        $.mobile.urlHistory.stack = [ {url : 'someUrl' } ];
-        $.mobile.urlHistory.activeIndex = 0;
-        $.mobile.origChangePage = $.mobile.changePage;
-        spyOn($.mobile, 'changePage');
-        spyOn(window.history, 'go');
-        module("ng", function($provide) {
-            $provide.value('$rootElement', $("body"));
-            var i;
-            for (i=0; i<$.mobile._registerBrowserDecorators.length; i++) {
-                $.mobile._registerBrowserDecorators[i]($provide);
-            }
+    // Add callbacks to the promise that expose the resolved value/error
+    function expose(promise) {
+      // Don't add hooks to the same promise twice (shouldn't happen anyway)
+      if (!promise.hasOwnProperty('$$resolved')) {
+        promise.$$resolved = false;
+        promise.then(function (value) {
+          promise.$$resolved = { success: true, value: value };
+        }, function (error) {
+          promise.$$resolved = { success: false, error: error };
         });
-        spyOn(angular.mock.$Browser.prototype, 'url').andCallThrough();
-        $.mobile.popup.active = undefined;
-        jasmine.Clock.installMock();
+
+        // We need to expose() any then()ed promises recursively
+        var qThen = promise.then;
+        promise.then = function () {
+          return expose(qThen.apply(this, arguments));
+        };
+      }
+      return promise;
+    }
+
+    // Wrap functions that return a promise
+    angular.forEach([ 'when', 'all', 'reject'], function (name) {
+      var qFunc = $delegate[name];
+      $delegate[name] = function () {
+        return expose(qFunc.apply(this, arguments));
+      };
     });
 
-    afterEach(function() {
-        clearEvents();
+    // Wrap defer()
+    var qDefer = $delegate.defer;
+    $delegate.defer = function () {
+      var deferred = qDefer();
+      expose(deferred.promise);
+      return deferred;
+    }
+
+    return $delegate;
+  });
+});
+
+try {
+  // Animation testing support
+  angular.module('mock.animate').config(function ($provide) {
+    $provide.decorator('$animate', function ($delegate) {
+      $delegate.flush = function() {
+        while (this.queue.length > 0) {
+          this.flushNext(this.queue[0].method);
+        }
+      };
+      return $delegate;
     });
+  });
+} catch (e) {}
 
-    var markEvents = function() {
-        var key,
-            cache = angular.element.cache;
+function testablePromise(promise) {
+  if (!promise || !promise.then) throw new Error('Expected a promise, but got ' + jasmine.pp(promise) + '.');
+  if (!isDefined(promise.$$resolved)) throw new Error('Promise has not been augmented by ngMock');
+  return promise;
+}
 
-        for(key in cache) {
-            if (cache.hasOwnProperty(key)) {
-                var events = cache[key].events;
-                for (var eventName in events) {
-                    var entries = events[eventName];
-                    for (var i=0; i<entries.length; i++) {
-                        entries[i].doNotClear = true;
-                    }
-                }
-            }
-        }
-    };
-    markEvents();
+function resolvedPromise(promise) {
+  var result = testablePromise(promise).$$resolved;
+  if (!result) throw new Error('Promise is not resolved yet');
+  return result;
+}
 
-    var clearEvents = function() {
-        var key,
-            cache = angular.element.cache;
+function resolvedValue(promise) {
+  var result = resolvedPromise(promise);
+  if (!result.success) throw result.error;
+  return result.value;
+}
 
-        for(key in cache) {
-            if (cache.hasOwnProperty(key)) {
-                var handle = cache[key].handle;
-                var elem = handle?$(handle.elem):null;
-                if (elem) {
-                    var events = cache[key].events;
-                    for (var eventName in events) {
-                        var entries = events[eventName];
-                        for (var i=entries.length-1; i>=0; i--) {
-                            if (!entries[i].doNotClear) {
-                                elem.unbind(eventName, entries[i].handler);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    };
+function resolvedError(promise) {
+  var result = resolvedPromise(promise);
+  if (result.success) throw new Error('Promise was expected to fail but returned ' + jasmin.pp(res.value) + '.');
+  return result.error;
+}
 
-
-    function test$() {
-        return $.apply(this, arguments);
+beforeEach(function () {
+  this.addMatchers({
+    toBeResolved: function() {
+      return !!testablePromise(this.actual).$$resolved;
     }
+  });
+});
 
-    function spyOnJq(fnName) {
-        if ($.fn.orig[fnName]) {
-            return spyOn($.fn.orig, fnName);
-        }
-        return spyOn($.fn, fnName);
-    }
+// Misc test utils
+function caught(fn) {
+  try {
+    fn();
+    return null;
+  } catch (e) {
+    return e;
+  }
+}
 
-    function compileInPage(html, pageControllerName) {
-        var container = test$("<div>"+html+"</div>");
-        var page = test$('<div id="start" data-role="page" data-url="start"><div data-role="content"></div></div>');
-        test$("body").append(page);
-        if (pageControllerName) {
-            page.attr('ng-controller', pageControllerName);
-        }
-        page.find(":jqmData(role='content')").append(container);
-
-        inject(function($compile, $rootScope) {
-            $compile(page)($rootScope);
-            $.mobile.activePage = page;
-            $rootScope.$apply();
-        });
-        page.addClass("temp", "true");
-        return {
-            page: page,
-            element: container.children()
-        }
-    }
-
-    function compile(html) {
-        var wrapperElement = $('<div>'+html+'</div>');
-        wrapperElement.children().addClass("result", "true");
-        $("body").append(wrapperElement);
-        var rootScope;
-        inject(function($compile, $rootScope) {
-            rootScope = $rootScope;
-            $compile(wrapperElement)($rootScope);
-            $rootScope.$apply();
-        });
-        return $(".result").removeClass("result").addClass("temp", "true");
-    }
-
-    function triggerInputEvent(element) {
-        // Angular uses the "input" event in browsers that support it (eg. chrome).
-        // However, as jquery mobile fires the change event itself by some widgets,
-        // we ensured that angular always also reacts to the change event.
-        element.trigger('change');
-    }
-
-    // API
-    window.testutils = {
-        compile: compile,
-        compileInPage: compileInPage,
-        triggerInputEvent: triggerInputEvent,
-        spyOnJq: spyOnJq
-    };
-})(window.jQuery, window.angular, window);
+// Utils for test from core angular
+var noop = angular.noop,
+    toJson = angular.toJson;
+beforeEach(module('ui.router.compat'));

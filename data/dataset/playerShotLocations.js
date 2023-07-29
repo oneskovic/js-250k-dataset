@@ -1,7 +1,3 @@
-/**
- * @name views.playerShotLocations
- * @namespace Player shot locations table.
- */
 define(["dao", "globals", "ui", "core/player", "lib/jquery", "lib/knockout", "lib/underscore", "views/components", "util/bbgmView", "util/helpers"], function (dao, g, ui, player, $, ko, _, components, bbgmView, helpers) {
     "use strict";
 

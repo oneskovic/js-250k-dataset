@@ -1,13 +1,3 @@
-
-/* JaxEdit: online LaTeX editor with live preview
- * Copyright (c) 2011-2014 JaxEdit project
- * License: GNU Lesser General Public License, Version 3
- *
- * Website: http://jaxedit.com
- * Source:  https://github.com/zohooo/jaxedit
- * Release: http://code.google.com/p/jaxedit/
- */
-
 jaxedit.doChange = function(editor, change) {
   console.log(change.from, change.to, change.text, change.next);
   var data = this.textdata;

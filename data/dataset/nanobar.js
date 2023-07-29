@@ -1,4 +1,3 @@
-/* http://nanobar.micronube.com/  ||  https://github.com/jacoborus/nanobar/    MIT LICENSE */
 var Nanobar = (function () {
 
 	'use strict';

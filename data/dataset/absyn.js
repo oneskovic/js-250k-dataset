@@ -1,5 +1,3 @@
-/* global LAMBDA : true */
-
 (function (){
 
 "use strict";

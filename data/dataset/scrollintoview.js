@@ -1,10 +1,3 @@
-/**
- * jCarousel ScrollIntoView Plugin
- *
- * Depends:
- *     core.js
- *     core_plugin.js
- */
 (function($) {
     'use strict';
 

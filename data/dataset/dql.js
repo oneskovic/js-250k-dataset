@@ -1,7 +1,3 @@
-/**
- * DQL Adapter Normalization
- */
-
 var normalize = require('../utils/normalize');
 
 module.exports = {

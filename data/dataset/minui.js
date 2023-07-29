@@ -1,5 +1,3 @@
-// minimal, simplified UI
-
 (function() {
     function MinUI(opts) {
         this.client = opts.client

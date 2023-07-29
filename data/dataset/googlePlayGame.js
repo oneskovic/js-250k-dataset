@@ -1,14 +1,7 @@
 'use strict';
 
 
-/**
- * @ngdoc service
- * @name ngCordovaMocks.googlePlayGame
- *
- * @description
- * A service for testing Google Play Game features
- * in an app build with ngCordova.
- */  
+  
 ngCordovaMocks.factory('$cordovaGooglePlayGame', ['$q', function ($q) {
 		var throwsError = false;
 		var isSignedIn = false;

@@ -1,14 +1,3 @@
-/**
- * @class button - outdent text
- * уменьшает padding/margin/самомнение ;)
- *
- * @param  elRTE  rte   объект-редактор
- * @param  String name  название кнопки 
- * @todo decrease lists nesting level!
- *
- * @author:    Dmitry Levashov (dio) dio@std42.ru
- * @copyright: Studio 42, http://www.std42.ru
- **/
 (function($) {
 elRTE.prototype.ui.prototype.buttons.outdent = function(rte, name) {
 	this.constructor.prototype.constructor.call(this, rte, name);

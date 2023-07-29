@@ -1,74 +1,77 @@
-/*
- * JavaScript tracker for Snowplow: tests/intern.js
- * 
- * Significant portions copyright 2010 Anthon Pang. Remainder copyright 
- * 2012-2014 Snowplow Analytics Ltd. All rights reserved. 
- * 
- * Redistribution and use in source and binary forms, with or without 
- * modification, are permitted provided that the following conditions are 
- * met: 
- *
- * * Redistributions of source code must retain the above copyright 
- *   notice, this list of conditions and the following disclaimer. 
- *
- * * Redistributions in binary form must reproduce the above copyright 
- *   notice, this list of conditions and the following disclaimer in the 
- *   documentation and/or other materials provided with the distribution. 
- *
- * * Neither the name of Anthon Pang nor Snowplow Analytics Ltd nor the
- *   names of their contributors may be used to endorse or promote products
- *   derived from this software without specific prior written permission. 
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR 
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY 
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+define(["./config/Suites"],
+       function (Suites) {
+   return {
 
-define({
+      // The port on which the instrumenting proxy will listen
+      proxyPort: 9000,
 
-	proxyPort: 9000,
-	proxyUrl: 'http://localhost:9000/',
+      // A fully qualified URL to the Intern proxy
+      proxyUrl: "http://192.168.56.1:9000/",
 
-	capabilities: {
-		'selenium-version': '2.39.0',
-		'build': 'process.env.TRAVIS_JOB_ID'
-	},
+      // Default desired capabilities for all environments. Individual capabilities can be overridden by any of the
+      // specified browser environments in the `environments` array below as well. See
+      // https://code.google.com/p/selenium/wiki/DesiredCapabilities for standard Selenium capabilities and
+      // https://saucelabs.com/docs/additional-config#desired-capabilities for Sauce Labs capabilities.
+      // Note that the `build` capability will be filled in with the current commit ID from the Travis CI environment
+      // automatically
+      capabilities: {
+         "selenium-version": "2.44.0"
+      },
 
-	environments: [
-		{ browserName: 'internet explorer', version: '11', platform: 'Windows 8.1' },
-		{ browserName: 'internet explorer', version: '10', platform: 'Windows 8' },
-		{ browserName: 'internet explorer', version: '9', platform: 'Windows 7' },
-		{ browserName: 'firefox', version: '27', platform: [ 'OS X 10.6', 'Windows 7', 'Linux' ] },
-		{ browserName: 'chrome', version: '32', platform: [ 'OS X 10.6', 'Windows 7', 'Linux' ] },
-		{ browserName: 'safari', version: '6', platform: 'OS X 10.8' },
-		{ browserName: 'safari', version: '7', platform: 'OS X 10.9' }
-	],
+      // Browsers to run integration testing against. Note that version numbers must be strings if used with Sauce
+      // OnDemand. Options that will be permutated are browserName, version, platform, and platformVersion; any other
+      // capabilities options specified for an environment will be copied as-is
+      environments: [
+         {
+            browserName: "chrome",
+            chromeOptions: {
+               excludeSwitches: ["ignore-certificate-errors"]
+            }
+         },
+         { browserName: "firefox" }
+      ],
 
-	maxConcurrency: 1,
-	useSauceConnect: true,
+      // Maximum number of simultaneous integration tests that should be executed on the remote WebDriver service
+      maxConcurrency: 1,
 
-	// Connection information for the remote WebDriver service.
-	webdriver: {
-		host: 'localhost',
-		port: 4444
-	},
+      // Dig Dug tunnel handler
+      tunnel: "NullTunnel",
 
-	// Configuration options for the module loader; any AMD configuration options supported by the Dojo loader can be
-	// used here
-	loader: {},
+      // Dig Dug tunnel options
+      tunnelOptions: {
+         hostname: "192.168.56.4",
+         port: 4444
+      },
 
-	// Functional test suite(s) to run in each browser once non-functional tests are completed
-	functionalSuites: ['tests/integration/setup', 'tests/integration/integration', 'tests/functional/helpers','tests/functional/detectors'],
+      // Configuration options for the module loader; any AMD configuration options supported by the Dojo loader can be
+      // used here
+      loader: {
+         // Packages that should be registered with the loader in each testing environment
+         // Note: the config package is specifically for virtual machine (vm)
+         packages: [
+            { name: "alfresco", location: "./src/test/resources/alfresco" },
+            { name: "config", location: "./src/test/resources/config/vm" },
+            { name: "reporters", location: "./src/test/resources/reporters" }
+         ]
+      },
 
-	// A regular expression matching URLs to files that should not be included in code coverage analysis
-	excludeInstrumentation: /^tests\//
+      // Non-functional test suite(s) to run in each browser
+      suites: Suites.nonFunctionalSuites,
 
+      // Functional test suite(s) to run in each browser once non-functional tests are completed
+      functionalSuites: Suites.vmFunctionalSuites(),
+
+      // A regular expression matching URLs to files that should not be included in code coverage analysis
+      excludeInstrumentation: /^(?:tests|node_modules)\//,
+
+      // An array of code coverage reporters to invoke
+      reporters: [
+         // "console"
+         // "runner"
+         // "reporters/TestSummary"
+         "reporters/AikauReporter"
+         // "pretty"
+      ]
+
+   };
 });

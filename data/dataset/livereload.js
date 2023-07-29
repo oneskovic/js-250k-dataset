@@ -24,7 +24,7 @@ utils.startLRServer = function startLRServer(grunt, done) {
 };
 
 utils.getSnippet = function () {
-  /*jshint quotmark:false */
+  
   var snippet = [
           "<!-- livereload snippet -->",
           "<script>document.write('<script src=\"http://'",

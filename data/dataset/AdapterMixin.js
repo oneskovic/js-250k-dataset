@@ -5,10 +5,7 @@ define( [ "ember" ], function( Ember ) {
 	    reURL = /^[a-z]+:\/\/([\w\.]+)\/(.+)$/i;
 
 
-	/**
-	 * Adapter mixin for using static model names
-	 * instead of using type.typeKey as name
-	 */
+	
 	return Ember.Mixin.create( Ember.Evented, {
 		find: function( store, type, id, snapshot ) {
 			return this.ajax( this.buildURL( type, id, snapshot ), "GET" );

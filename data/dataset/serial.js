@@ -1,12 +1,3 @@
-/**************************************************************************
-* SAE - Scripted Amiga Emulator
-*
-* 2012-2015 Rupert Hausberger
-*
-* https://github.com/naTmeg/ScriptedAmigaEmulator
-*
-**************************************************************************/
-
 function Serial()
 {
 	var buf = new Uint8Array(1024);

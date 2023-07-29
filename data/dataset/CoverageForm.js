@@ -1,13 +1,5 @@
 Ext.namespace("Ext.testia");
-/**
- * Ext.testia.ReportForm extension class for Ext.testia.AppForm
- *
- * @class Ext.testia.StatusForm
- * @extend Ext.testia.ReportForm
- *
- * Extend basic AppForm by adding copy button, and default handler
- * for that.
- */
+
 Ext.testia.CoverageForm = function(form_div, toolbar_div, config) {
     Ext.testia.CoverageForm.superclass.constructor.call(this,
         form_div, toolbar_div, config);

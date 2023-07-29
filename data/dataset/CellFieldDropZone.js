@@ -1,6 +1,3 @@
-// A DropZone which cooperates with DragZones whose dragData contains
-// a "field" property representing a form Field. Fields may be dropped onto
-// grid data cells containing a matching data type.
 Ext.define('Ext.ux.dd.CellFieldDropZone', {
     extend: 'Ext.dd.DropZone',
 

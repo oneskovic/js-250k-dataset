@@ -1,62 +1,54 @@
-Congo.Database = Backbone.Model.extend({
-  url: function () {
-    return "/mongo-api/dbs/" + this.id;
-  },
-  idAttribute: "name",
-});
-Congo.DatabaseCollection = Backbone.Collection.extend({
-  model : Congo.Database,
-  url: "/mongo-api/dbs"
-});
+const Bookshelf = require('bookshelf');
+const fs = require('fs');
+const sequence = require('when/sequence');
 
-Congo.DatabaseOptionView = Congo.View.extend({
-  initialize: function () {
-    this.render();
-  },
-  template : "#new-db-template",
-  events: {
-    "submit form": "addDb"
-  },
-  addDb: function (event) {
-    event.preventDefault();
-    var newDbName = $("#newDb").val();
-    var newDb = new Congo.Database({ name: newDbName });
-    newDb.save();
-    Congo.databases.add(newDb);
-  }
-});
+var config;
+var newDB = false;
 
-Congo.DatabaseView = Congo.ItemView.extend({
-  tagName: "tr",
-  template: "#database-list-template",
-  events: {
-    "click button": "remove",
-    "click a": "showDb"
-  },
-  showDb: function (ev) {
-    ev.preventDefault();
-    var db = $(ev.currentTarget).data("db");
-    Congo.router.navigate(db,true);
-  }
 
-});
+if (process.env.testing) {
+  console.log('Connecting to SQLite3 testing database...');
+  config = require('../../test/config/db');
+} else if (process.argv[2] === 'sqlite3') {
+  console.log('Connecting to SQLite3 development database...');
+  config = require('../../config/db_sqlite');
+  newDB = !fs.existsSync(config.database.connection.filename);
+} else {
+  console.log('Connecting to PostgreSQL database...');
+  config = require('../../config/db_pg');
+}
 
-Congo.DatabaseListView = Congo.ListView.extend({
-  tagName: "table",
-  className: "table table-striped",
-  ItemView : Congo.DatabaseView
-});
+const db = Bookshelf.initialize(config.database);
 
-Congo.DatabaseLayoutView = Congo.Layout.extend({
-  template: "#db-details-template",
-  regions: {
-    databaseList: "#database-list",
-    databaseOptions: "#database-options"
-  },
-  layoutReady: function () {
-    var dbListView = new Congo.DatabaseListView({ collection: this.collection });
-    var optionView = new Congo.DatabaseOptionView({});
-    this.databaseList.append(dbListView.render().el);
-    this.databaseOptions.append(optionView.render().el);
-  }
-})
+if (!process.env.testing) {
+
+  /*
+    When the application starts, it will check to see which migrations last ran
+    and run any newer migrations. This will also load some base data if this is a
+    new database.
+   */
+  db.knex.migrate.latest(config).then(function () {
+
+    // if running sqlite3 in development on initial load, insert test data
+    if(config.database.client === "sqlite3" && newDB) {
+
+      var data = {
+        submissions : require('../../test/fixtures/submissions'),
+        submission_tags : require('../../test/fixtures/submission_tags'),
+        tags : require('../../test/fixtures/tags'),
+        comments : require('../../test/fixtures/comments'),
+        images : require('../../test/fixtures/images'),
+      };
+
+      sequence([
+        function(){return db.knex('submissions').insert(data.submissions);},
+        function(){return db.knex('tags').insert(data.tags);},
+        function(){return db.knex('comments').insert(data.comments);},
+        function(){return db.knex('submission_tags').insert(data.submission_tags);},
+        function(){return db.knex('images').insert(data.images);},
+      ]);
+    }
+  });
+}
+
+module.exports = db;

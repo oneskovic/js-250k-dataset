@@ -1,4 +1,3 @@
-/** @module deliteful/Combobox/ComboPopup */
 define([
 	"delite/register",
 	"requirejs-dplugins/jquery!attributes/classes",	// addClass()

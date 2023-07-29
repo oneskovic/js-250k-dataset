@@ -1,10 +1,3 @@
-/**
- * @overview
- *
- * @author 闲耘™ (hotoo.cn[AT]gmail.com)
- * @version 2013/04/02
- */
-
 (function(){
   function getPreviousSibling(node){
     while(node = node.previousSibling){

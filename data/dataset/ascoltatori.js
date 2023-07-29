@@ -3,11 +3,7 @@
 var SubsCounter = require("./subs_counter");
 var util = require("./util");
 
-/**
- * You can require any Ascolatore through this module.
- *
- * @api public
- */
+
 module.exports.AbstractAscoltatore = require('./abstract_ascoltatore');
 module.exports.TrieAscoltatore = require('./trie_ascoltatore');
 module.exports.EventEmitter2Ascoltatore = require('./event_emitter2_ascoltatore');
@@ -21,10 +17,7 @@ module.exports.DecoratorAscoltatore = require("./decorator_ascoltatore");
 module.exports.JSONAscoltatore = require("./json_ascoltatore");
 module.exports.FileSystemAscoltatore = require("./filesystem_ascoltatore");
 
-/**
- *
- * @api private
- */
+
 var classes = {
   "amqp": module.exports.AMQPAscoltatore,
   "trie": module.exports.TrieAscoltatore,

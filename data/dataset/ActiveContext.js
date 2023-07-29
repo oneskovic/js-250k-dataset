@@ -1,10 +1,7 @@
 var React = require('react');
 var objectAssign = require('react/lib/Object.assign');
 
-/**
- * A mixin for components that store the active state of routes,
- * URL parameters, and query.
- */
+
 var ActiveContext = {
 
   propTypes: {
@@ -29,9 +26,7 @@ var ActiveContext = {
     };
   },
 
-  /**
-   * Returns a read-only array of the currently active routes.
-   */
+  
   getActiveRoutes: function () {
     return this.state.activeRoutes.slice(0);
   },

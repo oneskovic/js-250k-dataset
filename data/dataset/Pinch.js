@@ -1,99 +1,100 @@
-/**
- * A event recognizer which knows when you pinch.
- *
- * @private
- */
-Ext.define('Ext.event.recognizer.Pinch', {
-    extend: 'Ext.event.recognizer.MultiTouch',
+define(['Ti/_/declare', 'Ti/_/lang'], function (declare, lang) {
 
-    requiredTouchesCount: 2,
+	var touchStartLocation = null,
+		fingerDifferenceThresholdTimer = null,
+		startDistance = null,
+		previousDistance = null,
+		previousTime = null,
 
-    handledEvents: ['pinchstart', 'pinch', 'pinchend'],
+		// There are two possibilities: the user puts down two fingers at exactly the same time,
+		// which is almost impossible, or they put one finger down first, followed by the second.
+		// For the second case, we need ensure that the two taps were intended to be at the same time.
+		// This value defines the maximum time difference before this is considered some other type of gesture.
+		fingerDifferenceThreshold = 100;
 
-    /**
-     * @member Ext.dom.Element
-     * @event pinchstart
-     * Fired once when a pinch has started.
-     * @param {Ext.event.Event} event The {@link Ext.event.Event} event encapsulating the DOM event.
-     * @param {HTMLElement} node The target of the event.
-     * @param {Object} options The options object passed to Ext.mixin.Observable.addListener.
-     */
+	function processTouch(e) {
+		if (touchStartLocation && touchStartLocation.length == 2 && e.touches.length == 2) {
+			var currentDistance = Math.sqrt(Math.pow(e.touches[0].clientX - e.touches[1].clientX,2) +
+				Math.pow(e.touches[0].clientY - e.touches[1].clientY,2)),
+				velocity = 0,
+				currentTime = Date.now();
+			if (previousDistance) {
+				velocity = Math.abs(previousDistance / startDistance - currentDistance / startDistance) / ((currentTime - previousTime) / 1000);
+			}
+			previousDistance = currentDistance;
+			previousTime = currentTime;
+			return {
+				pinch: [{
+					scale: currentDistance / startDistance,
+					velocity: velocity
+				}]
+			};
+		}
+	}
 
-    /**
-     * @member Ext.dom.Element
-     * @event pinch
-     * Fires continuously when there is pinching (the touch must move for this to be fired).
-     * @param {Ext.event.Event} event The {@link Ext.event.Event} event encapsulating the DOM event.
-     * @param {HTMLElement} node The target of the event.
-     * @param {Object} options The options object passed to Ext.mixin.Observable.addListener.
-     */
+	return lang.setObject('Ti._.Gestures.Pinch', {
 
-    /**
-     * @member Ext.dom.Element
-     * @event pinchend
-     * Fires when a pinch has ended.
-     * @param {Ext.event.Event} event The {@link Ext.event.Event} event encapsulating the DOM event.
-     * @param {HTMLElement} node The target of the event.
-     * @param {Object} options The options object passed to Ext.mixin.Observable.addListener.
-     */
+		processTouchStartEvent: function (e) {
+			var x = e.changedTouches[0].clientX,
+				y = e.changedTouches[0].clientY,
+				touchesLength = e.touches.length,
+				changedTouchesLength = e.changedTouches.length;
 
-    /**
-     * @property {Number} scale
-     * The scape of a pinch event.
-     *
-     * **This is only available when the event type is `pinch`**
-     * @member Ext.event.Event
-     */
+			// First finger down of the two, given a slight difference in contact time
+			if (touchesLength == 1 && changedTouchesLength == 1) {
+				touchStartLocation = [{
+					x: x,
+					y: y
+				}];
+				fingerDifferenceThresholdTimer = setTimeout(function () {
+					touchStartLocation = null;
+				}, fingerDifferenceThreshold);
 
-    startDistance: 0,
+			// Second finger down of the two, given a slight difference in contact time
+			} else if (touchesLength == 2 && changedTouchesLength == 1) {
+				clearTimeout(fingerDifferenceThresholdTimer);
+				if (touchStartLocation) {
+					touchStartLocation.push({
+						x: x,
+						y: y
+					});
+					startDistance = Math.sqrt(Math.pow(touchStartLocation[0].x - touchStartLocation[1].x,2) +
+						Math.pow(touchStartLocation[0].y - touchStartLocation[1].y,2));
+				}
 
-    lastTouches: null,
+			// Two fingers down at the same time
+			} else if (touchesLength == 2 && changedTouchesLength == 2) {
+				touchStartLocation = [{
+					x: x,
+					y: y
+				},
+				{
+					x: e.changedTouches[1].clientX,
+					y: e.changedTouches[1].clientY
+				}];
+				startDistance = Math.sqrt(Math.pow(touchStartLocation[0].x - touchStartLocation[1].x,2) +
+					Math.pow(touchStartLocation[0].y - touchStartLocation[1].y,2));
+				
+			// Something else, means it's not a pinch
+			} else {
+				touchStartLocation = null;
+			}
+		},
 
-    onTouchMove: function(e) {
-        if (!this.isTracking) {
-            return;
-        }
+		processTouchEndEvent: function(e){
+			var result = processTouch(e);
+			touchStartLocation = null;
+			return result;
+		},
 
-        var touches = Array.prototype.slice.call(e.touches),
-            firstPoint, secondPoint, distance;
+		processTouchMoveEvent: function(e){
+			return processTouch(e);
+		},
 
-        firstPoint = touches[0].point;
-        secondPoint = touches[1].point;
+		processTouchCancelEvent: function () {
+			touchStartLocation = null;
+		}
 
-        distance = firstPoint.getDistanceTo(secondPoint);
-
-        if (distance === 0) {
-            return;
-        }
-
-        if (!this.isStarted) {
-
-            this.isStarted = true;
-
-            this.startDistance = distance;
-
-            this.fire('pinchstart', e, touches, {
-                touches: touches,
-                distance: distance,
-                scale: 1
-            });
-        }
-        else {
-            this.fire('pinch', e, touches, {
-                touches: touches,
-                distance: distance,
-                scale: distance / this.startDistance
-            });
-        }
-
-        this.lastTouches = touches;
-    },
-
-    fireEnd: function(e) {
-        this.fire('pinchend', e, this.lastTouches);
-    },
-
-    fail: function() {
-        return this.callParent(arguments);
-    }
+	});
+	
 });

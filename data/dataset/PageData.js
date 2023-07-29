@@ -1,5 +1,3 @@
-/*global d3, Utils */
-
 function PageData(dataUrl, callback) {
   this.dataUrl = dataUrl
   this.callback = callback

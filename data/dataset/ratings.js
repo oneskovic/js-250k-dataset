@@ -1,20 +1,3 @@
-/**
- * RabidRatings - Simple and Pretty Ratings for Everyone
- * JavaScript functionality requires MooTools version 1.2 <http://www.mootools.net>.
- * 
- * Full package available at <http://widgets.rabidlabs.net/ratings>.
- * django version at http://code.google.com/p/djang-rabid-ratings/
- *
- * NOTE: The included JavaScript WILL ONLY WORK WITH MOOTOOLS.  It will not work if any other JavaScript
- * framework is present on the page.
- *
- * Current MooTools version: 1.2
- *
- * @author Michelle Steigerwalt <http://www.msteigerwalt.com>
- * @copyright 2007, 2008 Michelle Steigerwalt, 2008 Darrel Herbst
- * @license LGPL 2.1 <http://creativecommons.org/licenses/LGPL/2.1/>
- */
-
 var RabidRatings = new Class({
 
 	Implements: Options,

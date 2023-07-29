@@ -1,124 +1,126 @@
-tinyMCEPopup.requireLangPack();
+/**
+ * The purpose of the Link widget is to provide a re-usable accessible link that is compatible with the
+ * publication/subscription model used by the Alfresco widgets. It is important that a "title" attribute
+ * is set that provides context to the link (e.g. "Delete 'Document 1'" rather than just "Delete", etc.)
+ * 
+ * @module alfresco/navigation/Link
+ * @extends external:dijit/_WidgetBase
+ * @mixes external:dojo/_TemplatedMixin
+ * @mixes external:dojo/_OnDijitClickMixin
+ * @mixes module:alfresco/core/Core
+ * @author Dave Draper
+ */
+define(["dojo/_base/declare",
+        "dijit/_WidgetBase", 
+        "dijit/_TemplatedMixin",
+        "dijit/_OnDijitClickMixin",
+        "dojo/text!./templates/Link.html",
+        "alfresco/core/Core",
+        "dojo/_base/event"], 
+        function(declare, _WidgetBase, _TemplatedMixin, _OnDijitClickMixin, template, AlfCore, event) {
 
-var LinkDialog = {
-	preInit : function() {
-		var url;
-
-		if (url = tinyMCEPopup.getParam("external_link_list_url"))
-			document.write('<script language="javascript" type="text/javascript" src="' + tinyMCEPopup.editor.documentBaseURI.toAbsolute(url) + '"></script>');
-	},
-
-	init : function() {
-		var f = document.forms[0], ed = tinyMCEPopup.editor;
-
-		// Setup browse button
-		document.getElementById('hrefbrowsercontainer').innerHTML = getBrowserHTML('hrefbrowser', 'href', 'file', 'theme_advanced_link');
-		if (isVisible('hrefbrowser'))
-			document.getElementById('href').style.width = '180px';
-
-		this.fillClassList('class_list');
-		this.fillFileList('link_list', 'tinyMCELinkList');
-		this.fillTargetList('target_list');
-
-		if (e = ed.dom.getParent(ed.selection.getNode(), 'A')) {
-			f.href.value = ed.dom.getAttrib(e, 'href');
-			f.linktitle.value = ed.dom.getAttrib(e, 'title');
-			f.insert.value = ed.getLang('update');
-			selectByValue(f, 'link_list', f.href.value);
-			selectByValue(f, 'target_list', ed.dom.getAttrib(e, 'target'));
-			selectByValue(f, 'class_list', ed.dom.getAttrib(e, 'class'));
-		}
-	},
-
-	update : function() {
-		var f = document.forms[0], ed = tinyMCEPopup.editor, e, b;
-
-		// Remove element if there is no href
-		if (!f.href.value) {
-			e = ed.dom.getParent(ed.selection.getNode(), 'A');
-			if (e) {
-				tinyMCEPopup.execCommand("mceBeginUndoLevel");
-				b = ed.selection.getBookmark();
-				ed.dom.remove(e, 1);
-				ed.selection.moveToBookmark(b);
-				tinyMCEPopup.execCommand("mceEndUndoLevel");
-				tinyMCEPopup.close();
-				return;
-			}
-		}
-
-		ed.execCommand('mceInsertLink', false, {
-			href : f.href.value,
-			title : f.linktitle.value,
-			target : f.target_list ? f.target_list.options[f.target_list.selectedIndex].value : null,
-			'class' : f.class_list ? f.class_list.options[f.class_list.selectedIndex].value : null
-		});
-
-		tinyMCEPopup.close();
-	},
-
-	checkPrefix : function(n) {
-		if (n.value && Validator.isEmail(n) && !/^\s*mailto:/i.test(n.value) && confirm(tinyMCEPopup.getLang('advanced_dlg.link_is_email')))
-			n.value = 'mailto:' + n.value;
-
-		if (/^\s*www./i.test(n.value) && confirm(tinyMCEPopup.getLang('advanced_dlg.link_is_external')))
-			n.value = 'http://' + n.value;
-	},
-
-	fillFileList : function(id, l) {
-		var dom = tinyMCEPopup.dom, lst = dom.get(id), v, cl;
-
-		l = window[l];
-
-		if (l && l.length > 0) {
-			lst.options[lst.options.length] = new Option('', '');
-
-			tinymce.each(l, function(o) {
-				lst.options[lst.options.length] = new Option(o[0], o[1]);
-			});
-		} else
-			dom.remove(dom.getParent(id, 'tr'));
-	},
-
-	fillClassList : function(id) {
-		var dom = tinyMCEPopup.dom, lst = dom.get(id), v, cl;
-
-		if (v = tinyMCEPopup.getParam('theme_advanced_styles')) {
-			cl = [];
-
-			tinymce.each(v.split(';'), function(v) {
-				var p = v.split('=');
-
-				cl.push({'title' : p[0], 'class' : p[1]});
-			});
-		} else
-			cl = tinyMCEPopup.editor.dom.getClasses();
-
-		if (cl.length > 0) {
-			lst.options[lst.options.length] = new Option(tinyMCEPopup.getLang('not_set'), '');
-
-			tinymce.each(cl, function(o) {
-				lst.options[lst.options.length] = new Option(o.title || o['class'], o['class']);
-			});
-		} else
-			dom.remove(dom.getParent(id, 'tr'));
-	},
-
-	fillTargetList : function(id) {
-		var dom = tinyMCEPopup.dom, lst = dom.get(id), v;
-
-		lst.options[lst.options.length] = new Option(tinyMCEPopup.getLang('not_set'), '');
-		lst.options[lst.options.length] = new Option(tinyMCEPopup.getLang('advanced_dlg.link_target_same'), '_self');
-		lst.options[lst.options.length] = new Option(tinyMCEPopup.getLang('advanced_dlg.link_target_blank'), '_blank');
-
-		if (v = tinyMCEPopup.getParam('theme_advanced_link_targets')) {
-			tinymce.each(v.split(','), function(v) {
-				v = v.split('=');
-				html += '<option value="' + v[1] + '">' + v[0] + '</option>';
-			});
-		}
-	}
-};
-
-LinkDialog.preInit();
-tinyMCEPopup.onInit.add(LinkDialog.init, LinkDialog);
+   return declare([_WidgetBase, _TemplatedMixin, _OnDijitClickMixin, AlfCore], {
+      
+      /**
+       * An array of the CSS files to use with this widget.
+       * 
+       * @instance
+       * @type {object[]}
+       * @default [{cssFile:"./css/Link.css"}]
+       */
+      cssRequirements: [{cssFile:"./css/Link.css"}],
+      
+      /**
+       * The HTML template to use for the widget.
+       * @instance
+       * @type {string}
+       */
+      templateString: template,
+      
+      /**
+       * This is the label that will appear as the link. 
+       * 
+       * @instance
+       * @type {string}
+       * @default
+       */
+      label: "",
+      
+      /**
+       * This will appear as the hover title for the link. It is especially important for accessibility 
+       * that this is given a meaningful value, e.g. some kind of context as to the purpose of the link.
+       * 
+       * @instance
+       * @type {string}
+       * @default "" 
+       */
+      title: "",
+      
+      /**
+       * This is the topic that will be published on when the link is clicked (either by mouse or keyboard).
+       * 
+       * @instance
+       * @type {string}
+       * @default ""
+       */
+      publishTopic: "",
+      
+      /**
+       * This is the object that will be published on the [publish topic]{@link module:alfresco/navigation/Link#publishTopic}
+       * when the link is clicked.
+       * 
+       * @instance
+       * @type {object}
+       * @default null
+       */
+      publishPayload: null,
+      
+      /**
+       * Ensures that labels and titles are set and issues warnings if any data is not set as expected.
+       * 
+       * @instance
+       */
+      postMixInProperties: function alfresco_navigation_Link__postMixInProperties() {
+         if (this.label != null && this.label != "")
+         {
+            this.label = this.message(this.label);
+         }
+         else
+         {
+            this.label = "";
+            this.alfLog("warn", "No sensible 'label' attribute set for a link", this);
+         }
+         if (this.title != null && this.title != "")
+         {
+            this.title = this.message(this.title);
+         }
+         else
+         {
+            this.title = "";
+            this.alfLog("warn", "No sensible 'title' attribute set for a link", this);
+         }
+         if (this.publishPayload == null)
+         {
+            this.publishPayload = {};
+         }
+         if (this.publishTopic == null || this.publishTopic == "")
+         {
+            this.alfLog("warn", "A link has been created without a 'publishTopic' attribute, clicking it will have no effect", this);
+         }
+      },
+      
+      /**
+       * This is called whenever the user actions the link either with the mouse or with the keyboard. It publishes the
+       * [publish payload]{@link module:alfresco/navigation/Link#publishPayload} on the [publish topic]{@link module:alfresco/navigation/Link#publishTopic}
+       * @instance
+       * @param {object} evt The click event
+       */
+      onClick: function alfresco_navigation_Link__onClick(evt) {
+         event.stop(evt);
+         if (this.publishTopic != null)
+         {
+            this.alfPublish(this.publishTopic, this.publishPayload);
+         }
+      }
+   });
+});

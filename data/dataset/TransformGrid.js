@@ -1,6 +1,3 @@
-/**
- * A Grid which creates itself from an existing HTML table element.
- */
 Ext.define('Ext.ux.grid.TransformGrid', {
     extend: 'Ext.grid.Panel',
 

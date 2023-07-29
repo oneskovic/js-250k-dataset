@@ -1,8 +1,3 @@
-/**
- * @fileoverview Mutax.
- */
-
-
 goog.provide('ydn.db.base.Mutex');
 
 

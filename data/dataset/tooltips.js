@@ -1,148 +1,104 @@
-/**
- * The native tooltips feature for RithJS
- *
- * Copyright (C) 2009-2011 Nikolay Nemshilov
- */
-var Tooltip = new Widget({
-  extend: {
-    version: '2.2.1',
+(function($) {
+    $.fn.tooltip = function(options) {
 
-    EVENTS: $w('show hide'),
+        options = $.extend({}, $.fn.tooltip.defaults, options);
 
-    Options: {
-      cssRule:    '[data-tooltip]', // a css-marker of an element with a tooltip
+        return this.each(function() {
 
-      fxName:     'fade',           // the appearance effect name
-      fxDuration: 400,              // the appearance effect duration
-      delay:      400,              // the appearance delay
+            var opts = $.fn.tooltip.elementOptions(this, options);
 
-      move:       true,             // if it should be moved with the mouse
+            $(this).hover(function() {
 
-      idSuffix:   '-tooltip'        // ID prefix for tooltips with ID
-    },
+                $.data(this, 'cancel.tooltip', true);
 
-    current:   null,  // the currently active tooltip reference
-    instances: R([]), // keeps the list of instances
+                var tip = $.data(this, 'active.tooltip');
+                if (!tip) {
+                    tip = $('<div class="tooltip"><div class="tooltip-inner"/></div>');
+                    tip.css({position: 'absolute', zIndex: 100000});
+                    $.data(this, 'active.tooltip', tip);
+                }
 
-    // tries to find a tip closest to the event
-    find: function(event) {
-      var element = event.target;
+                if ($(this).attr('tip') || typeof($(this).attr('original-title')) != 'string') {
+                    $(this).attr('original-title', $(this).attr('tip') || '').removeAttr('tip');
+                }
 
-      if (element.match(Tooltip.Options.cssRule)) {
-        var uid = $uid(element);
-        return (Tooltip.instances[uid] || (Tooltip.instances[uid] = new Tooltip(element)));
-      }
-    }
-  },
+                var title;
+                if (typeof opts.title == 'string') {
+                    title = $(this).attr(opts.title == 'title' ? 'original-title' : opts.title);
+                } else if (typeof opts.title == 'function') {
+                    title = opts.title.call(this);
+                }
 
-  /**
-   * Constructor
-   *
-   * @param Element associated element
-   * @param Object options
-   */
-  initialize: function(element, options) {
-    this.associate = element = $(element);
+                tip.find('.tooltip-inner')[opts.html ? 'html' : 'text'](title || opts.fallback);
 
-    this
-      .$super('tooltip')
-      .setOptions(options, element)
-      .insert('<div class="rui-tooltip-arrow"></div>'+
-        '<div class="rui-tooltip-container">'+
-          (element.get('title') || element.get('alt'))+
-        '</div>'
-      )
-      .on({
-        mouseout:  this._mouseOut,
-        mouseover: this._cancelTimer
-      })
-      .insertTo(document.body);
+                var pos = $.extend({}, $(this).offset(), {width: this.offsetWidth, height: this.offsetHeight});
+                tip.get(0).className = 'tooltip'; // reset classname in case of dynamic gravity
+                tip.remove().css({top: 0, left: 0, visibility: 'hidden', display: 'block'}).appendTo(document.body);
+                var actualWidth = tip[0].offsetWidth, actualHeight = tip[0].offsetHeight;
+                var gravity = (typeof opts.gravity == 'function') ? opts.gravity.call(this) : opts.gravity;
 
-    // adding the ID if needed
-    if (element.has('id')) {
-      this.set('id', element.get('id') + this.options.idSuffix);
-    }
+                switch (gravity.charAt(0)) {
+                    case 'n':
+                        tip.css({top: pos.top + pos.height, left: pos.left + pos.width / 2 - actualWidth / 2}).addClass('tooltip-north');
+                        break;
+                    case 's':
+                        tip.css({top: pos.top - actualHeight, left: pos.left + pos.width / 2 - actualWidth / 2}).addClass('tooltip-south');
+                        break;
+                    case 'e':
+                        tip.css({top: pos.top + pos.height / 2 - actualHeight / 2, left: pos.left - actualWidth}).addClass('tooltip-east');
+                        break;
+                    case 'w':
+                        tip.css({top: pos.top + pos.height / 2 - actualHeight / 2, left: pos.left + pos.width}).addClass('tooltip-west');
+                        break;
+                }
 
-    // removing the titles from the elment
-    element.set({ title: '', alt: ''});
-  },
+                if (opts.fade) {
+                    tip.css({opacity: 0, display: 'block', visibility: 'visible'}).animate({opacity: 0.8});
+                } else {
+                    tip.css({visibility: 'visible'});
+                }
 
-  /**
-   * Hides the tooltip
-   *
-   * @return Tooltip this
-   */
-  hide: function() {
-    this._cancelTimer();
+            }, function() {
+                $.data(this, 'cancel.tooltip', false);
+                var self = this;
+                setTimeout(function() {
+                    if ($.data(this, 'cancel.tooltip')) return;
+                    var tip = $.data(self, 'active.tooltip');
+                    if (opts.fade) {
+                        tip.stop().fadeOut(function() { $(this).remove(); });
+                    } else {
+                        tip.remove();
+                    }
+                }, 100);
 
-    this._timer = R(function() {
-      Element.prototype.hide.call(this, this.options.fxName, {
-        engine:   'javascript', // Webkit too slow in here
-        duration: this.options.fxDuration
-      });
-      Tooltip.current = null;
-      this.fire('hide');
-    }).bind(this).delay(100);
+            });
 
-    return this;
-  },
+        });
 
-  /**
-   * Shows the tooltip with a dealy
-   *
-   * @param Boolean if true will show tooltip immediately
-   * @return Tooltip this
-   */
-  show: function(immediately) {
-    // hidding all the others
-    Tooltip.instances.each(function(tip) {
-      if (tip && tip !== this) { tip.hide(); }
-    }, this);
+    };
 
-    // show the tooltip with a delay
-    this._timer = R(function() {
-      Element.prototype.show.call(this.stop(),
-        this.options.fxName, {
-          engine: 'javascript', // webkit it too slow on that
-          duration: this.options.fxDuration
-        }
-      );
+    // Overwrite this method to provide options on a per-element basis.
+    // For example, you could store the gravity in a 'tooltip-gravity' attribute:
+    // return $.extend({}, options, {gravity: $(ele).attr('tooltip-gravity') || 'n' });
+    // (remember - do not modify 'options' in place!)
+    $.fn.tooltip.elementOptions = function(ele, options) {
+        return $.metadata ? $.extend({}, options, $(ele).metadata()) : options;
+    };
 
-      Tooltip.current = this.fire('show');
-    }).bind(this).delay(this.options.delay);
+    $.fn.tooltip.defaults = {
+        fade: false,
+        fallback: '',
+        gravity: 'n',
+        html: false,
+        title: 'title'
+    };
 
-    return (Tooltip.current = this);
-  },
+    $.fn.tooltip.autoNS = function() {
+        return $(this).offset().top > ($(document).scrollTop() + $(window).height() / 2) ? 's' : 'n';
+    };
 
-  /**
-   * Moves it to where the event happened
-   *
-   * @return Tooltip this
-   */
-  moveToEvent: function(event) {
-    if (this.options.move) {
-      this._.style.left = event.pageX + 'px';
-      this._.style.top  = event.pageY + 'px';
-    }
+    $.fn.tooltip.autoWE = function() {
+        return $(this).offset().left > ($(document).scrollLeft() + $(window).width() / 2) ? 'e' : 'w';
+    };
 
-    return this;
-  },
-
-// protected
-
-  // cancels a show timeout
-  _cancelTimer: function() {
-    if (this._timer) {
-      this._timer.cancel();
-      this._timer = null;
-    }
-    return false;
-  },
-
-  _mouseOut: function(event) {
-    event.stop();
-    if (event.relatedTarget !== this.associate) {
-      this.hide();
-    }
-  }
-});
+})(jQuery);

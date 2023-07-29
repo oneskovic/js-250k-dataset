@@ -53,9 +53,7 @@ define(["exports", "module", "react", "./BootstrapMixin", "./CollapsableMixin", 
     },
 
     render: function render() {
-      /*
-       * this.props.collapsable is set in NavBar when a eventKey is supplied.
-       */
+      
       var classes = this.props.collapsable ? this.getCollapsableClassSet() : {};
       /*
        * prevent duplicating navbar-collapse call if passed as prop. kind of overkill... good cadidate to have check implemented as a util that can

@@ -1,7 +1,3 @@
-/** 
- * GetStrike.net custom Torrent API interfacing.
- * Fetches list of torrent results and tries to fetch the magnet links for an episode.
- */
 DuckieTV.factory('Strike', ["$q", "$http",
     function($q, $http) {
 

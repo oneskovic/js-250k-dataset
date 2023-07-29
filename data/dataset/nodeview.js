@@ -2,10 +2,7 @@
 cls.EcmascriptDebugger || (cls.EcmascriptDebugger = {});
 cls.EcmascriptDebugger["6.0"] || (cls.EcmascriptDebugger["6.0"] = {});
 
-/**
-  * @constructor
-  * @extends InspectionBaseView
-  */
+
 
 cls.EcmascriptDebugger["6.0"].DOMAttrsView = function(id, name, container_class)
 {

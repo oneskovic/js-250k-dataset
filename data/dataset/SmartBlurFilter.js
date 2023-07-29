@@ -1,7 +1,3 @@
-/**
- * @author Mat Groves http://matgroves.com/ @Doormat23
- */
-
 PIXI.SmartBlurFilter = function()
 {
     PIXI.AbstractFilter.call( this );

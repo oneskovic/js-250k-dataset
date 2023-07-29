@@ -1,128 +1,67 @@
-/**
- * Unit test for vsf.db.config
- */
-var should = require('should'),
-  vsf = require('../common').getVSF(),
-  Config = vsf.require('/lib/vsf/db/config');
+var Config = require(__dirname + "/../../../../ui/components/Config"),
+	sinon = require("sinon"),
+	should = require("should");
 
-describe('vsf.db.config', function() {
-  it('APIs', function() {
-    Config.should.be.a('function');
+module.exports = {
+	setUp: function(done) {
+		this._webSocketResponder = {
+			once: sinon.stub()
+		};
 
-    var config = Config({});
-    config.should.be.a('object');
+		this._config = new Config(this._webSocketResponder);
 
-    config.getType.should.be.a('function');
-    config.getUsername.should.be.a('function');
-    config.getPassword.should.be.a('function');
-    config.getAddress.should.be.a('function');
-    config.getPort.should.be.a('function');
-    config.getDbName.should.be.a('function');
-  });
+		done();
+	},
 
-  it('params', function() {
+	"Should return null before config has loaded": function(test) {
+		var result = this._config.get("foo");
 
-    var fullMongodbConfig = Config({
-      type: Config.TYPE.MONGODB,
-      username: 'root',
-      password: 'awesome',
-      address: 'localhost',
-      port: 27017,
-      dbName: 'watpl'
-    });
+		test.equal(result, null);
 
-    fullMongodbConfig.getType().should.equal('mongodb');
-    fullMongodbConfig.getUsername().should.equal('root');
-    fullMongodbConfig.getPassword().should.equal('awesome');
-    fullMongodbConfig.getAddress().should.equal('localhost');
-    fullMongodbConfig.getPort().should.equal(27017);
-    fullMongodbConfig.getDbName().should.equal('watpl');
-    fullMongodbConfig.getDbUrl().should.equal('mongodb://root:awesome@localhost:27017/watpl');
+		test.done();
+	},
 
-    var optionalMongodbConfig = Config({
-      type: Config.TYPE.MONGODB,
-      address: 'db.watpl.com',
-      dbName: 'watpl'
-    });
+	"Should survive being asked for null": function(test) {
+		var callback = this._webSocketResponder.once.getCall(0).args[1];
+		callback({});
 
-    optionalMongodbConfig.getType().should.equal('mongodb');
-    should.not.exist(optionalMongodbConfig.getUsername());
-    should.not.exist(optionalMongodbConfig.getPassword());
-    optionalMongodbConfig.getAddress().should.equal('db.watpl.com');
-    optionalMongodbConfig.getPort().should.equal(27017);
-    optionalMongodbConfig.getDbName().should.equal('watpl');
-    optionalMongodbConfig.getDbUrl().should.equal('mongodb://db.watpl.com:27017/watpl');
+		var result = this._config.get();
 
-    var fullMySqlConfig = Config({
-      type: Config.TYPE.MYSQL,
-      username: 'root',
-      password: 'awesome',
-      address: 'mysql.watpl.com',
-      port: 3306,
-      dbName: 'watpl'
-    });
+		test.equal(result, null);
 
-    fullMySqlConfig.getType().should.equal('mysql');
-    fullMySqlConfig.getUsername().should.equal('root');
-    fullMySqlConfig.getPassword().should.equal('awesome');
-    fullMySqlConfig.getAddress().should.equal('mysql.watpl.com');
-    fullMySqlConfig.getPort().should.equal(3306);
-    fullMySqlConfig.getDbName().should.equal('watpl');
-    fullMySqlConfig.getDbUrl().should.equal('mysql://root:awesome@mysql.watpl.com:3306/watpl');
+		test.done();
+	},
 
-    var optionalMySqlConfig = Config({
-      type: Config.TYPE.MYSQL,
-      address: 'mysql.watpl.com',
-      dbName: 'watpl'
-    });
+	"Should return config key": function(test) {
+		var callback = this._webSocketResponder.once.getCall(0).args[1];
+		callback({foo: "bar"});
 
-    optionalMySqlConfig.getType().should.equal('mysql');
-    should.not.exist(optionalMySqlConfig.getUsername());
-    should.not.exist(optionalMySqlConfig.getPassword());
-    optionalMySqlConfig.getAddress().should.equal('mysql.watpl.com');
-    optionalMySqlConfig.getPort().should.equal(3306);
-    optionalMySqlConfig.getDbName().should.equal('watpl');
-    optionalMySqlConfig.getDbUrl().should.equal('mysql://mysql.watpl.com:3306/watpl');
-  });
+		var result = this._config.get("foo");
 
-  it('params.dbUrl', function() {
-    var dbUrl = 'mongodb://root:awesome@localhost:27017/watpl';
+		result.should.equal("bar");
 
-    var config = Config({
-      dbUrl: dbUrl
-    });
+		test.done();
+	},
 
-    config.getType().should.equal('mongodb');
-    config.getUsername().should.equal('root');
-    config.getPassword().should.equal('awesome');
-    config.getAddress().should.equal('localhost');
-    config.getPort().should.equal(27017);
-    config.getDbName().should.equal('watpl');
-    config.getDbUrl().should.equal(dbUrl);
+	"Should return nested config key": function(test) {
+		var callback = this._webSocketResponder.once.getCall(0).args[1];
+		callback({foo: {bar: "baz"}});
 
-    var dbUrl2 = 'mysql://localhost:3306/watpl';
+		var result = this._config.get("foo:bar");
 
-    var config2 = Config({
-      dbUrl: dbUrl2
-    });
+		result.should.equal("baz");
 
-    config2.getType().should.equal('mysql');
-    should.not.exist(config2.getUsername());
-    should.not.exist(config2.getPassword());
-    config2.getAddress().should.equal('localhost');
-    config2.getPort().should.equal(3306);
-    config2.getDbName().should.equal('watpl');
-    config2.getDbUrl().should.equal(dbUrl2);
+		test.done();
+	},
 
-    //not well-formed
+	"Should survive invalid nested config key": function(test) {
+		var callback = this._webSocketResponder.once.getCall(0).args[1];
+		callback({foo: {bar: "baz"}});
 
-    var dbUrl3 = 'mysql:/def:r45/abc';
+		var result = this._config.get("foo:baz");
 
-    (function() {
-      var config3 = Config({
-        dbUrl: dbUrl3
-      });
-    }).should.throw(/^config.dbUrl format is not valid/);
+		test.equal(result, null);
 
-  });
-});
+		test.done();
+	}
+};

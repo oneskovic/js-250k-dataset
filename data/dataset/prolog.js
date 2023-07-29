@@ -1,9 +1,3 @@
-/*
-Language: Prolog
-Description: Prolog is a general purpose logic programming language associated with artificial intelligence and computational linguistics.
-Author: Raivo Laanemets <raivo@infdot.com>
-*/
-
 function(hljs) {
 
   var ATOM = {

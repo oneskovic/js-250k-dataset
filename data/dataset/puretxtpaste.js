@@ -1,9 +1,3 @@
-/**
- * 纯文本粘贴插件
- * @file
- * @since 1.2.6.1
- */
-
 UE.plugins['pasteplain'] = function(){
     var me = this;
     me.setOpt({

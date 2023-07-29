@@ -1,4 +1,3 @@
-//>>built
 define(
 "dojo/cldr/nls/he/hebrew", //begin v1.x content
 {

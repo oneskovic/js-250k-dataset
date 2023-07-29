@@ -1,6 +1,3 @@
-/**
- * Requester of a resource by an URI
- */
 define(['Class'], function(Class) {
     
     var AsyncRequester = Class.extend({
@@ -8,13 +5,7 @@ define(['Class'], function(Class) {
           this.session = session;  
         }, 
         
-        /**
-         * Sends a request and handles the responses
-         * If no callbacks are defined, it calls this.options.error which is the default error handler.
-         * The errorResponde containing a variable (handled) which can be used by the default error handler
-         * to do special actions, for example if that error is handled by the then(null, errorFunction) of the 
-         * service (which is the one who calls this function) for doing that you must put errorHandled parameter = true
-         */
+        
         makeRequest: function(promise, callbacks, errorHandled) {
             var self = this;
             var p = promise

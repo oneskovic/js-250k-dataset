@@ -1,17 +1,3 @@
-/**
- * @class searches
- * @extends Ext.Controller
- * 
- * The searches controller renders the tweets list for a given Search record. We have two public actions - first and
- * show. Usually, the 'show' action will be called, either because the user tapped on a search or because when the app
- * first loaded the browser url was in the form #searches/Search%20Term (see app/routes.js for more details).
- * 
- * The 'show' action shows the Tweets for a given Search. The 'first' action is used when initializing the application
- * for the first time - it makes sure that the shared Searches Store (see app/stores/Searches.js) is loaded and then
- * loads the first available Search. Because we add to history using the historyUrl config, if the user refreshes now
- * they will be taken straight to the 'show' action.
- * 
- */
 Ext.regController("searches", {
     model: "Search",
     

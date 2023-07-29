@@ -1,7 +1,3 @@
-/**
-* Copyright (c) 2011 Markus Kohlhase (mail@markus-kohlhase.de)
-*/
-
 var fast = fast || (function( window, undefined ){
 
   // container for the modules

@@ -1,65 +1,82 @@
-'use strict';
-
-var config = require('./config');
-var browser = require('./browser');
-
-function normalizeURL(url, pathPrefix, accessToken) {
-    accessToken = accessToken || config.ACCESS_TOKEN;
-
-    if (!accessToken && config.REQUIRE_ACCESS_TOKEN) {
-        throw new Error('An API access token is required to use Mapbox GL. ' +
-            'See https://www.mapbox.com/developers/api/#access-tokens');
-    }
-
-    var https = config.FORCE_HTTPS ||
-        (typeof document !== 'undefined' && document.location.protocol === 'https:');
-
-    url = url.replace(/^mapbox:\/\//, (https ? config.HTTPS_URL : config.HTTP_URL) + pathPrefix);
-    url += url.indexOf('?') !== -1 ? '&access_token=' : '?access_token=';
-
-    if (config.REQUIRE_ACCESS_TOKEN) {
-        if (accessToken[0] === 's') {
-            throw new Error('Use a public access token (pk.*) with Mapbox GL JS, not a secret access token (sk.*). ' +
-                'See https://www.mapbox.com/developers/api/#access-tokens');
+var app;
+Ext.onReady(function() {
+    app = new gxp.Viewer({
+        portalConfig: {
+            renderTo: document.body,
+            layout: "border",
+            width: 600,
+            height: 400,
+            border: false,
+            items: [{
+                xtype: "panel",
+                region: "center",
+                border: false,
+                layout: "fit",
+                items: ["map-viewport"]
+            }, {
+                id: "tree-container",
+                xtype: "container",
+                layout: "fit",
+                region: "west",
+                width: 200
+            }]
+        },
+        
+        // configuration of all tool plugins for this application
+        tools: [{
+            ptype: "gxp_layertree",
+            outputConfig: {
+                id: "tree",
+                border: true,
+                tbar: [] // we will add buttons to "tree.bbar" later
+            },
+            outputTarget: "tree-container"
+        }, {
+            ptype: "gxp_addlayers",
+            actionTarget: "tree.tbar"
+        }, {
+            ptype: "gxp_removelayer",
+            actionTarget: ["tree.tbar", "tree.contextMenu"]
+        }, {
+            ptype: "gxp_zoomtoextent",
+            actionTarget: "map.tbar"
+        }, {
+            ptype: "gxp_zoom",
+            actionTarget: "map.tbar"
+        }, {
+            ptype: "gxp_navigationhistory",
+            actionTarget: "map.tbar"
+        }],
+        
+        // layer sources
+        sources: {
+            mapbox: {
+                ptype: "gxp_mapboxsource"
+            },
+            mapquest: {
+                ptype: "gxp_mapquestsource"
+            }
+        },
+        
+        // map and layers
+        map: {
+            id: "map-viewport", // id needed to reference map in items above
+            title: "Map",
+            projection: "EPSG:900913",
+            units: "m",
+            maxResolution: 156543.03390625,
+            center: [0, 0],
+            zoom: 1,
+            layers: [{
+                source: "mapbox",
+                name: "blue-marble-topo-bathy-jan",
+                group: "background"
+            }],
+            items: [{
+                xtype: "gx_zoomslider",
+                vertical: true,
+                height: 100
+            }]
         }
-
-        url += accessToken;
-    }
-
-    return url;
-}
-
-module.exports.normalizeStyleURL = function(url, accessToken) {
-    var user = url.match(/^mapbox:\/\/([^.]+)/);
-    if (!user)
-        return url;
-
-    return normalizeURL(url, '/styles/v1/' + user[1] + '/', accessToken);
-};
-
-module.exports.normalizeSourceURL = function(url, accessToken) {
-    if (!url.match(/^mapbox:\/\//))
-        return url;
-
-    url = normalizeURL(url + '.json', '/v4/', accessToken);
-
-    // TileJSON requests need a secure flag appended to their URLs so
-    // that the server knows to send SSL-ified resource references.
-    if (url.indexOf('https') === 0)
-        url += '&secure';
-
-    return url;
-};
-
-module.exports.normalizeGlyphsURL = function(url, accessToken) {
-    if (!url.match(/^mapbox:\/\//))
-        return url;
-
-    return normalizeURL(url, '/v4/', accessToken);
-};
-
-module.exports.normalizeTileURL = function(url, sourceUrl) {
-    if (!sourceUrl || !sourceUrl.match(/^mapbox:\/\//))
-        return url;
-    return url.replace(/\.((?:png|jpg)\d*)(?=$|\?)/, browser.devicePixelRatio >= 2 ? '@2x.$1' : '.$1');
-};
+    });
+});

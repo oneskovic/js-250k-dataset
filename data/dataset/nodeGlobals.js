@@ -1,6 +1,3 @@
-/**
- * Created by mauricio on 2/17/15.
- */
 module.exports = [{
 //  displayName: 'node/x',
 //  entryPoint: 'x'

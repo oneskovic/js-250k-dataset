@@ -1,8 +1,6 @@
 "use strict";
 
-/*!
- * Module dependencies.
- */
+
 
 var dummy
   , util = require('util')

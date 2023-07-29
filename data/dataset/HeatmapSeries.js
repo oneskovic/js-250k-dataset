@@ -1,7 +1,3 @@
-
-/**
- * Extend the default options with map options
- */
 defaultOptions.plotOptions.heatmap = merge(defaultOptions.plotOptions.scatter, {
 	animation: false,
 	borderWidth: 0,

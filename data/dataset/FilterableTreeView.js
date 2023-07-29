@@ -1,11 +1,3 @@
-/*
-
-Siesta 2.0.5
-Copyright(c) 2009-2013 Bryntum AB
-http://bryntum.com/contact
-http://bryntum.com/products/siesta/license
-
-*/
 // !XXX when adding new methods to this mixing need to also update the 
 // `setupLockableTree` method in the Sch.mixin.Lockable
 Ext.define("Sch.mixin.FilterableTreeView", {

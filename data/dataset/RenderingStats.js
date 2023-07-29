@@ -1,12 +1,3 @@
-/* 
-based on 
-https://chromium.googlesource.com/chromium/src/+/e2f820e34c43102785cfc9f38bde8b5a052938b8/tools/telemetry/telemetry/web_perf/metrics/rendering_stats.py
-Just picking up mean frame time, ignoring everything about InputLatency
-
-Just returns frame_times and frame_timestamps that are used to calculate the metrics in 
-https://chromium.googlesource.com/chromium/src/+/e2f820e34c43102785cfc9f38bde8b5a052938b8/tools/telemetry/telemetry/web_perf/metrics/smoothness.py
-*/
-
 var debug = require('debug')('bp:metrics:RenderingStats');
 
 function GetTimestampEventName(events) {

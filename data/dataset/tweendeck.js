@@ -1,14 +1,3 @@
-/*
-	TweenDeck - For making animated presentation decks with Greensock
-	by John Polacek (@johnpolacek) - with some help from @greensock himself
-
-	Powered by the Greensock Tweening Platform
-	http://www.greensock.com
-	Greensock License info at http://www.greensock.com/licensing/
-
-	Dual licensed under MIT and GPL.
-*/
-
 (function($) {
 
 	$.tweendeck = function(timeline, options) {

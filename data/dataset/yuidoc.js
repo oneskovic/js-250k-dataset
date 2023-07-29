@@ -1,11 +1,3 @@
-/*
- * grunt-contrib-yuidoc
- * http://gruntjs.com/
- *
- * Copyright (c) 2014 George Pantazis, contributors
- * Licensed under the MIT license.
- */
-
 'use strict';
 
 module.exports = function(grunt) {

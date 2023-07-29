@@ -2,19 +2,7 @@ define(["Tone/core/Tone", "Tone/signal/Signal"], function(Tone){
 
 	"use strict";
 	
-	/**
-	 *  @class  A single master output which is connected to the
-	 *          AudioDestinationNode. It provides useful conveniences
-	 *          such as the ability to set the global volume and mute
-	 *          the entire application. Additionally, it accepts
-	 *          a master send/receive for adding final compression, 
-	 *          limiting or effects to your application. <br><br>
-	 *          Like the Transport, the Master output is created for you
-	 *          on initialization. It does not need to be created.
-	 *
-	 *  @constructor
-	 *  @extends {Tone}
-	 */
+	
 	Tone.Master = function(){
 		Tone.call(this);
 

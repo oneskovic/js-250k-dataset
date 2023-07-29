@@ -42,9 +42,7 @@
 
 
 
-    /**
-     * we'll be super fussy and only allow alnum, -, _, and .
-     */
+    
     function _fix_filename(fn) {
         if (!fn || fn.length == 0)  return "unknown";
 

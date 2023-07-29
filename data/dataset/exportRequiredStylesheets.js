@@ -1,13 +1,3 @@
-/**
- * Angular Builder middleware module.
- *
- * @module middleware/exportRequiredStylesheets
- *
- * @license
- * Copyright 2013 Cláudio Manuel Brás da Silva
- * http://github.com/claudio-silva
- * Licensed under the MIT license.
- */
 'use strict';
 
 var MATCH_DIRECTIVE = /\/\/#\s*stylesheets?\s*\((.*?)\)/g;

@@ -1,64 +1,50 @@
-define([
-  'summernote/core/list'
-], function (list) {
-  /**
-   * @class core.key
-   *
-   * Object for keycodes.
-   *
-   * @singleton
-   * @alternateClassName key
-   */
-  var key = {
-    /**
-     * @method isEdit
-     *
-     * @param {Number} keyCode
-     * @return {Boolean}
-     */
-    isEdit: function (keyCode) {
-      return list.contains([8, 9, 13, 32], keyCode);
-    },
-    /**
-     * @property {Object} nameFromCode
-     * @property {String} nameFromCode.8 "BACKSPACE"
-     */
-    nameFromCode: {
-      '8': 'BACKSPACE',
-      '9': 'TAB',
-      '13': 'ENTER',
-      '32': 'SPACE',
+var valgen = require('./value');
 
-      // Number: 0-9
-      '48': 'NUM0',
-      '49': 'NUM1',
-      '50': 'NUM2',
-      '51': 'NUM3',
-      '52': 'NUM4',
-      '53': 'NUM5',
-      '54': 'NUM6',
-      '55': 'NUM7',
-      '56': 'NUM8',
+/**
+ * Returns a generator for bytes keys.
+ */
+function bytes(namespace, set, options) {
+    var bgen = valgen.bytes(options);
+    return function() {
+        return { ns: namespace, set: set, key: bgen()};
+    };
+}
 
-      // Alphabet: a-z
-      '66': 'B',
-      '69': 'E',
-      '73': 'I',
-      '74': 'J',
-      '75': 'K',
-      '76': 'L',
-      '82': 'R',
-      '83': 'S',
-      '85': 'U',
-      '89': 'Y',
-      '90': 'Z',
+/**
+ * Returns a generator for string keys.
+ */
+function string(namespace, set, options) {
+    var sgen = valgen.string(options);
+    return function() {
+        return { ns: namespace, set: set, key: sgen()};
+    };
+}
 
-      '191': 'SLASH',
-      '219': 'LEFTBRACKET',
-      '220': 'BACKSLASH',
-      '221': 'RIGHTBRACKET'
+/**
+ * Returns a generator for integer keys.
+ */
+function integer(namespace, set, options) {
+    var igen = valgen.integer(options);
+    return function() {
+        return { ns: namespace, set: set, key: igen()};
+    };
+}
+
+
+function range(keygen, end, start) {
+    start = start ? start : 0;
+    end = end ? end : start + 1;
+    var i = 0;
+    var a = []
+    for ( ; i < end; i++ ) {
+        a.push(keygen());
     }
-  };
+    return a;
+}
 
-  return key;
-});
+module.exports = {
+    bytes: bytes,
+    integer: integer,
+    string: string,
+    range: range
+};

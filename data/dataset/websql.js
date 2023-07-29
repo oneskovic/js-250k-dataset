@@ -1,5 +1,3 @@
-// wrappers to provide WebSql-alike interface to mysql
-
 var createTCPClient = require('./client').createTCPClient;
 var util = require('util');
 

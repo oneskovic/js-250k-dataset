@@ -1,10 +1,3 @@
-/**
- * Created by lihui on 14-9-18.
- * 根据文件内容依次去读取文件中的数据
- *
- *
- */
-
 var async = require('async');
 var path = require('path');
 var fs = require('fs');

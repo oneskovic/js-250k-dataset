@@ -1,11 +1,3 @@
-/*
-rrestjs v1.0 新增功能，注册匹配路由
-实例：
-_restConfig.manualRouter = {
-"get:put:post:/user/comein":function(req, res){res.send('hello wrold')}, //注册get，put，post，方法的路径
-"/user/logout":function(req, res){res.send('goodbay!')}, //注册所有方法的路径
-}
-*/
 var manual = _restConfig.manualRouter;
 if(manual){
 	var outerror = require('./Outerror'),

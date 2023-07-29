@@ -1,15 +1,3 @@
-/**
- *
- * Release touch sequenz on specific element.
- *
- * @param {String} selector element to release on
- * @callbackParameter error
- *
- * @uses property/getLocation, protocol/touchUp
- * @type mobile
- *
- */
-
 var async = require('async'),
     ErrorHandler = require('../utils/ErrorHandler.js');
 

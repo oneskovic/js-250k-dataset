@@ -1,10 +1,3 @@
-/**
- * Created by JetBrains PhpStorm.
- * User: Ernesto J. Rodriguez (Certun)
- * File:
- * Date: 10/29/11
- * Time: 4:45 PM
- */
 Ext.define('App.ux.combo.posCodes', {
 	extend: 'Ext.form.ComboBox',
 	alias: 'widget.mitos.poscodescombo',

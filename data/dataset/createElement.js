@@ -1,5 +1,3 @@
-/*jshint regexp:false*/
-
 define(['jquery'], function ($) {
 
     'use strict';

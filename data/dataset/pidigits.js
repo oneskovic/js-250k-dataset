@@ -1,10 +1,3 @@
-// The Computer Language Benchmarks Game
-//  http://shootout.alioth.debian.org
-//
-//  Contributed by Matthew Wilson 
-//  biginteger derived from Tom Wu's jsbn.js
-
-
 var compareTo, multiply, divide, addTo, add, intValue, shiftLeft, nbv;
 
 function main($n) {

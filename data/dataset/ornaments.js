@@ -1,5 +1,3 @@
-// ORNAMENTS ///////////////////////////////////////////////////////
-
 // added as part of the ingress #helios in 2014, ornaments
 // are additional image overlays for portals
 // currently there are 28 known ornaments: ap$x$suffix

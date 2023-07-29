@@ -1,4 +1,3 @@
-
 var types = {};
 types.Object = 'https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Object';
 types.Boolean = 'https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Boolean'

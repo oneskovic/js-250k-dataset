@@ -4,9 +4,7 @@ var
   aws = require('../aws'),
   _ = require('../util');
 
-/**
- * GET BatchDeleteAttributes
- */
+
 var Request = module.exports.Request = function(args) {
   sdb.Request.call(this, args, 'BatchDeleteAttributes');
 

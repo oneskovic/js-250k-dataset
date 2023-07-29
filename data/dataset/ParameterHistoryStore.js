@@ -1,25 +1,5 @@
 ;(function(history) {
-  /**
-   * A parameter store that stores the values of exposed parameters in the URL via History.js
-   * to maintain the application's state. This uses the HTML5 History API for newer browsers, and 
-   * falls back to using the hash in older browsers. Don't forget to add the following (or similar)
-   * inside your <tt>head</tt> tag:
-   *
-   * <pre>
-   * <script src="history.js/scripts/bundled/html4+html5/jquery.history.js"></script>
-   * </pre>
-   *
-   * Configure the manager with:
-   *
-   * <pre>
-   * Manager.setStore(new AjaxSolr.ParameterHistoryStore());
-   * </pre>
-   *
-   * @class ParameterHistoryStore
-   * @augments AjaxSolr.ParameterStore
-   * @see https://github.com/browserstate/history.js
-   * @see http://www.whatwg.org/specs/web-apps/current-work/multipage/history.html
-   */
+  
   AjaxSolr.ParameterHistoryStore = AjaxSolr.ParameterStore.extend(
     /** @lends AjaxSolr.ParameterHistoryStore.prototype */
     {

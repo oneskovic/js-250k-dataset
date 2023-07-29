@@ -1,7 +1,3 @@
-/**
-* A slider joint allows for relative translation and relative rotation between two rigid bodies along the axis.
-* @author saharan
-*/
 OIMO.SliderJoint = function(config,lowerTranslation,upperTranslation){
     OIMO.Joint.call( this, config);
     this.type=this.JOINT_SLIDER;

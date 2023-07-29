@@ -1,6 +1,3 @@
-// example paginated request to FindingService:findItemsAdvanced
-// (find some gadgets)
-
 var ebay = require('../index.js');
 
 var params = {};

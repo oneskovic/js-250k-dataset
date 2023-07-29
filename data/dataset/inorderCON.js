@@ -1,4 +1,3 @@
-/*global ODSA */
 "use strict";
 // Remove slideshow
 $(document).ready(function () {

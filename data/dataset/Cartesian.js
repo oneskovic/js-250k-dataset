@@ -1,12 +1,3 @@
-/**
- * @abstract
- * @class Ext.chart.series.Cartesian
- * @extends Ext.chart.series.Series
- *
- * Common base class for series implementations which plot values using x/y coordinates.
- *
- * @constructor
- */
 Ext.define('Ext.chart.series.Cartesian', {
     extend: 'Ext.chart.series.Series',
     config: {

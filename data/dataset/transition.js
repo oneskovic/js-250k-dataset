@@ -1,64 +1,81 @@
-/*
-	Copyright 2010-2011 Vodafone Group Services GmbH
-	
-	Licensed under the Apache License, Version 2.0 (the "License");
-	you may not use this file except in compliance with the License.
-	You may obtain a copy of the License at
-	
-		http://www.apache.org/licenses/LICENSE-2.0
-	
-	Unless required by applicable law or agreed to in writing, software
-	distributed under the License is distributed on an "AS IS" BASIS,
-	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	See the License for the specific language governing permissions and
-	limitations under the License.
-*/
-(function(){
-	
-	__toggleActive = function(obj){
-		if (/active/.test(obj.className)) {
-			obj.className = obj.className.replace(/active/,'');
-		}else{
-			obj.className += ' active';
-		}
-	}
+angular.module('ui.bootstrap.transition', [])
 
-	
-	dohx.add({name:"CSS transitions",
-		mqcExecutionOrderBaseOffset:500000, // This number is the base offset for the execution order, the test ID gets added. Never change this number unless you know what you are doing.
-		tests:[
-			{
-				id:100,
-				name:"One step transition",
-				instructions:[
-					"Click 'GO'!",
-					"Click the red box!"
-				],
-				expectedResult:"Did the box move to the right?",
-				test:function(t){
-					dohx.showInfo(
-						'<div class="transition" onclick="__toggleActive(this)" id="test100">Click here</div>'
-					);
-				}
-			},
-//			{
-//				id:200,
-//				name:"animationstart event",
-//				instructions:["Touch the element."],
-//				test:function(t){
-//					dohx.showInfo(
-//						'<div class="transition" onclick="__toggleActive(this)" id="test200">This element should move</div>'
-//					);
-//window.onanimationstart =
-//  window.onanimationiteration =
-//  window.onanimationend =
-//  window.ontransitionend = function (e) {
-//	console.log('Pure ' + e.type);
-//}
-//				}
-//			},
-//*/
-		]
-	});
+.value('$transitionSuppressDeprecated', false)
 
-})();
+.factory('$transition', [
+        '$q', '$timeout', '$rootScope', '$log', '$transitionSuppressDeprecated',
+function($q ,  $timeout ,  $rootScope ,  $log ,  $transitionSuppressDeprecated) {
+
+  if (!$transitionSuppressDeprecated) {
+    $log.warn('$transition is now deprecated. Use $animate from ngAnimate instead.');
+  }
+
+  var $transition = function(element, trigger, options) {
+    options = options || {};
+    var deferred = $q.defer();
+    var endEventName = $transition[options.animation ? 'animationEndEventName' : 'transitionEndEventName'];
+
+    var transitionEndHandler = function(event) {
+      $rootScope.$apply(function() {
+        element.unbind(endEventName, transitionEndHandler);
+        deferred.resolve(element);
+      });
+    };
+
+    if (endEventName) {
+      element.bind(endEventName, transitionEndHandler);
+    }
+
+    // Wrap in a timeout to allow the browser time to update the DOM before the transition is to occur
+    $timeout(function() {
+      if ( angular.isString(trigger) ) {
+        element.addClass(trigger);
+      } else if ( angular.isFunction(trigger) ) {
+        trigger(element);
+      } else if ( angular.isObject(trigger) ) {
+        element.css(trigger);
+      }
+      //If browser does not support transitions, instantly resolve
+      if ( !endEventName ) {
+        deferred.resolve(element);
+      }
+    });
+
+    // Add our custom cancel function to the promise that is returned
+    // We can call this if we are about to run a new transition, which we know will prevent this transition from ending,
+    // i.e. it will therefore never raise a transitionEnd event for that transition
+    deferred.promise.cancel = function() {
+      if ( endEventName ) {
+        element.unbind(endEventName, transitionEndHandler);
+      }
+      deferred.reject('Transition cancelled');
+    };
+
+    return deferred.promise;
+  };
+
+  // Work out the name of the transitionEnd event
+  var transElement = document.createElement('trans');
+  var transitionEndEventNames = {
+    'WebkitTransition': 'webkitTransitionEnd',
+    'MozTransition': 'transitionend',
+    'OTransition': 'oTransitionEnd',
+    'transition': 'transitionend'
+  };
+  var animationEndEventNames = {
+    'WebkitTransition': 'webkitAnimationEnd',
+    'MozTransition': 'animationend',
+    'OTransition': 'oAnimationEnd',
+    'transition': 'animationend'
+  };
+  function findEndEventName(endEventNames) {
+    for (var name in endEventNames){
+      if (transElement.style[name] !== undefined) {
+        return endEventNames[name];
+      }
+    }
+  }
+  $transition.transitionEndEventName = findEndEventName(transitionEndEventNames);
+  $transition.animationEndEventName = findEndEventName(animationEndEventNames);
+  return $transition;
+}]);

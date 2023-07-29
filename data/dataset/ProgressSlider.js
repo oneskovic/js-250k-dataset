@@ -1,3 +1,5 @@
+if(!dojo._hasResource["dojox.av.widget.ProgressSlider"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
+dojo._hasResource["dojox.av.widget.ProgressSlider"] = true;
 dojo.provide("dojox.av.widget.ProgressSlider");
 dojo.require("dijit._Widget");
 dojo.require("dijit._Templated");
@@ -10,7 +12,7 @@ dojo.declare("dojox.av.widget.ProgressSlider", [dijit._Widget, dijit._Templated]
 	//		progress bars: one for playhead position, and one for download 
 	//		progress.
 	//
-	templatePath: dojo.moduleUrl("dojox.av.widget","resources/ProgressSlider.html"),
+	templateString: dojo.cache("dojox.av.widget", "resources/ProgressSlider.html", "<div class=\"Progress\" dojoAttachEvent=\"mousedown:startDrag\">\n    \n    <div class=\"ProgressLoaded\" dojoAttachPoint=\"progressLoaded\"></div>\n    <div class=\"ProgressPosition\" dojoAttachPoint=\"progressPosition\"></div>\n\t<div class=\"ProgressHandle\" dojoAttachPoint=\"handle\" dojoAttachEvent=\"mouseover:handleOver, mouseout:handleOut\"></div>\n</div>\n"),
 	postCreate: function(){
 		// summary:
 		//		Initialize slider.
@@ -130,3 +132,5 @@ dojo.declare("dojox.av.widget.ProgressSlider", [dijit._Widget, dijit._Templated]
 	}
 	
 });
+
+}

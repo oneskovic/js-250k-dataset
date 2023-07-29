@@ -1,5 +1,3 @@
-/*global $:false, getChart:false */
-
 function Pagestat(){
 }
 

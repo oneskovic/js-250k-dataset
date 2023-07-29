@@ -1,14 +1,6 @@
 dojo.provide("dojox.analytics.Urchin");
 
-/*=====
-dojo.mixin(djConfig,{
-	// urchin: String
-	//		Used by dojox.analytics.Urchin as the default UA-123456-7 account
-	//		number used when being created. Alternately, you can pass an acct:"" 
-	//		parameter to the constructor a la: new dojox.analytics.Urchin({ acct:"UA-123456-7" });
-	urchin: ""
-});
-=====*/
+
 
 dojo.declare("dojox.analytics.Urchin", null, {
 	// summary: A Google-analytics helper, for post-onLoad inclusion of the tracker 

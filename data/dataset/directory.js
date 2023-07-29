@@ -1,4 +1,3 @@
-
 var util = require("narwhal/util");
 
 exports.Directory = function (paths, notFound) {

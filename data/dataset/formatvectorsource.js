@@ -1,6 +1,3 @@
-// FIXME consider delaying feature reading so projection can be provided by
-// consumer (e.g. the view)
-
 goog.provide('ol.source.FormatVector');
 
 goog.require('goog.asserts');

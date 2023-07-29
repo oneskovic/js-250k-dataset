@@ -1,17 +1,3 @@
-/*
-* If you create a derivative, please leave this text intact:
-*
-* FlowType.JS 1.0
-* Copyright (c) 2013, Simple Focus http://simplefocus.com/
-*
-* FlowType.JS by Simple Focus (http://simplefocus.com/)
-* is licensed under the MIT License. Read a copy of the
-* license in the LICENSE.txt file or at
-* http://choosealicense.com/licenses/mit
-*
-* Thanks to Giovanni Difeterici (http://www.gdifeterici.com/)
-*/
-
 (function($) {
    $.fn.flowtype = function(options) {
 

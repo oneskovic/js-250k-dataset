@@ -1,7 +1,3 @@
-/* Translators (2009 onwards):
- *  - Purodha
- */
-
 /**
  * @requires OpenLayers/Lang.js
  */

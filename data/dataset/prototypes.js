@@ -1,9 +1,3 @@
-/*!
- * XRegExp Prototype Methods v1.0.0
- * (c) 2012 Steven Levithan <http://xregexp.com/>
- * MIT License
- */
-
 /**
  * Adds a collection of methods to `XRegExp.prototype`. RegExp objects copied by XRegExp are also
  * augmented with any `XRegExp.prototype` methods. Hence, the following work equivalently:

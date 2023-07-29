@@ -7,21 +7,7 @@ goog.require('math.Vector');
 goog.require('graphics.Drawable');
 goog.require('graphics.Layer');
 
-/**
- * @constructor
- * @extends {model.projectile.Bomb}
- * @implements {graphics.Drawable}
- * @param {!Game} game
- * @param {!model.player.Player} owner
- * @param {number} level
- * @param {!math.Vector} position
- * @param {!math.Vector} velocity
- * @param {number} lifetime
- * @param {number} damage
- * @param {number} bounceCount
- * @param {number} blastRadius
- * @param {number} proxRadius
- */
+
 model.projectile.BombSprite = function(game, owner, level, position, velocity, lifetime, damage, bounceCount, blastRadius, proxRadius) {
   goog.base(this, game, owner, level, position, velocity, lifetime, damage, bounceCount, blastRadius, proxRadius);
 

@@ -1,11 +1,6 @@
 goog.provide('clojure.walk');
 goog.require('cljs.core');
-/**
-* Traverses form, an arbitrary data structure.  inner and outer are
-* functions.  Applies inner to each element of form, building up a
-* data structure of the same type, then applies outer to the result.
-* Recognizes all Clojure data structures. Consumes seqs as with doall.
-*/
+
 clojure.walk.walk = (function walk(inner,outer,form){
 if(cljs.core.truth_(cljs.core.seq_QMARK_.call(null,form)))
 {return outer.call(null,cljs.core.doall.call(null,cljs.core.map.call(null,inner,form)));

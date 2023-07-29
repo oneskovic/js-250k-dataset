@@ -1,132 +1,107 @@
-/*
- * CutJS
- * Copyright (c) 2015 Ali Shakiba, Piqnt LLC
- * Available under the MIT license
- * @license
+"use strict";
+
+
+var ease    = require('./ease'),
+    functor = require('./functor'),
+    is      = require('is');
+
+/**
+ * Initializes a new Tween instance.
  */
+function Tween(fn, startValue, endValue, startTime, endTime) {
+    if (!is.fn(fn)) {
+        fn = null;
+    }
+    this._fn = fn;
+    this._startValue = functor(startValue);
+    this._endValue = functor(endValue);
+    this._startTime = startTime;
+    this._endTime = Math.max(startTime, endTime);
+    this._ease = ease.linear;
+}
 
-var Easing = require('./easing');
-var Cut = require('./core');
-
-Cut.prototype.tween = function(duration, delay) {
-  if (!this._tween) {
-    this._tween = new Tween(this);
-  }
-  return this._tween.tween(duration, delay);
+/**
+ * Retrieves the tween start time.
+ *
+ * @return {Number}
+ */
+Tween.prototype.startTime = function () {
+    return this._startTime;
 };
 
-function Tween(cut) {
-  // TODO: reuse head.start/keys/end
+/**
+ * Retrieves the tween end time.
+ *
+ * @return {Number}
+ */
+Tween.prototype.endTime = function () {
+    return this._endTime;
+};
 
-  var tween = this;
-  this._owner = cut;
-  this._queue = [];
-  this._next = null;
+/**
+ * Retrieves the tween start value.
+ *
+ * @return {Number}
+ */
+Tween.prototype.startValue = function () {
+    return this._startValue();
+};
 
-  var lastTime = 0;
-  cut.tick(function(elapsed, now, last) {
-    if (!tween._queue.length) {
-      return;
+/**
+ * Retrieves the tween end value.
+ *
+ * @return {Number}
+ */
+Tween.prototype.endValue = function () {
+    return this._endValue();
+};
+
+/**
+ * Sets or retrieves the easing function used by the tween.
+ *
+ * @return {Number}
+ */
+Tween.prototype.ease = function (value) {
+    if (arguments.length === 0) {
+        return this._ease;
     }
-
-    // ignore old elapsed
-    var ignore = lastTime != last;
-    lastTime = now;
-    this.touch();
-    if (ignore) {
-      return;
-    }
-
-    var head = tween._queue[0];
-
-    if (!head.time) {
-      head.time = 1;
+    if (is.fn(value)) {
+        this._ease = value;
     } else {
-      head.time += elapsed;
+        this._ease = ease(value);
     }
-
-    if (head.time < head.delay) {
-      return;
-    }
-
-    if (!head.start) {
-      head.start = {};
-      head.keys = {};
-      for ( var key in head.end) {
-        if (typeof (start = cut.pin(key)) === 'number') {
-          head.start[key] = start;
-          head.keys[key] = key;
-        } else if (typeof (startX = cut.pin(key + 'X')) === 'number'
-            && typeof (startY = cut.pin(key + 'Y')) === 'number') {
-          head.start[key + 'X'] = startX;
-          head.keys[key + 'X'] = key;
-          head.start[key + 'Y'] = startY;
-          head.keys[key + 'Y'] = key;
-        }
-      }
-    }
-
-    var p = (head.time - head.delay) / head.duration;
-    var over = p >= 1;
-    p = p > 1 ? 1 : p;
-    p = typeof head.easing == 'function' ? head.easing(p) : p;
-    var q = 1 - p;
-
-    for ( var key in head.keys) {
-      cut.pin(key, head.start[key] * q + head.end[head.keys[key]] * p);
-    }
-
-    if (over) {
-      tween._queue.shift();
-      head.then && head.then.call(cut);
-    }
-
-  }, true);
+    return this;
 };
 
-Tween.prototype.tween = function(duration, delay) {
-  this._next = {
-    id : Cut._TS++,
-    end : {},
-    duration : duration || 400,
-    delay : delay || 0
-  };
-  return this;
-};
-
-Tween.prototype.pin = function(a, b) {
-  if (this._next !== this._queue[this._queue.length - 1]) {
-    this._owner.touch();
-    this._queue.push(this._next);
-  }
-
-  var end = this._next.end;
-  if (typeof a === 'object') {
-    for ( var attr in a) {
-      end[attr] = a[attr];
+/**
+ * Retrieves the value at a given point in time.
+ *
+ * @return {Number}
+ */
+Tween.prototype.value = function (t) {
+    var startValue = this.startValue(),
+        endValue = this.endValue(),
+        startTime = this.startTime(),
+        endTime = this.endTime(),
+        delta = endValue - startValue;
+    if (startTime === endTime) {
+        return endValue;
     }
-  } else if (typeof b !== 'undefined') {
-    end[a] = b;
-  }
-  return this;
+    return delta * this._ease(Math.max(0, Math.min(1, (t - startTime) / (endTime - startTime))));
 };
 
-Tween.prototype.clear = function(forward) {
-  var tween;
-  while (tween = this._queue.shift()) {
-    forward && this._owner.pin(tween.end);
-  }
-  return this;
-};
-
-Tween.prototype.then = function(then) {
-  this._next.then = then;
-  return this;
-};
-
-Tween.prototype.ease = function(easing) {
-  this._next.easing = Easing(easing);
-  return this;
+/**
+ * Executes the function associated with the tween at a given time.
+ * Returns the result of the function. The function is not called if t
+ * is before the start time.
+ *
+ * @return {Object}
+ */
+Tween.prototype.update = function (t) {
+    if (this._fn === null || t < this.startTime()) {
+        return null;
+    }
+    return this._fn.call(this, this.value(t));
 };
 
 module.exports = Tween;

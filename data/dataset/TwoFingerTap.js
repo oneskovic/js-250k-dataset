@@ -1,4 +1,3 @@
-/*global define*/
 define(['Ti/_/declare', 'Ti/_/lang'], function (declare, lang) {
 
 	var touchStartLocation = null,

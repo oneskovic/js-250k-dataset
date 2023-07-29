@@ -1,33 +1,3 @@
-// RequireJS Handlebars template plugin
-// http://github.com/jfparadis/requirejs-handlebars
-//
-// An alternative to http://github.com/SlexAxton/require-handlebars-plugin/blob/master/hbs.js
-//
-// Using Handlebars Semantic templates at http://handlebarsjs.com
-// Using and RequireJS text.js at http://requirejs.org/docs/api.html#text
-// @author JF Paradis
-// @version 0.0.2
-//
-// Released under the MIT license
-//
-// Usage:
-//   require(['backbone', 'hbar!mytemplate'], function (Backbone, mytemplate) {
-//     return Backbone.View.extend({
-//       initialize: function(){
-//         this.render();
-//       },
-//       render: function(){
-//         this.$el.html(mytemplate({message: 'hello'}));
-//     });
-//   });
-//
-// Configuration: (optional)
-//   require.config({
-//     hbars: {
-//       extension: '.hbar' // default = '.html'
-//     }
-//   });
-
 /*jslint nomen: true */
 /*global define: false */
 

@@ -1,8 +1,3 @@
-/**
- * GuiDialog - modal dialog Has a mask full screen mask over the screen and
- * background image
- */
-
 GuiDialog.prototype = new GuiDiv();
 GuiDialog.prototype.constructor = GuiDialog;
 /**

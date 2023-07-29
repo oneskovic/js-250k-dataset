@@ -1,11 +1,3 @@
-/// <reference path="../../Interfaces/IDisposable.ts" />
-/// <reference path="../../Interfaces/IUpdateable.ts" />
-/// <reference path="../../Bounds/BoundingRectangle.ts" />
-/// <reference path="../../Assets/Sizes/Size2d.ts" />
-/// <reference path="../../Assets/Vectors/Vector2d.ts" />
-/// <reference path="../../GameTime.ts" />
-/// <reference path="../CollisionConfiguration.ts" />
-/// <reference path="QuadTreeNode.ts" />
 var EndGate;
 (function (EndGate) {
     (function (Collision) {

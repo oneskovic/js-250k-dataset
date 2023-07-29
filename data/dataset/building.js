@@ -1,4 +1,4 @@
-/* jshint -W079 */ // prevent redefinition of $ warning
+ // prevent redefinition of $ warning
 
 'use strict';
 // gulp
@@ -19,7 +19,7 @@ var buildDependencies = [
 ];
 
 gulp.task('build', buildDependencies, function () {
-  return gulp.src(paths.dist + '/**/*')
+  return gulp.src(paths.dist + '*')
     .pipe($.size({showFiles: true}));
 });
 
@@ -63,7 +63,7 @@ gulp.task('build-app', ['clean', 'inject-all'], function () {
 // copy templates
 gulp.task('build-templates', ['clean'], function () {
   return gulp.src([
-    'app/**/templates/**/*',
+    'apptemplates*',
   ])
   .pipe($.if(options.minify, $.minifyHtml()))
   .pipe(gulp.dest(paths.dist));
@@ -71,7 +71,7 @@ gulp.task('build-templates', ['clean'], function () {
 
 // copy assets, wait for fonts
 gulp.task('build-assets', ['clean', 'bower-fonts'], function () {
-  return gulp.src('app/**/assets/**/*')
+  return gulp.src('appassets*')
     .pipe($.if(options.minify, $.imagemin()))
     .pipe(gulp.dest(paths.dist));
 });

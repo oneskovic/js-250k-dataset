@@ -1,7 +1,3 @@
-/**
- * Scanline shader
- */
-
 THREE.ScanlineShader = {
 
 	uniforms: {

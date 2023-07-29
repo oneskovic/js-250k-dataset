@@ -1,6 +1,3 @@
-/**
- * Created by Stefano on 01/04/14.
- */
 onmessage = function (event) {
 	var data = event.data;
 	switch (data.cmd) {

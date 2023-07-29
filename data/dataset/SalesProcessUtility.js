@@ -1,11 +1,3 @@
-/**
- * @class crm.SalesProcessUtility
- *
- * Saleslogix salesprocess utils
- *
- * @singleton
- *
- */
 define('crm/SalesProcessUtility', [
     'dojo/_base/lang',
     'dojo/string',

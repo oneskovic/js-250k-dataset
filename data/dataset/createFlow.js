@@ -4,7 +4,7 @@ var LodashWrapper = require('./LodashWrapper'),
     isArray = require('../lang/isArray'),
     isLaziable = require('./isLaziable');
 
-/** Used as the `TypeError` message for "Functions" methods. */
+
 var FUNC_ERROR_TEXT = 'Expected a function';
 
 /**

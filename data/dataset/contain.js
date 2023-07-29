@@ -1,9 +1,3 @@
-/*!
- * Should
- * Copyright(c) 2010-2014 TJ Holowaychuk <tj@vision-media.ca>
- * MIT Licensed
- */
-
 var util = require('../util'),
   eql = require('../eql');
 

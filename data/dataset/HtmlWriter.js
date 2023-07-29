@@ -1,5 +1,3 @@
-/*! @license ©2014 Ruben Verborgh - Multimedia Lab / iMinds / Ghent University */
-
 /** A HtmlWriter represents Linked Data Fragments as HTML. */
 
 var qejs = require('qejs'),

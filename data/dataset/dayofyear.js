@@ -1,13 +1,3 @@
-/**
-* Day of Year Constraint (dy)
-* (c) 2013 Bill, BunKat LLC.
-*
-* Definition for a day of year constraint type.
-*
-* Later is freely distributable under the MIT license.
-* For all details and documentation:
-*     http://github.com/bunkat/later
-*/
 later.dayOfYear = later.dy = {
 
   /**

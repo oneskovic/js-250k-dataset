@@ -1,8 +1,6 @@
 'use strict';
 
-/**
- * @module br/test/viewhandler/Clicked
- */
+
 
 require('jquery');
 

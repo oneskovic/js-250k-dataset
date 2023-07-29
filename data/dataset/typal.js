@@ -1,11 +1,3 @@
-/*
- * Introduces a typal object to make classical/prototypal patterns easier
- * Plus some AOP sugar
- *
- * By Zachary Carter <zach@carter.name>
- * MIT Licensed
- * */
-
 var typal = (function () {
 
 var create = Object.create || function (o) { function F(){}; F.prototype = o; return new F(); };

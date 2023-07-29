@@ -1,4 +1,3 @@
-// HOT PROBS Chat client-side functionality
 ;(function($, window, io) {
 
 	var pchatClient = {

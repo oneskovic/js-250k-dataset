@@ -1,103 +1,60 @@
-/**
- * @fileoverview Basic metrics capability.  Expectation is that new metrics will 
- *  likely be set up as separate files / separate sets.    
- */
+var Q = require('q');
 
-/**
- * @namespace
- */
-var Ozone = Ozone || {};
-
-/**
- * @namespace
- */
-Ozone.metrics = Ozone.metrics || {};
-
-/**
- * @description Basic logging capability - meant to be called by other methods
- *    which transform or validate data  
- * @since OWF 3.8.0
- *
- * @param {String} userId
- * @param {String} userName
- * @param {String} metricSite Identifier, potentially URL, for source of metric - typically OWF instance
- * @param {String} componentName    
- * @param {String} componentId 
- * @param {String} componentInstanceId
- * @param {String} metricTypeId String describing metric - recommend package name construct
- * @param {String} metricData Any additional data for metric - do any necessary validation appropriate to metricTypeId before sending through 
- */
-Ozone.metrics.logMetric = function(userId, userName, metricSite, componentName, componentId, componentInstanceId, metricTypeId, metricData) {
-	var currentDate = new Date();
-	
-    Ozone.util.Transport.send({
-        url: OWF.getContainerUrl() + '/metric',
-        method: 'POST',
-        onSuccess: function(response) {
-        },
-        autoSendVersion : false,
-        content : {
-          metricTime: currentDate.getTime(),
-          userId: userId,
-          userName: userName,
-          site: metricSite,
-          userAgent: navigator.userAgent,
-          component: componentName,
-          componentId: componentId,
-          instanceId: componentInstanceId,
-          metricTypeId: metricTypeId,
-          widgetData: metricData
-        }
-    });
+function BaseMetric(cfg) {
+	cfg = cfg || {};
+	this.probes = cfg.probes || this.probes;
+	if (!this.probes || !Array.isArray(this.probes)) {
+		this.probes = [];
+	}
+	this.hrtime = process.hrtime();
+	this.__data = [];
 };
 
-/**
- * @description Logs a set of metrics to the server all at once.  All
- * metrics passed into a call to this function will be logged in a single
- * HTTP request, instead of one request per metric
- * @since OWF 6.0
- *
- * @param {Array} metrics 
- * @param {String} metrics[*].userId
- * @param {String} metrics[*].userName
- * @param {Number} metrics[*].metricTime The time at which is metric was collected (in UNIX time)
- * @param {String} metrics[*].site Identifier, potentially URL, for source of metric - typically OWF instance
- * @param {String} metrics[*].component
- * @param {String} metrics[*].componentId 
- * @param {String} metrics[*].instanceId
- * @param {String} metrics[*].metricTypeId String describing metric - recommend package name construct
- * @param {String} metrics[*].widgetData Any additional data for metric - do any necessary validation appropriate to metricTypeId before sending through 
- * @param {String} metrics[*].userAgent Should be set to the user-agent string of the browser
- */
-Ozone.metrics.logBatchMetrics = function(metrics) {
-	var currentDate = new Date();
-	
-    Ozone.util.Transport.send({
-        url: OWF.getContainerUrl() + '/metric',
-        method: 'POST',
-        onSuccess: function(response) {
-        },
-        autoSendVersion : false,
-        content : {
-        	data: metrics
-        }
-    });
+BaseMetric.prototype.getResults = function() {
+	throw 'getResults not implemented for ' + this.id;
 };
 
-/**
- * @description Log view of widget - see calls in dashboards
- * @since OWF 3.8.0
- *
- * @param {String} userId     - see Ozone.metrics.logMetric userId
- * @param {String} userName   - see Ozone.metrics.logMetric userName
- * @param {String} metricSite - see Ozone.metrics.logMetric metricSite
- * @param {Object} widget   
- */ 
-Ozone.metrics.logWidgetRender = function(userId, userName, metricSite, widget) {
+BaseMetric.prototype.onError = function(err) {
 
-  // checking here, on the assumption we may save ourselves some validation time
-  //   on any widget data validation (last param)
-  if (Ozone.config.metric.enabled === true) {
-      Ozone.metrics.logMetric(userId, userName, metricSite, widget.name, widget.widgetGuid, widget.id, "ozone.widget.view", "");
-      }
 };
+
+BaseMetric.prototype.onData = function(data) {
+	this.hrtime = process.hrtime(this.hrtime);
+	if (data) {
+		data.__time = this.hrtime[0];
+		this.__data.push(data);
+	}
+};
+
+var difference = function(a, b) {
+	if (typeof a !== typeof b) {
+		return NaN;
+	}
+	if (Array.isArray(a) && Array.isArray(b) && a.length === b.length) {
+		return a.map(function(el, i) {
+			return el - b[i];
+		});
+	} else if (typeof a === 'object') {
+		var diff = {};
+		for (var key in a) {
+			diff[key] = difference(a[key], b[key]);
+		}
+		return diff;
+	} else {
+		return a - b;
+	}
+}
+
+BaseMetric.prototype.__getDeltas = function() {
+	var deltas = [];
+	if (this.__data.length === 1) {
+		return this.__data[0];
+	}
+	for (var i = 1; i < this.__data.length; i++) {
+		var x = difference(this.__data[i], this.__data[i - 1]);
+		deltas.push(x);
+	}
+	return (deltas.length === 1 ? deltas[0] : deltas);
+};
+
+module.exports = BaseMetric;

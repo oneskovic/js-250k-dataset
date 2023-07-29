@@ -1,8 +1,3 @@
-/*
- * Tangram
- * Copyright 2010 Baidu Inc. All rights reserved.
- */
-
 ///import baidu.page.getScrollTop;
 ///import baidu.page.getViewHeight;
 ///import baidu.dom.getPosition;

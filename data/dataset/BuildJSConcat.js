@@ -1,5 +1,3 @@
-// JSConcat
-
 var versionStr = "1.4.1";
 var allSourceFiles = [
 	"disclaimer.txt",

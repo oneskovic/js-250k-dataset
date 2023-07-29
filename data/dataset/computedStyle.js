@@ -1,4 +1,3 @@
-
   var document = global.document;
   var computedStyle;
 

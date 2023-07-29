@@ -1,11 +1,3 @@
-// A reusable scatter plot module.
-// 
-//  * Draws from the [D3 scatter plot example](http://bl.ocks.org/mbostock/3887118)
-//  * Draws from ModelJS conventions used in the [barChart example](http://curran.github.io/model-contrib/#/barChart).
-//  * Draws from this [brushing example for interaction](http://bl.ocks.org/mbostock/4343214)
-//  * See also [D3 Quadtree documentation](https://github.com/mbostock/d3/wiki/Quadtree-Geom)
-//
-// By Curran Kelleher August 2014
 define(["d3", "model", "modelContrib/reactivis"], function (d3, Model, Reactivis) {
   return function ScatterPlot(container) {
     var defaults = {

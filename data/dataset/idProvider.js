@@ -15,9 +15,7 @@ function IdProvider(config) {
     this.cookieKey = encodeURIComponent(security.encrypt(SESSION_ID_COOKIE, this.config.secret));
 }
 
-/**
- * Called once at the beginning of each request.
- */
+
 IdProvider.prototype.getSessionId = function(req) {
     var cookie = util.parseCookies(req)[this.cookieKey];
     var id;

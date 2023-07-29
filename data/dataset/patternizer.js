@@ -1,17 +1,3 @@
-/*
- * patternizer.js
- * v1.01
- * To see what this is capable of, see the UI at patternizer.com
- * 
- * Developed by Matthew Lein
- * matthewlein.com
- * 
- * Released under the MIT license.
- * Please leave this license and author info intact.
- * 
- * Copyright 2011
- */
-
 var patternizer = {
 	
 	supportsCanvas : function() {

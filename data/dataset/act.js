@@ -1,4 +1,3 @@
-/* AARALON (c) 2013-2014 */
  
 var fs = require('fs');
 var u = require('util');
@@ -45,7 +44,7 @@ module.exports = {
 	initChar: function(ch) {
 
 		ch.cmd = point({}, act.basic);
-		var allowed = true; /* act plugins without a requires check will allow every command in them */
+		var allowed = true; 
 		
 		for (var i in act) {
 			

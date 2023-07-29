@@ -1,9 +1,3 @@
-/*
- * LooseLeaf: Lightweight blogging engine for node.js
- * http://looseleafjs.org/
- * (c) 2011- tnantoka
- */
-
 // Load modules
 var express = require('express');
 var fs = require('fs');

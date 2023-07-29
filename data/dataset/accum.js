@@ -1,4 +1,3 @@
-/* basic entropy accumulator */
 var accum = (function() {
 
     var pool,    // randomness pool

@@ -1,9 +1,3 @@
-/**
- * @fileoverview Rule to flag non-camelcased identifiers
- * @author Nicholas C. Zakas
- * @copyright 2015 Dieter Oberkofler. All rights reserved.
- */
-
 "use strict";
 
 //------------------------------------------------------------------------------

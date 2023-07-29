@@ -1,26 +1,3 @@
-
-
-
-/**
-* Creates an item for a menu bar.
-* 
-* @param {HTML} p_oObject Markup for the menu item content. The markup is inserted into the DOM as HTML, and should be escaped by the implementor if coming from an external source.
-* @param {<a href="http://www.w3.org/TR/2000/WD-DOM-Level-1-20000929/level-
-* one-html.html#ID-74680021">HTMLLIElement</a>} p_oObject Object specifying the 
-* <code>&#60;li&#62;</code> element of the menu bar item.
-* @param {<a href="http://www.w3.org/TR/2000/WD-DOM-Level-1-20000929/level-
-* one-html.html#ID-38450247">HTMLOptGroupElement</a>} p_oObject Object 
-* specifying the <code>&#60;optgroup&#62;</code> element of the menu bar item.
-* @param {<a href="http://www.w3.org/TR/2000/WD-DOM-Level-1-20000929/level-
-* one-html.html#ID-70901257">HTMLOptionElement</a>} p_oObject Object specifying 
-* the <code>&#60;option&#62;</code> element of the menu bar item.
-* @param {Object} p_oConfig Optional. Object literal specifying the 
-* configuration for the menu bar item. See configuration class documentation 
-* for more details.
-* @class MenuBarItem
-* @constructor
-* @extends YAHOO.widget.MenuItem
-*/
 YAHOO.widget.MenuBarItem = function(p_oObject, p_oConfig) {
 
     YAHOO.widget.MenuBarItem.superclass.constructor.call(this, p_oObject, p_oConfig);

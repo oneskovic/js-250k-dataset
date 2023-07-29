@@ -1,8 +1,6 @@
 (function (angular, browserSyncSocket) {
 
-    /**
-     * @type {{emit: emit, on: on}}
-     */
+    
     var socket = browserSyncSocket || {
 
         emit: function () {},

@@ -1,50 +1,70 @@
-'use strict';
-var fs             =  require('fs')
-  , log            =  require('../log')
-  , state          =  require('../state')
-  , completeAppend =  require('../complete-append');
+var assert = require('assert')
 
+module.exports = function (_, dir, next, gm) {
+  var out = require('path').resolve(dir + '/append.jpg');
 
-module.exports = function append(repl) {
-  var stdin = repl.inputStream
-    , stdout = repl.outputStream;
+  try {
+    require('fs').unlinkSync(out);
+  } catch (_) {}
 
-  function appendHistoryToFile(entry, last, lines) {
-    if (!entry) { 
-      log.warn('Since no file was sourced, I wouldn\'t know what file to append to.');
-      return repl.displayPrompt();
-    }
+  var m = gm(dir + '/lost.png')
+  .append(dir + '/original.jpg', dir + '/original.jpg')
+  .append()
+  .background('#222')
 
-    var appendLine = repl.rli.history[last];
-    var append = completeAppend(repl.rli.history);
+  var args = m.args();
+  assert.equal('convert', args[0]);
+  assert.equal('-background',args[1]);
+  assert.equal('#222',args[2]);
+  assert.ok(/examples\/imgs\/lost\.png$/.test(args[3]));
+  assert.ok(/examples\/imgs\/original\.jpg$/,args[4]);
+  assert.ok(/examples\/imgs\/original\.jpg$/,args[5]);
+  assert.equal('-append',args[6]);
+  assert.equal('-',args[7]);
 
-    if (!append) { 
-      log.warn('Found nothing in history that could be appended.');
-      return repl.displayPrompt();
-    }
-
-    state.fileFeedSuspended = true;
-
-    repl.displayPrompt();
-    log.info('%s>> \'%s\'', append.highlighted, entry.path);
-    repl.displayPrompt();
-
-    fs.appendFile(entry.fullPath, append.raw, function (err) {
-      state.fileFeedSuspended = false;
-      if (err) return log.error(err);
-    });
+  if (!gm.integration) {
+    return horizontal(dir, next, gm);
   }
 
-  stdin.on('keypress', function (s, key) {
-    if (key && key.ctrl && key.name === 'a') {
-      appendHistoryToFile(state.lastFedFile, 0, 1);
-    }
+  m.write(out, function (err) {
+    if (err) return next(err);
+    gm(out).size(function (err, size) {
+      if (err) return next(err);
+      assert.equal(460, size.width);
+      assert.equal(435, size.height);
+
+      horizontal(dir, next, gm);
+    })
+  });
+}
+
+function horizontal (dir, next, gm) {
+  var out = require('path').resolve(dir + '/appendHorizontal.jpg');
+
+  var m = gm(dir + '/original.jpg')
+  .append(dir + '/lost.png', true);
+
+  var args = m.args();
+  assert.equal('convert', args[0]);
+  assert.ok(/examples\/imgs\/original\.jpg$/.test(args[1]));
+  assert.ok(/examples\/imgs\/lost\.png$/.test(args[2]));
+  assert.equal('+append',args[3]);
+  assert.equal('-',args[4]);
+
+  if (!gm.integration) {
+    return next();
+  }
+
+  m
+  .write(out, function (err) {
+    if (err) return next(err);
+    gm(out).size(function (err, size) {
+      if (err) return next(err);
+      assert.equal(697, size.width);
+      assert.equal(155, size.height);
+
+      next();
+    })
   });
 
-  repl.defineCommand('append', {
-      help: 'Appends the last entered parsable chunk of code or the last line to the last file that was sourced in the repl'
-    , action: function () { 
-        appendHistoryToFile(state.lastFedFile, 1, 1); 
-      }
-  });
-};
+}

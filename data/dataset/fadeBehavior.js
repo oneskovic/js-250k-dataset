@@ -1,9 +1,3 @@
-/**
- * @fileoverview FadeBehavior - simple angular rotation
- * 
- * @author Tony Parisi
- */
-
 goog.provide('Vizi.FadeBehavior');
 goog.require('Vizi.Behavior');
 

@@ -1,5 +1,3 @@
-// FIXME - rename to WorkspacesView
-
 function WorkspaceView(model, container) {
     this.model = model;
     this.container = container;

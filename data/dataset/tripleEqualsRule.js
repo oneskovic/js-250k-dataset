@@ -31,7 +31,7 @@ var ComparisonWalker = (function (_super) {
         _super.prototype.visitBinaryExpression.call(this, node);
     };
     ComparisonWalker.prototype.isExpressionAllowed = function (node) {
-        var nullKeyword = 32 /* NullKeyword */;
+        var nullKeyword = 32 ;
         if (this.hasOption(OPTION_ALLOW_NULL_CHECK) && (node.left.kind() === nullKeyword || node.right.kind() === nullKeyword)) {
             return true;
         }

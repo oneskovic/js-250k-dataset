@@ -1,7 +1,3 @@
-/**
- * Module dependencies.
- */
-
 var mongoose = require('mongoose');
 var Deployment = mongoose.model('Deployment');
 var log = require('debug')('hub:db-api:deployment');

@@ -1,136 +1,72 @@
-/*
- * Fuzzy
- * https://github.com/myork/fuzzy
- *
- * Copyright (c) 2012 Matt York
- * Licensed under the MIT license.
- */
+'use strict';
 
-(function() {
+describe('fuzzyFilter', function() {
+  var filter,
+    collection = [
+      { title: 'The DaVinci Code', author: 'F. Scott Fitzgerald' },
+      { title: 'The Great Gatsby', author: 'Dan Browns' },
+      { title: 'Angels & Demons',  author: 'Dan Louis' },
+      { title: 'The Lost Symbol',  author: 'David Maine' },
+      { title: 'Old Man\'s War',   author: 'Rob Grant' }
+    ];
 
-var root = this;
+  beforeEach(module('a8m.fuzzy'));
 
-var fuzzy = {};
+  beforeEach(inject(function ($filter) {
+    filter = $filter('fuzzy');
+  }));
 
-// Use in node or in browser
-if (typeof exports !== 'undefined') {
-  module.exports = fuzzy;
-} else {
-  root.fuzzy = fuzzy;
-}
+  it('should get array as collection, search, and filter by fuzzy searching', function() {
 
-// Return all elements of `array` that have a fuzzy
-// match against `pattern`.
-fuzzy.simpleFilter = function(pattern, array) {
-  return array.filter(function(string) {
-    return fuzzy.test(pattern, string);
+    //search by title
+    expect(filter(collection, 'tha')).toEqual([collection[0], collection[1]]);
+    expect(filter(collection, 'thesy')).toEqual([collection[1], collection[3]]);
+    expect(filter(collection, 'omwar')).toEqual([collection[4]]);
+
+    //search by author
+    expect(filter(collection, 'sfd')).toEqual([collection[0]]);
+    expect(filter(collection, 'danos')).toEqual([collection[1], collection[2]]);
+    expect(filter(collection, 'rgnt')).toEqual([collection[4]]);
+
   });
-};
 
-// Does `pattern` fuzzy match `string`?
-fuzzy.test = function(pattern, string) {
-  return fuzzy.match(pattern, string) !== null;
-};
+  it('should be case sensitive if set to true', function() {
 
-// If `pattern` matches `string`, wrap each matching character
-// in `opts.pre` and `opts.post`. If no match, return null
-fuzzy.match = function(pattern, string, opts) {
-  opts = opts || {};
-  var patternIdx = 0
-    , result = []
-    , len = string.length
-    , totalScore = 0
-    , currScore = 0
-    // prefix
-    , pre = opts.pre || ''
-    // suffix
-    , post = opts.post || ''
-    // String to compare against. This might be a lowercase version of the
-    // raw string
-    , compareString =  opts.caseSensitive && string || string.toLowerCase()
-    , ch, compareChar;
+    expect(filter(collection, 'tha', true)).toEqual([]);
+    expect(filter(collection, 'thesy', true)).toEqual([]);
+    expect(filter(collection, 'omwar', true)).toEqual([]);
 
-  pattern = opts.caseSensitive && pattern || pattern.toLowerCase();
+    expect(filter(collection,'TDC', true)).toEqual([collection[0]]);
+    expect(filter(collection,'ThLSy', true)).toEqual([collection[3]]);
+    expect(filter(collection,'OldWar', true)).toEqual([collection[4]]);
 
-  // For each character in the string, either add it to the result
-  // or wrap in template if it's the next string in the pattern
-  for(var idx = 0; idx < len; idx++) {
-    ch = string[idx];
-    if(compareString[idx] === pattern[patternIdx]) {
-      ch = pre + ch + post;
-      patternIdx += 1;
+  });
 
-      // consecutive characters should increase the score more than linearly
-      currScore += 1 + currScore;
-    } else {
-      currScore = 0;
-    }
-    totalScore += currScore;
-    result[result.length] = ch;
-  }
+  it('should get array of strings, search, and filter by fuzzy searching', function() {
 
-  // return rendered string if we have a match for every char
-  if(patternIdx === pattern.length) {
-    return {rendered: result.join(''), score: totalScore};
-  }
+    var array = ['Dan Brown', 'Dan Louis', 'David Maine', 'Rob Grant', 'F. Scott Fitzgerald'];
 
-  return null;
-};
+    expect(filter(array)).toEqual(array);
+    expect(filter(array, 'da')).toEqual([ 'Dan Brown', 'Dan Louis', 'David Maine' ]);
+    expect(filter(array, 'oa')).toEqual([ 'Rob Grant', 'F. Scott Fitzgerald' ]);
+    expect(filter(array, 'S', true)).toEqual([ 'F. Scott Fitzgerald' ]);
 
-// The normal entry point. Filters `arr` for matches against `pattern`.
-// It returns an array with matching values of the type:
-//
-//     [{
-//         string:   '<b>lah' // The rendered string
-//       , index:    2        // The index of the element in `arr`
-//       , original: 'blah'   // The original element in `arr`
-//     }]
-//
-// `opts` is an optional argument bag. Details:
-//
-//    opts = {
-//        // string to put before a matching character
-//        pre:     '<b>'
-//
-//        // string to put after matching character
-//      , post:    '</b>'
-//
-//        // Optional function. Input is an entry in the given arr`,
-//        // output should be the string to test `pattern` against.
-//        // In this example, if `arr = [{crying: 'koala'}]` we would return
-//        // 'koala'.
-//      , extract: function(arg) { return arg.crying; }
-//    }
-fuzzy.filter = function(pattern, arr, opts) {
-  opts = opts || {};
-  return arr
-    .reduce(function(prev, element, idx, arr) {
-      var str = element;
-      if(opts.extract) {
-        str = opts.extract(element);
-      }
-      var rendered = fuzzy.match(pattern, str, opts);
-      if(rendered != null) {
-        prev[prev.length] = {
-            string: rendered.rendered
-          , score: rendered.score
-          , index: idx
-          , original: element
-        };
-      }
-      return prev;
-    }, [])
+  });
 
-    // Sort by score. Browsers are inconsistent wrt stable/unstable
-    // sorting, so force stable by using the index in the case of tie.
-    // See http://ofb.net/~sethml/is-sort-stable.html
-    .sort(function(a,b) {
-      var compare = b.score - a.score;
-      if(compare) return compare;
-      return a.index - b.index;
-    });
-};
+  it('should not get a search and return the collection as-is', function() {
 
+    var array = [{ name: 'foo' }];
 
-}());
+    expect(filter(array)).toEqual(array);
 
+  });
+
+  it('should get a !collection and return it as-is', function() {
+
+    expect(filter(!1)).toBeFalsy();
+    expect(filter(1)).toEqual(1);
+    expect(filter('string')).toEqual('string');
+
+  });
+
+});

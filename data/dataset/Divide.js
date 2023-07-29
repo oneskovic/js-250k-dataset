@@ -3,17 +3,7 @@ function(Tone){
 
 	"use strict";
 
-	/**
-	 *  @class Divide by a value or signal. 
-	 *         input 0: numerator. input 1: divisor. 
-	 *
-	 *  @deprecated
-	 *  @extends {Tone.SignalBase}
-	 *  @constructor
-	 *  @param {number=} divisor if no value is provided, Tone.Divide will divide the first
-	 *                         and second inputs. 
-	 *  @param {number} [precision=3] the precision of the calculation
-	 */
+	
 	Tone.Divide = function(divisor, precision){
 
 		console.warn("Tone.Divide has been deprecated. If possible, it's much more efficient to multiply by the inverse value.");

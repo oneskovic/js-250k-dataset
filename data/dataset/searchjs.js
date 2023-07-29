@@ -1,4 +1,3 @@
-/*jslint node:true,nomen:true */
 (function(exports){
 	var matchObj, matchArray, singleMatch;
 	

@@ -3,14 +3,7 @@ TestCase
     'org.puremvc.js.patterns.observer.NotificationTest'
     
 ,   {
-        /**
-         * Log a message to the console if supported.
-         *
-         * @param {String} message
-         *  The message to log
-         * @return {void}
-         * @private
-         */
+        
         log: function (message)
         {
             if (window.console && console.log)

@@ -1,4 +1,3 @@
-
 var bencode = require('../util/bencode'),
     protocol = require('./protocol'),
     util = require('util');

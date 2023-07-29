@@ -1,112 +1,128 @@
-(function (Ω) {
+(function(Proton, undefined) {
 
-	"use strict";
-
-	var Particle = Ω.Class.extend({
-
-		particles: null,
-		running: false,
-
-		init: function (opts, cb) {
-
-			this.maxLife = opts.life || 40;
-			this.life = this.maxLife;
-			this.cb = cb;
-			this.col = opts.col || "100, 0, 0";
-
-			this.particles = [];
-			for(var i = 0; i < 20; i++) {
-				this.particles.push(
-					new Part({col: this.col}, this)
-				);
-			}
-
-		},
-
-		play: function (x, y) {
-
-			this.life = this.maxLife;
-			this.x = x;
-			this.y = y;
-			this.running = true;
-			this.particles.forEach(function (p) {
-				p.reset();
-			});
-
-		},
-
-		tick: function () {
-
-			if (!this.running) {
-				return;
-			}
-
-			this.life -= 1;
-
-			this.particles.forEach(function (p) {
-				p.tick();
-			});
-
-			if (this.life < 0) {
-				this.running = false;
-				this.cb && this.cb();
-			}
-
-		},
-
-		render: function (gfx) {
-
-			var self = this;
-
-			if (!this.running) {
-				return;
-			}
-
-			this.particles.forEach(function (p) {
-				p.render(gfx, self.x, self.y);
-			});
-
-		}
-
-	});
-
-	function Part (opts, parent) {
-		this.parent = parent;
-		this.x = 0;
-		this.y = 0;
-		this.w = 4;
-		this.h = 4;
-		this.col = opts.col;
-		this.xSpeed = Math.random() * 2 - 1;
-		this.ySpeed = Math.random() * 2 - 1 - 1;
+	Particle.ID = 0;
+	
+	function Particle(pOBJ) {
+		/**
+		 * The particle's id;
+		 * @property id
+		 * @type {String} id
+		 */
+		this.id = 'particle_' + Particle.ID++;
+		this.reset(true);
+		Proton.Util.setPrototypeByObject(this, pOBJ);
 	}
-	Part.prototype = {
 
-		reset: function () {
-			this.life = this.parent.maxLife;
-			this.x = 0;
-			this.y = 0;
-			this.xSpeed = Math.random() * 2 - 1;
-			this.ySpeed = Math.random() * 2 - 1 - 3;
+
+	Particle.prototype = {
+		getDirection : function() {
+			return Math.atan2(this.v.x, -this.v.y) * (180 / Math.PI);
 		},
 
-		tick: function () {
-			this.x += this.xSpeed;
-			this.y += this.ySpeed;
-			this.ySpeed += 0.2;
+		reset : function(init) {
+			this.life = Infinity;
+			this.age = 0;
+			//能量损失
+			this.energy = 1;
+			this.dead = false;
+			this.sleep = false;
+			this.target = null;
+			this.sprite = null;
+			this.parent = null;
+			this.mass = 1;
+			this.radius = 10;
+			this.alpha = 1;
+			this.scale = 1;
+			this.rotation = 0;
+			this.color = null;
+			this.easing = Proton.ease.setEasingByName(Proton.easeLinear);
+			if (init) {
+				this.transform = {}
+				this.p = new Proton.Vector2D();
+				this.v = new Proton.Vector2D();
+				this.a = new Proton.Vector2D();
+				this.old = {
+					p : new Proton.Vector2D(),
+					v : new Proton.Vector2D(),
+					a : new Proton.Vector2D()
+				};
+				this.behaviours = [];
+			} else {
+				Proton.Util.destroyObject(this.transform);
+				this.p.set(0, 0);
+				this.v.set(0, 0);
+				this.a.set(0, 0);
+				this.old.p.set(0, 0);
+				this.old.v.set(0, 0);
+				this.old.a.set(0, 0);
+				this.removeAllBehaviours();
+			}
+
+			this.transform.rgb = {
+				r : 255,
+				g : 255,
+				b : 255
+			}
+			return this;
 		},
 
-		render: function (gfx, x, y) {
+		update : function(time, index) {
+			if (!this.sleep) {
+				this.age += time;
+				var length = this.behaviours.length, i;
+				for ( i = 0; i < length; i++) {
+					if (this.behaviours[i])
+						this.behaviours[i].applyBehaviour(this, time, index)
+				}
+			} else {
 
-			var c = gfx.ctx;
+			}
 
-			c.fillStyle = "rgba(" + this.col + ", " + (0.3 + this.parent.life / this.parent.maxLife) + ")";
-			c.fillRect(this.x + x, this.y + y, this.w, this.h);
+			if (this.age >= this.life) {
+				this.destory();
+			} else {
+				var scale = this.easing(this.age / this.life);
+				this.energy = Math.max(1 - scale, 0);
+			}
 
+		},
+
+		addBehaviour : function(behaviour) {
+			this.behaviours.push(behaviour);
+			if (behaviour.hasOwnProperty('parents'))
+				behaviour.parents.push(this);
+			behaviour.initialize(this);
+		},
+
+		addBehaviours : function(behaviours) {
+			var length = behaviours.length, i;
+			for ( i = 0; i < length; i++) {
+				this.addBehaviour(behaviours[i]);
+			}
+		},
+
+		removeBehaviour : function(behaviour) {
+			var index = this.behaviours.indexOf(behaviour);
+			if (index > -1) {
+				var behaviour = this.behaviours.splice(index, 1);
+				behaviour.parents = null;
+			}
+		},
+
+		removeAllBehaviours : function() {
+			Proton.Util.destroyArray(this.behaviours);
+		},
+		/**
+		 * Destory this particle
+		 * @method destory
+		 */
+		destory : function() {
+			this.removeAllBehaviours();
+			this.energy = 0;
+			this.dead = true;
+			this.parent = null;
 		}
-
 	};
 
-	Ω.Particle = Particle;
-
-}(window.Ω));
+	Proton.Particle = Particle;
+})(Proton);

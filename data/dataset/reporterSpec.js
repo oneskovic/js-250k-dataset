@@ -1,5 +1,3 @@
-/* jasmine specs for Reporter.js go here */
-
 describe('Reporter', function() {
     var reporter, reporterValues;
 

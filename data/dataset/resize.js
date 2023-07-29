@@ -1,82 +1,57 @@
-window.resize = (function () {
 
-	'use strict';
+var assert = require('assert')
 
-	function Resize() {
-		//
-	}
+module.exports = function (gm, dir, finish, GM) {
 
-	Resize.prototype = {
+  var a = GM('img.png').resize(10);
+  var args = a.args();
+  assert.equal('convert', args[0]);
+  assert.equal('-resize', args[2]);
+  if (a._options.imageMagick) {
+    assert.equal('10', args[3]);
+  } else {
+    assert.equal('10x', args[3]);
+  }
 
-		init: function(outputQuality) {
-			this.outputQuality = (outputQuality === 'undefined' ? 0.8 : outputQuality);
-		},
+  var a = GM('img.png').resize(10, 20);
+  var args = a.args();
+  assert.equal('convert', args[0]);
+  assert.equal('-resize', args[2]);
+  assert.equal('10x20', args[3]);
 
-		photo: function(file, maxSize, outputType, callback) {
+  var a = GM('img.png').resize(10, false, '%');
+  var args = a.args();
+  assert.equal('convert', args[0]);
+  assert.equal('-resize', args[2]);
+  if (a._options.imageMagick) {
+    assert.equal('10%', args[3]);
+  } else {
+    assert.equal('10x%', args[3]);
+  }
 
-			var _this = this;
+  var a = GM('img.png').resize('10%');
+  var args = a.args();
+  assert.equal('convert', args[0]);
+  assert.equal('-resize', args[2]);
+  if (a._options.imageMagick) {
+    assert.equal('10%', args[3]);
+  } else {
+    assert.equal('10%x', args[3]);
+  }
 
-			var reader = new FileReader();
-			reader.onload = function (readerEvent) {
-				_this.resize(readerEvent.target.result, maxSize, outputType, callback);
-			}
-			reader.readAsDataURL(file);
+  var m = gm
+  .resize(58, 50, '%');
 
-		},
+  var args=  m.args();
+  assert.equal('convert', args[0]);
+  assert.equal('-resize', args[2]);
+  assert.equal('58x50%', args[3]);
 
-		resize: function(dataURL, maxSize, outputType, callback) {
+  if (!GM.integration)
+    return finish();
 
-			var _this = this;
-
-			var image = new Image();
-			image.onload = function (imageEvent) {
-
-				// Resize image
-				var canvas = document.createElement('canvas'),
-					width = image.width,
-					height = image.height;
-				if (width > height) {
-					if (width > maxSize) {
-						height *= maxSize / width;
-						width = maxSize;
-					}
-				} else {
-					if (height > maxSize) {
-						width *= maxSize / height;
-						height = maxSize;
-					}
-				}
-				canvas.width = width;
-				canvas.height = height;
-				canvas.getContext('2d').drawImage(image, 0, 0, width, height);
-
-				_this.output(canvas, outputType, callback);
-
-			}
-			image.src = dataURL;
-
-		},
-
-		output: function(canvas, outputType, callback) {
-
-			switch (outputType) {
-
-				case 'file':
-					canvas.toBlob(function (blob) {
-						callback(blob);
-					}, 'image/jpeg', 0.8);
-					break;
-
-				case 'dataURL':
-					callback(canvas.toDataURL('image/jpeg', 0.8));
-					break;
-
-			}
-
-		}
-
-	};
-
-	return Resize;
-
-}());
+  m
+  .write(dir + '/resize.png', function resize (err) {
+    finish(err);
+  });
+}

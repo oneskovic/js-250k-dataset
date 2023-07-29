@@ -1,12 +1,3 @@
-/*
- *
- * Chrome-Last.fm-Scrobbler TTnetMuzik.com.tr Connector by Yasin Okumus
- * http://www.yasinokumus.com
- * v0.2
- * - Long song names problem fixed
- * - "-" char in the song names problem fixed
- * - "(Album Version)" in the song names will not scrobbling
- */
  
 // track and artist will be stored
 var track = '';

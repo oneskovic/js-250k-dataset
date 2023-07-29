@@ -1,7 +1,3 @@
-/**
- * @constructor
- * @extends BesedaPackage.events.EventEmitter
- */
 BesedaPackage.transport.request.JSONPRequest = function() {
     BesedaPackage.events.EventEmitter.prototype.constructor.call(this);
 

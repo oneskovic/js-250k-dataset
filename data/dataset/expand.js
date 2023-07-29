@@ -1,63 +1,56 @@
-   /**
-   *  Expands an observable sequence by recursively invoking selector.
-   *  
-   * @param {Function} selector Selector function to invoke for each produced element, resulting in another sequence to which the selector will be invoked recursively again.
-   * @param {Scheduler} [scheduler] Scheduler on which to perform the expansion. If not provided, this defaults to the current thread scheduler.
-   * @returns {Observable} An observable sequence containing all the elements produced by the recursive expansion.
-   */
-  observableProto.expand = function (selector, scheduler) {
-    isScheduler(scheduler) || (scheduler = immediateScheduler);
-    var source = this;
-    return new AnonymousObservable(function (observer) {
-      var q = [],
-        m = new SerialDisposable(),
-        d = new CompositeDisposable(m),
-        activeCount = 0,
-        isAcquired = false;
+///import baidu.fx.create;
 
-      var ensureActive = function () {
-        var isOwner = false;
-        if (q.length > 0) {
-            isOwner = !isAcquired;
-            isAcquired = true;
-        }
-        if (isOwner) {
-          m.setDisposable(scheduler.scheduleRecursive(function (self) {
-            var work;
-            if (q.length > 0) {
-              work = q.shift();
-            } else {
-              isAcquired = false;
-              return;
+///import baidu.dom.g;
+///import baidu.dom.show;
+///import baidu.object.extend;
+///import baidu.array.each;
+///import baidu.dom.getStyle;
+///import baidu.lang.isNumber;
+
+/**
+ * 展开DOM元素
+ * 
+ * @param   {HTMLElement}   element DOM元素或者ID
+ * @param   {JSON}          options 类实例化时的参数配置
+ * @return  {Effect}                效果类的实例
+ */
+
+baidu.fx.expand = function(element, options) {
+    if (!(element = baidu.dom.g(element))) return null;
+
+    var e = element, offsetHeight, height, 
+        stylesValue = ["paddingBottom","paddingTop","borderTopWidth","borderBottomWidth"];
+
+    var fx = baidu.fx.create(e, baidu.object.extend({
+        //[Implement Interface] initialize
+        initialize : function() {
+            baidu.dom.show(e);
+            this.protect("height");
+            this.protect("overflow");
+            height = offsetHeight = e.offsetHeight;
+            
+            function getStyleNum(d,style){
+                var result = parseInt(baidu.getStyle(d,style));
+                result = isNaN(result) ? 0 : result;
+                result = baidu.lang.isNumber(result) ? result : 0;
+                return result;
             }
-            var m1 = new SingleAssignmentDisposable();
-            d.add(m1);
-            m1.setDisposable(work.subscribe(function (x) {
-              observer.onNext(x);
-              var result = null;
-              try {
-                result = selector(x);
-              } catch (e) {
-                observer.onError(e);
-              }
-              q.push(result);
-              activeCount++;
-              ensureActive();
-            }, observer.onError.bind(observer), function () {
-              d.remove(m1);
-              activeCount--;
-              if (activeCount === 0) {
-                observer.onCompleted();
-              }
-            }));
-            self();
-          }));
+            
+            baidu.each(stylesValue,function(item){
+                height -= getStyleNum(e,item);
+            });
+            e.style.overflow = "hidden";
+            e.style.height = "1px";
         }
-      };
 
-      q.push(source);
-      activeCount++;
-      ensureActive();
-      return d;
-    });
-  };
+        //[Implement Interface] transition
+        ,transition : function(percent) {return Math.sqrt(percent);}
+
+        //[Implement Interface] render
+        ,render : function(schedule) {
+            e.style.height = Math.floor(schedule * height) +"px";
+        }
+    }, options || {}), "baidu.fx.expand_collapse");
+
+    return fx.launch();
+};

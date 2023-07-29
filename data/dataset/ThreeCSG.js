@@ -1,13 +1,3 @@
-/*
-	THREE.CSG
-	@author Chandler Prall <chandler.prall@gmail.com> http://chandler.prallfamily.com
-	
-	Wrapper for Evan Wallace's CSG library (https://github.com/evanw/csg.js/)
-	Provides CSG capabilities for Three.js models.
-	
-	Provided under the MIT License
-*/
-
 THREE.CSG = {
 	toCSG: function ( three_model, offset, rotation ) {
 		var i, geometry, offset, polygons, vertices, rotation_matrix;

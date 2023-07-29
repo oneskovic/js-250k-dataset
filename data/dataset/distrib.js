@@ -6,11 +6,7 @@ var distros = require('../distros.json');
 
 module.exports = {
 
-  /**
-   * Install a full suite of application and plugins listed in given distro.
-   *
-   * @param {String} distroName The name of the distribution to install.
-   */
+  
   installDistro: function (distroName, actions, callback) {
     if (distros[distroName] !== undefined) {
       var distro = distros[distroName];

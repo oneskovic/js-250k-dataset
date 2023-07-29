@@ -1,6 +1,3 @@
-/**
-	Implement a concrete item mechanism for AbstractPageScroller.
-*/
 enyo.kind({
 	name: "enyo.FlyweightDbList",
 	kind: enyo.FlyweightList,

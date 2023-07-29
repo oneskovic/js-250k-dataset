@@ -1,7 +1,3 @@
-/**
- * Created by ldp on 2015/1/19.
- */
-
 // 循环队列
 function CycleQueue() {
     this.base = {};

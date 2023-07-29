@@ -1,11 +1,6 @@
 'use strict';
 
-/**
-* The command delegator is a program that moves jobs queued up in firebase into beanstalk. We move
-* them to beanstalk because beanstalk is better at handling delayed jobs and making sure only one
-* worker is executing a specific job. The delegator uses memcached to make sure it does not accidentally
-* queue up multiple copies of the same job.
-*/
+
 
 var firebase = require('firebase');
 var colors = require('colors');

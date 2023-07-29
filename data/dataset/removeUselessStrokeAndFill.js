@@ -12,15 +12,7 @@ exports.params = {
 var regStrokeProps = /^stroke/,
     regFillProps = /^fill/;
 
-/**
- * Remove useless stroke and fill attrs.
- *
- * @param {Object} item current iteration item
- * @param {Object} params plugin params
- * @return {Boolean} if false, item will be filtered out
- *
- * @author Kir Belevich
- */
+
 exports.fn = function(item, params) {
 
     if (item.isElem()) {

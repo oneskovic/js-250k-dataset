@@ -1,5 +1,3 @@
-/*globals define, console*/
-
 // NotificationManager
 // Este manager se encargara de gestionar todas las notificaciones del sistema.
 //

@@ -1,6 +1,3 @@
-/// <reference path="../../Scripts/endgate-0.2.0.d.ts" />
-/// <reference path="../../Scripts/typings/jquery/jquery.d.ts" />
-/// <reference path="../Server/IPayloadDefinitions.ts" />
 var ShootR;
 (function (ShootR) {
     var DeathScreen = (function () {

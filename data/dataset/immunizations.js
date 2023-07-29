@@ -1,7 +1,3 @@
-/*
- * Parser for the C32 immunizations section
- */
-
 Parsers.C32.immunizations = function (c32) {
   
   var parseDate = Documents.parseDate;

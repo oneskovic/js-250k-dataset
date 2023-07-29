@@ -1,14 +1,3 @@
-/*
- * Test annotations within the Directive Definition Object (DDO):
- *
- *    angular.module('myMod', []).directive('whatever', function () {
- *      return {
- *        controller: function ($scope) { ... }  // <--- this needs annotations
- *      };
- *    })
- *
- */
-
 var assert = require('should');
 
 // so we don't have to put the stuff we're testing into a string

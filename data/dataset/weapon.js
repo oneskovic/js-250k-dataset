@@ -1,7 +1,3 @@
-/** 
- * @namespace 
- * @description Weapons
- */
 Wolf.Weapon = (function() {
 
 

@@ -1,7 +1,3 @@
-// vwf.js
-// This file contains the functions that handle the top level parsing and responses to
-// requests for the VWF nodeJS server.
-
 var parseurl = require( './parse-url' ),
     serve = require( './serve' ),
     servehandler = require( './serve-handler' ),

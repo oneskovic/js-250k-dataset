@@ -1,7 +1,3 @@
-/**
- * Tests if the user is using a pointer device
- * @module monitors/pointer
- */
 (function(win,undefined) {
 
 	'use strict';

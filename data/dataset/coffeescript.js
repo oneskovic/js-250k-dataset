@@ -1,9 +1,3 @@
-/**
- * Coffeescript patterns
- *
- * @author Craig Campbell
- * @version 1.0
- */
 Rainbow.extend('coffeescript', [
     {
         'name': 'comment.block',

@@ -5,13 +5,7 @@ goog.require('lime.Label');
 goog.require('lime.RoundedRect');
 goog.require('lime.fill.LinearGradient');
 
-/**
- * Glossy button. Rounded button with some predefined style.
- * Use lime.Button for lower level control.
- * @param {string} txt Text shown on the button.
- * @constructor
- * @extends lime.Button
- */
+
 lime.GlossyButton = function(txt) {
     lime.Button.call(this, this.makeState_(txt), this.makeState_(txt));
 

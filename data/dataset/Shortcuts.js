@@ -1,11 +1,3 @@
-/*
- * qWikiOffice Desktop 1.0
- * Copyright(c) 2007-2010, Murdock Technologies, Inc.
- * licensing@qwikioffice.com
- * 
- * http://www.qwikioffice.com/license
- */
-
 QoDesk.QoPreferences.Shortcuts = Ext.extend(Ext.Panel, {
    constructor : function(config){
       // constructor pre-processing

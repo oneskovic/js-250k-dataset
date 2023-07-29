@@ -1,8 +1,3 @@
-/**
- * A abstract base class for map features - nodes and ways. Should not be
- * instantiated.
- * @class
- */
 var Feature = Class.create(
 /** 
  * @lends Feature.prototype 

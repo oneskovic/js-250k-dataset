@@ -1,6 +1,3 @@
-/**
- * Created by sander.struijk on 26.06.14.
- */
 'use strict';
 
 module.exports = function (directoryService, alertify) {

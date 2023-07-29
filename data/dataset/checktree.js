@@ -1,7 +1,5 @@
 QoDesk.QoPreferences.CheckTree = Ext.extend(Ext.tree.TreePanel, {
-   /**
-    * @cfg {String}
-    */
+   
    launcherKey: null
 
    , constructor : function(config){

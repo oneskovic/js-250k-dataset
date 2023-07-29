@@ -1,7 +1,3 @@
-/**
- * render page content from jade template
- */
-
 "use strict";
 
 var jade           = require("jade"),

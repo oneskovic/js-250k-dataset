@@ -1,6 +1,3 @@
-/**
- * Tree store for nested set tree representation.
- */
 Ext.ux.maximgb.tg.NestedSetStore = Ext.extend(Ext.ux.maximgb.tg.AbstractTreeStore,
 {
     /**

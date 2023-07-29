@@ -2,9 +2,7 @@
 
 var parseAttrSelector = (require('./parseSelector.js')).parseAttrSelector;
 
-/**
- * Get the value of a property which may be multiple levels down in the object.
- */
+
 function getPathValue(node, path) {
 	var names = path.split("."), name;
 

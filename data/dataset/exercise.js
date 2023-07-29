@@ -1,89 +1,72 @@
-const path         = require('path')
-    , childProcess = require('child_process')
-    , copy         = require('../../lib/copy')
-    , solutions    = require('../../lib/solutions')
-    , check        = require('../../lib/check')
-    , gyp          = require('../../lib/gyp')
-    , packagejson  = require('../../lib/packagejson')
+var path          = require('path')
+  , through2      = require('through2')
+  , superagent    = require('superagent')
+  , exercise      = require('workshopper-exercise')()
+  , filecheck     = require('workshopper-exercise/filecheck')
+  , execute       = require('workshopper-exercise/execute')
+  , comparestdout = require('workshopper-exercise/comparestdout')
+  , rndport       = require('../../lib/rndport');
 
+// checks that the submission file actually exists
+exercise = filecheck(exercise)
 
-      // a place to make a full copy to replace myaddon.cc with a mock to do a mocked run to test JS
-const copyFauxTempDir = path.join(process.cwd(), '~test-addon-faux.' + Math.floor(Math.random() * 10000))
-    , solutionFiles   = [ 'index.js' ]
+// execute the solution and submission in parallel with spawn()
+exercise = execute(exercise)
 
+// set up ports to be passed to submission and solution
+exercise.addSetup(function(mode, callback) {
+  this.submissionPort = rndport()
+  this.solutionPort   = this.submissionPort + 1
 
-var exercise = require('workshopper-exercise')()
+  this.submissionArgs = [this.submissionPort, path.join(__dirname, 'public')]
+  this.solutionArgs   = [this.solutionPort, path.join(__dirname, 'public')]
 
+  process.nextTick(callback)
+})
 
-// add solutions file listing from solutions/ directory
-exercise = solutions(exercise, solutionFiles)
+// add a processor for both run and verify calls, added *before*
+// the comparestdout processor so we can mess with the stdouts
+exercise.addProcessor(function (mode, callback) {
+  this.submissionStdout.pipe(process.stdout)
 
-// the steps towards verification
-exercise.addProcessor(check.checkSubmissionDir)
-exercise.addProcessor(copy.copyTemp([ copyFauxTempDir ]))
-exercise.addProcessor(copyFauxAddon)
-exercise.addProcessor(packagejson.checkPackageJson)
-exercise.addProcessor(gyp.checkBinding)
-exercise.addProcessor(checkJs)
+  // replace stdout with our own streams
+  this.submissionStdout = through2()
+  if (mode == 'verify')
+    this.solutionStdout = through2()
 
-// always clean up the temp directories
-exercise.addCleanup(copy.cleanup([ copyFauxTempDir ]))
+  setTimeout(query.bind(this, mode), 1000)
 
-
-function copyFauxAddon (mode, callback) {
-  copy(path.join(__dirname, 'faux', 'myaddon.cc'), copyFauxTempDir, function (err) {
-    if (err)
-      return callback(err)
-
+  process.nextTick(function () {
     callback(null, true)
   })
-}
+})
 
 
-// run `node-gyp rebuild` on a mocked version of the addon that prints what we want
-// so we can test that their JS is doing what it is supposed to be doing and there
-// is no cheating! (e.g. console.log(...))
-function checkJs (mode, callback) {
+// compare stdout of solution and submission
+exercise = comparestdout(exercise)
+
+// delayed for 500ms to wait for servers to start so we can start
+// playing with them
+function query (mode) {
   var exercise = this
 
-  if (!exercise.passed)
-    return callback(null, true) // shortcut if we've already had a failure
+  function connect (port, stream) {
+    var url = 'http://localhost:' + port + '/main.css'
 
-  gyp.rebuild(copyFauxTempDir, function (err) {
-    if (err) {
-      exercise.emit('fail', 'Compile mock C++ to test JavaScript: ' + err.message)
-      return callback(null, false)
-    }
+    superagent.get(url)
+      .on('error', function (err) {
+        exercise.emit(
+            'fail'
+          , exercise.__('fail.connection', {address: url, message: err.message})
+        )
+      })
+      .pipe(stream)
+  }
 
-    childProcess.exec(
-          '"'
-        + process.execPath
-        + '" "'
-        + require.resolve('../../lib/require-argv2')
-        + '" "'
-        + copyFauxTempDir
-        + '"'
-      , function (err, stdout, stderr) {
-          if (err) {
-            process.stderr.write(stderr)
-            process.stdout.write(stdout)
-            return callback(err)
-          }
+  connect(this.submissionPort, this.submissionStdout)
 
-          var pass = stdout.toString().replace('\r', '') == 'FAUX\n'
-          if (!pass) {
-            console.log('stdout: [%s]', stdout.toString())
-            console.log('stderr: [%s]', stderr.toString())
-            process.stderr.write(stderr)
-            process.stdout.write(stdout)
-          }
-          exercise.emit(pass ? 'pass' : 'fail', 'JavaScript code loads addon and invokes `print()` method')
-
-          callback(null, pass)
-        }
-    )
-  })
+  if (mode == 'verify')
+    connect(this.solutionPort, this.solutionStdout)
 }
-
 
 module.exports = exercise

@@ -2,10 +2,7 @@
 
 tutao.provide('tutao.entity.tutanota.DeleteMailData');
 
-/**
- * @constructor
- * @param {Object=} data The json data to store in this entity.
- */
+
 tutao.entity.tutanota.DeleteMailData = function(data) {
   if (data) {
     this.updateData(data);

@@ -4,12 +4,7 @@ var path = require('path'),
     utils = require('swaggerize-builder/lib/utils'),
     thing = require('core-util-is');
 
-/**
- * Routes handlers to express router.
- * @param router
- * @param mountpath
- * @param options
- */
+
 function expressroutes(router, options) {
     var routes, mountpath;
 

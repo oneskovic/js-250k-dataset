@@ -1,93 +1,111 @@
-// needs rework to generalize beyond webOS
-// like the idea of auto-wiring published properties but perhaps data layer should be extensible
+define(['App', 'underscore', 'backbone', 'hbs!template/prefs', 'view/basem-view'],
+	function(App, _, Backbone, PrefsTmpl, BaseView) {
+		return BaseView.extend({
+			template: PrefsTmpl,
+			events: {
+				//'submit #newlink': "submitForm",
+				'change input': 'updateSettings',
+				"change select": "updateSettings",
+				'click .apply-preferences': "applyPreferences"
+			},
 
-var _AutoPref = {
-	name : "extras.AutoPreferencesService",
-	kind : "Component",
-	components : [{
-		kind : "SystemService",
-		name : "getPreferences",
-		method : "getPreferences",
-		onResponse : "getPrefs"
-	}, {
-		kind : "SystemService",
-		name : "setPreferences",
-		method : "setPreferences",
-		onResponse : "setPrefs"
-	}, {
-		kind:"extras.Singleton",
-		name:"singleton",
-		base:"autoprefs"
-	}],
-	events : {
-		onLoad : "",
-		onSet : "",
-		onError : ""
-	},
-	deferUpdate:false,
-	create : function() {
-		this.inherited(arguments);
+			initialize: function(options) {
+				_.bindAll(this);
+				this.model = App.settings
+			},
+			onRender: function() {
+				this.showSettings()
+			},
+			//was having trouble getting handlebars template setting the settings values
+			//doing it in this function instead
+			showSettings: function() {
+				var self = this
 
-		var props = [];
-		for ( var prop in this.published) {
-			props.push(prop);
-			this["get" + enyo.cap(prop)] = enyo.bind(this, "getProp", prop);
-			this[prop + "Changed"] = enyo.bind(this, "changeHandler", prop);
-		}
+				for (var item in App.settings.attributes) {
+					var input = self.$('#' + item)
+					var type = input.prop('type')
+					if (type == 'checkbox') {
+						input.prop('checked', self.stringToBoolean(App.settings.attributes[item]));
+					} else if (type == 'select-one') {
+						input.val(App.settings.attributes[item]);
+						//$('#' + item + ' option[value=' + App.settings.attributes[item] + ']').attr('selected', 'selected');
 
-		this.$.getPreferences.call({
-			keys : props
-		});
-	},
-	getProp:function(prop) {
-		var p = this.$.singleton.get(prop);
-		
-		if(p) {
-			this[prop] = p;
-			return p;
-		} else {
-			return this[prop];
-		}
-	},
-	changeHandler : function(prop) {
-		if (this.deferUpdate)
-			return;
-		
-		this.$.singleton.set(prop, this[prop]);
-		
-		var o = {};
-		o[prop] = this[prop];
-		this.$.setPreferences.call(o);
-	},
-	defer : function(disable) {
-		this.deferUpdate = !!disable;
-	},
-	update : function() {
-		var o = {};
-		for ( var prop in this.published) {
-			o[prop] = this[prop];
-		}
+					} else if (type == 'text') {
+						input.val(App.settings.attributes[item]);
+					}
+				}
 
-		this.$.setPreferences.call(o);
-	},
-	setPrefs : function(source, response) {
-		if (!response.returnValue)
-			this.doError(response);
+				//set radios manually
+				setTimeout(function() {
+					//not sure why this needs a settimeout, but it does :(
+					$('input:radio[name="cssType"][value="' + App.settings.attributes.cssType + '"]').attr('checked', true);
+				}, 111)
 
-		this.doSet();
-	},
-	getPrefs : function(source, response) {
-		if (!response.returnValue)
-			this.doError(response);
-		
-		for ( var prop in this.published) {
-			if(response[prop] !== undefined) {
-				this[prop] = response[prop];
+			},
+			updateSettings: function() {
+				var $inputs = this.$el.find('input, select,textarea,radio');
+				var o = {};
+				_.each($inputs, function(input) {
+					var $input = $(input);
+					var name = $input.attr('name');
+					var value = $input.val() || '';
+					var type = $input.attr('type');
+
+					switch (type) {
+						case 'checkbox':
+							if ($input.is(':checked')) {
+								o[name] = true;
+							} else {
+								o[name] = false;
+							}
+							break;
+						case 'radio':
+							o[name] = $input.parent().parent().find("input[name='" + name + "']:checked").val()
+							break;
+						default:
+							o[name] = value;
+							break;
+					}
+
+				});
+				App.settings.set(o);
+				for (var item in o) {
+					//console.log('name =' + item, 'value=' + o[item])
+					$.cookie(item, o[item], {
+						path: '/',
+						expires: 364
+					});
+
+				}
+
+				//return o;
+			},
+			applyPreferences: function() {
+				location.reload();
+			},
+			stringToBoolean: function(string) {
+
+				if (typeof string === 'undefined') {
+					return false
+				} else if (typeof string === 'boolean') {
+					return string
+				} else if (typeof string === 'string') {
+
+					switch (string.toLowerCase()) {
+						case "true":
+						case "yes":
+						case "1":
+							return true;
+						case "false":
+						case "no":
+						case "0":
+						case null:
+							return false;
+						default:
+							return Boolean(string);
+					}
+				}
 			}
-		}
 
-		this.doLoad();
-	}
-}
-
-enyo.kind(_AutoPref);
+		});
+	});

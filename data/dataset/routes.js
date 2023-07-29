@@ -1,58 +1,115 @@
-"use strict";
+var googl = require('goo.gl');
+var fs = require('fs');
+var config = require('../config/config.js');
+var helpers = {};
 
-
-/**
- * # Route map
- *
- * This maps URL routes to handler methods.
- *
- * _Note: Supported request methods are: `GET`, `POST`, `PUT`, `DEL`, `OPTIONS` and `HEAD`_
- *
- * You can specify one or more middleware which should get run before running
- * the controller method:
- *
- * ```javascript
- * module.exports = { 
- *   'GET /' : ['accessControl', 'main.index'] 
- * };
- * ```
- *
- * As you can see, if the middleware name has a period (`.`) within it it
- * is assumed to refer to a `controller`.`method` combination.
- * Otherwise it is assumed to be the name of a [middleware](#middleware) module file.
- *
- * The order in which they're specified determines the order in which they get 
- * executed at runtime.
- *
- * An example...
- * 
- * ```javascript
- * module.exports = { 
- *   'GET /' : ['accessControl', 'user.load', 'main.index'] 
- * };
- * ```
- *
- * For the above example, Waigo will process the request in the following
- * order:
- *
- * - Load `support/middleware/acccessControl.js` and pass request to its exported method
- * - Load `controllers/user.js` and pass request to its `load` method 
- * - Load `controllers/main.js` and pass request to its `index` method
- *
- * If you wish to initialise a particular middleware with options then you can
- * specify it as an object. For example:
- *
- * ```javascript
- * module.exports = { 
- *   'POST /signup' : [ { id: 'bodyParser', limit: '1kb' }, 'main.signup' ] 
- * };
- * ```
- *
- * For the above configuration an instance of the `bodyParser` middleware will 
- * get initialized for this route with the request body size limit set to `1KB`.
- */
-module.exports = {
+module.exports = function(app, fileModel, s3Client){
   
-};
+  // use set helpers
+  helpers = {
+    s3Client: s3Client,
+    fileModel: fileModel
+  }
 
+  // routes
+  app.post('/delete', removeFile);
+  app.post('/:secret?', addFile);
+  app.get('/:secret?', getFiles); 
+  
+}
 
+// get files
+var getFiles = function(req, res) {
+  var secret = req.params.secret ? req.params.secret : 'root';
+
+  helpers.fileModel.find({ secret: secret }, {}, { sort: {date: -1} }, function (err, files) {
+    if(err) {
+      return res.send(err, 500);
+    }
+    
+    res.render('index.jade', {
+      files: files,
+      domain: config.s3.domain,
+      host: req.headers.host
+    });
+  });
+}
+
+// upload file, shorten url and save to db
+var addFile = function(req, res) {
+  var files = req.files.files;
+  var safe = {};
+  var headers = {
+    'Content-Length': files.size,
+    'Content-Type': files.type
+  }
+  
+  safe.secret = req.params.secret ? req.params.secret : 'root';      
+  safe.name = files.name.replace(/ /g, "-").replace(/[?\[\]/\\=<>:;,''""&$#*()|~`!{}]/g, '');
+  safe.path = new Date().getTime() + '/' + safe.name;      
+  
+  helpers.s3Client.putFile(files.path, safe.path, headers, function(err, response){
+    if(err) {
+      return res.send(err, 500);
+    }
+    
+    googl.shorten(config.s3.domain + "/" + safe.path, function (url) {
+      fs.unlink(files.path, function(err){      
+        if(err) {
+          return res.send(err, 500);
+        }
+        
+        save(safe, url, function(err, data){
+          if(err) {
+            return res.send(err, 500);
+          }
+          
+          res.json(data, 200);
+        })
+      });
+    });
+  });
+}
+
+// delete file
+var removeFile = function(req, res){
+  var id = req.body.id;
+  helpers.fileModel.findById(id, function(err, files){
+    if(err) {
+      return res.send(err, 500);
+    }
+    
+    if(files !== null){
+      helpers.s3Client.deleteFile(files.url, function(){
+        files.remove();
+      });
+    }
+    
+    var data = {
+      success: "file deleted"
+    }
+    
+    res.json(data);
+  });
+}
+
+// save to the db
+var save = function(safe, url, cb) {
+  var file = new helpers.fileModel();
+  file.name = safe.name;
+  file.shortUrl = url.id;
+  file.url = safe.path;
+  file.secret = safe.secret;
+  file.save(function(err) {
+    var data = {
+      status: {
+        message: 'success',
+        url: safe.path,
+        name: safe.name,
+        id: file._id,
+        shortUrl: url.id
+      }
+    }
+    cb(err, data);
+  });  
+}

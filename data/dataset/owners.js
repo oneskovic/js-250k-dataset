@@ -1,10 +1,3 @@
-/*
- * owners.js: Commands related to working with system owners.
- *
- * (C) 2012, Nodejitsu Inc.
- *
- */
-
 var fs = require('fs'),
     quill = require('../../quill');
 

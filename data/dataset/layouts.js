@@ -1,9 +1,3 @@
-/*==================================================
- *  Static Track Based Layout
- *==================================================
- */
-
-
 Timeline.StaticTrackBasedLayout = function(params) {
     this._eventSource = params.eventSource;
     this._ether = params.ether;

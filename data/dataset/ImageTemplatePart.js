@@ -2,14 +2,7 @@ goog.provide('tvs.ImageTemplatePart');
 
 goog.require('tvs.TemplatePart');
 
-/**
- * @constructor
- * @param {string} content
- * @param {string} width Allowed values: *, height, [\d]px
- * @param {string} drawMode allowed values: repeat, stretch
- * @extends {tvs.TemplatePart}
- * @export
- */
+
 tvs.ImageTemplatePart = function(content, width, drawMode) {
     goog.base(this);
 

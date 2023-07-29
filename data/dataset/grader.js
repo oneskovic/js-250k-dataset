@@ -2,11 +2,7 @@
 
     "use strict";
 
-    /**
-     * Grader Class
-     *
-     * Provides grades, quality metrics
-     */
+    
     forp.Grader = function()
     {
         this.grades = {

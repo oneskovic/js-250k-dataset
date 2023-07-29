@@ -1,9 +1,4 @@
 /**
- * @fileOverview
- * Textarea (source, text) 영역의 컨텐츠를 수정, 관리하기 위한 HtmlPanel 관련 Source
- */
-
-/**
  * HTML모드(소스모드)의 컨텐츠를 수정, 관리하기 위한 클래스
  *
  * @class

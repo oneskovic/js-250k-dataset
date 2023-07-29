@@ -1,13 +1,3 @@
-/**
- * @ngdoc function
- * @name jqm.$hideAddressBar
- * @requires $window
- * @requires $rootElement
- * @requires $orientation
- *
- * @description
- * When called, this will hide the address bar on mobile devices that support it.
- */
 jqmModule.factory('$hideAddressBar', ['$window', '$rootElement', '$orientation', function ($window, $rootElement, $orientation) {
   var MIN_SCREEN_HEIGHT_WIDTH_OPT_OUT = 500,
     MAX_SCREEN_HEIGHT = 800,

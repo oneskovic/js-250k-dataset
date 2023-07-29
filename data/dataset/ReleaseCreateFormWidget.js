@@ -1,5 +1,3 @@
-/*jshint strict:false */
-
 define([
     "dojo/_base/declare",
     "mijit/_WidgetBase",

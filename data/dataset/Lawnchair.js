@@ -1,9 +1,3 @@
-/**
- * Lawnchair
- * =========
- * A lightweight JSON document store.
- * 
- */
 var Lawnchair = function(opts) {
 	this.init(opts);
 }

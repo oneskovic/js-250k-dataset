@@ -24,9 +24,7 @@ app.controller('AboutCtrl', function ($scope, $http, $rootScope, ngDialog, $wind
         });
     };
 
-    /**
-     * Get Soundnode about.html form Github
-     */
+    
     $http.get(urlAbout, config)
         .success(function (data) {
             $scope.content = data;
@@ -36,9 +34,7 @@ app.controller('AboutCtrl', function ($scope, $http, $rootScope, ngDialog, $wind
         });
 
 
-    /**
-     * Get App version from latest release from Github
-     */
+    
     $http.get(urlRelease, config)
         .success(function (data) {
             var release = data[0];

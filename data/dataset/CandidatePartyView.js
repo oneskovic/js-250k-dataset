@@ -1,7 +1,3 @@
-/**
- * The Member list panel (בנימין נתניהו, גדעון סער) shows a list of members
- * of the current selected party
- */
 OKnesset.app.views.CandidatePartyView = new Ext.extend(OKnesset.Panel, {
 			id : 'CandidatePartyView',
 			layout: {

@@ -1,8 +1,3 @@
-/**
- * This will inits the default roles, default user to app & index page to app
- */
-
-
 var DBActions = require("../DBActions"),
     async = require("async"),
     getProp = require("../AppProperties").get,

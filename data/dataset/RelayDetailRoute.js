@@ -1,4 +1,3 @@
-/*global GLOBE, Em */
 GLOBE.RelayDetailRoute = Em.Route.extend({
     model: function(params){
         return params.fingerprint;

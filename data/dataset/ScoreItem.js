@@ -1,7 +1,3 @@
-/*
- *  the score layer
-*/
-
 var ScoreItem = cc.Layer.extend({
 
   scoreType: null,    

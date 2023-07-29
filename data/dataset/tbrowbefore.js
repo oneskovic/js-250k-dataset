@@ -1,9 +1,3 @@
-/**
- * @class меню - Новый ряд в таблице
- *
- * @param  elRTE  rte   объект-редактор
- * @param  String name  название кнопки 
- **/
 elRTE.prototype.ui.prototype.buttons.tbrowbefore = function(rte, name) {
 	this.constructor.prototype.constructor.call(this, rte, name);
 	

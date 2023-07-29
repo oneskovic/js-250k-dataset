@@ -1,5 +1,5 @@
 "use strict";
-/*global ODSA */
+
 (function ($) {
   // Declare and initialize state variables
   var keyValue = $('#keyvalue').val();

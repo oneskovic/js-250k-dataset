@@ -1,4 +1,3 @@
-
 function KUploadButton(options) {
 	this.init(options);
 }

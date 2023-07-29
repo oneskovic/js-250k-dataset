@@ -1,10 +1,3 @@
-
-/**
- * Filename: js/app/views/HelpPageView
- *
- * initialises the view
- *
- */
 //
 
 

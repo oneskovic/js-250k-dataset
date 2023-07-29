@@ -1,6 +1,3 @@
-/**
- * Model representing a Staff object
- */
 Ext.define('CarTracker.model.Car', {
     extend: 'CarTracker.model.Base',    
     idProperty: 'CarID',

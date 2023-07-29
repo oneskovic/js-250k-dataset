@@ -13,10 +13,7 @@ inputEx.widget.ListCustom = function(options) {
 	this.selects = [];
 };
 YAHOO.lang.extend(inputEx.widget.ListCustom,inputEx.widget.DDList,{
-/**
-    * Add an item to the list
-    * @param {String|Object} item Either a string with the given value or an object with "label" and "value" attributes
-    */
+
    addItem: function(item) {
 
       if (this.maxItems && this.items.length >= this.maxItems){

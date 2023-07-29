@@ -3,18 +3,7 @@
 var zlib = require('zlib');
 
 module.exports = {
-  /**
-   * zlib works with streams, so this must be used asynchronously.
-   *
-   * Take in an object literal, and deflate and then Base64 encode it.
-   *
-   * @param {string} params The parameters object.
-   * @param {Function} callback The callback to take the results.
-   *                            The first parameter is any errors
-   *                            from decoding, and the second
-   *                            parameter is the encoded parameters
-   *                            object.
-   */
+  
   encode : function (data, callback) {
     zlib.deflate(JSON.stringify(data), function (err, raw) {
       if (err) return callback(err);

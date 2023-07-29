@@ -1,11 +1,4 @@
 /**
- * Copyright (C) 2009-2012 Klaus Reimer <k@ailis.de>
- * See LICENSE.txt for licensing information
- * 
- * @require threedee.js
- */
-
-/**
  * Constructs new render options.
  *            
  * @constructor

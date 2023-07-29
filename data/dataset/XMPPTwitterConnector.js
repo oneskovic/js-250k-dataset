@@ -1,4 +1,3 @@
-/* ---------------------------------------------------------------------- */
 /*                      Component specific code                           */
 
 const CLASS_ID    = Components.ID('{45bb23c9-eb7b-4510-ae42-8b2e9e67d29f}');
@@ -7,7 +6,7 @@ const CONTRACT_ID = '@hyperstruct.net/xmpp4moz/connector;1?type=twitter';
 const SOURCE      = 'chrome://sameplace/content/connectors/connector-twitter.js';
 const INTERFACE   = Components.interfaces.nsIXMPPConnector;
 
-/* ---------------------------------------------------------------------- */
+
 /*                           Template code                                */
 
 const Cc = Components.classes;

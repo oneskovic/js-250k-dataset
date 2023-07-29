@@ -1,5 +1,5 @@
 "use strict";
-/*global alert: true, ODSA */
+
 
 (function ($) {
   var jsav;

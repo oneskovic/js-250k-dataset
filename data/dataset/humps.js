@@ -1,10 +1,3 @@
-// =========
-// = humps =
-// =========
-// version 0.5.0
-// Underscore-to-camelCase converter (and vice versa)
-// for strings and object keys
-
 // humps is copyright © 2014 Dom Christie
 // Released under the MIT license.
 

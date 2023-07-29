@@ -2,11 +2,7 @@
 
 tutao.provide('tutao.tutanota.gui.BubbleInputGui');
 
-/**
- * Resizes the input field to be maximized in the last line if there is enough space (at least more than 15px)
- * @param {*} inputField The dom element.
- * @param {string} text The text of the inputField.
- */
+
 tutao.tutanota.gui.BubbleInputGui.resizeInputField = function(inputField, text) {
 	var inputFieldDiv = $(inputField).parent();
 	var bubbles = inputFieldDiv.siblings();

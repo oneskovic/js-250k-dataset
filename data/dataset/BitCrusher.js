@@ -3,15 +3,7 @@ function(Tone){
 
 	"use strict";
 
-	/**
-	 *  @class Downsample incoming signal to a different bitdepth. 
-	 *
-	 *  @constructor
-	 *  @extends {Tone.Effect}
-	 *  @param {number} bits 1-8. 
-	 *  @example
-	 *  var crusher = new Tone.BitCrusher(4);
-	 */
+	
 	Tone.BitCrusher = function(){
 
 		var options = this.optionsObject(arguments, ["bits"], Tone.BitCrusher.defaults);

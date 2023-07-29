@@ -1,7 +1,3 @@
-/*
- *  the trophy sprite
- */
-
 var Trophy = cc.Sprite.extend({
 
   position: null,			      

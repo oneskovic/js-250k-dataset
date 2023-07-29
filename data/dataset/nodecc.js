@@ -1,7 +1,3 @@
-/**
- * js | css files Compo and Merge tool used nodejs
- * @author AlloyTeam.Horizon
- */
  
 var fs = require('fs'),
     util = require('util'),

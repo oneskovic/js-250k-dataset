@@ -1,8 +1,3 @@
-/**
- * This is an entry point for global namespace. If you want to use separate
- * modules individually - you are more than welcome to do so.
- */
-
 var random = require('ngraph.random');
 
 var Viva = {

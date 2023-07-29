@@ -1,97 +1,92 @@
-var klass   = require('klass'),
-    Crypto  = require('../util/crypto'),
-    globals = require('../globals');
+var peerConfig = require('./config.js').peer;
 
-var Peer = module.exports = klass({
-
-  /**
-   * Peer constructor
-   *
-   * @param {String|Array} address Address of the Peer or tuple representation
-   * @param {String}       id      ID of the Peer
-   */
-  initialize: function() {
-    var args  = arguments;
-
-    if (Array.isArray(args[0])) {
-      args  = args[0];
+/**
+ * @constructor
+ * @class Represents a foreign Peer. Used by {@link Router} instances to route
+ * messages from one Peer to another. Control over a Peer lies in the hand of a
+ * {@link ConnectionManager} instance.
+ *
+ * @param id {String}
+ * @param peerConnection {RTCPeerConnection} The PeerConnection to the remote peer.
+ * @param dataChannel {DataChannel} The DataChannel to the remote peer.
+ */
+var Peer = function(id, peerConnection, dataChannel) {
+    if (!(this instanceof Peer)) {
+        return new Peer(id, peerConnection, dataChannel);
     }
+    this.id = id;
+    this._peerConnection = peerConnection;
+    this._dataChannel = dataChannel;
+    this._dataChannel.onmessage = this._onmessage.bind(this);
+    this._heartbeatDefaultTimer = peerConfig.messageTimeout || 1000;
+    this._heartbeatCallbacks = {};
+};
 
-    this.touch();
-    this._distance = null;
-    this._address  = args[0];
-    this._id       = args[1];
-
-    if (!this._validateID(this._id)) {
-      throw new Error('non valid ID');
+Peer.prototype.send = function(msg) {
+    var stringifiedMsg = JSON.stringify(msg);
+    try {
+        this._dataChannel.send(stringifiedMsg);
+    } catch (e) {
+        throw new Error('Peer could not send message over datachannel: \'' + stringifiedMsg + '\'; Cause: ' + e.name + ': ' + e.message);
     }
-  },
+};
 
-  //
-  // Public
-  //
+Peer.prototype._onmessage = function(rawMsg) {
+    var msg;
+    try {
+        msg = JSON.parse(rawMsg.data);
+    } catch (e) {
+        console.log('Cannot parse message', rawMsg);
+    }
+    if (msg.type === 'heartbeat') {
+        this._onheartbeat(msg);
+    } else {
+        this.onmessage(msg);
+    }
+};
 
-  touch: function() {
-    this._lastSeen = new Date().getTime();
-    return this;
-  },
+Peer.prototype.onmessage = function() {
+    // overwrite
+};
 
-  setID: function(id) {
-    this._id = id;
-  },
+Peer.prototype.onclose = function() {
+    // overwrite
+};
 
-  setAddress: function(address) {
-    this._address = address;
-  },
+Peer.prototype.sendHeartbeat = function(cb, timeout) {
+    var self = this;
+    var randomnumber = Math.floor(Math.random() * 100001);
+    self._heartbeatCallbacks[randomnumber] = cb;
+    try {
+        self.send({
+            type: 'heartbeat',
+            request: true,
+            sqnr: randomnumber
+        });
+    } catch (e) {
+        // sweep this under the table as the error is handled by the timeout
+    }
+    setTimeout(function() {
+        if (self._heartbeatCallbacks[randomnumber]) {
+            self._heartbeatCallbacks[randomnumber]('Peer unreachable');
+        }
+    }, timeout || self._heartbeatDefaultTimer);
+};
 
-  getLastSeen: function() {
-    return this._lastSeen;
-  },
+Peer.prototype._onheartbeat = function(msg) {
+    var self = this;
+    if (msg.request) {
+        self.send({
+            type: 'heartbeat',
+            response: true,
+            sqnr: msg.sqnr
+        });
+    } else if (msg.response) {
+        self._heartbeatCallbacks[msg.sqnr]();
+        delete self._heartbeatCallbacks[msg.sqnr];
+    }
+};
 
-  getID: function() {
-    return this._id;
-  },
-
-  cacheDistance: function(id) {
-    this._distance = this._distance || this.getDistanceTo(id);
-    return this;
-  },
-
-  getDistance: function() {
-    return this._distance;
-  },
-
-  getDistanceTo: function(id) {
-     return Crypto.distance(this.getID(), id);
-  },
-
-  getAddress: function() {
-    return this._address;
-  },
-
-  getTriple: function() {
-    return [this._address, this._id];
-  },
-
-  equals: function(peer) {
-    return (this._id === peer.getID());
-  },
-
-  toString: function() {
-    return '<' + this._address + '#' + this._id + '>';
-  },
-
-  //
-  // Private
-  //
-
-  _validateID: function(id) {
-    return typeof id === 'string' && globals.REGEX_NODE_ID.test(id);
-  },
-
-  _generateID: function() {
-    //return globals.DIGEST(this._address);
-    return Crypto.digest.randomSHA1();
-  }
-
-});
+if (typeof(module) !== 'undefined') {
+    module.exports = Peer;
+}

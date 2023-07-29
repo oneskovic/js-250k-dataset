@@ -1,9 +1,3 @@
-/**
- * @author mrdoob / http://mrdoob.com/
- * @author bhouston / http://exocortex.com/
- * @author stephomi / http://stephaneginier.com/
- */
-
 ( function ( THREE ) {
 
 	THREE.Raycaster = function ( origin, direction, near, far ) {

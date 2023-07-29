@@ -1,5 +1,3 @@
-
-
 // Valid
 var1    = 'var1';
 var10   = 'var1';

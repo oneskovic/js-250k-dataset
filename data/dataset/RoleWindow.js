@@ -1,5 +1,3 @@
-//= require ext_extensions/SubmitFalse
-
 Ext.ns('Talho.Admin.Apps.view');
 
 Talho.Admin.Apps.view.RoleWindow = Ext.extend(Ext.Window, {

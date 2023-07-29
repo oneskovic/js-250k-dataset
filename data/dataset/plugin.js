@@ -1,54 +1,51 @@
-/**
- * plugin.js
- *
- * Copyright 2013 Web Power, www.webpower.nl
- * @author Arjan Haverkamp
- */
+Selectize.define('drag_drop', function(options) {
+	if (!$.fn.sortable) throw new Error('The "drag_drop" plugin requires jQuery UI "sortable".');
+	if (this.settings.mode !== 'multi') return;
+	var self = this;
 
-/*jshint unused:false */
-/*global tinymce:true */
+	self.lock = (function() {
+		var original = self.lock;
+		return function() {
+			var sortable = self.$control.data('sortable');
+			if (sortable) sortable.disable();
+			return original.apply(self, arguments);
+		};
+	})();
 
-tinymce.PluginManager.requireLangPack('codemirror');
+	self.unlock = (function() {
+		var original = self.unlock;
+		return function() {
+			var sortable = self.$control.data('sortable');
+			if (sortable) sortable.enable();
+			return original.apply(self, arguments);
+		};
+	})();
 
-tinymce.PluginManager.add('codemirror', function(editor, url) {
+	self.setup = (function() {
+		var original = self.setup;
+		return function() {
+			original.apply(this, arguments);
 
-	function showSourceEditor() {
-		// Insert caret marker
-		editor.focus();
-		editor.selection.collapse(true);
-		editor.selection.setContent('<span class="CmCaReT" style="display:none">&#0;</span>');
+			var $control = self.$control.sortable({
+				items: '[data-value]',
+				forcePlaceholderSize: true,
+				disabled: self.isLocked,
+				start: function(e, ui) {
+					ui.placeholder.css('width', ui.helper.css('width'));
+					$control.css({overflow: 'visible'});
+				},
+				stop: function() {
+					$control.css({overflow: 'hidden'});
+					var active = self.$activeItems ? self.$activeItems.slice() : null;
+					var values = [];
+					$control.children('[data-value]').each(function() {
+						values.push($(this).attr('data-value'));
+					});
+					self.setValue(values);
+					self.setActiveItem(active);
+				}
+			});
+		};
+	})();
 
-		// Open editor window
-		var win = editor.windowManager.open({
-			title: 'HTML source code',
-			url: url + '/source.html',
-			width: 800,
-			height: 550,
-			resizable : true,
-			maximizable : true,
-			buttons: [
-				{ text: 'Ok', subtype: 'primary', onclick: function(){
-					var doc = document.querySelectorAll('.mce-container-body>iframe')[0];
-					doc.contentWindow.submit();
-					win.close();
-				}},
-				{ text: 'Cancel', onclick: 'close' }
-			]
-		});
-	};
-
-	// Add a button to the button bar
-	editor.addButton('code', {
-		tooltip: 'Source code',
-		icon: 'code',
-		onclick: showSourceEditor
-	});
-
-	// Add a menu item to the tools menu
-	editor.addMenuItem('code', {
-		icon: 'code',
-		text: 'Source code',
-		context: 'tools',
-		onclick: showSourceEditor
-	});
 });

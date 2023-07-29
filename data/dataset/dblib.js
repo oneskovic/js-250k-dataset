@@ -1,8 +1,4 @@
 /*
- * Misc database library functions
- */
-
-/*
  * Execute an SQL statement. This can be both DML (queries) or DDL (create/alter)
  * @param {String} statement : The statement to run
  * @param {Boolean} throwException : If true, throw exception on error. Default:false

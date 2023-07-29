@@ -1,6 +1,6 @@
 (function (enyo, scope) {
 
-	/** @lends TaskManagerSupport.prototype */
+	
 	enyo.TaskManagerSupport = {
 
 		/**

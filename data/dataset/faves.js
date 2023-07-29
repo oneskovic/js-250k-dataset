@@ -1,11 +1,3 @@
-/**
-* faves.js
-* This is where you list saved items
-*
-* Giv Parvaneh <giv@givp.org> 2010
-* This code is free to use by all
-*/
-
 Titanium.include('globals.js');
 
 win = Titanium.UI.currentWindow;

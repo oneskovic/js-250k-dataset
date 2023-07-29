@@ -1,4 +1,3 @@
-/*global YAHOO,WireIt */
 /**
  * Container that draw into a canvas. (Draw an Ellipse by default, override the drawCanvas method to customize)
  * @class CanvasContainer

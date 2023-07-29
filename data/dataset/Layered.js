@@ -10,13 +10,7 @@
 
     var layered_widgets = {};
 
-    /**
-     * Layered mixin class.
-     * 
-     * @mixin Layered
-     * @category Mixin
-     * @extends BaseWidget
-     */
+    
     uijet.Mixin('Layered', {
         options         : {
             cloak   : true

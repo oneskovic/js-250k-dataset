@@ -1,6 +1,3 @@
-// Simple JavaScript Templating
-// Adapted from John Resig - http://ejohn.org/ - MIT Licensed
-
 frappe.template = {compiled: {}, debug:{}};
 frappe.template.compile = function(str, name) {
 	var key = name || str;

@@ -38,12 +38,7 @@ ViewContainer.prototype.getPath = function(){
     return getItemPath(this);
 };
 
-/*
-    ViewContainers handle their own array state.
-    A View that is added to a ViewContainer will
-    be automatically removed from its current
-    container, if it has one.
-*/
+
 ViewContainer.prototype.add = function(view, insertIndex){
     // If passed an array
     if(view instanceof Array){

@@ -1,13 +1,5 @@
 (function (enyo, scope) {
-	/**
-	* Fires when the user changes the value of the toggle button, but not
-	* when the value is changed programmatically.
-	*
-	* @event onyx.ToggleIconButton#onChange
-	* @type {Object}
-	* @property {Boolean} value - The current value of the button.
-	* @public
-	*/
+	
 
 	/**
 	* {@link onyx.ToggleIconButton} is an icon that acts like a toggle switch. The icon

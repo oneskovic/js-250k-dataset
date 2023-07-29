@@ -1,6 +1,3 @@
-/*
- *
- */
 r360.TravelStartTimeControl = L.Control.extend({
     options: {
         position    : 'topright',

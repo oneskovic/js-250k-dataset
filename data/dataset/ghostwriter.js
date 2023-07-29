@@ -1,4 +1,3 @@
-// stuff
 define(['jquery',
    'scribe',
    'scribe-plugin-blockquote-command',

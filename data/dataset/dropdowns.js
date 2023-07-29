@@ -1,97 +1,114 @@
-$(document).ready(function() {
+'use strict';
 
-    /*
-     * Check if a dropdown overflows the screen size.
-     * parent: element used to calculate the position where the element will appear on the screen.
-     * element: element to be drawn.
-     * useParentWidth: (boolean) true if element will appear on the right size of parent.
-     */
-    function elementOverflowScreenWidth(parent, element, useParentWidth) {
-        if (useParentWidth) {
-            return ((window.screen.width - $(parent).offset().left) <= ($(parent).outerWidth() + $(element).outerWidth()));
-        } else {
-            return ((window.screen.width - $(parent).offset().left) <= $(element).outerWidth());
-        }
-    }
 
-    /*
-     * Check if a dropdown overflows a scrollable container.
-     * container: div with overflow:hidden.
-     * element: element to be drawn.
-     * coordinate: ("top"|"bottom") specifies if it should check overflow at the top or bottom of the container.
-     */
-    function elementOverflowParentHeight(container, element, coordinate) {
-        if (coordinate == "top") {
-            var containerTop = container.offset().top;
-            var elementTop = element.offset().top;
-            return elementTop < containerTop;
-        } else if (coordinate == "bottom") {
-            var containerBottom = container.offset().top + container.outerHeight();
-            var elementBottom = element.offset().top + element.outerHeight();
-            return elementBottom > containerBottom;
-        } else {
-            throw new Error("Undefined coordinate '" + coordinate + "', must be 'top' or 'bottom'");
-        }
-    }
+var jqLite = require('./lib/jqLite.js'),
+    util = require('./lib/util.js'),
+    attrKey = 'data-mui-toggle',
+    attrSelector = '[data-mui-toggle="dropdown"]',
+    openClass = 'mui-open',
+    menuClass = 'mui-dropdown-menu';
 
-    $(".dropdown-toggle").on("click", function() {
-        var menu = $(this).siblings("ul.dropdown-menu").first();
 
-        // Check if the menu overflows
-        if (elementOverflowScreenWidth(this, menu, false)) {
-            if (!menu.hasClass("right-menu")) {
-                menu.addClass("right-menu");
-            }
-        } else {
-            if (menu.hasClass("right-menu")) {
-                menu.removeClass("right-menu");
-            }
-        }
+/**
+ * Initialize toggle element.
+ * @param {Element} toggleEl - The toggle element.
+ */
+function initialize(toggleEl) {
+  // check flag
+  if (toggleEl._muiDropdown === true) return;
+  else toggleEl._muiDropdown = true;
+
+  // attach click handler
+  jqLite.on(toggleEl, 'click', clickHandler);
+}
+
+
+/**
+ * Handle click events on dropdown toggle element.
+ * @param {Event} ev - The DOM event
+ */
+function clickHandler(ev) {
+  // only left clicks
+  if (ev.button !== 0) return;
+
+  var toggleEl = this;
+  
+  // exit if toggle button is disabled
+  if (toggleEl.getAttribute('disabled') !== null) return;
+
+  // let event bubble before toggling dropdown
+  setTimeout(function() {
+    if (!ev.defaultPrevented) toggleDropdown(toggleEl);
+  }, 0);
+}
+
+
+/**
+ * Toggle the dropdown.
+ * @param {Element} toggleEl - The dropdown toggle element.
+ */
+function toggleDropdown(toggleEl) {
+  var wrapperEl = toggleEl.parentNode,
+      menuEl = toggleEl.nextElementSibling,
+      doc = wrapperEl.ownerDocument;
+
+  // exit if no menu element
+  if (!menuEl || !jqLite.hasClass(menuEl, menuClass)) {
+    return util.raiseError('Dropdown menu element not found');
+  }
+
+  // method to ignore clicks inside menu
+  function stopPropagationFn(ev) {
+    ev.stopPropagation();
+  }
+
+  // method to close dropdown
+  function closeDropdownFn() {
+    jqLite.removeClass(menuEl, openClass);
+      
+    // remove event handlers
+    jqLite.off(doc, 'click', closeDropdownFn);
+    jqLite.off(menuEl, 'click', stopPropagationFn);
+    jqLite.off(toggleEl, 'click', stopPropagationFn);
+  }
+
+  // method to open dropdown
+  function openDropdownFn() {
+    // position menu element below toggle button
+    var wrapperRect = wrapperEl.getBoundingClientRect(),
+        toggleRect = toggleEl.getBoundingClientRect();
+
+    var top = toggleRect.top - wrapperRect.top + toggleRect.height;
+    jqLite.css(menuEl, 'top', top + 'px');
+
+    // add open class to wrapper
+    jqLite.addClass(menuEl, openClass);
+
+    // close dropdown when user clicks outside of menu
+    jqLite.on(toggleEl, 'click', stopPropagationFn);
+    jqLite.on(menuEl, 'click', stopPropagationFn);    
+    jqLite.on(doc, 'click', closeDropdownFn);
+  }
+
+  // toggle dropdown
+  if (jqLite.hasClass(menuEl, openClass)) closeDropdownFn();
+  else openDropdownFn();
+}
+
+  
+/** Define module API */
+module.exports = {
+  /** Initialize module listeners */
+  initListeners: function() {
+    var doc = document;
+
+    // markup elements available when method is called
+    var elList = doc.querySelectorAll(attrSelector);
+    for (var i=elList.length - 1; i >= 0; i--) initialize(elList[i]);
+
+    // listen for new elements
+    util.onNodeInserted(function(el) {
+      if (el.getAttribute(attrKey) === 'dropdown') initialize(el);
     });
-
-    $(".dropdown-submenu").on("hover", function() {
-        var menu = $("ul.dropdown-menu", this).first();
-
-        if (elementOverflowScreenWidth(this, menu, true)) {
-            if (!$(this).hasClass("left-submenu")) {
-                $(this).addClass("left-submenu");
-            }
-        } else {
-            if ($(this).hasClass("left-submenu")) {
-                $(this).removeClass("left-submenu");
-            }
-        }
-    });
-
-    $(document).on("click", ".message-field-dropdown .key", function() {
-        var dropdownContainer = $(this).parent();
-        var menu = $(this).siblings("ul.dropdown-menu").first();
-        var container = $("#sidebar-replacement .nano .content");
-
-        dropdownContainer.removeClass("dropup");
-
-        if (elementOverflowParentHeight(container, menu, "bottom")) {
-            dropdownContainer.addClass("dropup");
-        }
-    });
-
-    $(document).on("hover", ".message-field-dropdown .dropdown-submenu", function() {
-        var menu = $(this).children("ul.dropdown-menu").first();
-        var container = $("#sidebar-replacement .nano .content");
-
-        // By default, let submenu go down
-        $(this).removeClass("up-submenu");
-        $(this).addClass("down-submenu");
-
-        if (elementOverflowParentHeight(container, menu, "bottom")) {
-            // Move submenu up
-            $(this).removeClass("down-submenu");
-            $(this).addClass("up-submenu");
-
-            if (elementOverflowParentHeight(container, menu, "top")) {
-                $(this).removeClass("up-submenu");
-                $(this).addClass("down-submenu");
-            }
-        }
-    });
-});
+  }
+};

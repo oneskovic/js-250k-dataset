@@ -1,10 +1,3 @@
-/**
- *
- * @author petr.sloup@klokantech.com (Petr Sloup)
- *
- * Copyright 2013 Klokan Technologies Gmbh (www.klokantech.com)
- */
-
 goog.provide('weapi.markers.PolyDragger');
 
 goog.require('goog.dom');

@@ -1,7 +1,5 @@
 'use strict';
-/**
-@module att
-**/
+
 
 /**
 根据模板创建项目

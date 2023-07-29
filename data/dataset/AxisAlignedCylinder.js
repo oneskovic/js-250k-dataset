@@ -2,11 +2,7 @@ define(["require", "exports", "module", "./Cone"], function(require, exports, mo
 
 var Cone = require('./Cone');
 
-/** 
- @member toxi
- @constructor
- @description An Abstract (don't use this directly) Axis-aligned Cylinder class
- */
+
 var	AxisAlignedCylinder = function(pos,radius,length) {
 	this.pos = (pos===undefined)? undefined: pos.copy();
 	this.setRadius(radius);

@@ -1,5 +1,3 @@
-/*global angular:true */
-
 (function () {
   'use strict';
   angular.module('codeFriends.projects')

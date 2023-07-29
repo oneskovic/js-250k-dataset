@@ -1,12 +1,3 @@
-/**
-@class socialAuth
-
-@toc
-//1. data
-//2. checkAuthGoogle
-//3. checkAuthFacebook
-*/
-
 'use strict';
 
 angular.module('app').

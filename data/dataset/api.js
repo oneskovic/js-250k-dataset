@@ -1,104 +1,57 @@
-// the http module allows us to create a server
-var http = require('http')
+var tap = require("tap");
+var test = tap.test;
+var DataBuffer = require('../lib/buffer');
+var reified;
 
-// the fs module allows us to read and write files to disk
-var fs   = require('fs')
+test('load', function(t){
+  console.log('\n** API');
+  t.ok(reified = require('../'), 'reified loaded');
+  t.similar(Object.keys(reified).sort(), [
+    'data','defaultEndian','isData','isType'
+  ], 'reified has all expected enumerable names');
+  t.similar(Object.getOwnPropertyNames(reified).sort(), [
+    'ArrayType','BitfieldType','DataBuffer',
+    'NumericType','StructType','Type',
+    'arguments','caller','data','defaultEndian',
+    'isData','isType','length','name','prototype'
+  ], 'reified has all expected names');
+  t.end();
+});
 
-// First, read all the data files =============================================
+test('reified as Type constructor', function(t){
+  t.equal(reified('Int32'), reified.NumericType.Int32, 'returns correct existing type');
+  var int8x10 = reified('Int8[10]');
+  var Int8 = reified('Int8');
+  t.equal(int8x10.prototype.DataType, 'array', 'name with bracket syntax creates array');
+  t.equal(int8x10.count, 10, 'array is correct length');
+  t.equal(int8x10.name, 'Int8x10', 'array is correct name');
+  t.equal(int8x10, reified('Int8[10]'), 'matching name and type is not recreated');
+  t.equal(int8x10, Int8[10], 'bracket notation also returns existing type');
+  int8x10.rename('Renamed');
+  var instance = new int8x10;
+  t.equal(instance.constructor.name, 'Renamed', 'renaming changes existing prototypes');
+  t.equal(reified('RGB', { r: 'Uint8', g: 'Uint8', b: 'Uint8' }).inspect(), '‹RGB›(3b) { r: ‹Uint8› | g: ‹Uint8› | b: ‹Uint8› }', 'StructType created');
+  t.end();
+});
 
-// you can directly require JSON files!
-var citiesData = require('./data/cities.json'),
-    characterData = require('./data/characters.json')
+test('reified as Data constructor', function(t){
+  var Int32 = reified('Int32');
+  var int32 = new reified('Int32', 10000);
+  t.equal(reified('Int32'), int32.constructor, 'using `new` constructs Data of right type');
+  t.equal(int32.reify(), 10000, 'passes value to real constructor');
+  t.similar((new reified('Int32[2][2]')).reify(), [[0,0],[0,0]], 'string constructs multidimensional arrays');
+  t.similar((new reified(Int32[2][2])).reify(), [[0,0],[0,0]], 'types constructs multidimensional arrays');
+  t.similar(new reified(Int32[2][2], [[1,2],[3,4]]).reify(), [[1,2],[3,4]], 'multidimensional init values are passed');
+  function OCT(n){ return [n,0,0,0] }
+  var flatten = Function.call.bind([].concat, []);
+  var buff = new Buffer(flatten(OCT(1), OCT(2), OCT(3), OCT(4)));
+  t.similar((new reified('Int32[2][2]', buff)).reify(), [[1,2],[3,4]], 'Provided buffer reifies correctly');
+  t.end();
+});
 
-// Then define our routes, or handler functions. ==============================
 
-var routes = {
+//`reified('Bits', 2)` - If the first parameter is a new name and the second parameter is a number a _‹BitfieldT›_ is created with the specified bytes.
+//`reified('Flags', [array of flags...], 2)` - If the second parameter is an array a _‹BitfieldT›_ is created, optionally with bytes specified.
+//`reified('FlagObject', { object of flags...}, 2)` - If the second parameter is a non-type object and the third is a number then a _‹BitfieldT›_ is created using the object as a flags object.
 
-    characters: function (name) {
 
-        if (name === 'all') {
-            return characterData
-        }
-
-        // go through every entry in characterData
-        // and return the one that matches the name
-        for (var i = 0; i < characterData.length; i++) {
-            var character = characterData[i]
-            if (character.name === name) {
-                return character
-            }
-        }
-
-        return {
-            error: 'character not found'
-        }
-
-    },
-
-    cities: function (name) {
-
-        if (name === 'all') {
-            return citiesData
-        }
-
-        for (var i = 0; i < citiesData.length; i++) {
-            var city = citiesData[i]
-            if (city.name === name) {
-                return city
-            }
-        }
-
-        return {
-            error: 'city not found'
-        }
-
-    }
-
-}
-
-// Now it's time to create the server! ========================================
-
-var server = http.createServer(function (request, response) {
-
-    // find the position of the second slash
-    var secondSlashIndex = request.url.indexOf('/', 1)
-
-    // if there's no second slash...
-    if (secondSlashIndex === -1) {
-        // return 404
-        response.end('404')
-
-    } else {
-
-        // extract the information
-
-        // route is the characters between first and second slashes
-        var route = request.url.slice(1, secondSlashIndex)
-
-        // parameter is the characters after the second slash
-        var parameter = request.url.slice(secondSlashIndex + 1)
-
-        // check if the route exists in our routes object
-        if (routes[route]) {
-
-            // call that route function with the parameter
-            // and get the returned data
-            var data = routes[route](parameter)
-
-            // convert the data into plain string
-            // and send it back to browser
-            response.end(JSON.stringify(data))
-
-        } else {
-
-            response.end('404')
-
-        }
-
-    }
-
-})
-
-// Finally, you need to make the server listen to a port. =====================
-
-server.listen(8080)

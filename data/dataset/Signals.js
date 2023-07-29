@@ -1,24 +1,5 @@
 (function (enyo, scope) {
-	/**
-	* {@link enyo.Signals} is a [component]{@link enyo.Component} used to listen
-	* to global messages.
-	* 
-	* An object with a Signals component can listen to messages sent from anywhere
-	* by declaring handlers for them.
-	* 
-	* DOM [events]{@glossary event} that have no node targets are broadcast as
-	* signals. These events include Window events, such as `onload` and
-	* `onbeforeunload`, as well as events that occur directly on `document`, such
-	* as `onkeypress` if `document` has the focus.
-	* 
-	* For more information, see the documentation on [Event
-	* Handling]{@linkplain $dev-guide/key-concepts/event-handling.html} in the
-	* Enyo Developer Guide.
-	*
-	* @class enyo.Signals
-	* @extends enyo.Component
-	* @public
-	*/
+	
 	enyo.kind(
 		/** @lends enyo.Signals.prototype */ {
 

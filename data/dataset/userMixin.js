@@ -1,8 +1,3 @@
-
-/**
- * Mixin dependencies
- */
-
 var getErrorMessage = require('./../errorMessage');
 
 /**

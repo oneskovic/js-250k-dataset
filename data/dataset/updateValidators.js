@@ -1,7 +1,3 @@
-/*!
- * Module dependencies.
- */
-
 var async = require('async');
 var ValidationError = require('../error/validation.js');
 var ObjectId = require('../types/objectid');

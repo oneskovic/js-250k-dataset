@@ -1,4 +1,3 @@
-
 Ext.regModel("Sencha.Protocol.Model", { // JCM not actually used...
     fields: [
         {name: "id"}

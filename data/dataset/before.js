@@ -1,16 +1,4 @@
 /**
-* Before Modifier
-* (c) 2013 Bill, BunKat LLC.
-*
-* Modifies a constraint such that all values that are less than the
-* specified value are considered valid.
-*
-* Later is freely distributable under the MIT license.
-* For all details and documentation:
-*     http://github.com/bunkat/later
-*/
-
-/**
 * Creates a new modified constraint.
 *
 * @param {Constraint} constraint: The constraint to be modified

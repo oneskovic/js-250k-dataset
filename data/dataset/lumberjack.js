@@ -1,13 +1,3 @@
-/*!
- * Lumberjack JavaScript Utility v0.3
- * http://github.com/jbail/lumberjack
- *
- * Copyright 2013 Jeff Bail
- * Released under the MIT license
- * http://opensource.org/licenses/MIT
- *
- * Date: 2013-11-24
- */
 (function () {
 
   function Console(console, name, options) {

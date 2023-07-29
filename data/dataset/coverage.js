@@ -1,8 +1,6 @@
 "use strict";
 
-/**
- * @module reporter-coverage
- */
+
 
 var util = require("util");
 var istanbul;

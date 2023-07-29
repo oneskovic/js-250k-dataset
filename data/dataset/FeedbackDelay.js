@@ -2,17 +2,7 @@ define(["Tone/core/Tone", "Tone/effect/FeedbackEffect", "Tone/signal/Signal"], f
 
 	"use strict";
 	
-	/**
-	 *  @class  A feedback delay
-	 *
-	 *  @constructor
-	 *  @extends {Tone.FeedbackEffect}
-	 *  @param {Tone.Time} [delayTime=0.25] The delay time in seconds. 
-	 *  @param {number=} feedback The amount of the effected signal which 
-	 *                            is fed back through the delay.
-	 *  @example
-	 *  var feedbackDelay = new Tone.FeedbackDelay("8n", 0.25);
-	 */
+	
 	Tone.FeedbackDelay = function(){
 		
 		var options = this.optionsObject(arguments, ["delayTime", "feedback"], Tone.FeedbackDelay.defaults);

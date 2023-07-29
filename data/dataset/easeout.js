@@ -1,10 +1,3 @@
-/*
- * ------------------------------------------
- * 先快后慢动画实现文件
- * @version  1.0
- * @author   genify(caijf@corp.netease.com)
- * ------------------------------------------
- */
 /** @module util/animation/easeout */
 NEJ.define([
     'base/global',

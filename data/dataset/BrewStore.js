@@ -1,9 +1,3 @@
-/*
- * Brew store
- *
- * @module BrewStore
- */
-
 var util = require('util');
 var EventEmitter = require('events').EventEmitter;
 

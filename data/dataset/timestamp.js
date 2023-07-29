@@ -1,7 +1,3 @@
-/**
- * 时间戳转换工具
- * @author zhaoxianlie
- */
 var Timestamp = (function(){
 
 	"use strict";

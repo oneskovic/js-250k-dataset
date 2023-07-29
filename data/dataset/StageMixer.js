@@ -1,5 +1,3 @@
-// Handles all instruments currently in stage
-
 Module("WAB.StageMixer", function (StageMixer) {
 
   function capitalize (word) {

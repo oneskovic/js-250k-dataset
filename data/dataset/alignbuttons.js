@@ -1,8 +1,3 @@
-/**
- * @fileoverview
- * 에디터의 이미지를 선택시 툴바의 align icon을 변경시키는 module
- */
-
 TrexMessage.addMsg({
 	'@align.image.align.center': "가운데정렬",
 	'@align.image.align.full': "오른쪽글흐름",

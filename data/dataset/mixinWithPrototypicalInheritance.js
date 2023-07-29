@@ -1,6 +1,3 @@
-/*global
-  angular: false
-*/
 /**
  * @fileOverview
  * A child controller that inherits from multiple parents via prototypical

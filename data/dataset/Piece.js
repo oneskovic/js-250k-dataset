@@ -1,7 +1,3 @@
-//
-// Block Dream - HTML5 mobile game built with Hydra
-// https://github.com/aduros/hydra/blob/master/projects/LICENSE.txt
-
 goog.provide("tetris.Piece");
 
 goog.require("hydra.math");

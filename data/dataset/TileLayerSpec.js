@@ -1,4 +1,3 @@
-
 describe('TileLayer', function () {
 	var tileUrl = '';
 

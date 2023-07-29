@@ -1,4 +1,3 @@
-// Publish a local service on startup
 var bonjourSocket = Titanium.Network.createTCPSocket({
 	hostName:Titanium.Network.INADDR_ANY,
 	port:40401,

@@ -1,6 +1,3 @@
-/*
- * Popup unit tests
- */
 (function($) {
 module('featureInfo');
 

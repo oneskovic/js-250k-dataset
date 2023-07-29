@@ -2,12 +2,7 @@
 
 var path = require('path');
 
-/**
- * Class loader utility to load JavaScript classes from qualified route name,
- * e.g. actions.HomeAction#get. Adds a cache layer in order to speed up
- * classes lookup.
- * @constructor
- */
+
 function ClassLoader() {
   this.cache = {};
 }

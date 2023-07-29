@@ -1,95 +1,95 @@
-import { Tokenizer } from "../simple-html-tokenizer";
-import { unwrapMustache } from "./utils";
-import { map } from "../htmlbars-util/array-utils";
-import builders from "./builders";
+require.def("ace/Tokenizer", [], function() {
 
-Tokenizer.prototype.createAttribute = function(char) {
-  if (this.token.type === 'EndTag') {
-    throw new Error('Invalid end tag: closing tag must not have attributes, in ' + formatTokenInfo(this) + '.');
-  }
-  this.currentAttribute = builders.attr(char.toLowerCase(), [], null);
-  this.token.attributes.push(this.currentAttribute);
-  this.state = 'attributeName';
-};
+var Tokenizer = function(rules) {
+    this.rules = rules;
 
-Tokenizer.prototype.markAttributeQuoted = function(value) {
-  this.currentAttribute.quoted = value;
-};
+    this.regExps = {};
+    for ( var key in this.rules) {
+        var state = this.rules[key];
+        var ruleRegExps = [];
 
-Tokenizer.prototype.addToAttributeName = function(char) {
-  this.currentAttribute.name += char;
-};
+        for ( var i = 0; i < state.length; i++) {
+            ruleRegExps.push(state[i].regex);
+        };
 
-Tokenizer.prototype.addToAttributeValue = function(char) {
-  var value = this.currentAttribute.value;
-
-  if (!this.currentAttribute.quoted && char === '/') {
-    throw new Error("A space is required between an unquoted attribute value and `/`, in " + formatTokenInfo(this) +
-                    '.');
-  }
-  if (!this.currentAttribute.quoted && value.length > 0 &&
-      (char.type === 'MustacheStatement' || value[0].type === 'MustacheStatement')) {
-    throw new Error("Unquoted attribute value must be a single string or mustache (on line " + this.line + ")");
-  }
-
-  if (typeof char === 'object') {
-    if (char.type === 'MustacheStatement') {
-      value.push(char);
-    } else {
-      throw new Error("Unsupported node in attribute value: " + char.type);
+        this.regExps[key] = new RegExp("(?:(" + ruleRegExps.join(")|(") + ")|(.))", "g");
     }
-  } else {
-    if (value.length > 0 && value[value.length - 1].type === 'TextNode') {
-      value[value.length - 1].chars += char;
-    } else {
-      value.push(builders.text(char));
-    }
-  }
 };
 
-Tokenizer.prototype.finalizeAttributeValue = function() {
-  if (this.currentAttribute) {
-    this.currentAttribute.value = prepareAttributeValue(this.currentAttribute);
-    delete this.currentAttribute.quoted;
-    delete this.currentAttribute;
-  }
-};
+(function() {
 
-Tokenizer.prototype.addElementModifier = function(mustache) {
-  if (!this.token.modifiers) {
-    this.token.modifiers = [];
-  }
+    this.getLineTokens = function(line, startState) {
+        var currentState = startState;
+        var state = this.rules[currentState];
+        var re = this.regExps[currentState];
+        re.lastIndex = 0;
 
-  var modifier = builders.elementModifier(mustache.path, mustache.params, mustache.hash);
-  this.token.modifiers.push(modifier);
-};
+        var match, tokens = [];
 
-function prepareAttributeValue(attr) {
-  var parts = attr.value;
-  var length = parts.length;
+        var lastIndex = 0;
 
-  if (length === 0) {
-    return builders.text('');
-  } else if (length === 1 && parts[0].type === "TextNode") {
-    return parts[0];
-  } else if (!attr.quoted) {
-    return parts[0];
-  } else {
-    return builders.concat(map(parts, prepareConcatPart));
-  }
-}
+        var token = {
+            type: null,
+            value: ""
+        };
 
-function prepareConcatPart(node) {
-  switch (node.type) {
-    case 'TextNode': return builders.string(node.chars);
-    case 'MustacheStatement': return unwrapMustache(node);
-    default:
-      throw new Error("Unsupported node in quoted attribute value: " + node.type);
-  }
-}
+        while (match = re.exec(line)) {
+            var type = "text";
+            var value = match[0];
 
-function formatTokenInfo(tokenizer) {
-  return '`' + tokenizer.token.tagName + '` (on line ' + tokenizer.line + ')';
-}
+            if (re.lastIndex == lastIndex) { throw new Error("tokenizer error"); }
+            lastIndex = re.lastIndex;
 
-export { Tokenizer };
+            window.LOG && console.log(currentState, match);
+
+            for ( var i = 0; i < state.length; i++) {
+                if (match[i + 1]) {
+                    if (typeof state[i].token == "function") {
+                        type = state[i].token(match[0]);
+                    }
+                    else {
+                        type = state[i].token;
+                    }
+
+                    if (state[i].next && state[i].next !== currentState) {
+                        currentState = state[i].next;
+                        var state = this.rules[currentState];
+                        var lastIndex = re.lastIndex;
+
+                        var re = this.regExps[currentState];
+                        re.lastIndex = lastIndex;
+                    }
+                    break;
+                }
+            };
+            
+                  
+            if (token.type !== type) {
+                if (token.type) {
+                    tokens.push(token);
+                }
+                token = {
+                    type: type,
+                    value: value
+                };
+            } else {
+                token.value += value;
+            }
+        };
+
+        if (token.type) {
+            tokens.push(token);
+        }
+
+        window.LOG && console.log(tokens, currentState);
+
+        return {
+            tokens : tokens,
+            state : currentState
+        };
+    };
+
+}).call(Tokenizer.prototype);
+
+return Tokenizer;
+});

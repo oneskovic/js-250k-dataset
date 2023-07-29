@@ -1,9 +1,3 @@
-
-/**
- * A Github API Method Map
- * Refer to the apis plugin for how to build a method map
- * https://github.com/ProLoser/CakePHP-Api-Datasources
- */
  
 module.exports = {
   hosts : {

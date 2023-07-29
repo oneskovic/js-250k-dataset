@@ -1,6 +1,3 @@
-/**
- * Demonstrates a simple registration form.
- */
 Ext.define('KitchenSink.view.form.RegisterForm', {
     extend: 'Ext.form.Panel',
     xtype: 'form-register',

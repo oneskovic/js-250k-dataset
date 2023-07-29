@@ -1,9 +1,3 @@
-/*
-HTMLEncode - Encode HTML special characters.
-Copyright (c) 2006-2010 Thomas Peri, http://www.tumuski.com/
-MIT License
-*/
-
 /*jslint white: true, onevar: true, undef: true, nomen: true, eqeqeq: true,
    plusplus: true, bitwise: true, regexp: true, newcap: true, immed: true */
 

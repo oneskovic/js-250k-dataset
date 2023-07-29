@@ -1,146 +1,92 @@
-CodeMirror.defineMode("velocity", function(config) {
-    function parseWords(str) {
-        var obj = {}, words = str.split(" ");
-        for (var i = 0; i < words.length; ++i) obj[words[i]] = true;
-        return obj;
-    }
+var path = require('path');
 
-    var indentUnit = config.indentUnit
-    var keywords = parseWords("#end #else #break #stop #[[ #]] " +
-                              "#{end} #{else} #{break} #{stop}");
-    var functions = parseWords("#if #elseif #foreach #set #include #parse #macro #define #evaluate " +
-                               "#{if} #{elseif} #{foreach} #{set} #{include} #{parse} #{macro} #{define} #{evaluate}");
-    var specials = parseWords("$foreach.count $foreach.hasNext $foreach.first $foreach.last $foreach.topmost $foreach.parent $velocityCount");
-    var isOperatorChar = /[+\-*&%=<>!?:\/|]/;
-    var multiLineStrings =true;
+describe.skip('Velocity integration.', function () {
 
-    function chain(stream, state, f) {
-        state.tokenize = f;
-        return f(stream, state);
-    }
-    function tokenBase(stream, state) {
-        var beforeParams = state.beforeParams;
-        state.beforeParams = false;
-        var ch = stream.next();
-        // start of string?
-        if ((ch == '"' || ch == "'") && state.inParams)
-            return chain(stream, state, tokenString(ch));
-        // is it one of the special signs []{}().,;? Seperator?
-        else if (/[\[\]{}\(\),;\.]/.test(ch)) {
-            if (ch == "(" && beforeParams) state.inParams = true;
-            else if (ch == ")") state.inParams = false;
-            return null;
-        }
-        // start of a number value?
-        else if (/\d/.test(ch)) {
-            stream.eatWhile(/[\w\.]/);
-            return "number";
-        }
-        // multi line comment?
-        else if (ch == "#" && stream.eat("*")) {
-            return chain(stream, state, tokenComment);
-        }
-        // unparsed content?
-        else if (ch == "#" && stream.match(/ *\[ *\[/)) {
-            return chain(stream, state, tokenUnparsed);
-        }
-        // single line comment?
-        else if (ch == "#" && stream.eat("#")) {
-            stream.skipToEnd();
-            return "comment";
-        }
-        // variable?
-        else if (ch == "$") {
-            stream.eatWhile(/[\w\d\$_\.{}]/);
-            // is it one of the specials?
-            if (specials && specials.propertyIsEnumerable(stream.current().toLowerCase())) {
-                return "keyword";
-            }
-            else {
-                state.beforeParams = true;
-                return "builtin";
-            }
-        }
-        // is it a operator?
-        else if (isOperatorChar.test(ch)) {
-            stream.eatWhile(isOperatorChar);
-            return "operator";
-        }
-        else {
-            // get the whole word
-            stream.eatWhile(/[\w\$_{}]/);
-            var word = stream.current().toLowerCase();
-            // is it one of the listed keywords?
-            if (keywords && keywords.propertyIsEnumerable(word))
-                return "keyword";
-            // is it one of the listed functions?
-            if (functions && functions.propertyIsEnumerable(word) ||
-                stream.current().match(/^#[a-z0-9_]+ *$/i) && stream.peek()=="(") {
-                state.beforeParams = true;
-                return "keyword";
-            }
-            // default: just a "word"
-            return null;
-        }
-    }
+  this.timeout(20000);
 
-    function tokenString(quote) {
-        return function(stream, state) {
-            var escaped = false, next, end = false;
-            while ((next = stream.next()) != null) {
-                if (next == quote && !escaped) {
-                    end = true;
-                    break;
-                }
-                escaped = !escaped && next == "\\";
-            }
-            if (end) state.tokenize = tokenBase;
-            return "string";
-        };
-    }
+  var server = meteor({ pathToApp: path.resolve(__dirname, '..', 'velocity'), skipBuild: false });
+  var client = ddp(server);
 
-    function tokenComment(stream, state) {
-        var maybeEnd = false, ch;
-        while (ch = stream.next()) {
-            if (ch == "#" && maybeEnd) {
-                state.tokenize = tokenBase;
-                break;
-            }
-            maybeEnd = (ch == "*");
-        }
-        return "comment";
-    }
+  it('should be able to register gagarin framework', function () {
+    return client
+      .call('velocity/register/framework', [ 'gagarin' ]);
+  });
 
-    function tokenUnparsed(stream, state) {
-        var maybeEnd = 0, ch;
-        while (ch = stream.next()) {
-            if (ch == "#" && maybeEnd == 2) {
-                state.tokenize = tokenBase;
-                break;
-            }
-            if (ch == "]")
-                maybeEnd++;
-            else if (ch != " ")
-                maybeEnd = 0;
-        }
-        return "meta";
-    }
-    // Interface
+  it('should be able to reset gagarin reports', function () {
+    return client
+      .call('velocity/reports/reset', [ { framework: 'gagarin' } ]);
+  });
 
-    return {
-        startState: function(basecolumn) {
-            return {
-                tokenize: tokenBase,
-                beforeParams: false,
-                inParams: false
-            };
-        },
+  it('should be able to report that a test has passed', function () {
+    return client
+      .call('velocity/reports/submit', [ {
+        name      : 'A super duper test.',
+        framework : 'gagarin',
+        result    : 'passed',
+        id        : "1",
+        ancestors : [],
+        timestamp : new Date(),
+        duration  : 10, // in milliseconds
+      } ]);
+  });
 
-        token: function(stream, state) {
-            if (stream.eatSpace()) return null;
-            return state.tokenize(stream, state);
-        }
-    };
+  it('should be able to report that a test has failed', function () {
+    return client
+      .call('velocity/reports/submit', [ {
+        name      : 'This test should fail.',
+        framework : 'gagarin',
+        result    : 'failed',
+        id        : "2",
+        ancestors : [],
+        timestamp : new Date(),
+        duration  : 100, // in milliseconds
+        browser   : 'none',
+        //---------------------------
+        failureType       : 'expect',
+        failureMessage    : 'I did not expect the Spanish inquisition',
+        failureStackTrace : new Error('some error').stack,
+      } ]);
+  });
+
+  it('should be able to mark gagarin tests as completed', function () {
+    return client
+      .call('velocity/reports/completed', [ { framework: 'gagarin' } ]);
+  });
+
+
+  describe('Velocity UI.', function () {
+
+    var client2 = browser(server);
+
+    before(function () {
+      return client2
+        .click('#velocity-status-widget > .velocity-icon-status')
+        .sleep(1000); // wait until animation ends
+    });
+
+    it('should be able to see the velocity panel', function () {
+      return client2.waitForDOM('#velocityOverlay.visible');
+    });
+
+    it('should be able to see all the results', function () {
+      return client2
+        .click('.velocity-options-toggle')
+        .click('#showSuccessful.btn-velocity');
+    });
+
+    it('should be able to read tests results', function () {
+      return client2.execute(function () {
+        return $('.velocity-result-table > tbody').children().map(function () {
+          return $(this).text();
+        });
+      }).then(function (listOfResults) {
+        expect(listOfResults).to.be.ok;
+        expect(listOfResults[0]).to.match(/A super duper test.\s*\n\s*10 ms/);
+        expect(listOfResults[1]).to.match(/This test should fail.\s*\n\s*Fail/);
+        expect(listOfResults[2]).to.match(/I did not expect the Spanish inquisition/);
+      });
+    });
+
+  });
+
 });
-
-CodeMirror.defineMIME("text/velocity", "velocity");

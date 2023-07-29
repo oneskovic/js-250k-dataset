@@ -1,11 +1,7 @@
 var _        = require('underscore');
 var Backbone = require('backbone');
 
-/**
- * Holds all the notebook cell contents.
- *
- * @return {Object}
- */
+
 var Notebook = module.exports = Backbone.Collection.extend({
   model: require('../models/cell'),
   comparator: function (model) {

@@ -1,15 +1,3 @@
-/**
- * @author Brucewan
- * @version 1.0
- * @date 2014-06-13
- * @description tg核心功能
- * @example
-		var tab1 = new mo.Tab({
-			target: $('#slide01 li')
-		}); 
- * @name mo
- * @namespace
- */
 define(function(require, exports, module) {
 
 	(function(){

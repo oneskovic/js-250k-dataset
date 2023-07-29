@@ -1,4 +1,3 @@
-// please no
 module['exports'] = function zalgo(text, options) {
   text = text || "   he is here   ";
   var soul = {

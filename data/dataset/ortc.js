@@ -1,4 +1,3 @@
-/* global define, suite, test, assert */
 define([
 //  'ortc/ortc'
 ], function (ORTC) {

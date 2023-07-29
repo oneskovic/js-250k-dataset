@@ -1,8 +1,3 @@
-
-/***************************************
-*  THE MAGIC INGREDIENT
-***************************************/
-
 /* WHAT THIS DOES:
 *  - Updates stats for all kudos buttons.
 *  - Looks for mouseenter on all kudos buttons.

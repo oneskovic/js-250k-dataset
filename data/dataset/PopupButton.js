@@ -1,9 +1,3 @@
-/**
- * A PopupButton is a button that shows a Popup when pressed. That Popup might be a ContextMenu or it might be a more
- * complicated popup which allows further configuration of an action.
- * @module jidejs/ui/control/PopupButton
- * @extends module:jidejs/ui/control/Button
- */
 define([
 	'./../../base/Class', './../../base/ObservableProperty', './../../base/DOM', './Button', './../Pos',
     './../Skin', './../register'

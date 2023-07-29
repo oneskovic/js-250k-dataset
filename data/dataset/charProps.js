@@ -1,8 +1,3 @@
-/**
- * Indexer constructor (takes index and performs pre-emptive caching)
- * @constructor
- * @param {String} input Content to index
- */
 function Indexer(input) {
   this.input = input;
 

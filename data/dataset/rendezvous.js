@@ -6,10 +6,7 @@ mc.connect();
 var querystring = require('querystring');
 var fs = require('fs')
 
-/*
- *  Database Handler
- *
- */
+
 
 var db = { 'connection' : null,
 	   'insert' : function(key, ua, ip) {

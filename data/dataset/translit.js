@@ -1,4 +1,3 @@
-/* jshint -W089 */
 /* global XRegExp */
 
 var char_map = {

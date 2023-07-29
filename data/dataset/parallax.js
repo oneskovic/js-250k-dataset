@@ -1,22 +1,5 @@
 var jaws = (function(jaws) {
-  /** 
-   * @class Manage a parallax scroller with different layers. "Field Summary" contains options for the Parallax()-constructor.
-   * @constructor
-   *
-   * @property scale     number, scale factor for all layers (2 will double everything and so on)
-   * @property repeat_x  true|false, repeat all parallax layers horizontally
-   * @property repeat_y  true|false, repeat all parallax layers vertically
-   * @property camera_x  number, x-position of "camera". add to camera_x and layers will scroll left. defaults to 0
-   * @property camera_y  number, y-position of "camera". defaults to 0
-   *
-   * @example
-   * parallax = new jaws.Parallax({repeat_x: true})
-   * parallax.addLayer({image: "parallax_1.png", damping: 100})
-   * parallax.addLayer({image: "parallax_2.png", damping: 6})
-   * parallax.camera_x += 1    // scroll layers horizontally
-   * parallax.draw()
-   *
-   */
+  
   jaws.Parallax = function Parallax(options) {
     if( !(this instanceof arguments.callee) ) return new arguments.callee( options );
     jaws.parseOptions(this, options, this.default_options)

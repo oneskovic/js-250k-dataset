@@ -1,8 +1,4 @@
-﻿/*! 
- * Copyright(c) 2014 Jan Blaha 
- *
- * Child process rendering html(xml) from template content, helpers and input data.
- */
+﻿
 
 
 //resolve references in json specified by $ref and $id attribute, this is handy when user send cycles in json

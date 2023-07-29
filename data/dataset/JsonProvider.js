@@ -1,13 +1,3 @@
-/**
- * @class Ext.direct.JsonProvider
-
-A base provider for communicating using JSON. This is an abstract class
-and should not be instanced directly.
-
- * @markdown
- * @abstract
- */
-
 Ext.define('Ext.direct.JsonProvider', {
     extend: 'Ext.direct.Provider',
 

@@ -6,29 +6,7 @@ exports.active = true;
 
 var animationElems = require('./_collections').elemsGroups.animation;
 
-/*
- * Collapse useless groups.
- *
- * @example
- * <g>
- *     <g attr1="val1">
- *         <path d="..."/>
- *     </g>
- * </g>
- *         ⬇
- * <g>
- *     <g>
- *         <path attr1="val1" d="..."/>
- *     </g>
- * </g>
- *         ⬇
- * <path attr1="val1" d="..."/>
- *
- * @param {Object} item current iteration item
- * @return {Boolean} if false, item will be filtered out
- *
- * @author Kir Belevich
- */
+
 exports.fn = function(item) {
 
     // non-empty elements

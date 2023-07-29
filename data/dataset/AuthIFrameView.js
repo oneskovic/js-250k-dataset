@@ -1,10 +1,5 @@
 define(['view/AuthViewUtil', 'Config'], function(Util, Config) {
-    /**
-     * IFrame auth view.
-     * Opens an IFrame inside the specified DOM Element (using the parent size).
-     * Visually, it looks like the login form is part of the application
-     * 
-     */
+    
     var AuthIFrameView = function(uri, redirectUri, options) {
         this.uri = Util.buildUriFromOptions(uri, redirectUri, options);
         this.id = Config.config.AUTH_FRAME_ID;

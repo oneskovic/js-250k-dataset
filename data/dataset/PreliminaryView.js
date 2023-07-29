@@ -1,6 +1,3 @@
-/**
- * LoginView.js
- */
 (function (spiderOakApp, window, undefined) {
   "use strict";
   var console = window.console || {};

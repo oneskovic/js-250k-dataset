@@ -1,66 +1,104 @@
-var TagItemController = Composer.Controller.extend({
-	tag: 'li',
-
-	events: {
-		'click': 'select_tag'
-	},
-
-	model: null,
-
-	init: function()
-	{
-		if(!this.model) return false;
-		this.model.bind('change', this.render.bind(this), 'tag:item:change:render');
-		this.model.bind('gray', this.render.bind(this), 'tag:item:gray:render');
-		this.render();
-	},
-
-	release: function()
-	{
-		this.model.unbind('change', 'tag:item:change:render');
-		this.model.unbind('gray', 'tag:item:gray:render');
-		this.parent.apply(this, arguments);
-	},
-
-	render: function()
-	{
-		var content = Template.render('tags/item', {
-			tag: toJSON(this.model)
-		});
-		this.html(content);
-
-		var cls = '';
-		if(this.model.get('selected')) cls = 'sel';
-		if(this.model.get('excluded')) cls = 'exclude';
-		if(this.model.get('disabled')) cls += ' disabled';
-
-		this.el.className = cls;
-	},
-
-	select_tag: function(e)
-	{
-		if(e) e.stop();
-
-		var exclude = e.control;
-
-		if(this.model.get('selected', false))
-		{
-			this.model.unset('selected');
+re.c('item')
+.require('sprite update hittest items.png')
+.namespace({
+	
+	update:function(t){
+		
+		if(!this.hero.dead && this.hero.touchesBody(this.posX, this.posY, this.sizeX, this.sizeY, 10, 0)){
+			this.touching = true;
+			this.touch(t);
+			
+		} else if(this.touching){
+			
+			this.touching = false;
+			
+			this.untouch(t);
 		}
-		else if(this.model.get('excluded', false))
-		{
-			this.model.unset('excluded');
-		}
-		else
-		{
-			if(exclude)
-			{
-				this.model.set({excluded: true});
-			}
-			else
-			{
-				this.model.set({selected: true});
-			}
-		}
+		
 	}
+	
+})
+.inherit({
+	
+	touching:false,
+	
+	touch:function(){
+	
+	},
+	
+	untouch:function(){
+	
+	}
+	
+})
+.extend({
+	
+	place:function(obj){
+		
+		if(typeof obj.xt == 'number')
+			this.posX = obj.xt * re.tile.sizeX;
+		else
+			this.posX = obj.x;
+		
+		if(typeof obj.yt == 'number')
+			this.posY = obj.yt * re.tile.sizeY;
+		else 
+			this.posY = obj.y;
+			
+		var that = this;
+		
+		//multiply objects
+		if(obj.mul){
+			this.clone(obj.mul-1).each(function(i, t){
+				//turn last one into a cap
+				if(i == t-1 && this.cap){
+					this.addComp(this.cap);
+				}
+				
+				i++;
+				
+				this.posX = that.posX;
+				this.posY = that.posY;
+				
+				if(obj.hor)
+					this.posX += re.tile.sizeX * obj.hor * i;
+				
+				if(obj.ver)
+					this.posY += re.tile.sizeY * obj.ver * i;
+				
+				if(this.has('ladder')){
+					//make walkable
+					re.hitmap.set(this.posX / re.tile.sizeX, this.posY / re.tile.sizeY, 0);
+				}
+				
+				this.signal('place');
+			});
+		}
+		
+		this.signal('place');
+	}
+	
+})
+.init(function(c){
+	if(!c.actionSfx){
+		c.actionSfx = re.e('sound action.sfx');
+	}
+
+	this.bisect = this.bitmap.width;
+	this.bodX = re.tile.sizeX;
+	this.bodY = re.tile.sizeY;
+	
+	this.hero = c.hero;
+	
+	this.addSignal('update', this.item_update);
+	
+	this.updateBefore(this.hero);
+})
+.dispose(function(c){
+	if(c.actionSfx){
+		c.actionSfx.dispose();
+		c.actionSfx = null;
+	}
+	
+	this.removeSignal('update', this.item_update);
 });

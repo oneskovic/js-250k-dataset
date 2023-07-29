@@ -1,14 +1,4 @@
 /**
- * Quirks.js
- *
- * Copyright, Moxiecode Systems AB
- * Released under LGPL License.
- *
- * License: http://www.tinymce.com/license
- * Contributing: http://www.tinymce.com/contributing
- */
-
-/**
  * This class contains various fixes for browsers. These issues can not be feature
  * detected since we have no direct control over the clipboard. However we might be able
  * to remove some of these fixes once the browsers gets updated/fixed.

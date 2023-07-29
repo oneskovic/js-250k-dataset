@@ -1,11 +1,3 @@
-
-/**
- * Ensures the input element takes up the maximum amount of remaining list width,
- * or the entirety of the list width if too little space remains. In this case,
- * the list height will be automatically increased to accomodate the new line. This
- * growth will not occur if {@link Ext.ux.form.field.BoxSelect#multiSelect} or
- * {@link Ext.ux.form.field.BoxSelect#grow} is false.
- */
 Ext.define('Ext.ux.layout.component.field.BoxSelectField', {
     /* Begin Definitions */
     alias: ['layout.boxselectfield'],

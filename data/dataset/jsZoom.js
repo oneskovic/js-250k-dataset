@@ -1,13 +1,3 @@
-/*
- * jsZoom is a toolkit that supports zooming elements on a page.  For modern browsers
- * it uses CSS3's 'scale' property; for, erm, other browsers it uses the 'zoom' property.
- * 
- * jsZoom has been tested on Chrome, Safari, FF 3.x and IE7/8.  It probably works
- * on other WebKit browsers, too, but something's up on Opera right now.
- * 
- * Currently, the 'translate' property is not supported, but it should be.  And hopefully
- * soon will be.
- */
 (function() {
 	
 	var ie = (/MSIE/.test(navigator.userAgent) && !window.opera);

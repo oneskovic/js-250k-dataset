@@ -1,4 +1,3 @@
-/*global one*/
 INCLUDE('lib:color.js');
 
 installColorSpace('HSV', ['hue', 'saturation', 'value', 'alpha'], {

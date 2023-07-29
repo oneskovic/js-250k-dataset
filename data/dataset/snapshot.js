@@ -1,12 +1,3 @@
-/*
- * Debug PhantomJS processing of a page on a sample website
- * 
- * Uses sitemap.xml to snapshot a sample website, but holds one page for debugging.
- * 
- * Demonstrates how to walk through the html-snapshots default script.
- * Demonstrates phantomjsOptions usage on a per-page basis.
- * 
- */
 var path = require("path");
 var util = require("util");
 var assert = require("assert");

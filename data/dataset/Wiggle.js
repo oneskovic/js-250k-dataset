@@ -6,9 +6,7 @@ define([
        function( declare, FixedImage, YScaleMixin ) {
 
 var Wiggle = declare( [ FixedImage, YScaleMixin ],
- /**
-  * @lends JBrowse.View.Track.FixedImage.Wiggle.prototype
-  */
+ 
 {
 
     /**

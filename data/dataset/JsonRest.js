@@ -1,9 +1,3 @@
-/*
-	Copyright (c) 2004-2011, The Dojo Foundation All Rights Reserved.
-	Available via Academic Free License >= 2.1 OR the modified BSD license.
-	see: http://dojotoolkit.org/license for details
-*/
-
 //>>built
 define("dojo/store/JsonRest", ["../_base/kernel", "../_base/xhr", "../json", "../_base/declare", "./util/QueryResults"], function(dojo, xhr, JSON, declare, QueryResults) {
   //  module:

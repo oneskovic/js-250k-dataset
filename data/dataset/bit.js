@@ -1,4 +1,3 @@
-
 // Well duh.
 var CHAR_BIT = 8;
 

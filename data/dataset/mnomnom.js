@@ -1,11 +1,5 @@
 var mnomnom = {
-  /**
-  * Commands
-  * hack to pass multiple command to a callback
-  * @param  {String}   value    commands
-  * @param  {Function} callback [description]
-  * @return program instance
-  */
+  
   commands: function(value) {
 
     value = value.split(' ')

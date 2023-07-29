@@ -6,11 +6,7 @@ define([
     var namedHues = new LinkedMap(),
         primaryHues = [],
         Hue;
-    /*
-    * This class defines color hues and allows them to be access by name. There are
-    * also methods to check if a hue is one of the 7 primary hues (rainbow) or to
-    * find the closest defined hue for a given color.
-    */
+    
 
     /**
      * construct a new Hue

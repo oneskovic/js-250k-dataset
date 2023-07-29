@@ -1,145 +1,134 @@
-/* ***** BEGIN LICENSE BLOCK *****
- * Distributed under the BSD license:
- *
- * Copyright (c) 2010, Ajax.org B.V.
- * All rights reserved.
- * 
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of Ajax.org B.V. nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL AJAX.ORG B.V. BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * ***** END LICENSE BLOCK ***** */
+CodeMirror.defineMode("lua", function(config, parserConfig) {
+  var indentUnit = config.indentUnit;
 
-define(function(require, exports, module) {
-"use strict";
+  function prefixRE(words) {
+    return new RegExp("^(?:" + words.join("|") + ")", "i");
+  }
+  function wordRE(words) {
+    return new RegExp("^(?:" + words.join("|") + ")$", "i");
+  }
+  var specials = wordRE(parserConfig.specials || []);
+ 
+  // long list of standard functions from lua manual
+  var builtins = wordRE([
+    "_G","_VERSION","assert","collectgarbage","dofile","error","getfenv","getmetatable","ipairs","load",
+    "loadfile","loadstring","module","next","pairs","pcall","print","rawequal","rawget","rawset","require",
+    "select","setfenv","setmetatable","tonumber","tostring","type","unpack","xpcall",
 
-var oop = require("../lib/oop");
-var TextMode = require("./text").Mode;
-var Tokenizer = require("../tokenizer").Tokenizer;
-var LuaHighlightRules = require("./lua_highlight_rules").LuaHighlightRules;
-var Range = require("../range").Range;
+    "coroutine.create","coroutine.resume","coroutine.running","coroutine.status","coroutine.wrap","coroutine.yield",
 
-var Mode = function() {
-    this.$tokenizer = new Tokenizer(new LuaHighlightRules().getRules());
-};
-oop.inherits(Mode, TextMode);
+    "debug.debug","debug.getfenv","debug.gethook","debug.getinfo","debug.getlocal","debug.getmetatable",
+    "debug.getregistry","debug.getupvalue","debug.setfenv","debug.sethook","debug.setlocal","debug.setmetatable",
+    "debug.setupvalue","debug.traceback",
 
-(function() {
-    var indentKeywords = {
-        "function": 1,
-        "then": 1,
-        "do": 1,
-        "else": 1,
-        "elseif": 1,
-        "repeat": 1,
-        "end": -1,
-        "until": -1
-    };
-    var outdentKeywords = [
-        "else",
-        "elseif",
-        "end",
-        "until"
-    ];
+    "close","flush","lines","read","seek","setvbuf","write",
 
-    function getNetIndentLevel(tokens) {
-        var level = 0;
-        // Support single-line blocks by decrementing the indent level if
-        // an ending token is found
-        for (var i in tokens){
-            var token = tokens[i];
-            if (token.type == "keyword") {
-                if (token.value in indentKeywords) {
-                    level += indentKeywords[token.value];
-                }
-            } else if (token.type == "paren.lparen") {
-                level ++;
-            } else if (token.type == "paren.rparen") {
-                level --;
-            }
-        }
-        // Limit the level to +/- 1 since usually users only indent one level
-        // at a time regardless of the logical nesting level
-        if (level < 0) {
-            return -1;
-        } else if (level > 0) {
-            return 1;
-        } else {
-            return 0;
-        }
+    "io.close","io.flush","io.input","io.lines","io.open","io.output","io.popen","io.read","io.stderr","io.stdin",
+    "io.stdout","io.tmpfile","io.type","io.write",
+
+    "math.abs","math.acos","math.asin","math.atan","math.atan2","math.ceil","math.cos","math.cosh","math.deg",
+    "math.exp","math.floor","math.fmod","math.frexp","math.huge","math.ldexp","math.log","math.log10","math.max",
+    "math.min","math.modf","math.pi","math.pow","math.rad","math.random","math.randomseed","math.sin","math.sinh",
+    "math.sqrt","math.tan","math.tanh",
+
+    "os.clock","os.date","os.difftime","os.execute","os.exit","os.getenv","os.remove","os.rename","os.setlocale",
+    "os.time","os.tmpname",
+
+    "package.cpath","package.loaded","package.loaders","package.loadlib","package.path","package.preload",
+    "package.seeall",
+
+    "string.byte","string.char","string.dump","string.find","string.format","string.gmatch","string.gsub",
+    "string.len","string.lower","string.match","string.rep","string.reverse","string.sub","string.upper",
+
+    "table.concat","table.insert","table.maxn","table.remove","table.sort"
+  ]);
+  var keywords = wordRE(["and","break","elseif","false","nil","not","or","return",
+			 "true","function", "end", "if", "then", "else", "do", 
+			 "while", "repeat", "until", "for", "in", "local" ]);
+
+  var indentTokens = wordRE(["function", "if","repeat","for","while", "\\(", "{"]);
+  var dedentTokens = wordRE(["end", "until", "\\)", "}"]);
+  var dedentPartial = prefixRE(["end", "until", "\\)", "}", "else", "elseif"]);
+
+  function readBracket(stream) {
+    var level = 0;
+    while (stream.eat("=")) ++level;
+    stream.eat("[");
+    return level;
+  }
+
+  function normal(stream, state) {
+    var ch = stream.next();
+    if (ch == "-" && stream.eat("-")) {
+      if (stream.eat("["))
+        return (state.cur = bracketed(readBracket(stream), "comment"))(stream, state);
+      stream.skipToEnd();
+      return "comment";
+    } 
+    if (ch == "\"" || ch == "'")
+      return (state.cur = string(ch))(stream, state);
+    if (ch == "[" && /[\[=]/.test(stream.peek()))
+      return (state.cur = bracketed(readBracket(stream), "string"))(stream, state);
+    if (/\d/.test(ch)) {
+      stream.eatWhile(/[\w.%]/);
+      return "number";
     }
+    if (/[\w_]/.test(ch)) {
+      stream.eatWhile(/[\w\\\-_.]/);
+      return "variable";
+    }
+    return null;
+  }
 
-    this.getNextLineIndent = function(state, line, tab) {
-        var indent = this.$getIndent(line);
-        var level = 0;
-
-        var tokenizedLine = this.$tokenizer.getLineTokens(line, state);
-        var tokens = tokenizedLine.tokens;
-
-        if (state == "start") {
-            level = getNetIndentLevel(tokens);
-        }
-        if (level > 0) {
-            return indent + tab;
-        } else if (level < 0 && indent.substr(indent.length - tab.length) == tab) {
-            // Don't do a next-line outdent if we're going to do a real outdent of this line
-            if (!this.checkOutdent(state, line, "\n")) {
-                return indent.substr(0, indent.length - tab.length);
-            }
-        }
-        return indent;
+  function bracketed(level, style) {
+    return function(stream, state) {
+      var curlev = null, ch;
+      while ((ch = stream.next()) != null) {
+        if (curlev == null) {if (ch == "]") curlev = 0;}
+        else if (ch == "=") ++curlev;
+        else if (ch == "]" && curlev == level) { state.cur = normal; break; }
+        else curlev = null;
+      }
+      return style;
     };
+  }
 
-    this.checkOutdent = function(state, line, input) {
-        if (input != "\n" && input != "\r" && input != "\r\n")
-            return false;
-
-        if (line.match(/^\s*[\)\}\]]$/))
-            return true;
-
-        var tokens = this.$tokenizer.getLineTokens(line.trim(), state).tokens;
-
-        if (!tokens || !tokens.length)
-            return false;
-
-        return (tokens[0].type == "keyword" && outdentKeywords.indexOf(tokens[0].value) != -1);
+  function string(quote) {
+    return function(stream, state) {
+      var escaped = false, ch;
+      while ((ch = stream.next()) != null) {
+        if (ch == quote && !escaped) break;
+        escaped = !escaped && ch == "\\";
+      }
+      if (!escaped) state.cur = normal;
+      return "string";
     };
+  }
+    
+  return {
+    startState: function(basecol) {
+      return {basecol: basecol || 0, indentDepth: 0, cur: normal};
+    },
 
-    this.autoOutdent = function(state, session, row) {
-        var prevLine = session.getLine(row - 1);
-        var prevIndent = this.$getIndent(prevLine).length;
-        var prevTokens = this.$tokenizer.getLineTokens(prevLine, "start").tokens;
-        var tabLength = session.getTabString().length;
-        var expectedIndent = prevIndent + tabLength * getNetIndentLevel(prevTokens);
-        var curIndent = this.$getIndent(session.getLine(row)).length;
-        if (curIndent < expectedIndent) {
-            // User already outdented //
-            return;
-        }
-        session.outdentRows(new Range(row, 0, row + 2, 0));
-    };
+    token: function(stream, state) {
+      if (stream.eatSpace()) return null;
+      var style = state.cur(stream, state);
+      var word = stream.current();
+      if (style == "variable") {
+        if (keywords.test(word)) style = "keyword";
+        else if (builtins.test(word)) style = "builtin";
+	else if (specials.test(word)) style = "variable-2";
+      }
+      if (indentTokens.test(word)) ++state.indentDepth;
+      else if (dedentTokens.test(word)) --state.indentDepth;
+      return style;
+    },
 
-}).call(Mode.prototype);
-
-exports.Mode = Mode;
+    indent: function(state, textAfter) {
+      var closing = dedentPartial.test(textAfter);
+      return state.basecol + indentUnit * (state.indentDepth - (closing ? 1 : 0));
+    }
+  };
 });
 
-
+CodeMirror.defineMIME("text/x-lua", "lua");

@@ -1,7 +1,3 @@
-/*!
- * @depends ../core/AudioletNode.js
- */
-
 /**
  * Play the contents of an audio buffer
  *

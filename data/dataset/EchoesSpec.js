@@ -1,4 +1,3 @@
-// - YoutubeResponse json response object
 describe("Echoes Player", function () {
 	// var player = ;
 	var youtubeItemView;

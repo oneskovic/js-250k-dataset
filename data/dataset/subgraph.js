@@ -1,4 +1,3 @@
-// Copyright 2012 The Obvious Corporation.
 var Q = require('kew')
 var nodeunitq = require('nodeunitq')
 var builder = new nodeunitq.Builder(exports)

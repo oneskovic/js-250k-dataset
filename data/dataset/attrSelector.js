@@ -1,12 +1,3 @@
-/**
- * Copyright (c) 2011 unscriptable.com
- *
- * TODO: documentation
- * TODO: allow for nested rules (LESS, SASS, XStyle)
- * TODO: reuse toggleClass and templatize
- *
- */
-
 (function (global, doc) {
 
 	var

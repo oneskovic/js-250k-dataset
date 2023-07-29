@@ -1,4 +1,3 @@
-
 Kojak.NetProfile = function(urlBase){
     Kojak.Core.assert(urlBase, 'Parameters to NetProfile not set correctly');
     this._urlBase = urlBase;

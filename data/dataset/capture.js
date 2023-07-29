@@ -14,7 +14,7 @@ var _ = require('lodash'),
     DEF_FORMAT = 'png';
 
 
-/* Configurations and options */
+
 
 function outputFile(options, conf, base64) {
     var format = options.format || DEF_FORMAT;

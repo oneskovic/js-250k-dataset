@@ -1,8 +1,6 @@
-dojo.provide("dojo.cldr.supplemental");
+dojo.provide("dojo.date.supplemental");
 
-dojo.require("dojo.i18n");
-
-dojo.cldr.supplemental.getFirstDayOfWeek = function(/*String?*/locale){
+dojo.date.getFirstDayOfWeek = function(locale){
 // summary: Returns a zero-based index for first day of the week
 // description:
 //		Returns a zero-based index for first day of the week, as used by the local (Gregorian) calendar.
@@ -16,33 +14,17 @@ dojo.cldr.supplemental.getFirstDayOfWeek = function(/*String?*/locale){
 		as:0,au:0,az:0,bw:0,ca:0,cn:0,fo:0,ge:0,gl:0,gu:0,hk:0,ie:0,il:0,is:0,jm:0,jp:0,kg:0,kr:0,la:0,
 		mh:0,mo:0,mp:0,mt:0,nz:0,ph:0,pk:0,sg:0,th:0,tt:0,tw:0,um:0,us:0,uz:0,vi:0,za:0,zw:0,
 		et:0,mw:0,ng:0,tj:0,
-// variant. do not use?		gb:0,
+		gb:0,
 		sy:4
 	};
 
-	var country = dojo.cldr.supplemental._region(locale);
+	locale = dojo.hostenv.normalizeLocale(locale);
+	var country = locale.split("-")[1];
 	var dow = firstDay[country];
-	return (dow === undefined) ? 1 : dow; /*Number*/
+	return (typeof dow == 'undefined') ? 1 : dow; /*Number*/
 };
 
-dojo.cldr.supplemental._region = function(/*String?*/locale){
-	locale = dojo.i18n.normalizeLocale(locale);
-	var tags = locale.split('-');
-	var region = tags[1];
-	if(!region){
-		// IE often gives language only (#2269)
-		// Arbitrary mappings of language-only locales to a country:
-		region = {de:"de", en:"us", es:"es", fi:"fi", fr:"fr", he:"il", hu:"hu", it:"it",
-			ja:"jp", ko:"kr", nl:"nl", pt:"br", sv:"se", zh:"cn"}[tags[0]];
-	}else if(region.length == 4){
-		// The ISO 3166 country code is usually in the second position, unless a
-		// 4-letter script is given. See http://www.ietf.org/rfc/rfc4646.txt
-		region = tags[2];
-	}
-	return region;
-}
-
-dojo.cldr.supplemental.getWeekend = function(/*String?*/locale){
+dojo.date.getWeekend = function(locale){
 // summary: Returns a hash containing the start and end days of the weekend
 // description:
 //		Returns a hash containing the start and end days of the weekend according to local custom using locale,
@@ -61,10 +43,24 @@ dojo.cldr.supplemental.getWeekend = function(/*String?*/locale){
 		eg:6,il:6,sy:6
 	};
 
-	var country = dojo.cldr.supplemental._region(locale);
+	locale = dojo.hostenv.normalizeLocale(locale);
+	var country = locale.split("-")[1];
 	var start = weekendStart[country];
 	var end = weekendEnd[country];
-	if(start === undefined){start=6;}
-	if(end === undefined){end=0;}
+	if(typeof start == 'undefined'){start=6;}
+	if(typeof end == 'undefined'){end=0;}
 	return {start:start, end:end}; /*Object {start,end}*/
+};
+
+dojo.date.isWeekend = function(/*Date?*/dateObj, locale){
+// summary:
+//	Determines if the date falls on a weekend, according to local custom.
+
+	var weekend = dojo.date.getWeekend(locale);
+	var day = (dateObj || new Date()).getDay();
+	if(weekend.end<weekend.start){
+		weekend.end+=7;
+		if(day<weekend.start){ day+=7; }
+	}
+	return day >= weekend.start && day <= weekend.end; // Boolean
 };

@@ -1,7 +1,3 @@
-//
-// Basic React-THREE example using a custom 'Cupcake' Component which consists of two cubes
-//
-
 /* jshint strict: false */
 /* global React : false */
 /* global ReactTHREE : false */

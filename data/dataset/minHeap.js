@@ -1,10 +1,6 @@
 module.exports = MinHeap;
 
-/**
- * Min heap implementation (aka priority queue).
- * @param {Array} array Optional backing store for the heap.
- * @param {Function} comparator(a, b) Optional compare function for heap sorting.
- */
+
 function MinHeap(array, comparator) {
   /**
    * Storage for heap. 

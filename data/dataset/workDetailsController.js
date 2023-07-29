@@ -1,8 +1,3 @@
-/**
- * Copyright 2014 eRealm Info & Tech.
- *
- * Created by Ken on 9/08/2014
- */
 angular.module('erealm').controller('WorkDetailsController', ['$scope','client','$translate','$timeout', function($scope, client, $translate, $timeout) {
 
     'use strict';

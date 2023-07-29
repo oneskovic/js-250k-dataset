@@ -2,22 +2,7 @@ var util = require('util');
 
 module.exports = Geospatial;
 
-/**
- * # Geospacial
- *
- * Used for geospatial data entry.
- *
- * - Longitute is easting is `x`
- * - Latitude is northing is `y`
- * - Altitude is `z` (optional)
- *
- * Value can be in the form of an Array with
- * the format `[ x, y ]` or `[ x, y, z ]`.
- *
- * Value can be in the form of an object with
- * the properties of `{ x: n, y: n, z: n }` or
- * `{ lon: n, lat: n, alt: n }`.
- */
+
 
 function Geospatial (path, value) {
   this.name = 'Geospatial';

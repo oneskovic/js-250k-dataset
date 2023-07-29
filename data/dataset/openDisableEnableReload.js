@@ -1,9 +1,3 @@
-/**
- * 1) Disable all panels
- * 2) Open a new tab and Firebug UI on it.
- * 3) Step by step enable alls panels and verify they are enabled.
- * 4) Reload page and check all panels again (must be still enabled).
- */
 function runTest()
 {
     FBTest.disableAllPanels();

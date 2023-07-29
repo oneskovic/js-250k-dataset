@@ -7,13 +7,7 @@ _kiwi.utils.notifications = (function () {
     }
 
     var notifications = {
-        /**
-         * Check if desktop notifications have been allowed by the user.
-         *
-         * @returns {?Boolean} `true`  - they have been allowed.
-         *                     `false` - they have been blocked.
-         *                     `null`  - the user hasn't answered yet.
-         */
+        
         allowed: function () {
             return Notification.permission === 'granted' ? true
                  : Notification.permission === 'denied' ? false

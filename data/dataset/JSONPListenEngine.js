@@ -1,7 +1,3 @@
-/*
- * @author <a href='bocelli.hu@gmail.com'>bocelli.hu</a>
- * @version 1.0
- * */
 Package('tupai.net.engines')
 .use('tupai.net.HttpListenEngine')
 .define('JSONPListenEngine', function(cp) { return cp.HttpListenEngine.extend({

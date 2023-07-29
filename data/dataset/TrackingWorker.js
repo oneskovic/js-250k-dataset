@@ -1,5 +1,3 @@
-
-
 var visitorLat;
 var visitorLng;
 var auto_userid;

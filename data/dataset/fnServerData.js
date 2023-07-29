@@ -1,4 +1,3 @@
-// DATA_TEMPLATE: empty_table
 oTest.fnStart( "fnServerData for Ajax sourced data" );
 
 $(document).ready( function () {

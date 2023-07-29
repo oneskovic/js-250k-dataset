@@ -1,9 +1,3 @@
-/**
- * Tests for lib/helper/test/project.js
- *
- * @author Nabil Krause <nabil.krause@silberlicht.eu>
- */
-
 var should      = require('should');
 var path        = require('path');
 var fs          = require('fs');

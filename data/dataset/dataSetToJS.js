@@ -5,11 +5,7 @@ var dicomParser = (function (dicomParser) {
         dicomParser = {};
     }
 
-    /**
-     * converts an explicit dataSet to a javascript object
-     * @param dataSet
-     * @param options
-     */
+    
     dicomParser.explicitDataSetToJS = function (dataSet, options) {
 
         if(dataSet === undefined) {

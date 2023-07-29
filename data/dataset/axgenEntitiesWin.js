@@ -1,12 +1,3 @@
-/*
- * Entities windows.   - Ext JS Library 2.2
- * bundle: AxgenBundle 
- * Alejandro Hurtado <ahurt2000@gmail.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- * 
- */
 Ext.ns('AxGen.EntitiesWin');
 AxGen.EntitiesWin = function(config){
     Ext.apply(this, config);

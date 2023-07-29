@@ -1,110 +1,115 @@
+define(function(require, exports, module) {
+    var Context = require('./Context');
+    var Transform = require('./Transform');
+    var Surface = require('./Surface');
 
-/*!
- * Stylus - Group
- * Copyright(c) 2010 LearnBoost <dev@learnboost.com>
- * MIT Licensed
- */
+    /**
+     * A Context designed to contain surfaces and set properties
+     *   to be applied to all of them at once.
+     *   This is primarily used for specific performance improvements in the rendering engine.
+     *   Private.
+     *
+     * @private
+     * @class Group
+     * @extends Surface
+     * @constructor
+     * @param {Object} [options] Surface options array (see Surface})
+     */
+    function Group(options) {
+        Surface.call(this, options);
+        this._shouldRecalculateSize = false;
+        this._container = document.createDocumentFragment();
+        this.context = new Context(this._container);
+        this.setContent(this._container);
+        this._groupSize = [undefined, undefined];
+    }
 
-/**
- * Module dependencies.
- */
+    /** @const */
+    Group.SIZE_ZERO = [0, 0];
 
-var Node = require('./node');
+    Group.prototype = Object.create(Surface.prototype);
+    Group.prototype.elementType = 'div';
+    Group.prototype.elementClass = 'famous-group';
 
-/**
- * Initialize a new `Group`.
- *
- * @api public
- */
+    /**
+     * Add renderables to this component's render tree.
+     *
+     * @method add
+     * @private
+     * @param {Object} obj renderable object
+     * @return {RenderNode} Render wrapping provided object, if not already a RenderNode
+     */
+    Group.prototype.add = function add() {
+        return this.context.add.apply(this.context, arguments);
+    };
 
-var Group = module.exports = function Group(){
-  Node.call(this);
-  this.nodes = [];
-  this.extends = [];
-};
+    /**
+     * Generate a render spec from the contents of this component.
+     *
+     * @private
+     * @method render
+     * @return {Number} Render spec for this component
+     */
+    Group.prototype.render = function render() {
+        return Surface.prototype.render.call(this);
+    };
 
-/**
- * Inherit from `Node.prototype`.
- */
+    /**
+     * Place the document element this component manages into the document.
+     *
+     * @private
+     * @method deploy
+     * @param {Node} target document parent of this container
+     */
+    Group.prototype.deploy = function deploy(target) {
+        this.context.migrate(target);
+    };
 
-Group.prototype.__proto__ = Node.prototype;
+    /**
+     * Remove this component and contained content from the document
+     *
+     * @private
+     * @method recall
+     *
+     * @param {Node} target node to which the component was deployed
+     */
+    Group.prototype.recall = function recall(target) {
+        this._container = document.createDocumentFragment();
+        this.context.migrate(this._container);
+    };
 
-/**
- * Push the given `selector` node.
- *
- * @param {Selector} selector
- * @api public
- */
+    /**
+     * Apply changes from this component to the corresponding document element.
+     *
+     * @private
+     * @method commit
+     *
+     * @param {Object} context update spec passed in from above in the render tree.
+     */
+    Group.prototype.commit = function commit(context) {
+        var transform = context.transform;
+        var origin = context.origin;
+        var opacity = context.opacity;
+        var size = context.size;
+        var result = Surface.prototype.commit.call(this, {
+            allocator: context.allocator,
+            transform: Transform.thenMove(transform, [-origin[0] * size[0], -origin[1] * size[1], 0]),
+            opacity: opacity,
+            origin: origin,
+            size: Group.SIZE_ZERO
+        });
+        if (size[0] !== this._groupSize[0] || size[1] !== this._groupSize[1]) {
+            this._groupSize[0] = size[0];
+            this._groupSize[1] = size[1];
+            this.context.setSize(size);
+        }
+        this.context.update({
+            transform: Transform.translate(-origin[0] * size[0], -origin[1] * size[1], 0),
+            origin: origin,
+            size: size
+        });
+        return result;
+    };
 
-Group.prototype.push = function(selector){
-  this.nodes.push(selector);
-};
-
-/**
- * Return this set's `Block`.
- */
-
-Group.prototype.__defineGetter__('block', function(){
-  return this.nodes[0].block;
+    module.exports = Group;
 });
-
-/**
- * Assign `block` to each selector in this set.
- *
- * @param {Block} block
- * @api public
- */
-
-Group.prototype.__defineSetter__('block', function(block){
-  for (var i = 0, len = this.nodes.length; i < len; ++i) {
-    this.nodes[i].block = block;
-  }
-});
-
-/**
- * Check if this set has only placeholders.
- *
- * @return {Boolean}
- * @api public
- */
-
-Group.prototype.__defineGetter__('hasOnlyPlaceholders', function(){
-  return this.nodes.every(function(selector) { return selector.isPlaceholder; });
-});
-
-/**
- * Return a clone of this node.
- * 
- * @return {Node}
- * @api public
- */
-
-Group.prototype.clone = function(parent){
-  var clone = new Group;
-  clone.lineno = this.lineno;
-  clone.column = this.column;
-  this.nodes.forEach(function(node){
-    clone.push(node.clone(parent, clone));
-  });
-  clone.filename = this.filename;
-  clone.block = this.block.clone(parent, clone);
-  return clone;
-};
-
-/**
- * Return a JSON representation of this node.
- *
- * @return {Object}
- * @api public
- */
-
-Group.prototype.toJSON = function(){
-  return {
-    __type: 'Group',
-    nodes: this.nodes,
-    block: this.block,
-    lineno: this.lineno,
-    column: this.column,
-    filename: this.filename
-  };
-};

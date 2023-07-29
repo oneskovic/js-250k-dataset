@@ -2,9 +2,7 @@ var fs = require('fs')
   , spawn = require('child_process').spawn
   , debug = require('debug')('mongod');
 
-/*!
- * Utility for restarting the current apps mongod instance.
- */
+
 
 exports.restart = function (mongod, env, port, fn) {
   var pid;

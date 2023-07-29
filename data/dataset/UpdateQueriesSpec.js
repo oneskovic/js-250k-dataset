@@ -1,5 +1,3 @@
-/*global define,jasmine,angular,describe,it,expect,beforeEach*/
-
 define(function (require) {
     'use strict';
 

@@ -1,50 +1,98 @@
-/*
-Script: notifications.js
-    The client-side javascript code for the Notifications plugin.
+describe("notifications", function () {
+    var notifications = require('ripple/notifications'),
+        exception = require('ripple/exception'),
+        constants = require('ripple/constants');
 
-Copyright:
-    (C) Pedro Algarvio 2009 <damoxc@gmail.com>
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 3, or (at your option)
-    any later version.
+    beforeEach(function () {
+        var box = document.getElementById(constants.NOTIFICATIONS.MAIN_CONTAINER_CLASS),
+            msgBox = document.getElementById(constants.NOTIFICATIONS.MESSAGE_TEXT_CONTAINER_CLASS);
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+        msgBox.innerHTML = "";
+        box.setAttribute("class", "");
+        box.setAttribute("style", "display: none;");
+    });
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, write to:
-        The Free Software Foundation, Inc.,
-        51 Franklin Street, Fifth Floor
-        Boston, MA  02110-1301, USA.
+    it("throws exception when opening notification with invalid type", function () {
+        var nType = "test";
+        expect(function () {
+            notifications.openNotification(nType);
+        }).toThrow(function (e) {
+            return e.type === exception.types.NotificationType;
+        });
+    });
 
-    In addition, as a special exception, the copyright holders give
-    permission to link the code of portions of this program with the OpenSSL
-    library.
-    You must obey the GNU General Public License in all respects for all of
-    the code used other than OpenSSL. If you modify file(s) with this
-    exception, you may extend this exception to your version of the file(s),
-    but you are not obligated to do so. If you do not wish to do so, delete
-    this exception statement from your version. If you delete this exception
-    statement from all source files in the program, then also delete it here.
-*/
+    it("throws exception when closing notification with invalid type", function () {
+        var nType = "test";
+        expect(function () {
+            notifications.closeNotification(nType);
+        }).toThrow(function (e) {
+            return e.type === exception.types.NotificationType;
+        });
+    });
 
-NotificationsPlugin = Ext.extend(Deluge.Plugin, {
-	constructor: function(config) {
-		config = Ext.apply({
-			name: "Notifications"
-		}, config);
-		NotificationsPlugin.superclass.constructor.call(this, config);
-	},
-	
-	onDisable: function() {
-		
-	},
-	
-	onEnable: function() {
-		
-	}
+    it("throws exception_when opening notification if too many arguments", function () {
+        expect(function () {
+            notifications.openNotification("1", "2", "3", 3, true);
+        }).toThrow(function (e) {
+            return e.type === exception.types.NotificationType;
+        });
+    });
+
+    it("throws exception_when closing notification if too many arguments", function () {
+        expect(function () {
+            notifications.closeNotification("1", "2", "3", 3, true);
+        }).toThrow(function (e) {
+            return e.type === exception.types.NotificationType;
+        });
+    });
+
+    it("openNotification_throws_no_exception_when_valid_command", function () {
+        var nType = "normal",
+            msg = "some type of notification";
+        expect(function () {
+            notifications.closeNotification(nType, msg);
+        }).not.toThrow();
+    });
+
+    it("openNotification_updates_dom_objects_properly_when_opening_normal_notification", function () {
+        var nType = "normal",
+            msg = "some type of notification",
+            box, msgBox;
+
+        notifications.openNotification(nType, msg);
+
+        box = document.getElementById(constants.NOTIFICATIONS.MAIN_CONTAINER_CLASS);
+        msgBox = document.getElementById(constants.NOTIFICATIONS.MESSAGE_TEXT_CONTAINER_CLASS);
+
+        expect(msgBox.innerHTML).toMatch(new RegExp(msg));
+        expect(box.getAttribute("style")).toEqual("display: block;");
+    });
+
+    it("closeNotification_updates_dom_objects_properly_when_closing_normal_notification", function () {
+        notifications.closeNotification("normal");
+
+        var box = document.getElementById(constants.NOTIFICATIONS.MAIN_CONTAINER_CLASS);
+        expect(box.getAttribute("style")).toEqual("display: none;");
+    });
+
+    it("openNotification_updates_dom_objects_properly_when_opening_error_notification", function () {
+        var nType = "error",
+            msg = "type of notification",
+            box, msgBox;
+
+        notifications.openNotification(nType, msg);
+
+        box = document.getElementById(constants.NOTIFICATIONS.MAIN_CONTAINER_CLASS);
+        msgBox = document.getElementById(constants.NOTIFICATIONS.MESSAGE_TEXT_CONTAINER_CLASS);
+
+        expect(msgBox.innerHTML).toMatch(new RegExp(msg));
+        expect(box.getAttribute("style")).toEqual("display: block;");
+    });
+
+    it("closeNotification_updates_dom_objects_properly_when_closing_error_notification", function () {
+        notifications.closeNotification("error");
+
+        var box = document.getElementById(constants.NOTIFICATIONS.MAIN_CONTAINER_CLASS);
+        expect(box.getAttribute("style")).toEqual("display: none;");
+    });
 });
-new NotificationsPlugin();

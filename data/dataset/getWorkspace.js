@@ -1,5 +1,3 @@
-//getApks.js returns a list of available .apk files for download
-
 var fs = require('fs');
 var path = require('path');
 

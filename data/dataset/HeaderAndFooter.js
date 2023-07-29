@@ -1,5 +1,3 @@
-//Javascript function to create a header and footer for App Inventor documentation pages
-
 function createHeader(breadcrumbs) {
     // body
     document.write('<div id= "aiac">');

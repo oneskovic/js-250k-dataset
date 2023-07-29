@@ -1,5 +1,3 @@
-/*globals define,app*/
-
 define( [
     'jquery', 'lodash',
     'src/views/BaseView',

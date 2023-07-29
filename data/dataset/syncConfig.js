@@ -1,5 +1,3 @@
-//model sync configuraion
-
 (function ($, _, Backbone) {
   "use strict";
 

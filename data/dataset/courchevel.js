@@ -3,7 +3,7 @@ var fs = require('fs');
 var parser = require('../../lib/lifts/parser');
 var parse = require('../../lib/resorts/courchevel');
 
-/*global describe, it */
+
 describe('parse courchevel', function() {
 
   it('should return lift status', function(done) {

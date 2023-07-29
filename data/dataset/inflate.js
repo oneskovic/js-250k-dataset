@@ -3,13 +3,7 @@ define([
     "util/dom2"
   ], function(i18n) {
     
-  /*
   
-  A simple, Mustache-compatible templating library that doesn't use eval, so
-  it's safe for Chrome apps. It's not fast, but templating is rarely our
-  bottleneck.
-  
-  */
     
   var cache = {};
   var fragment = document.createDocumentFragment();

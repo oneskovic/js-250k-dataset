@@ -1,9 +1,3 @@
-/**
- * User sign-up form
- * @class Controllers.UserSignUp
- * @uses Parse
- */
-
 var Parse = require("parse");
 
 /**

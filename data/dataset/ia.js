@@ -1,7 +1,3 @@
-/* Translators (2009 onwards):
- *  - McDutchie
- */
-
 /**
  * @requires OpenLayers/Lang.js
  */

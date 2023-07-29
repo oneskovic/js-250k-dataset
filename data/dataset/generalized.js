@@ -1,7 +1,3 @@
-/* 
- * == BSD2 LICENSE ==
- */
-
 var _ = require('lodash');
 var d3 = require('d3');
 

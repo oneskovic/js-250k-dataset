@@ -1,67 +1,89 @@
-/*
- *
- * Forwarder device
- *
- */
+dojo.provide("dojo.lang.timing.Streamer");
+dojo.require("dojo.lang.timing.Timer");
 
-var zmq = require('../../')
-    , frontPort = 'tcp://127.0.0.1:12345'
-    , backPort = 'tcp://127.0.0.1:12346';
+dojo.lang.timing.Streamer = function(
+	input, 
+	output, 
+	/* int */interval, 
+	/* int */minimum,
+	/* array */initialData
+){
+	//	summary
+	//	Streamer will take an inputthat pushes N datapoints into a
+	//		queue, and will pass the next point in that queue out to an
+	//		outputat the passed interval; this way you can emulate
+	//		a constant buffered stream of data.
+	//	input: theexecuted when the internal queue reaches minimumSize
+	//	output: theexecuted on internal tick
+	//	interval: the interval in ms at which the outputis fired.
+	//	minimum: the minimum number of elements in the internal queue.
 
-function createClient (port) {
-    var socket = zmq.socket('push');
+	var self = this;
+	var queue = [];
 
-    socket.identity = 'client' + process.pid;
+	//	public properties
+	this.interval = interval || 1000;
+	this.minimumSize = minimum || 10;	//	latency usually == interval * minimumSize
+	this.inputFunction = input || function(q){ };
+	this.outputFunction = output || function(point){ };
 
-    socket.connect(port);
-    console.log('client connected!');
+	//	more setup
+	var timer = new dojo.lang.timing.Timer(this.interval);
+	var tick = function(){
+		self.onTick(self);
 
-    setInterval(function() {
-        var value = Math.floor(Math.random()*100);
+		if(queue.length < self.minimumSize){
+			self.inputFunction(queue);
+		}
 
-        console.log(socket.identity + ': pushing ' + value);
-        socket.send(value);
-    }, 100);
+		var obj = queue.shift();
+		while(typeof(obj) == "undefined" && queue.length > 0){
+			obj = queue.shift();
+		}
+		
+		//	check to see if the inputneeds to be fired
+		//	stop before firing the output function
+		//	TODO: relegate this to the output function?
+		if(typeof(obj) == "undefined"){
+			self.stop();
+			return;
+		}
+
+		//	call the output function.
+		self.outputFunction(obj);
+	};
+
+	this.setInterval = function(/* int */ms){
+		//	summary
+		//	sets the interval in milliseconds of the internal timer
+		this.interval = ms;
+		timer.setInterval(ms);
+	};
+
+	this.onTick = function(/* dojo.lang.timing.Streamer */obj){ };
+	// wrap the timer functions so that we can connect to them if needed.
+	this.start = function(){
+		//	summary
+		//	starts the Streamer
+		if(typeof(this.inputFunction) == "function" && typeof(this.outputFunction) == "function"){
+			timer.start();
+			return;
+		}
+		dojo.raise("You cannot start a Streamer without an input and an output function.");
+	};
+	this.onStart = function(){ };
+	this.stop = function(){
+		//	summary
+		//	stops the Streamer
+		timer.stop();
+	};
+	this.onStop = function(){ };
+
+	//	finish initialization
+	timer.onTick = this.tick;
+	timer.onStart = this.onStart;
+	timer.onStop = this.onStop;
+	if(initialData){
+		queue.concat(initialData);
+	}
 };
-
-function createWorker (port) {
-    var socket = zmq.socket('pull');
-
-    socket.identity = 'worker' + process.pid;
-
-    socket.on('message', function(data) {
-        console.log(socket.identity + ': pulled ' + data.toString());
-    });
-
-    socket.connect(port, function(err) {
-        if (err) throw err;
-        console.log('worker connected!');
-    });
-};
-
-function createStreamerDevice(frontPort, backPort) {
-    var frontSocket = zmq.socket('pull'),
-        backSocket = zmq.socket('push');
-
-    frontSocket.identity = 'sub' + process.pid;
-    backSocket.identity = 'pub' + process.pid;
-
-    frontSocket.bind(frontPort, function (err) {
-        console.log('bound', frontPort);
-    });
-
-    frontSocket.on('message', function() {
-        //pass to back
-        console.log('forwarder: sending downstream', arguments[0].toString());
-        backSocket.send(Array.prototype.slice.call(arguments));
-    });
-
-    backSocket.bind(backPort, function (err) {
-        console.log('bound', backPort);
-    });
-}
-
-createStreamerDevice(frontPort, backPort);
-
-createClient(frontPort);
-createWorker(backPort);   

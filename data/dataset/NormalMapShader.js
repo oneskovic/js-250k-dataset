@@ -1,10 +1,3 @@
-/**
- * @author alteredq / http://alteredqualia.com/
- *
- * Normal map shader
- * - compute normals from heightmap
- */
-
 THREE.NormalMapShader = {
 
 	uniforms: {

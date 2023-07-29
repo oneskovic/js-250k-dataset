@@ -1,83 +1,71 @@
-/**
-# COMPONENT **fullscreen**
-This component listens for "toggle-fullscreen" messages to toggle the game's container to full-screen and back.
+document.write(
+    '<div style="position: relative; width: 50%;">' +
+        '<div class="fotorama" id="fotorama" style="position: absolute; width: 50%; max-width: 199px; top: 12px; left: 17px;">' +
+        '<img src="test/i/okonechnikov/1-lo.jpg">' +
+        '<img src="test/i/okonechnikov/2-lo.jpg">' +
+        '<img src="test/i/okonechnikov/9-lo.jpg">' +
+        '<img src="test/i/okonechnikov/6-lo.jpg">' +
+        '<img src="test/i/okonechnikov/5-lo.jpg">' +
+        '</div>' +
+    '</div>'
+);
 
-Note: This component connects to the browser's fullscreen API if available. It also sets a "full-screen" class on the game container that should be styled in CSS for proper behavior.
+describe('Fullscreen', function () {
+  var $window, $fotorama, fotorama, startPosition, startDimensions, fullscreenPosition;
 
-## Dependencies:
-- [[Render-Animation]] (component on entity) - This component listens for the "animation-complete" event triggered by render-sprite.
+  beforeEach(function () {
+    $window = $window || $(window);
+    $fotorama = $fotorama || $('#fotorama');
+    fotorama = fotorama || $fotorama.data('fotorama');
+    //jasmine.Clock.useMock();
+  });
 
-## Messages:
+  describe('requestFullScreen', function () {
 
-### Listens for:
-- **toggle-fullscreen** - On receiving this message, the component will go fullscreen if not already in fullscreen mode, and vice-versa.
+    it('correct position on start', function () {
+      startPosition = $fotorama.position();
+      startDimensions = {width: $fotorama.width(), height: $fotorama.height()};
+      expect(startPosition.left).toEqual(Number($fotorama.css('left').replace(/px$/, '')));
+      expect(startPosition.top).toEqual(Number($fotorama.css('top').replace(/px$/, '')));
+    });
 
-## JSON Definition:
-    {
-      "type": "fullscreen"
-    }
-*/
+    it('no fullscreen if it is not allowed yet', function () {
+      fotorama.requestFullScreen();
+      //jasmine.Clock.tick(100);
+      expect($fotorama.hasClass('fotorama--fullscreen')).toBeFalsy();
+    });
 
-//TODO: Ideally this should be set up to work for any given element, not just the game container. - DDD
-(function(){
-	var enabled = false,
-	element = null,
-	turnOffFullScreen = function(){
-		enabled = false;
-		element.className = element.className.replace(/ full-screen/g, '');
-		platformer.game.bindings['resize'].callback();
-	},
-	toggleFullscreen = function(){
-		if(enabled){
-			if(document.webkitExitFullscreen){
-				document.webkitExitFullscreen();
-			} else if (document.mozCancelFullScreen) {
-				document.mozCancelFullScreen();
-			} else if (document.exitFullscreen) {
-				document.exitFullscreen();
-			}
-			turnOffFullScreen();
-		} else {
-			enabled = true;
-			element.className += ' full-screen';
-			if(element.webkitRequestFullscreen){
-				if(!platformer.game.settings.supports.safari || platformer.game.settings.supports.chrome){ //Safari doesn't allow all keyboard input in fullscreen which breaks game input - DDD 5/27/2013
-					element.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-				}
-			} else if (element.mozRequestFullScreen) {
-				element.mozRequestFullScreen();
-			} else if (element.requestFullscreen) {
-				element.requestFullscreen(); // Opera
-			}
-			platformer.game.bindings['resize'].callback();
-		}
-	};
-	document.addEventListener('fullscreenchange', function(e){
-		if(!document.fullscreenElement){
-			turnOffFullScreen();
-		}
-	});
-	document.addEventListener('webkitfullscreenchange', function(e){
-		if(!document.webkitFullscreenElement){
-			turnOffFullScreen();
-		}
-	});
-	document.addEventListener('mozfullscreenchange', function(e){
-		if(!document.mozFullScreenElement){
-			turnOffFullScreen();
-		}
-	});
-	
-	return platformer.createComponentClass({
-		id: 'fullscreen',
-		constructor: function(definition){
-			if (!element) {
-				element = platformer.game.containerElement;
-			}
-		},
-		events:{
-			"toggle-fullscreen": toggleFullscreen
-		}
-	});
-	
-})();
+    it('fullscreen is opened', function () {
+      // allow fullscreen
+      fotorama.setOptions({allowFullScreen: true});
+//
+//		    // try again
+      fotorama.requestFullScreen();
+      //jasmine.Clock.tick(100);
+//
+//		    // fullscreen is here
+      expect($fotorama.hasClass('fotorama--fullscreen')).toBeTruthy();
+    });
+//
+    it('size & position are correct', function () {
+      fullscreenPosition = $fotorama.position();
+      expect($fotorama.width()).toEqual($window.width());
+      expect($fotorama.height()).toEqual($window.height());
+      expect(fullscreenPosition.left).toEqual(0);
+      expect(fullscreenPosition.top).toEqual(0);
+    });
+  });
+
+  describe('cancelFullscreen', function () {
+    it('fullscreen is cancelled', function () {
+      fotorama.cancelFullScreen();
+      //jasmine.Clock.tick(100);
+      expect($fotorama.hasClass('fotorama--fullscreen')).toBeFalsy();
+    });
+
+    it('size & position are back and correct', function () {
+      expect({width: $fotorama.width(), height: $fotorama.height()}).toEqual(startDimensions);
+      expect($fotorama.position()).toEqual(startPosition);
+    });
+  });
+});

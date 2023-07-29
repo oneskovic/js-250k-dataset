@@ -1,5 +1,3 @@
-/* a standard model to create a Policy from */
-
 // ALL policy checks MUST call the callback, otherwise 
 // the data will never arrive at the client
 

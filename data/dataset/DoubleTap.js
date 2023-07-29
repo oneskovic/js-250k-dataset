@@ -1,12 +1,3 @@
-/*!
- * jQuery Double Tap Plugin.
- *
- * Copyright (c) 2010 Raul Sanchez (http://www.sanraul.com)
- *
- * Dual licensed under the MIT and GPL licenses:
- * http://www.opensource.org/licenses/mit-license.php
- * http://www.gnu.org/licenses/gpl.html
- */
  
 (function($){
 	// Determine if we on iPhone or iPad

@@ -1,8 +1,3 @@
-///import core
-///import uicore
-///import ui/popup.js
-///import ui/autotypesetpicker.js
-///import ui/splitbutton.js
 (function (){
     var utils = baidu.editor.utils,
         Popup = baidu.editor.ui.Popup,

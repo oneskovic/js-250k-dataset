@@ -1,7 +1,3 @@
-/**
- * @module terminal
- */
-
 'use strict';
 
 /**

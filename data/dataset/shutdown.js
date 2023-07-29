@@ -1,7 +1,3 @@
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 /* shutdown.js is an abstraction for installing graceful shutdown
  * handlers into processes so that they gracefully shutdown upon
  * signals.

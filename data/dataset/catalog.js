@@ -7,10 +7,7 @@ catalogModule.controller("CatalogCtrl", ["$scope", "$filter", "catalogDataServic
 		$scope.catalog = catalogDataService.get();
 
 		$scope.numberOfVisibleProducts = function () {
-			/**
-			 * The return expression breaks down like this...
-			 * (catalog.products | filter:catalog.searchQuery | orderBy:catalog.sortOrder.type:catalog.sortOrder.reverse | startFrom:catalog.currentPage*catalog.productsPerPage | limitTo:catalog.productsPerPage).length
-			**/
+			
 
 			return $filter("limitTo")($filter("startFrom")($filter("orderBy")($filter("filter")($scope.catalog.products, $scope.catalog.searchQuery), $scope.catalog.sortOrder.type, $scope.catalog.sortOrder.reverse), $scope.catalog.currentPage*$scope.catalog.productsPerPage), $scope.catalog.productsPerPage).length;
 		};

@@ -1,10 +1,6 @@
 var helpers = require('./browser');
 
-/*
- add these 2 lines to the top of your it block to force a logout and log back in
- - forms.logout();
- - forms.login(config.user.username,config.user.password);
- */
+
 
 exports.login = function (username,password) {
 	browser.get('#/login');

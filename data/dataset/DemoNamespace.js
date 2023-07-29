@@ -1,18 +1,3 @@
-/**
-File:
-	DemoNamespace.js
-Created By:
-	Mario Gonzalez
-Project:
-	NoBarrierOSC
-Abstract:
-	This file contains the namespace for NoBarrierOSC demo and a few helper functions for namespaces/inheritance
-
-Basic Usage:
- 	This class is not instantiated
-Version:
-	1.0
-*/
 Demo = (typeof Demo === 'undefined') ? {} : Demo;
 /**
  * Allows a package to create a namespace within Demo

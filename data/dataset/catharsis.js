@@ -1,11 +1,3 @@
-/**
- * Catharsis
- * A parser for Google Closure Compiler type expressions, powered by PEG.js.
- *
- * @author Jeff Williams <jeffrey.l.williams@gmail.com>
- * @license MIT License <http://opensource.org/licenses/mit-license.php/>
- */
-
 'use strict';
 
 var parse = require('./lib/parser').parse;
@@ -56,7 +48,7 @@ function cachedParse(expr, options) {
 	var cache = getTypeExpressionCache(options);
 	var parsedType;
 
-	if (cache && Object.prototype.hasOwnProperty.call(cache, expr)) {
+	if (cache && cache[expr]) {
 		return cache[expr];
 	} else {
 		parsedType = parse(expr, options);

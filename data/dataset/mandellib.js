@@ -1,9 +1,3 @@
-/* 
- * mandellib.js
- *
- *
- * ------ Ready Bake Globals ---- 
- */
 var canvas;
 var ctx;
 

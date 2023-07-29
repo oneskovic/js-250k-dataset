@@ -1,6 +1,3 @@
-/// @@@ Only works with tabulator.isExtension 
-
-
 // isExtension = true;
 
 // if (!tabulator.isExtension) throw "Coded only for extension";

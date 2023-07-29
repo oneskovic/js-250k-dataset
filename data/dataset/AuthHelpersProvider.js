@@ -60,12 +60,7 @@ define( [ 'angular', '../module' ], function( ng ) {
         return helpers;
       },
 
-      /**
-       * @ngdoc function
-       * @methodOf ngSeed.providers:CSAccountProvider
-       * @name setAccountService
-       * @param  {String} serviceName the account service name
-       */
+      
       extend: function( providerName ) {
           if ( typeof providerName !== 'string' ) {
             throw new Error( 'Helpers: extend method expects a string (name of the helpers provider)' );

@@ -1,13 +1,3 @@
-/**
- * keysort
- *
- * @author Jason Mulligan <jason.mulligan@avoidwork.com>
- * @copyright 2013 Jason Mulligan
- * @license BSD-3 <https://raw.github.com/avoidwork/keysort/master/LICENSE>
- * @link http://avoidwork.github.io/keysort/
- * @module keysort
- * @version 0.1.1
- */
 (function ( global ) {
 "use strict";
 

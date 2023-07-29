@@ -1,8 +1,3 @@
-/*!
- * Responsive Images: Mobile-First images that scale responsively and responsibly
- * Copyright 2011, Scott Jehl, Filament Group, Inc
- * Dual licensed under the MIT or GPL Version 2 licenses.
-*/
 (function( win ){
 	//defaults / mixins
 	var	rwdi			= win.rwd_images || {},

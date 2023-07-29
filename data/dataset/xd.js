@@ -1,7 +1,3 @@
-/**
-*@namespace Sfdc.canvas.xd
-*@name Sfdc.canvas.xd
-*/
 (function ($$, window) {
 
     "use strict";

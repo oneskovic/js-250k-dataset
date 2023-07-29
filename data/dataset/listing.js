@@ -1,9 +1,3 @@
-/**
- * All is directly copied or inspired from http://razorjack.net/quicksand/index.html
- *
- * @author  Jacek Galanciak <https://github.com/razorjack/quicksand/>
- * @author  Jean-François Lépine <jeanfrancois@lepine.pro>
- */
 (function($) {
     $.fn.sorted = function(customOptions) {
         var options = {

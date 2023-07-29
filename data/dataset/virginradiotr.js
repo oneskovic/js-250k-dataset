@@ -1,15 +1,4 @@
-﻿/*
- *
- * Chrome-Last.fm-Scrobbler 
- * http://www.virginradioturkiye.com/live 
- * http://live.radioeksen.com/live
- * 
- *
- * 
- * Connector by Salim KAYABAŞI
- * http://www.salimkayabasi.com
- * to debug change its' status to 'true'
- */
+﻿
  
 var artist = '';
 var track = '';

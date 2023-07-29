@@ -1,16 +1,5 @@
 (function(Proton, undefined) {
-	/**
-	 * The FollowEmitter class inherits from Proton.Emitter
-	 *
-	 * use the FollowEmitter will emit particle when mousemoving
-	 *
-	 * @class Proton.FollowEmitter
-	 * @constructor
-	 * @param {Element} mouseTarget mouseevent's target;
-	 * @param {Number} ease the easing of following speed;
-	 * @default 0.7
-	 * @param {Object} pObj the parameters object;
-	 */
+	
 	function FollowEmitter(mouseTarget, ease, pObj) {
 		this.mouseTarget = Proton.Util.initValue(mouseTarget, window);
 		this.ease = Proton.Util.initValue(ease, .7);

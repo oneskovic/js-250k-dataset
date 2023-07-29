@@ -1,15 +1,3 @@
-// See: http://cubiq.org/remove-onclick-delay-on-webkit-for-iphone
-//
-// I changed the touch detection from window.Touch to: 'ontouchstart' in document.documentElement
-// See: http://modernizr.github.com/Modernizr/touch.html
-//
-// I also changed the code such that a callback function is pass into the NoClickDelay function,
-// rather than firing a click event on "theTarget".
-//
-// There still seems to be an issue (present on the Android Galaxy Nexus at least) where a
-// "ghost click" is sometimes fired after the callback has been executed. The onClick
-// handler was added to supress these ghost clicks, although it never appears to be fired.
-
 function NoClickDelay(el, callback) {
 	this.element = typeof el === 'object' ? el : document.getElementById(el);
 	this.callback = callback;

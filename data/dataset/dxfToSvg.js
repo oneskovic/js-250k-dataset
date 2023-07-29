@@ -1,8 +1,3 @@
-// Dependencies:
-// * http://jquery.com/
-// * https://github.com/mondalaci/positional-format.js
-// $ bower install jquery positional-format.js
-
 /**
  * Convert DXF string to SVG format.
  * @param {string} dxfString The DXF string to be converted.

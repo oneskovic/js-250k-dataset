@@ -1,7 +1,3 @@
-/**
- * Classes to iterate over records in an array-like structure of bytes (FromBytes).
- */
-
 define([
        ],
        function(

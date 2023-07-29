@@ -1,4 +1,3 @@
-/*eslint-env node, mocha */
 /*eslint  quotes: [2, "single"] */
 var consolidate = require('../../'),
     fs = require('fs');

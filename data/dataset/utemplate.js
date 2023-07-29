@@ -1,18 +1,3 @@
-/**
- * utemplate
- *
- * @param {string} template
- * @param {function} model - data as Freak instance
- * @param {optional function} onChange - will be called whenever used model property changes
- *
- * @returns {string} - rendered template using model
- *
- * Basic template rendering.
- * Supported tags: {{variable}}, {{#section}}, {{^inverted_section}}
- * (short closing tags {{/}} supported)
- *
- * Does NOT support nested sections, so simple parsing via regex is possible.
- */
 function utemplate(template, model, onChange) {
   return template
     // {{#section}} sectionBody {{/}}

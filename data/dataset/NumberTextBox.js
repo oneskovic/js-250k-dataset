@@ -3,12 +3,7 @@ dojo.provide("dijit.form.NumberTextBox");
 dojo.require("dijit.form.ValidationTextBox");
 dojo.require("dojo.number");
 
-/*=====
-dojo.declare(
-	"dijit.form.NumberTextBox.__Constraints",
-	[dijit.form.RangeBoundTextBox.__Constraints, dojo.number.__FormatOptions, dojo.number.__ParseOptions]
-);
-=====*/
+
 
 dojo.declare(
 	"dijit.form.NumberTextBoxMixin",

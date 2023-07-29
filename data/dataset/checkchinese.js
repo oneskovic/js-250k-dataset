@@ -1,8 +1,3 @@
-/**
- * @author xuld
- */
-
-
 //#include text/base.js
 
 Object.extend(Text, {

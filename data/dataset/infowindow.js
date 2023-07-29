@@ -1,8 +1,3 @@
-/**
- * User: kgoulding
- * Date: 4/4/12
- * Time: 10:30 AM
- */
 (function () { // self-invoking function
     SAS.InfoWindow = function () {
         var _self = this;

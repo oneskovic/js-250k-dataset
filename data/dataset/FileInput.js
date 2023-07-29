@@ -1,117 +1,75 @@
-/**
- * FileInput.js
- *
- * Copyright 2013, Moxiecode Systems AB
- * Released under GPL License.
- *
- * License: http://www.plupload.com/license
- * Contributing: http://www.plupload.com/contributing
- */
+if(!dojo._hasResource["dojox.widget.FileInput"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
+dojo._hasResource["dojox.widget.FileInput"] = true;
+dojo.provide("dojox.widget.FileInput");
+dojo.experimental("dojox.widget.FileInput"); 
 
-/**
-@class moxie/runtime/dropbox/file/FileInput
-@private
-*/
-define("moxie/runtime/dropbox/file/FileInput", [
-	"moxie/runtime/dropbox/Runtime",
-	"moxie/file/File",
-	"moxie/core/utils/Basic",
-	"moxie/core/utils/Dom",
-	"moxie/core/utils/Events",
-	"moxie/core/utils/Mime",
-	"moxie/core/utils/Env"
-], function(extensions, File, Basic, Dom, Events, Mime, Env) {
+dojo.require("dijit.form._FormWidget");
+dojo.require("dijit._Templated"); 
 
-	function FileInput() {
-		var _options, _disabled = false;
+dojo.declare("dojox.widget.FileInput",
+	dijit.form._FormWidget,
+	{
+	// summary: A styled input type="file"
+	//
+	// description: A input type="file" form widget, with a button for uploading to be styled via css,
+	//	a cancel button to clear selection, and FormWidget mixin to provide standard dijit.form.Form
+	//	support (FIXME: maybe not fully implemented) 
 
-		Basic.extend(this, {
-			init: function(options) {
-				var comp = this, I = comp.getRuntime(), config, exts = [];
+	// label: String
+	//	the title text of the "Browse" button
+	label: "Browse ...",
 
-				_options = options;
+	// cancelText: String
+	//	the title of the "Cancel" button
+	cancelText: "Cancel",
 
-				Basic.each(_options.accept, function(group) {
-					if (/\*/.test(group.extensions)) {
-						exts = [];
-						return false;
-					}
+	// name: String
+	//	ugh, this should be pulled from this.domNode
+	name: "uploadFile",
 
-					var items = group.extensions.split(/\s*,\s*/);
-					if (!items.length) {
-						return true; // continue
-					}
+	templateString:"<div class=\"dijitFileInput\">\n\t<input id=\"${id}\" class=\"dijitFileInputReal\" type=\"file\" dojoAttachPoint=\"fileInput\" name=\"${name}\" />\n\t<div class=\"dijitFakeInput\">\n\t\t<input class=\"dijitFileInputVisible\" type=\"text\" dojoAttachPoint=\"focusNode, inputNode\" />\n\t\t<div class=\"dijitInline dijitFileInputText\" dojoAttachPoint=\"titleNode\">${label}</div>\n\t\t<div class=\"dijitInline dijitFileInputButton\" dojoAttachPoint=\"cancelNode\" \n\t\t\tdojoAttachEvent=\"onclick:_onClick\">${cancelText}</div>\n\t</div>\n</div>\n",
+	
+	startup: function(){
+		// summary: listen for changes on our real file input
+		this._listener = dojo.connect(this.fileInput,"onchange",this,"_matchValue");
+		this._keyListener = dojo.connect(this.fileInput,"onkeyup",this,"_matchValue");
+	},
 
-					// prefix extensions with dots
-					[].push.apply(exts, ('.' + items.join(',.')).split(','));
-				});
+	_matchValue: function(){
+		// summary: set the content of the upper input based on the semi-hidden file input
+		this.inputNode.value = this.fileInput.value;
+		if(this.inputNode.value){
+			this.cancelNode.style.visibility = "visible";
+			dojo.fadeIn({ node: this.cancelNode, duration:275 }).play();
+		}
+	},
 
+	setLabel: function(/* String */label,/* String? */cssClass){
+		// summary: method to allow use to change button label
+		this.titleNode.innerHTML = label;
+	},
 
-				config = {
-					//iframe: true, // potentially there, but not working
-					linkType: 'direct',
-					extensions: exts,
+	_onClick: function(/* Event */e){
+		// summary: on click of cancel button, since we can't clear the input because of
+		// 	security reasons, we destroy it, and add a new one in it's place.
+		dojo.disconnect(this._listener);
+		dojo.disconnect(this._keyListener); 
+		this.domNode.removeChild(this.fileInput);
+		dojo.fadeOut({ node: this.cancelNode, duration:275 }).play(); 
 
-					success: function(files) {
-						comp.files = [];
+		// should we use cloneNode()? can we?
+		this.fileInput = document.createElement('input');
+		this.fileInput.setAttribute("type","file");
+		this.fileInput.setAttribute("id",this.id);
+		this.fileInput.setAttribute("name",this.name);
+		dojo.addClass(this.fileInput,"dijitFileInputReal");
+		this.domNode.appendChild(this.fileInput);
 
-						Basic.each(files, function(file) {
-							comp.files.push(new File(I.uid, {
-								name: file.name,
-								size: parseInt(file.bytes, 10),
-								downloadUrl: file.link,
-								thumbnail: file.thumbnailLink
-							}));
-						});
-
-						if (comp.files.length) {
-							comp.trigger('change');
-						}
-					}
-				};
-
-				if (_options.multiple) {
-					config.multiselect = true;
-				}
-				
-
-				Events.addEvent(Dom.get(_options.browse_button), 'click', function(e) {
-					if (_disabled) {
-						return;
-					}
-
-					Dropbox.choose(config);
-
-					e.preventDefault();
-				}, comp.uid);
-
-				comp.trigger({
-					type: 'ready',
-					async: true
-				});
-			},
-
-
-			disable: function(state) {
-				_disabled = state;
-			},
-
-
-			destroy: function() {
-				var I = this.getRuntime()
-				, shim = I.getShim()
-				;
-
-				Events.removeAllEvents(_options && Dom.get(_options.browse_button), this.uid);
-
-				shim.removeInstance(this.uid);
-
-				// destroy _picker
-
-				_options = shim = null;
-			}
-		});
+		this._keyListener = dojo.connect(this.fileInput,"onkeyup",this,"_matchValue");
+		this._listener = dojo.connect(this.fileInput,"onchange",this,"_matchValue"); 
+		this.inputNode.value = ""; 
 	}
 
-	return (extensions.FileInput = FileInput);
 });
+
+}

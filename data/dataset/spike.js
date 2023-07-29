@@ -1,5 +1,3 @@
-// Le Spike
-
 /*global game,me*/
 
 // Creating a "Spike" namespace

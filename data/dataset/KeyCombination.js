@@ -1,10 +1,3 @@
-/**
- * Created with JetBrains WebStorm.
- * User: pago
- * Date: 27.09.12
- * Time: 07:08
- * To change this template use File | Settings | File Templates.
- */
 define(['./../../base/Class', './../../base/Util'], function(Class, _) {
 	function parseConfig(s) {
 		// example: alt char:a

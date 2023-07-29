@@ -1,37 +1,3 @@
-/*
- * Converts depth maps of various formats into the format
- * readable by `generatePixelData()`.
- *
- * These all return the same depth map:
- *
- * var template = ["   ",
- *                 " # ",
- *                 "   "];
- *
- * var template = ["000",
- *                 "010",
- *                 "000"];
- *
- * var template = "   \n # \n   ";
- *
- * var template = "000\n010\n000";
- *
- * var template = [[0, 0, 0],
- *                 [0, 1, 0],
- *                 [0, 0, 0]];
- *
- * Of course, you can have varying depths:
- *
- * var template = ["001",
- *                 "012",
- *                 "123"];
- *
- * var template = [[0.0, 0.0, 0.3],
- *                 [0.0, 0.3, 0.6],
- *                 [0.3, 0.6, 0.9]];
- *
- */
-
 MagicEye.TemplateDepthMapper = MagicEye.DepthMapper.extend({
 
   constructor: function (template) {

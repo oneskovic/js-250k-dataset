@@ -1,13 +1,3 @@
-/**
- * @class FeedViewer.FeedPost
- * @extends Ext.panel.Panel
- *
- * Shows the detail of a feed post
- *
- * @constructor
- * Create a new Feed Post
- * @param {Object} config The config object
- */
 Ext.define('FeedViewer.FeedPost', {
 
     extend: 'Ext.panel.Panel',

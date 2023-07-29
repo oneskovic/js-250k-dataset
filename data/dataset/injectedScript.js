@@ -1,4 +1,3 @@
-// this script will be injected into the page for listening to user input
 (function() {
   /* global window */
 

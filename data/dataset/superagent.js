@@ -1,5 +1,3 @@
-/* global jest */
-
 /*
  * From http://bl.ocks.org/simenbrekken/b6282f713605b619834f
  * see https://github.com/facebook/jest/issues/61 for more information

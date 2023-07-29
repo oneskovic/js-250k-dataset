@@ -1,6 +1,3 @@
-/**
- *   SegmentProcessor is responsible of ...
- */
 function SegmentProcessor(vacuumProcessor, segmentId) {
     this.vacuumProcessor_ = vacuumProcessor;
     this.segmentId_ = segmentId;

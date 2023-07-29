@@ -1,5 +1,3 @@
-// mappingFactory.js
-
 Curiosity.factory('mapping', function($rootScope, elasticClient, elasticFunc, curiosity){
 	var mappingObj = {};
 	 

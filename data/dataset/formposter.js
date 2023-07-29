@@ -1,8 +1,3 @@
-/**
- * 表单提交组件
- * 使用方法：
- * var fp = new FormPoster($('form'));
- */
 var FormPoster = (function(){
 	var _guid_count = 1;
 	var _guid = function(){

@@ -1,10 +1,6 @@
 App.IndexController = Ember.ArrayController.extend(EmberDC.ControllerMixin, {
 
-  /**
-   * @property metrics
-   * @type {Array}
-   * Computed Metrics
-   */
+  
   metrics: [
     {value:'sighting',       label: 'Sightings'}
   ],

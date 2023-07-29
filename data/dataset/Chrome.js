@@ -1,6 +1,3 @@
-/**
- * @private
- */
 Ext.define('Ext.device.filesystem.Chrome', {
     extend: 'Ext.device.filesystem.HTML5',
     /**

@@ -1,114 +1,81 @@
-casper.test.begin('grid', 73, function (test) {
-  
-  casper
-  .start('../../examples/grid/index.html')
-  .then(function () {
-    // headers
-    test.assertElementCount('th', 2)
-    test.assertElementCount('th.active', 0)
-    test.assertSelectorHasText('th:nth-child(1)', 'Name')
-    test.assertSelectorHasText('th:nth-child(2)', 'Power')
-    assertTable(test, ['name', 'power'], [
-      { name: 'Chuck Norris', power: Infinity },
-      { name: 'Bruce Lee', power: 9000 },
-      { name: 'Jacky Chang', power: 7000 },
-      { name: 'Jet Li', power: 8000 }
-    ])
-  })
-  // test sorting
-  .thenClick('th:nth-child(1)', function () {
-    test.assertElementCount('th.active:nth-child(1)', 1)
-    test.assertElementCount('th.active:nth-child(2)', 0)
-    test.assertElementCount('th:nth-child(1) .arrow.dsc', 1)
-    test.assertElementCount('th:nth-child(2) .arrow.dsc', 0)
-    assertTable(test, ['name', 'power'], [
-      { name: 'Jet Li', power: 8000 },
-      { name: 'Jacky Chang', power: 7000 },
-      { name: 'Chuck Norris', power: Infinity },
-      { name: 'Bruce Lee', power: 9000 }
-    ])
-  })
-  .thenClick('th:nth-child(2)', function () {
-    test.assertElementCount('th.active:nth-child(1)', 0)
-    test.assertElementCount('th.active:nth-child(2)', 1)
-    test.assertElementCount('th:nth-child(1) .arrow.dsc', 1)
-    test.assertElementCount('th:nth-child(2) .arrow.dsc', 1)
-    assertTable(test, ['name', 'power'], [
-      { name: 'Chuck Norris', power: Infinity },
-      { name: 'Bruce Lee', power: 9000 },
-      { name: 'Jet Li', power: 8000 },
-      { name: 'Jacky Chang', power: 7000 }
-    ])
-  })
-  .thenClick('th:nth-child(2)', function () {
-    test.assertElementCount('th.active:nth-child(1)', 0)
-    test.assertElementCount('th.active:nth-child(2)', 1)
-    test.assertElementCount('th:nth-child(1) .arrow.dsc', 1)
-    test.assertElementCount('th:nth-child(2) .arrow.asc', 1)
-    assertTable(test, ['name', 'power'], [
-      { name: 'Jacky Chang', power: 7000 },
-      { name: 'Jet Li', power: 8000 },
-      { name: 'Bruce Lee', power: 9000 },
-      { name: 'Chuck Norris', power: Infinity }
-    ])
-  })
-  .thenClick('th:nth-child(1)', function () {
-    test.assertElementCount('th.active:nth-child(1)', 1)
-    test.assertElementCount('th.active:nth-child(2)', 0)
-    test.assertElementCount('th:nth-child(1) .arrow.asc', 1)
-    test.assertElementCount('th:nth-child(2) .arrow.asc', 1)
-    assertTable(test, ['name', 'power'], [
-      { name: 'Bruce Lee', power: 9000 },
-      { name: 'Chuck Norris', power: Infinity },
-      { name: 'Jacky Chang', power: 7000 },
-      { name: 'Jet Li', power: 8000 }
-    ])
-  })
-  // test search
-  .then(function () {
-    this.fill('#search', {
-      query: 'j'
-    })
-  })
-  .then(function () {
-    assertTable(test, ['name', 'power'], [
-      { name: 'Jacky Chang', power: 7000 },
-      { name: 'Jet Li', power: 8000 }
-    ])
-  })
-  .then(function () {
-    this.fill('#search', {
-      query: 'infinity'
-    })
-  })
-  .then(function () {
-    assertTable(test, ['name', 'power'], [
-      { name: 'Chuck Norris', power: Infinity }
-    ])
-  })
-  // run
-  .run(function () {
-    test.done()
-  })
+define(function(require, exports, module) {
 
-  /**
-   * Helper to assert the table data is rendered correctly.
-   *
-   * @param {CasperTester} test
-   * @param {Array} columns
-   * @param {Array} data
-   */
+'use strict';
 
-  function assertTable (test, columns, data) {
-    test.assertElementCount('td', data.length * columns.length)
-    for (var i = 0; i < data.length; i++) {
-      for (var j = 0; j < columns.length; j++) {
-        test.assertSelectorHasText(
-          'tr:nth-child(' + (i+1) + ') td:nth-child(' + (j+1) + ')',
-          data[i][columns[j]]
-        )
+var Widget = require('widget'),
+  moment = require('moment');
+
+var Grid = Widget.extend({
+  defaults: {
+    container: null,
+    data: {
+      listData: []
+    },
+    delegates: {
+      'click [data-role=remove]': function (e) {
+        var data = this.listData[e.currentTarget.dataset.index];
+
+        this.remove(data);
+
+        this.fire('remove', data.componentId);
+      }
+    },
+    template: require('./grid.handlebars'),
+    templateOptions: {
+      helpers: {
+        fdate: function(createTime) {
+          return moment(createTime).format('YYYY-MM-DD');
+        }
       }
     }
+  },
+
+  setup: function () {
+    this.render();
+
+    this.listData = this.data('listData');
+  },
+
+  append: function (data) {
+    var listData = this.listData,
+        found = false;
+
+    listData.forEach(function (row) {
+      if (row.componentId === data.componentId) {
+        found = true;
+        return false;
+      }
+    });
+
+    if (!found) {
+      listData.push(data);
+      this.render();
+    }
+  },
+
+  remove: function (data) {
+    var self = this,
+      listData = self.listData;
+
+    listData.forEach(function (row, i) {
+      if (row.componentId === data.componentId) {
+        listData.splice(i, 1);
+        self.render();
+      }
+    });
+  },
+
+  getData: function () {
+    return this.listData.map(function (row) {
+      return {
+        id: row.componentId,
+        name: row.componentName
+      }
+    });
   }
 
-})
+});
+
+module.exports = Grid;
+
+});

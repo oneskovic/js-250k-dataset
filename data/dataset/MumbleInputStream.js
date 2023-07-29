@@ -1,17 +1,10 @@
-
 "use strict";
 
 var EventEmitter = require('events').EventEmitter;
 var WritableStream = require('stream').Writable;
 
 
-/**
- * Mumble input stream
- *
- * @constructor
- * @this {MumbleInputStream}
- * @param {MumbleConnection} connection Mumble connection to write to
- */
+
 var MumbleInputStream = function( connection, options ) {
     var self = this;
     this.connection = connection;

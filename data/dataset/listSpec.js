@@ -1,8 +1,5 @@
 'use strict';
-/**
- * Project: GameEngine.
- * Copyright (c) 2013, Eugene-Krevenets
- */
+
 
 describe('list', function() {
     it('should be empty', function() {

@@ -1,9 +1,6 @@
 'use strict';
 
-/**
- * Provides a base utility for action classes.
- * @constructor
- */
+
 function BaseAction() {
 }
 

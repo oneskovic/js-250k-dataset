@@ -1,11 +1,3 @@
-/*!
- * jsPOS
- *
- * Copyright 2010, Percy Wegmann
- * Licensed under the LGPLv3 license
- * http://www.opensource.org/licenses/lgpl-3.0.html
- */
-
 /**
  * Indicates whether or not this string starts with the specified string.
  * @param {Object} string

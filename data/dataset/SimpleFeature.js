@@ -1,6 +1,3 @@
-/**
- * Simple implementation of a feature object.
- */
 define([
         'JBrowse/Util'
        ],

@@ -1,63 +1,109 @@
-/**
- * Archetypal install task. Tasks should extend this.
- */
-var task = module.exports = {
+var transport = require('ripple/platform/webworks.core/2.0.0/client/transport'),
+    _uri = "blackberry/pim/Task/";
 
-  /**
-   * Options map; define which command-line options this task is concerned
-   * with. Options will be namespaced according to the module name. e.g.,
-   * an option 'testop' in the 'sys' phase would be used as --sys-testop.
-   * @memberof task
-   */
-  options: {
+function Task() {
+    var _self = {
+        save: function () {
+            if (!_self.uid) {
+                _self.uid = Math.uuid(null, 16);
+            }
+            transport.call(_uri + "save",  {
+                post: {
+                    task: _self
+                }
+            });
+        },
+        remove: function () {
+            if (!_self.uid) {
+                throw "task has not yet been saved (has no uid)";
+            }
+            transport.call(_uri + "remove", {
+                get: {
+                    id: _self.uid
+                }
+            });
+        },
+        uid: null,
+        categories: [],
+        due: null,
+        note: "",
+        priority: Task.PRIORITY_NORMAL,
+        recurrence: null,
+        reminder: null,
+        status: Task.NOT_STARTED,
+        summary: ""
+    };
 
-  },
+    return _self;
+}
 
-  /**
-   * Invoked before the install phase. Validate the preconditions required for
-   * 'run' to complete successfully, which include environment, options
-   * values, etc. Should not cause any side-effects.
-   *
-   * @memberof task
-   * @return true if preconditions met, false otherwise.
-   */
-  beforeInstall: function (options) {
+function _massage(property, name) {
+    if (name === "recurrence" && property) {
+        if (property.end) {
+            property.end = new Date(property.end);
+        }
+    }
+    if (name === "reminder" && property) {
+        if (property.date) {
+            property.date = new Date(property.date);
+        }
+    }
+    if (name === "due" && property) {
+        property = new Date(property);
+    }
+    return property;
+}
 
-  },
-
-  /**
-   * Invoked during the install phase, and before the 'run()' method. Perform any
-   * setup tasks, and make sure the state of the machine is sane.
-   *
-   * @memberof task
-   * @return true if ready to install, false otherwise
-   */
-  beforeTask: function (options) {
-
-  },
-
-  /**
-   * Run the task. Failed operations should throw exceptions.
-   * @abstract
-   */
-  executeTask: function (options) {
-    throw new Error('Tasks must override task#executeTask');
-  },
-
-  /**
-   * Invoked after the install phase. Perform any cleanup. Failed operations
-   * should throw exceptions.
-   * @memberof task
-   */
-  afterTask: function (options) {
-    // do nothing unless overridden
-  },
-
-  afterInstall: function (options) {
-    // do nothing unless overridden
-  },
-
-  uninstall: function (options) {
-    // do nothing unless overridden
-  }
+Task.find = function (filter, orderBy, maxReturn, isAscending) {
+    return transport.call(_uri + "find", {
+        post: {
+            filter: filter,
+            orderBy: orderBy,
+            maxReturn: maxReturn,
+            isAscending: isAscending
+        }
+    }).map(function (properties) {
+        var task = new Task(),
+            key;
+        for (key in properties) {
+            if (task.hasOwnProperty(key)) {
+                task[key] = _massage(properties[key], key);
+            }
+        }
+        return task;
+    });
 };
+
+Task.__defineGetter__("NOT_STARTED", function () {
+    return 0;
+});
+
+Task.__defineGetter__("IN_PROGRESS", function () {
+    return 1;
+});
+
+Task.__defineGetter__("COMPLETED", function () {
+    return 2;
+});
+
+Task.__defineGetter__("WAITING", function () {
+    return 3;
+});
+
+Task.__defineGetter__("DEFERRED", function () {
+    return 4;
+});
+
+Task.__defineGetter__("PRIORITY_HIGH", function () {
+    return 0;
+});
+
+Task.__defineGetter__("PRIORITY_NORMAL", function () {
+    return 1;
+});
+
+Task.__defineGetter__("PRIORITY_LOW", function () {
+    return 2;
+});
+
+module.exports = Task;

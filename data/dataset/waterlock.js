@@ -6,9 +6,7 @@ var events = require('events');
 
 module.exports = Waterlock;
 
-/**
- * Creates a waterlock instance
- */
+
 function Waterlock(){
   events.EventEmitter.call(this);
 

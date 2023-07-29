@@ -7,13 +7,7 @@ var Definition = require('../definitionBase'),
   debug = require('debug')('domain:preCondition'),
   BusinessRuleError = require('../errors/businessRuleError');
 
-/**
- * PreCondition constructor
- * @param {Object}   meta           Meta infos like: { name: 'name', version: 1, priority: 1, payload: 'some.path', description: 'bla bla' }
- * @param {Function} preConditionFn Function handle
- *                                  `function(command, aggData, callback){}`
- * @constructor
- */
+
 function PreCondition (meta, preConditionFn) {
   Definition.call(this, meta);
 

@@ -1,9 +1,4 @@
-  /**
-   * Comonadic bind operator.
-   * @param {Function} selector A transform function to apply to each element.
-   * @param {Object} scheduler Scheduler used to execute the operation. If not specified, defaults to the ImmediateScheduler.
-   * @returns {Observable} An observable sequence which results from the comonadic bind operation.
-   */
+  
   observableProto.manySelect = function (selector, scheduler) {
     isScheduler(scheduler) || (scheduler = immediateScheduler);
     var source = this;

@@ -1,15 +1,3 @@
-/**
- File:
- GravityTrait.js
- Created By:
- Mario Gonzalez
- Project    :
- RealtimeMultiplayerNodeJS
- Abstract:
- This trait will cause an entity to chase a target
- Basic Usage:
-
- */
 (function () {
     BubbleDots.namespace("BubbleDots.traits");
     var RATE = 0.2;

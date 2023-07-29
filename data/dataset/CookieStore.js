@@ -1,20 +1,7 @@
 var d = require('describe-property');
 var Promise = require('../../utils/Promise');
 
-/**
- * Client-side storage for sessions using HTTP cookies.
- *
- * Accepts the following options:
- *
- * - expireAfter      The number of seconds after which sessions expire.
- *                    Defaults to 0 (no expiration)
- *
- * Note: Cookies are only able to reliably store about 4k of data. Also, sending
- * and receiving large cookies can have a significant impact on overall server
- * response time (see http://yuiblog.com/blog/2007/03/01/performance-research-part-3/).
- * For these reasons, if you are planning on storing a lot of data in the session
- * you may want to use a server-side storage, such as mach.session.RedisStore.
- */
+
 function CookieStore(options) {
   options = options || {};
 

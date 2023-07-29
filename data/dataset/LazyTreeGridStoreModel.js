@@ -1,4 +1,3 @@
-//>>built
 define("dojox/grid/LazyTreeGridStoreModel", ["dojo", "dijit", "dojox", "dijit/tree/ForestStoreModel"], function(dojo, dijit, dojox){
 
 dojo.declare("dojox.grid.LazyTreeGridStoreModel", dijit.tree.ForestStoreModel, {

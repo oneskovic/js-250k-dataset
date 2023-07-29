@@ -1,6 +1,3 @@
-/**
- * Demonstrates a the docking of toolbars in each dimension on a panel.
- */
 Ext.define('KitchenSink.view.toolbar.DockedToolbars', {
     extend: 'Ext.container.Container',
     xtype: 'docked-toolbars',

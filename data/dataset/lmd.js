@@ -1,4 +1,4 @@
-(function /*if ($P.CACHE) {*/lmd/*}*/(global, main, modules, modules_options, options) {
+(function lmd/*}*/(global, main, modules, modules_options, options) {
     var initialized_modules = {},
         global_eval = function (code) {
             return global.Function('return ' + code)();
@@ -129,8 +129,8 @@
 
             /*if ($P.OFF_PACKAGE) {*/'noop': global_noop,/*}*/
             'document': global_document,
-            /*if ($P.CACHE) {*/'lmd': lmd,/*}*/
-            /*if ($P.CACHE) {*/'main': main,/*}*/
+            'lmd': lmd,/*}*/
+            'main': main,/*}*/
 
             'on': lmd_on,
             'trigger': lmd_trigger,

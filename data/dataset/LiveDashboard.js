@@ -1,6 +1,3 @@
-/**
- * The Drilldown Combination Chart displays a set of random data.
- */
 Ext.define('KitchenSink.view.charts.combination.LiveDashboard', {
     extend: 'Ext.Panel',
     xtype: 'live-dashboard-chart',

@@ -1,7 +1,3 @@
-/*
- * Parser for the C32 vitals section
- */
-
 Parsers.C32.vitals = function (c32) {
   
   var parseDate = Documents.parseDate;

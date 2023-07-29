@@ -1,126 +1,143 @@
-define([
-        'math/vector2',
-        'math/vector3',
-        'math/vector4',
-        'math/boundingBox',
-        'graphics/device',
-        'graphics/vertexDeclaration',
-        'graphics/vertexElement'
-    ],
-    function(
-        Vector2,
-        Vector3,
-        Vector4,
-        BoundingBox,
-        GraphicsDevice,
-        VertexDeclaration,
-        VertexElement
-    ) {
-        'use strict';
+define(function (require) {
+	
+	require('vendor/fss');
+	
+	var Mesh = function (s, container, colorA, colorB) {
+		var instance = this,
+			_width = 440,
+			_height = 440,
+			now,
+			start = Date.now(),
+			renderer,
+			scene,
+			geometry,
+			material,
+			mesh,
+			light;
+		
+		instance.animating = false;
+		
+		instance.init = function () {
+			renderer = new FSS.SVGRenderer(s);
+			renderer.setSize(_width, _height);
+			renderer.element.transform('translate(-20, -20)'); //keep edges from showing
+			
+			instance.el = renderer.element;
+			
+			container.append(renderer.element);
 
-        var Mesh = function(device, primitiveType) {
-            if (typeof device === 'undefined') {
-                throw 'Mesh: cannot create a mesh without a graphics device';
-            }
-            if (typeof primitiveType === 'undefined') {
-                throw 'Mesh: cannot create a mesh without a primitive type';
-            }
+			scene = new FSS.Scene();
+			material = new FSS.Material(colorA, colorB);
+		    geometry = new FSS.Plane(_width, _height, 10, 10, s, material);
+			mesh = new FSS.Mesh(geometry, material);
+			scene.add(mesh);
 
-            this.device              = device;
-            this.primitiveType       = primitiveType;
+			light = new FSS.Light('#eeeeee', '#eeeeee');
+			light.setPosition(300*Math.sin(0.001), 200*Math.cos(0.0005), 100);
+			scene.add(light);
 
-            this.vertexDeclaration   = null;
-            this.indexData           = null;
-            this.vertexData          = null;
+			now = Date.now() - start;
 
-            this.vertexBuffer        = null;
-            this.indexBuffer         = null;
+			tweakMesh();
+			distortMesh();			
+			renderer.render(scene);
+		}
+		
+		instance.start = function () {
+			instance.animating = true;
+			animate();
+		}
+		
+		instance.stop = function () {
+			instance.animating = false;
+		}
+		
+		instance.setColor = function (colorA, colorB) {
+			var i;
+			
+			material = new FSS.Material(colorA, colorB);
+			
+			for (i = geometry.triangles.length - 1; i > -1; i -= 1) {	
+				geometry.triangles[i].material = material;
+			}
+			
+			animate();
+		}
+		
+		instance.rippleColor = function (colorA, colorB) {
+			var i;
+			
+			material = new FSS.Material(colorA, colorB);
 
-            this.boundingBox         = new BoundingBox();
-            this.boundingBoxComputed = false;
+			function colorTriangle(j) {
+				geometry.triangles[j].material = material;
 
-            this.setDirty(true);
-        };
+				if (j == 0) {
+					setTimeout(function () {
+						animate();
+					}, 10); //force clear
+				}
+			}
 
-        Mesh.prototype = {
-            constructor: Mesh,
+			for (i = geometry.triangles.length - 1; i > -1; i -= 1) {								
+				var speed = 200 + Math.sin(0.1 + Math.abs(geometry.triangles[i].centroid[0] / geometry.triangles[i].centroid[1])) * 100;
+				setTimeout(colorTriangle, speed * 2, i);
+			}			
+		}
+		
+		
+		function tweakMesh() {
+			var v, vertex;
+			
+			for (v = geometry.vertices.length - 1; v >= 0; v--) {
+			      vertex = geometry.vertices[v];
+			      vertex.anchor = FSS.Vector3.clone(vertex.position);
+			      vertex.step = FSS.Vector3.create(
+			        Math.randomInRange(0.2, 1.0),
+			        Math.randomInRange(0.2, 1.0),
+			        Math.randomInRange(0.2, 1.0)
+			      );
+				vertex.time = Math.randomInRange(0, Math.PIM2);
+			}
+		}
+		
+		function distortMesh() {
+			var v,
+				vertex,
+				ox, oy, oz,
+				offset = 10 / 2;
+			
+			for (v = geometry.vertices.length - 1; v >= 0; v--) {
+		      vertex = geometry.vertices[v];
+		      ox = Math.sin(vertex.time + vertex.step[0] * now * 0.002);
+		      oy = Math.cos(vertex.time + vertex.step[1] * now * 0.002);
+		      oz = Math.sin(vertex.time + vertex.step[2] * now * 0.002);
+		      FSS.Vector3.set(vertex.position,
+		        0.2 * geometry.segmentWidth * ox,
+		        0.1 * geometry.sliceHeight * oy,
+		        0.7 * offset * oz - offset);
+		      FSS.Vector3.add(vertex.position, vertex.anchor);
+		    }
 
-            isDirty: function() { 
-                return this._dirty;
-            },
-
-            setDirty: function(value) {
-                this._dirty = value;
-            },
-
-            setVertexData: function(vertexData) {
-                this.vertexData = vertexData;
-            },
-
-            setIndexData: function(indexData) {
-                this.indexData = indexData;
-            },
-
-            setVertexDeclaration: function(vertexDeclaration) {
-                this.vertexDeclaration = vertexDeclaration;
-            },
-
-            setBoundingBox: function(boundingBox) {
-                this.boundingBox = boundingBox;
-            },
-
-            getBoundingBox: function() {
-                return this.boundingBox;
-            },
-
-            sendToGPU: function() {
-                this.device.setVertexBufferData(this.vertexBuffer, this.vertexData);
-                this.device.setIndexBufferData(this.indexBuffer, this.indexData);
-                this.setDirty(false);
-            },
-
-            draw: function() {
-                if (this.isDirty(true)) {
-                    this.sendToGPU();
-                }
-
-                this.device.bindVertexDeclaration(this.vertexDeclaration);
-                this.device.bindVertexBuffer(this.vertexBuffer);
-                this.device.bindIndexBuffer(this.indexBuffer);
-                this.device.drawIndexedPrimitives(this.primitiveType, this.indexBuffer.length, GraphicsDevice.UNSIGNED_SHORT, 0);
-            },
-
-            warm: function() {
-                if (!this.vertexBuffer) {
-                    this.vertexBuffer = this.device.createBuffer();
-                    this.setDirty(true);
-                }
-                if (!this.indexBuffer) {
-                    this.indexBuffer  = this.device.createBuffer();
-                    this.setDirty(true);
-                }
-            },
-
-            destroy: function() {
-                this.device.deleteBuffer(this.vertexBuffer);
-                this.device.deleteBuffer(this.indexBuffer);
-                delete this.vertexBuffer;
-                delete this.indexBuffer;
-                delete this.vertexData;
-                delete this.indexData;
-                this.setDirty(true);
-            }
-        };
-
-        /* PrimitiveType */
-        Mesh.POINTS         = GraphicsDevice.POINTS;
-        Mesh.LINES          = GraphicsDevice.LINES;
-        Mesh.LINE_LOOP      = GraphicsDevice.LINE_LOOP;
-        Mesh.LINE_STRIP     = GraphicsDevice.LINE_STRIP;
-        Mesh.TRIANGLES      = GraphicsDevice.TRIANGLES;
-        Mesh.TRIANGLE_STRIP = GraphicsDevice.TRIANGLE_STRIP;
-        Mesh.TRIANGLE_FAN   = GraphicsDevice.TRIANGLE_FAN;
-
-        return Mesh;
-    }
-);
+		    geometry.dirty = true;
+		}
+	
+		function animate() {
+			now = Date.now() - start;
+			
+			if (mobilecheck() !== true) {
+				distortMesh();
+			}
+			
+			renderer.render(scene);
+			
+			if (instance.animating !== false) {
+				requestAnimationFrame(animate);
+			}
+		}
+		
+		instance.init();
+	}
+	
+	return Mesh;
+});

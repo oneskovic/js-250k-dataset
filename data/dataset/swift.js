@@ -1,9 +1,3 @@
-/*
-Language: Swift
-Author: Chris Eidhof <chris@eidhof.nl>
-*/
-
-
 function(hljs) {
   var SWIFT_KEYWORDS = {
       keyword: 'class deinit enum extension func import init let protocol static ' +

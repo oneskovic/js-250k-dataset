@@ -2,16 +2,7 @@
 
 var util = require('util');
 
-/**
- * Get Live View video stream of the camera with given ID.
- * @param  {object}   params   User parameters (cameraId, format, SliceId)
- * @param  {function} callback Function to execute at the end of the request. Passed the response of the request and the
- * error if on occurs
- * @returns {*|Synology}
- *
- *
- * @see Chapter 2.3.12.1
- */
+
 function stream() {
     var userParams = typeof arguments[0] === 'object' ? arguments[0]: {};
     var callback = typeof arguments[1] === 'function' ? arguments[1] :

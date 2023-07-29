@@ -1,8 +1,3 @@
-
-/**
- * Module dependencies.
- */
-
 var SchemaType = require('../schematype')
   , ArrayType = require('./array')
   , MongooseDocumentArray = require('../types/documentarray')

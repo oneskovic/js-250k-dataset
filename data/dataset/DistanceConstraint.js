@@ -1,4 +1,3 @@
-
 lychee.define('lychee.verlet.DistanceConstraint').requires([
 	'lychee.verlet.Particle',
 	'lychee.verlet.Vector2'
@@ -30,9 +29,7 @@ lychee.define('lychee.verlet.DistanceConstraint').requires([
 
 	Class.prototype = {
 
-		/*
-		 * ENTITY API
-		 */
+		
 
 		update: function(clock, delta) {
 

@@ -1,6 +1,3 @@
-/**
- * XULSchoolChrome namespace.
- */
 if ("undefined" == typeof(XULSchoolChrome)) {
   var XULSchoolChrome = {};
 };

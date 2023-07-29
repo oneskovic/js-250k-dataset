@@ -1,70 +1,78 @@
-/* 
- * == BSD2 LICENSE ==
- * Copyright (c) 2014, Tidepool Project
- * 
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the associated License, which is identical to the BSD 2-Clause
- * License as published by the Open Source Initiative at opensource.org.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the License for more details.
- * 
- * You should have received a copy of the License along with this program; if
- * not, you can obtain one from Tidepool Project at tidepool.org.
- * == BSD2 LICENSE ==
- */
+var express = require('express'),
+    utils = require('./utils.js');
 
-var common = require('./common.js');
-var schema = require('./validator/schematron.js');
+var app = express();
+app.set('port', process.env.PORT || 3000);
+app.use(express.static(__dirname + '/wizard'));
+app.use(express.json());
+app.use(express.urlencoded());
 
-module.exports = schema(
-  common,
-  {
-    deviceTime: schema().ifExists().isDeviceTime(),
-    recommended: schema().ifExists().object({
-      carb: schema().ifExists().number(),
-      correction: schema().ifExists().number()
-    }),
-    bgInput: schema().ifExists().number(),
-    carbInput: schema().ifExists().number(),
-    insulinOnBoard: schema().ifExists().number(),
-    insulinCarbRatio: schema().ifExists().number(),
-    insulinSensitivity: schema().ifExists().number(),
-    bgTarget: schema().ifExists().oneOf(
-      schema(
-          {
-            low: schema().number(),
-            high: schema().number(),
-            range: schema().banned(),
-            target: schema().banned()
-          }
-      ),
-      schema(
-          {
-            low: schema().number(),
-            high: schema().number(),
-            range: schema().banned(),
-            target: schema().number()
-          }
-      ),
-      schema(
-          {
-            low: schema().banned(),
-            high: schema().banned(),
-            range: schema().number(),
-            target: schema().number()
-          }
-      ),
-      schema(
-          {
-            low: schema().banned(),
-            high: schema().number(),
-            range: schema().banned(),
-            target: schema().number()
-          }
-      )
-    ),
-    bolus: schema().ifExists().object()
+var useCases = [];
+
+app.post('/configure/crime-stringer', function(req, res, next) {
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
+
+  useCases[1] = {
+    stringer: 'crime-stringer.js',
+    parameters: [req.body.lat, req.body.lng, req.body.numberOfMonths, req.body.threshold]
+  };
+
+  res.json(true);
+});
+
+app.post('/configure/local-police-stringer', function(req, res, next) {
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
+
+  useCases[0] = {
+    stringer: 'local-police-stringer.js',
+    parameters: [req.body.force, req.body.neighbourhood]
+  };
+
+  res.json(true);
+});
+
+app.post('/configure/write', function(req, res, next) {
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
+
+  utils.writeAsset('stringers_use_cases.json', JSON.stringify(useCases, null, 2),
+  function(err) {
+    if (err) {
+      res.json(false);
+    }
+    else {
+      res.json(true);
+    }
+  });
+});
+
+app.post('/configure/user-email', function(req, res, next) {
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  utils.writeAsset('user-email.json', req.body.user_email, function(err) {
+    if (err) {
+      res.json(false);
+    }
+    else {
+      res.json(true);
+    }
+  });
+});
+
+app.get('/configuration', function(req, res, next) {
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  utils.readAsset('stringers_use_cases.json', function(err, asset) {
+    res.send(asset);
+  });
+});
+
+app.listen(app.get('port'), function() {
+  console.log('Server started on port %d', app.get('port'));
+});
+
+process.on('uncaughtException', function(err) {
+  if (err.errno === 'EADDRINUSE') {
+    console.log('Unable to start server on port %d (is something already running on that port?)', app.get('port'));
+  } else {
+    console.log(err);
   }
-);
+  process.exit(1);
+});

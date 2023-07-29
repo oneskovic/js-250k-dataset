@@ -1,7 +1,3 @@
-/*
-*根据session检查是否登录，3个参数，req,res,callback;
-*callback的返回值作为本函数的返回值
-*/
 var catalogApi = {},
 	fs = require('fs'),
 	path = require('path'),

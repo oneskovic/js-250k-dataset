@@ -1,8 +1,3 @@
-/**
- * Copyright (C) 2012, Alex Russell (slightlyoff@chromium.org)
- * Use of this source code is governed by http://www.apache.org/licenses/LICENSE-2.0
- */
-
 (function(scope) {
 "use strict";
 

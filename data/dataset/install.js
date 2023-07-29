@@ -1,5 +1,5 @@
 'use strict';
-/*global require, module, Buffer, jsGen*/
+
 
 var then = jsGen.module.then,
     dao = jsGen.dao,

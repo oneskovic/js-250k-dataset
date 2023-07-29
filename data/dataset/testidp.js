@@ -1,5 +1,3 @@
-/*jshint sub: true */
-
 const
 request = require('request'),
 restmail = require('./restmail.js'),

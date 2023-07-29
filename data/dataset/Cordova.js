@@ -1,6 +1,3 @@
-/**
- * @private
- */
 Ext.define('Ext.device.camera.Cordova', {
     alternateClassName: 'Ext.device.camera.PhoneGap',
     extend: 'Ext.device.camera.Abstract',

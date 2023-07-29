@@ -1,101 +1,99 @@
-/*______________
-|       ______  |   U I Z E    J A V A S C R I P T    F R A M E W O R K
-|     /      /  |   ---------------------------------------------------
-|    /    O /   |    MODULE : Uize.Parse.Po.Value Object
-|   /    / /    |
-|  /    / /  /| |    ONLINE : http://www.uize.com
-| /____/ /__/_| | COPYRIGHT : (c)2014-2015 UIZE
-|          /___ |   LICENSE : Available under MIT License or GNU General Public License
-|_______________|             http://www.uize.com/license.html
-*/
+(function() {
+  var OldValue, Prefixer, Value, utils, vendor,
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-/* Module Meta Data
-	type: Object
-	importance: 1
-	codeCompleteness: 100
-	docCompleteness: 2
-*/
+  Prefixer = require('./prefixer');
 
-/*?
-	Introduction
-		The =Uize.Parse.Po.Value= module provides methods for parsing and serializing values in GNU gettext [[https://www.gnu.org/software/gettext/manual/html_node/PO-Files.html][PO files]].
+  OldValue = require('./old-value');
 
-		*DEVELOPERS:* `Chris van Rensburg`
-*/
+  utils = require('./utils');
 
-Uize.module ({
-	name:'Uize.Parse.Po.Value',
-	required:[
-		'Uize.Str.Whitespace',
-		'Uize.Parse.Code.StringLiteral'
-	],
-	builder:function () {
-		'use strict';
+  vendor = require('postcss/lib/vendor');
 
-		var
-			/*** Variables for Performance Optimization ***/
-				_indexOfNonWhitespace = Uize.Str.Whitespace.indexOfNonWhitespace,
+  Value = (function(_super) {
+    __extends(Value, _super);
 
-			/*** General Variables ***/
-				_stringLiteralParser = new Uize.Parse.Code.StringLiteral,
-				_terminatingCharsLookup = _charsLookup ('\n\r'),
-				_linebreakLookup = _charsLookup ('\n\r\f')
-		;
+    function Value() {
+      return Value.__super__.constructor.apply(this, arguments);
+    }
 
-		/*** Utility Functions ***/
-			function _charsLookup (_charsStr) {
-				return Uize.lookup (_charsStr.split (''));
-			}
+    Value.save = function(prefixes, decl) {
+      var already, cloned, prefix, prefixed, propPrefix, rule, trimmed, value, _ref, _results;
+      _ref = decl._autoprefixerValues;
+      _results = [];
+      for (prefix in _ref) {
+        value = _ref[prefix];
+        if (value === decl.value) {
+          continue;
+        }
+        propPrefix = vendor.prefix(decl.prop);
+        if (propPrefix === prefix) {
+          _results.push(decl.value = value);
+        } else if (propPrefix === '-pie-') {
+          continue;
+        } else {
+          prefixed = prefixes.prefixed(decl.prop, prefix);
+          rule = decl.parent;
+          if (rule.every(function(i) {
+            return i.prop !== prefixed;
+          })) {
+            trimmed = value.replace(/\s+/, ' ');
+            already = rule.some(function(i) {
+              return i.prop === decl.prop && i.value.replace(/\s+/, ' ') === trimmed;
+            });
+            if (!already) {
+              cloned = this.clone(decl, {
+                value: value
+              });
+              _results.push(decl.parent.insertBefore(decl, cloned));
+            } else {
+              _results.push(void 0);
+            }
+          } else {
+            _results.push(void 0);
+          }
+        }
+      }
+      return _results;
+    };
 
-		return Uize.mergeInto (
-			function (_source,_index) {
-				this.parse (_source,_index);
-			},
-			{
-				prototype:{
-					source:'',
-					index:0,
-					length:0,
-					isValid:false,
-					value:'',
+    Value.prototype.check = function(decl) {
+      var value;
+      value = decl.value;
+      if (value.indexOf(this.name) !== -1) {
+        return !!value.match(this.regexp());
+      } else {
+        return false;
+      }
+    };
 
-					parse:function (_source,_index) {
-						function _eatWhitespace () {
-							_index = (_indexOfNonWhitespace (_source,_index) + 1 || _sourceLength + 1) - 1;
-						}
-						var
-							m = this,
-							_sourceLength = (m.source = _source = _source || '').length
-						;
-						m.index = _index || (_index = 0);
-						m.isValid = true;
-						var
-							_parts = [],
-							_char,
-							_indexBeforeEatingWhitespace = _index
-						;
-						while (_index < _sourceLength) {
-							_stringLiteralParser.parse (_source,_index);
-							if (_stringLiteralParser.isValid) {
-								_parts.push (_stringLiteralParser.value);
-								_indexBeforeEatingWhitespace = (_index += _stringLiteralParser.length);
-								_eatWhitespace ();
-							} else {
-								break;
-							}
-						}
-						m.value = _parts.join ('');
-						m.isValid = !!(m.length = _indexBeforeEatingWhitespace - m.index);
-					},
+    Value.prototype.regexp = function() {
+      return this.regexpCache || (this.regexpCache = utils.regexp(this.name));
+    };
 
-					serialize:function () {
-						_stringLiteralParser.value = this.value;
-						_stringLiteralParser.isValid = true;
-						return _stringLiteralParser.serialize ();
-					}
-				}
-			}
-		);
-	}
-});
+    Value.prototype.replace = function(string, prefix) {
+      return string.replace(this.regexp(), '$1' + prefix + '$2');
+    };
 
+    Value.prototype.add = function(decl, prefix) {
+      var value, _ref;
+      decl._autoprefixerValues || (decl._autoprefixerValues = {});
+      value = decl._autoprefixerValues[prefix] || ((_ref = decl._value) != null ? _ref.raw : void 0) || decl.value;
+      value = this.replace(value, prefix);
+      if (value) {
+        return decl._autoprefixerValues[prefix] = value;
+      }
+    };
+
+    Value.prototype.old = function(prefix) {
+      return new OldValue(prefix + this.name);
+    };
+
+    return Value;
+
+  })(Prefixer);
+
+  module.exports = Value;
+
+}).call(this);

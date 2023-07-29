@@ -1,65 +1,52 @@
+///import baidu.ui.tooltip;
+///import baidu.ui.tooltip.create;
+///import baidu.event.on;
+///import baidu.event.get;
+///import baidu.object.clone;
+///import baidu.object.extend;
+
+baidu.extend(baidu.ui.tooltip.Tooltip.prototype, {
+	showDelay : 100,
+	hideDelay : 500,
+	offset : [0,0]
+});
 /**
- * Adds support for a "hover" event.  The event provides a convenience wrapper
- * for subscribing separately to mouseenter and mouseleave.  The signature for
- * subscribing to the event is</p>
- *
- * <pre><code>node.on("hover", overFn, outFn);
- * node.delegate("hover", overFn, outFn, ".filterSelector");
- * Y.on("hover", overFn, outFn, ".targetSelector");
- * Y.delegate("hover", overFn, outFn, "#container", ".filterSelector");
- * </code></pre>
- *
- * <p>Additionally, for compatibility with a more typical subscription
- * signature, the following are also supported:</p>
- *
- * <pre><code>Y.on("hover", overFn, ".targetSelector", outFn);
- * Y.delegate("hover", overFn, "#container", outFn, ".filterSelector");
- * </code></pre>
- *
- * @module event
- * @submodule event-hover
+ * 创建一个鼠标hover触发的tooltip
+ * @param {Array} elements
+ * @param {Object} options
+ * @return baidu.ui.tooltip.Tooltip
+ * @see baidu.ui.tooltip.Tooltip
  */
-var isFunction = Y.Lang.isFunction,
-    noop = function () {},
-    conf = {
-        processArgs: function (args) {
-            // Y.delegate('hover', over, out, '#container', '.filter')
-            // comes in as ['hover', over, out, '#container', '.filter'], but
-            // node.delegate('hover', over, out, '.filter')
-            // comes in as ['hover', over, containerEl, out, '.filter']
-            var i = isFunction(args[2]) ? 2 : 3;
+baidu.ui.tooltip.hover = function(elements,options){
+	var tooltips = baidu.ui.tooltip.create(elements,options),
+        tooltipArr = baidu.lang.isArray(tooltips)? tooltips : [tooltips];
+    baidu.array.each(tooltipArr, function(tooltip){
+        
+		baidu.on(tooltip.getTarget(), 'mouseover',function(e){
+			clearTimeout(tooltip.hideHandler);
+			tooltip.showHandler = setTimeout(function(){
+				tooltip.open();
+			},tooltip.showDelay);
+		});
+		tooltip.addEventListener('onopen', function(){
+			baidu.on(tooltip.getBody(), 'mouseover', function(){
+	            clearTimeout(tooltip.hideHandler);
+	        });
+		});
+		
+		function closeMe(){
+			clearTimeout(tooltip.showHandler);
+			clearTimeout(tooltip.hideHandler);
+			tooltip.hideHandler = setTimeout(function(){
+                tooltip.close();
+			},tooltip.hideDelay);
+		}
+		
+		baidu.on(tooltip.getTarget(), 'mouseout', closeMe);
+		tooltip.addEventListener('onopen', function(){
+			baidu.on(tooltip.getBody(),'mouseout', closeMe);
+		});
+    });
 
-            return (isFunction(args[i])) ? args.splice(i,1)[0] : noop;
-        },
-
-        on: function (node, sub, notifier, filter) {
-            var args = (sub.args) ? sub.args.slice() : [];
-
-            args.unshift(null);
-
-            sub._detach = node[(filter) ? "delegate" : "on"]({
-                mouseenter: function (e) {
-                    e.phase = 'over';
-                    notifier.fire(e);
-                },
-                mouseleave: function (e) {
-                    var thisObj = sub.context || this;
-
-                    args[0] = e;
-
-                    e.type = 'hover';
-                    e.phase = 'out';
-                    sub._extra.apply(thisObj, args);
-                }
-            }, filter);
-        },
-
-        detach: function (node, sub, notifier) {
-            sub._detach.detach();
-        }
-    };
-
-conf.delegate = conf.on;
-conf.detachDelegate = conf.detach;
-
-Y.Event.define("hover", conf);
+	return tooltips;
+};

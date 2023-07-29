@@ -5,9 +5,7 @@ br.test.GwtTestRunner.initialize();
 describe("Timer Fixtures use for manually and automatically executing time delayed functions", function(){
   fixtures("TimerControlFixtureFactory");
   
-  /*
-   * Next Step Mode
-   */
+  
   
   it("automatically executes a delayed function at the end of the current step", function(){
 	given("component.opened = true");

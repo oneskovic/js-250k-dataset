@@ -1,6 +1,3 @@
-/**
- * @private
- */
 Ext.define('Ext.fx.layout.card.Flip', {
     extend: 'Ext.fx.layout.card.Style',
 

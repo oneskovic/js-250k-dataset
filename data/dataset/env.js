@@ -1,145 +1,105 @@
-// (C) 2011-2012 Alibaba Group Holding Limited.
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License 
-// version 2 as published by the Free Software Foundation. 
+const
+	appc = require('node-appc'),
+	async = require('async'),
+	fs = require('fs'),
+	magik = require('./utilities').magik,
+	path = require('path'),
+	__ = appc.i18n(__dirname).__;
 
-// Authors :fengyin <fengyin.zym@taobao.com>
+var cache;
 
-global.os   =   require('os');
-global.fs   =   require('fs');
-global.net  =   require('net');
-global.http =   require('http');
-global.util =   require('util');
-//global.log  =   require('./log');
-//global.App = require('./app_ctrl');
+exports.detect = detect;
 
-global.mode = 'DEBUG';
-//global.mode = 'DEBUG';
+/**
+ * Detects general Windows environment information such as PowerShell permissions.
+ *
+ * @param {Object} [options] - An object containing various settings.
+ * @param {Boolean} [options.bypassCache=false] - When true, re-detects Windows environment information.
+ * @param {String} [options.powershell] - Path to the <code>powershell</code> executable.
+ * @param {Function} [callback(err, results)] - A function to call with the Windows environment information.
+ *
+ * @emits module:env#detected
+ * @emits module:env#error
+ *
+ * @returns {EventEmitter}
+ */
+function detect(options, callback) {
+	return magik(options, callback, function (emitter, options, callback) {
+		if (cache && !options.bypassCache) {
+			emitter.emit('detected', cache);
+			return callback(null, cache);
+		}
 
-global.debug = function(str){
-  if(mode == 'DEBUG')
-    console.log(str);
-}
+		var results = cache = {
+			os: {
+				name: null,
+				version: null
+			},
+			powershell: {
+				enabled: null
+			},
+			issues: []
+		};
 
-global.output = function(str){
-  console.log(str);
-}
+		async.series([
+			function osInfo(next) {
+				appc.subprocess.run('wmic', ['os', 'get', 'Caption,Version'], function (code, out, err) {
+					if (code) return next(code);
 
-global.inspect = function(obj){
-  if(mode == 'DEBUG')
-    debug(util.inspect(obj));
-}
+					var s = out.split('\n')[1].split(/ {2,}/);
+					s.length > 0 && (results.os.name = s[0].trim());
+					s.length > 1 && (results.os.version = s[1].trim());
 
-global.main = function(fn){
-  fn();
-}
+					next();
+				});
+			},
 
-global.isEmpty = function(obj){ 
-  for(var i in obj){ 
-    return false; 
-  } 
-  return true;
-}
+			function powershell(next) {
+				if (!results.os.version) return next();
 
-//shallow extend
-global.extend = function(des, src){
-  for(var key in src){
-    if(src.hasOwnProperty(key))
-      des[key] = src[key];
-  }
-}
+				if (appc.version.lt(results.os.version, '6.2.0')) {
+					results.issues.push({
+						id: 'WINDOWS_STORE_APPS_NOT_SUPPORTED',
+						type: 'warning',
+						message: __('Windows Store apps are not supported on this version of Windows.') + '\n' +
+							__('You must use Windows 8 or newer to create Windows Store apps.')
+					});
+					return next();
+				}
 
-//shallow clone
-global.clone = function(obj){
-  var ret = {};
-  for(var key in obj){
-    if(obj.hasOwnProperty(key))
-      ret[key] = obj[key];
-  }
-  return ret;
-}
+				appc.subprocess.getRealName(path.resolve(__dirname, '..', 'bin', 'test_permissions.ps1'), function (err, psScript) {
+					if (err) {
+						return next(err);
+					}
 
-// the member function to be used as callback
-// and set 'this' as the context
-global.memcb = function(context, mem){
-  return function(){
-    context[mem].apply(context, arguments);
-  }
-}
-
-/*this function will throw an exception ,
-**so it will end the request ,I use this way to 
-substitute the combination of :
-** #1 send_error
-** #2 return
-*/
-global.replyError = function(req, res, code ,info){
-  var  map = {
-    404 : 'Not Found',
-    400 : 'Bad Request',
-    500 : 'Internal Server Error'
-  }
-  var err_str = map[code] || 'error occurred';
-  var body = info || err_str; 
-  res.writeHead(code , {'Content-Type' : 'text/plain'});
-  res.end(body.toString());
-}
-
-//we throw this type of exception to
-//stop the process
-global.SExcp = function(err){
-  this.err = err; 
-}
-
-//empty exception,just for jump out of process
-//maybe throwed by controllers
-global.NullExcp = function(){
-  this.type = 'null';
-}
-
-//default we send http 500 error
-/*
-process.on('uncaughtException', function(obj) {
-  if(obj instanceof NullExcp){
-    //log.error(obj.info);
-  }else if(obj instanceof SExcp){
-    log.error(obj.err);
-    process.exit(-1);
-  }else{
-    log.excp(obj.stack + '\n');
-  }
-  delete obj;
-});
-*/
-//test the file's accessibility
-global.access = function(filepath){
-  var ok = true;
-  try{
-    fs.readFileSync(filepath);
-  }catch(e){
-    ok =false;
-  }
-  return ok;
-}
-
-//would be reset when require log.js
-
-global.log =  { 
-  access : function(str){
-    console.log('[access]\t' + str + '\t'+ new Date());
-  },
-  excp :  function(str){
-    console.log('[Excp]\t' + str + '\t'+ new Date());
-  },
-  error : function(str){
-    console.log('[Error]\t' + str + '\t'+ new Date());
-  },
-  warning : function(str){  
-    console.log('[Warning]\t' + str + '\t' + new Date());
-  },
-  info : function(str){
-    console.log('[Info]\t' + str + '\t'  + new Date());
-  }
+					appc.subprocess.run(options.powershell || 'powershell', [
+						'-command', psScript
+					], function (code, out, err) {
+						if (!code && /success/i.test(out.trim().split('\n').shift())) {
+							results.powershell.enabled = true;
+						} else {
+							results.powershell.enabled = false;
+							results.issues.push({
+								id: 'WINDOWS_POWERSHELL_SCRIPTS_DISABLED',
+								type: 'error',
+								message: __('Executing PowerShell scripts is disabled.') + '\n' +
+									__('In order to build Windows Hybrid apps for the Windows Store (winstore), you must change the execution policy to allow PowerShell scripts.') + '\n' +
+									__('To enable PowerShell scripts, search __PowerShell__ in the __Start__ menu, right click the icon, select __Run as administrator__, then run:') + '\n' +
+									'    __Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser__'
+							});
+						}
+						next();
+					});
+				});
+			}
+		], function (err) {
+			if (err) {
+				emitter.emit('error', err);
+				callback(err);
+			} else {
+				emitter.emit('detected', results);
+				callback(null, results);
+			}
+		});
+	});
 };
-
-

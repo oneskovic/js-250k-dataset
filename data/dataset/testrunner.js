@@ -1,117 +1,65 @@
-var a = require('assert'),
-    chainer = require('chainer'),
-    _ = require('underscore');
+"use strict";
+var qunit = require("qunit"),
+    absPath = (function () {
+        var joinPaths = require("path").join;
+        return function (relPath) {
+            return joinPaths(__dirname, relPath);
+        };
+    }());
 
-var tr = require('../lib/testrunner'),
-    log = require('../lib/log');
+qunit.options.deps = [{
+    path: absPath("../node_modules/underscore/underscore.js"),
+    namespace: "_"
+}, {
+    path: absPath("../node_modules/backbone/backbone.js"),
+    namespace: "Backbone"
+}];
 
-var fixtures = __dirname + '/fixtures',
-    chain = chainer();
-
-tr.options.log = {
+qunit.options.log = {
     // log assertions overview
-    // assertions: true,
+    assertions: false,
+
     // log expected and actual values for failed tests
-    // errors: true,
+    errors: true,
+
     // log tests overview
-    // tests: true,
+    tests: true,
+
     // log summary
-    // summary: true,
+    summary: true,
+
     // log global summary (all files)
     // globalSummary: true,
+
+    // log coverage
+    coverage: true,
+
+    // log global coverage (all files)
+    // globalCoverage: true,
+
     // log currently testing code file
     testing: true
 };
 
-// reset log stats every time .next is called
-chain.next = function() {
-    log.reset();
-    return chainer.prototype.next.apply(this, arguments);
-};
+qunit.options.coverage = { dir: "coverage" };
 
-chain.add('base testrunner', function() {
-    tr.run({
-        code: fixtures + '/testrunner-code.js',
-        tests: fixtures + '/testrunner-tests.js',
-    }, function(err, res) {
-          var stat = {
-                  files: 1,
-                  tests: 4,
-                  assertions: 7,
-                  failed: 2,
-                  passed: 5
-              };
-
-        a.ok(res.runtime > 0, 'Date was modified');
-        delete res.runtime;
-        a.deepEqual(stat, res, 'base testrunner test');
-        chain.next();
-    });
+qunit.run({
+    code: { path: absPath("../backbone-faux-server.js"), namespace: "fauxServer" },
+    tests: [
+        absPath("test-version.js"),
+        absPath("test-routes.js"),
+        absPath("test-urlexpmatch.js"),
+        absPath("test-handlers.js"),
+        absPath("test-sync.js"),
+        absPath("test-eventscallbacks.js"),
+        absPath("test-transportcustom.js"),
+        absPath("test-chain.js")
+    ]
+}, function (error, stats) {
+    if (error) {
+        console.error(new Error(error));
+        process.exit(1);
+        return;
+    }
+    process.exit(stats.failed > 0 ? 1 : 0);
 });
-
-chain.add('attach code to global', function() {
-    tr.run({
-        code: fixtures + '/child-code-global.js',
-        tests: fixtures + '/child-tests-global.js',
-    }, function(err, res) {
-        var stat = {
-                files: 1,
-                tests: 1,
-                assertions: 2,
-                failed: 0,
-                passed: 2
-            };
-
-        delete res.runtime;
-        a.deepEqual(stat, res, 'attaching code to global works');
-        chain.next();
-    });
-});
-
-chain.add('attach code to a namespace', function() {
-    tr.run({
-        code: {
-            path: fixtures + '/child-code-namespace.js',
-            namespace: 'testns'
-        },
-        tests: fixtures + '/child-tests-namespace.js',
-    }, function(err, res) {
-          var stat = {
-                  files: 1,
-                  tests: 1,
-                  assertions: 3,
-                  failed: 0,
-                  passed: 3
-              };
-
-        delete res.runtime;
-        a.deepEqual(stat, res, 'attaching code to specified namespace works');
-        chain.next();
-    });
-});
-
-chain.add('async testing logs', function() {
-    tr.run({
-        code: fixtures + '/async-code.js',
-        tests: fixtures + '/async-test.js',
-    }, function(err, res) {
-          var stat = {
-                  files: 1,
-                  tests: 4,
-                  assertions: 6,
-                  failed: 0,
-                  passed: 6
-              };
-
-        delete res.runtime;
-        a.deepEqual(stat, res, 'async code testing works');
-        chain.next();
-    });
-});
-
-chain.add(function() {
-    console.log('\nAll tests done');
-});
-
-chain.start();
-

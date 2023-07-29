@@ -1,9 +1,3 @@
-/// <reference path="../../../Scripts/endgate.d.ts" />
-/// <reference path="../../../Scripts/jquery.d.ts" />
-/// <reference path="PersistenceManager.ts" />
-/// <reference path="SpriteSheetViewer.ts" />
-/// <reference path="MapBuilder.ts" />
-// Wrap in module to keep code out of global scope
 var MapCreator;
 (function (MapCreator) {
     var OutputHandler = (function () {

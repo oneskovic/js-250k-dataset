@@ -1,17 +1,3 @@
-/**
- * The permissionsMap middleware is used to traverse up a node's family tree
- * and include the permissions granted to the use for each node. The module would be used to
- * figure out if a particular user has the rights to perform certain operations
- * not only in the current node but in it's parent. Sicne permissions should
- * cascade setting a user as an editor to one node, would automatcially assume
- * that the user was an editor to all of that node's children.
- *
- * used arguments: {id: id }
- *
- * kontx impact: push a complete mapping of user permissions to the kontx.user.permissions collection
- * result: backfills permissions to for a user to include all nodes
- *
- */
 var permissionsMap = function(kontx, next){
     'use strict';
 

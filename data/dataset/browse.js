@@ -11,12 +11,7 @@
       return number;
     }
 
-    /**
-     * Returns an ISO string containing the local time for the user,
-     * clearing minutes and seconds to improve caching
-     * @param  Date date The date to format
-     * @return string The formatted date
-     */
+    
     function isoString(date) {
       return date.getUTCFullYear() +
         '-' + pad( date.getUTCMonth() + 1 ) +

@@ -1,4 +1,3 @@
-/*! @license ©2013 Ruben Verborgh - Multimedia Lab / iMinds / Ghent University */
 /* A TurtleFragmentIterator reads data and metadata from Linked Data Fragments in Turtle. */
 
 var TransformIterator = require('../iterators/Iterator').TransformIterator,

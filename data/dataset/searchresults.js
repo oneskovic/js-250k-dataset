@@ -1,9 +1,3 @@
-// searchresults.js
-// =============================================
-// This file creates the autocomplete list with AJAX
-// And handles search UI/page navigation on submit as well as search analytics
-// Gus Wezerek can answer questions about the functions below
-
 var Autocomplete = (function() {
 
 

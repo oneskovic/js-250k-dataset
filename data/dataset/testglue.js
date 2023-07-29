@@ -1,6 +1,3 @@
-/**
- * Glue to make XPCShell test harness helpers work in a web page.
- */
 function do_throw(text, stack) {
   console.error(text);
   throw text;

@@ -1,6 +1,3 @@
-// A no-frills graphical container for the remote VM framebuffer
-// Renders the framebuffer and handles the keyboard and mouse
-
 FB.prototype = new EventEmitter;
 function FB (remote) {
     var self = this;

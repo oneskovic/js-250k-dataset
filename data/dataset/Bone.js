@@ -1,7 +1,3 @@
-/*
- * Bone
- */
-
 THREE.Bone = function( belongsToSkin ) {
 	
 	THREE.Object3D.call( this );

@@ -1,70 +1,70 @@
-var RELANG = {};
-RELANG['de'] = {
-	html: 'HTML',
-	video: 'Video',
-	image: 'Bilder',
-	table: 'Tabelle',
-	link: 'Link',
-	link_insert: 'Link einfügen ...',
-	unlink: 'Link entfernen',
-	formatting: 'Formatvorlagen',
-	paragraph: 'Absatz',
-	quote: 'Zitat',
-	code: 'Code',
-	header1: 'Überschrift 1',
-	header2: 'Überschrift 2',
-	header3: 'Überschrift 3',
-    header4: 'Überschrift 4',
-	bold:  'Fett',
-	italic: 'Kursiv',
-	fontcolor: 'Schriftfarbe',
-	backcolor: 'Texthervorhebungsfarbe',
-	unorderedlist: 'Aufzählungszeichen',
-	orderedlist: 'Nummerierung',	
-	outdent: 'Einzug verkleinern',
-	indent: 'Einzug vergrößern',
-	redo: 'Wiederholen',
-	undo: 'Rückgängig',
-	cut: 'Ausschneiden',
-	cancel: 'Abbrechen',	
-	insert: 'Einfügen',
-	save: 'Speichern',	
-	_delete: 'Löschen',
-	insert_table: 'Tabelle einfügen',		
-	insert_row_above: 'Zeile oberhalb einfügen',
-	insert_row_below: 'Zeile unterhalb einfügen',
-	insert_column_left: 'Spalte links einfügen',
-	insert_column_right: 'Spalte rechts einfügen',									
-	delete_column: 'Spalte löschen',									
-	delete_row: 'Zeile löschen',									
-	delete_table: 'Tabelle löschen',
-	rows: 'Zeilen',
-	columns: 'Spalten',	
-	add_head: 'Titel einfügen',
-	delete_head: 'Titel entfernen',	
-	title: 'Title',
-	image_view: 'Bilder',
-	image_position: 'Textumbruch',
-	none: 'Keine',
-	left: 'Links',
-	right: 'Rechts',
-	image_web_link: 'Bilder Link',
-	text: 'Text',
-	mailto: 'Email',
-	web: 'URL',
-	video_html_code: 'Video-Einbettungscode',
-	file: 'Datei',	
-	upload: 'Hochladen',
-	download: 'Download',
-	choose: 'Auswählen',
-	or_choose: 'Oder, wählen Sie eine Datei aus',
-	drop_file_here: 'Ziehen Sie eine Datei hier hin',
-	align_left:	'Linksbündig',	
-	align_center: 'Mitte',
-	align_right: 'Rechtsbündig',
-	align_justify: 'Blocksatz',
-	horizontalrule: 'Horizontale Linie',
-	fullscreen: 'Vollbild',
-	deleted: 'Durchgestrichen',
-	anchor: 'Anker'    	
-};
+(function () {
+  angular.module('ui.grid').config(['$provide', function ($provide) {
+    $provide.decorator('i18nService', ['$delegate', function ($delegate) {
+      $delegate.add('de', {
+        aggregate: {
+          label: 'Eintrag'
+        },
+        groupPanel: {
+          description: 'Ziehen Sie eine Spaltenüberschrift hierhin, um nach dieser Spalte zu gruppieren.'
+        },
+        search: {
+          placeholder: 'Suche...',
+          showingItems: 'Zeige Einträge:',
+          selectedItems: 'Ausgewählte Einträge:',
+          totalItems: 'Einträge gesamt:',
+          size: 'Einträge pro Seite:',
+          first: 'Erste Seite',
+          next: 'Nächste Seite',
+          previous: 'Vorherige Seite',
+          last: 'Letzte Seite'
+        },
+        menu: {
+          text: 'Spalten auswählen:'
+        },
+        sort: {
+          ascending: 'aufsteigend sortieren',
+          descending: 'absteigend sortieren',
+          remove: 'Sortierung zurücksetzen'
+        },
+        column: {
+          hide: 'Spalte ausblenden'
+        },
+        aggregation: {
+          count: 'Zeilen insgesamt: ',
+          sum: 'gesamt: ',
+          avg: 'Durchschnitt: ',
+          min: 'min: ',
+          max: 'max: '
+        },
+        pinning: {
+            pinLeft: 'Links anheften',
+            pinRight: 'Rechts anheften',
+            unpin: 'Lösen'
+        },
+        gridMenu: {
+          columns: 'Spalten:',
+          importerTitle: 'Datei importieren',
+          exporterAllAsCsv: 'Alle Daten als CSV exportieren',
+          exporterVisibleAsCsv: 'sichtbare Daten als CSV exportieren',
+          exporterSelectedAsCsv: 'markierte Daten als CSV exportieren',
+          exporterAllAsPdf: 'Alle Daten als PDF exportieren',
+          exporterVisibleAsPdf: 'sichtbare Daten als PDF exportieren',
+          exporterSelectedAsPdf: 'markierte Daten als CSV exportieren'
+        },
+        importer: {
+          noHeaders: 'Es konnten keine Spaltennamen ermittelt werden. Sind in der Datei Spaltendefinitionen enthalten?',
+          noObjects: 'Es konnten keine Zeileninformationen gelesen werden, Sind in der Datei außer den Spaltendefinitionen auch Daten enthalten?',
+          invalidCsv: 'Die Datei konnte nicht eingelesen werden, ist es eine gültige CSV-Datei?',
+          invalidJson: 'Die Datei konnte nicht eingelesen werden. Enthält sie gültiges JSON?',
+          jsonNotArray: 'Die importierte JSON-Datei muß ein Array enthalten. Breche Import ab.'
+        },
+        pagination: {
+            sizes: 'Einträge pro Seite',
+            totalItems: 'Einträge'
+        }
+      });
+      return $delegate;
+    }]);
+  }]);
+})();

@@ -1,5 +1,3 @@
-/*globals enyo */
-
 enyo.kind({
 	name: "DialpadButton",
 	kind: enyo.CustomButton,

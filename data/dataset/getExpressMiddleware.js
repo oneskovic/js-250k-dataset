@@ -1,14 +1,3 @@
-/*
- * Return express middleware that measures overall performance.
- *
- * The `prefix` defaults to `''` (but is currently mandatory). The
- * `options`-argument is optional.
- *  * You can set `timeByUrl`, that add a timer per URL template (ex:
- *    `/api/:username/:thingie`). This can be changed run-time by setting
- *    `res.locals.statsdUrlKey`.
- *  * Add a `function(client, startTime, req, res)` in `onResponseEnd` that
- *    will be called at the very end.
- */
 function factory(parentClient) {
     return function (prefix, options) {
         var client = parentClient.getChildClient(prefix || '');

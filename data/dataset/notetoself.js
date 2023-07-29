@@ -1,10 +1,3 @@
-/* notetoself.js
- * 
- * This version of notetoself uses a more efficient
- * way of creating new elements to demonstrate how
- * to get better performance from your web pages.
- */
-
 window.onload = init;
 
 function init() {

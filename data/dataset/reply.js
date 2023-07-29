@@ -1,86 +1,57 @@
-var check = require('validator').check;
-var	sanitize = require('validator').sanitize;
-var async = require('async');
-var Util = require('../../lib/util.js');
-var replyDao = require('../../dao/reply.js');
-var articleDao = require('../../dao/article.js');
-var common = require('../common/common.js');
-var memssage_ctrl = require('../message/message.js');
+var util = require("util");
+
+var PLUS      = 0x2B, // +
+    MINUS     = 0x2D, // -
+    DOLLAR    = 0x24, // $
+    STAR      = 0x2A, // *
+    COLON     = 0x3A, // :
+
+    CR        = exports.CR = 0x0D, // \r
+    LF        = exports.LF = 0x0A; // \n
+
+var Reply = exports.Reply = function Reply () {};
+
+var ErrorReply = require("./replies/errorReply").ErrorReply,
+    InlineReply = require("./replies/inlineReply").InlineReply,
+    IntegerReply = require("./replies/integerReply").IntegerReply,
+    BulkReply = require("./replies/bulkReply").BulkReply,
+    MultiBulkReply = require("./replies/multibulkReply").MultibulkReply;
+
+Reply.type2constructor = {};
+Reply.type2constructor[MINUS] = ErrorReply;
+Reply.type2constructor[PLUS] = InlineReply;
+Reply.type2constructor[COLON] = IntegerReply;
+Reply.type2constructor[DOLLAR] = BulkReply;
+Reply.type2constructor[STAR] = MultibulkReply;
 
 /**
- * 回复文章
- */
-exports.createReply = function(req,res,next){
-	if(!req.session || !req.session.user){
-		res.send('forbidden!须登录才可发表回复');
-		return;
-	}
-
-	var content = req.body.r_content;
-	var article_id = req.params.article_id;
-
-	var str = sanitize(content).trim();
-	if(str == ''){
-		res.render('notify/notify',{error:'回复内容不能为空！'});
-		return;
-	}
-	
-	var create_at =  Util.format_date(new Date());
-	async.parallel({
-        info : function(cb) {
-            replyDao.saveReply(content, req.session.user.id, article_id, create_at, function(err, info){
-                cb(null,null);
-            });
-        },
-        update_reply_count : function(cb) {
-            articleDao.updateReplyCountOfArticle(article_id, true, function(err, info){
-                cb(null,null);
-            });
-        },
-        sendMessage : function(cb) {
-            articleDao.queryArticle(article_id, function(err, article){
-                if(!err){
-                    var mbody = {};
-                    mbody.from_user_id = req.session.user.id;
-                    mbody.from_user_name = req.session.user.loginname;
-                    mbody.article_id = article_id;
-                    mbody.article_title = article.title;
-                    memssage_ctrl.create_message(common.MessageType.reply, article.author_id, JSON.stringify(mbody), function(){
-                        cb(null,null);
-                    });
-                }
-                cb(null,null);
-            });
-        }
-    }, function(err, results) {
-        if(err){
-            res.render('notify/notify',{error:((results.info || '')+(results.update_reply_count || ''))});
-            return;
-        }
-        res.redirect('/article/'+article_id);
-    });
-};
-
-/**
- * 删除回复
- */
-exports.deleteReply = function(req,res,next){
-	if(!req.session || !req.session.user){
-	    res.json({status:'failed'});
-        return;
+ * Factory method for creating replies. Figures out what type of reply (error, status,
+ * integer, bulk, multibulk) to construct.
+*/
+Reply.fromTypeCode = function (typeCode, client, context) {
+    var replyClass = this.type2constructor[typeCode],
+        newContext;
+    if (context && (context.scope === "exec")) {
+        context.currTxnCmdIndex = (typeof context.currTxnCmdIndex === "undefined") ? -1 : context.currTxnCmdIndex;
+        context.currTxnCmdIndex++;
     }
-	
-	var article_id = req.body.article_id;
-	var reply_id = req.body.reply_id;
-	replyDao.deleteReply(req.session.user.id, reply_id, function(err, info){
-	    if(err){
-	        res.json({status:'failed'});
-	        return;
-	    }
-	    articleDao.updateReplyCountOfArticle(article_id, false, function(err, info){
-            res.json({status:'success'});
-            return;
-        });
-	});
+    if (replyClass === MultibulkReply) {
+        // Setup the context to pass to the new MULTIBULK reply
+        newContext = {};
+        if (client.commandHistory.length > 0) { // If this isn't a message or pmessage
+            if (!context || !context.scope) {
+                newContext.scope = client.commandHistory.peek().commandName;
+            } else if (context.scope === "sort") {
+                newContext.scope = context.scope;
+                newContext.parsingSort = true;
+            } else if (context.scope === "exec") {
+                newContext.scope = context.scope;
+                newContext.currCommandName = client.currTxnCommands[context.currTxnCmdIndex].commandName;
+            }
+        }
+    } else if (!replyClass) {
+//        throw new Error("Invalid type code: " + util.inspect(String.fromCharCode(typeCode)));
+        return replyClass;
+    }
+    return new replyClass(client, newContext);
 };
-

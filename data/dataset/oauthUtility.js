@@ -4,16 +4,7 @@ angular.module("ngCordova.plugins.oauthUtility", [])
 
     return {
 
-      /*
-       * Sign an Oauth 1.0 request
-       *
-       * @param    string method
-       * @param    string endPoint
-       * @param    object headerParameters
-       * @param    object bodyParameters
-       * @param    string secretKey
-       * @return   object
-       */
+      
        createSignature: function(method, endPoint, headerParameters, bodyParameters, secretKey, tokenSecret) {
            if(typeof jsSHA !== "undefined") {
                var headerAndBodyParameters = angular.copy(headerParameters);

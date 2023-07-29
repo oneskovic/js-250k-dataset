@@ -4,14 +4,7 @@ var LookupWrapper = NodeGit.Utils.lookupWrapper;
 var Reference = NodeGit.Reference;
 var Branch = NodeGit.Branch;
 
-/**
-* Retrieves the reference pointed to by the oid
-* @async
-* @param {Repository} repo The repo that the reference lives in
-* @param {String|Reference} id The reference to lookup
-* @param {Function} callback
-* @return {Reference}
-*/
+
 Reference.lookup = LookupWrapper(Reference);
 
 /**

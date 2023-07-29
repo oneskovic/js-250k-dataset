@@ -1,11 +1,3 @@
-// Typical req.query (at a minimum, the "filter" parameter will be there):
-//
-// { "filter": "couchdb/refilter"
-// , "field" : "_id"
-// , "regex" : "^a"
-// , "log"   : true
-// }
-
 function(doc, req) {
   var field = req.query.field
     , regex = req.query.regex

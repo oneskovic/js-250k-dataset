@@ -27,10 +27,7 @@ function destroyEditor(name){
 
 function createEditor(name){
     try{
-	/* 
-	   cf. http://docs.cksource.com/CKEditor_3.x/Developers_Guide/Toolbar for more
-	   informations on ckEditor toolbars 
-	*/
+	
 	if (CKEDITOR.instances[name]) { CKEDITOR.instances[name].destroy(true); }
 	CKEDITOR.replace(name,{
 	    skin : 'v2',

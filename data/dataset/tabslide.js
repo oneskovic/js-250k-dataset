@@ -1,9 +1,3 @@
-// VexFlow - Music Engraving for HTML5
-// Copyright Mohit Muthanna 2010
-//
-// This class implements varies types of ties between contiguous notes. The
-// ties include: regular ties, hammer ons, pull offs, and slides.
-
 /**
  * Create a new tie from the specified notes. The notes must
  * be part of the same line, and have the same duration (in ticks).

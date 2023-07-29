@@ -1,8 +1,3 @@
-
-/**
- * Module dependencies.
- */
-
 var debug = require('debug')('slate-irc:names');
 var utils = require('../utils');
 

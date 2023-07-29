@@ -1,7 +1,3 @@
-/*
- * Contains L.MultiPolyline and L.MultiPolygon layers.
- */
-
 (function () {
 	function createMulti(Klass) {
 

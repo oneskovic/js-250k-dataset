@@ -4,16 +4,7 @@ goog.require('model.ModelObject');
 goog.require('PrizeType');
 goog.require('TileType');
 
-/**
- * @constructor
- * @extends {model.ModelObject}
- * @param {!model.Simulation} simulation
- * @param {!model.Map} map
- * @param {!PrizeType} type
- * @param {number} xTile
- * @param {number} yTile
- * @param {number} ttl
- */
+
 model.Prize = function(simulation, map, type, xTile, yTile, ttl) {
   goog.base(this, simulation);
 

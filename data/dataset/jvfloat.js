@@ -1,8 +1,3 @@
-/*
- * JVFloat.js
- * modified on: 18/09/2014
- */
-
 (function($) {
   'use strict';
   

@@ -1,70 +1,66 @@
-var test = require('tap').test;
-var torrents = require('../');
-var fs = require('fs');
-var path = require('path');
-var rimraf = require('rimraf');
-var tracker = require('bittorrent-tracker');
-var server = new tracker.Server();
+"use strict";
 
-var torrent = fs.readFileSync(path.join(__dirname, 'data', 'test.torrent'));
-var tmpPath = path.join(__dirname, '..', 'torrents', 'test');
-rimraf.sync(tmpPath);
+Components.utils.import("resource://gre/modules/Services.jsm");
 
-var seed;
+var gArgs;
 
-server.on('error', function() {
-});
+function init() {
+  var hasHardBlocks = false;
+  var hasSoftBlocks = false;
+  gArgs = window.arguments[0].wrappedJSObject;
 
-test('seed should connect to the tracker', function(t) {
-	t.plan(3);
+  // NOTE: We use strings from the "updates.properties" bundleset to change the
+  // text on the "Cancel" button to "Restart Later". (bug 523784)
+  let bundle = Services.strings.
+              createBundle("chrome://mozapps/locale/update/updates.properties");
+  let cancelButton = document.documentElement.getButton("cancel");
+  cancelButton.setAttribute("label", bundle.GetStringFromName("restartLaterButton"));
+  cancelButton.setAttribute("accesskey",
+                            bundle.GetStringFromName("restartLaterButton.accesskey"));
 
-	server.once('listening', function() {
-		t.ok(true, 'tracker should be listening');
-		seed = torrents(torrent, {
-			dht: false,
-			path: path.join(__dirname, 'data')
-		});
-		seed.listen(6882);
-		seed.once('ready', t.ok.bind(t, true, 'should be ready'));
-	});
-	server.once('start', function(addr) {
-		t.equal(addr, '127.0.0.1:6882');
-	});
-	server.listen(12345);
-});
+  var richlist = document.getElementById("addonList");
+  var list = gArgs.list;
+  list.sort(function(a, b) { return String.localeCompare(a.name, b.name); });
+  for (let i = 0; i < list.length; i++) {
+    let item = document.createElement("richlistitem");
+    item.setAttribute("name", list[i].name);
+    item.setAttribute("version", list[i].version);
+    item.setAttribute("icon", list[i].icon);
+    if (list[i].blocked) {
+      item.setAttribute("class", "hardBlockedAddon");
+      hasHardBlocks = true;
+    }
+    else {
+      item.setAttribute("class", "softBlockedAddon");
+      hasSoftBlocks = true;
+    }
+    richlist.appendChild(item);
+  }
 
-test('peer should block the seed via blocklist', function(t) {
-	t.plan(3);
-	var peer = torrents(torrent, {
-		dht: false,
-		blocklist: [
-			{ start: '127.0.0.1', end: '127.0.0.1' }
-		]
-	});
-	peer.once('ready', function() {
-		t.ok(true, 'peer should be ready');
-		peer.once('blocked-peer', function(addr) {
-			t.equal(addr, '127.0.0.1:6882');
-			peer.destroy(t.ok.bind(t, true, 'peer should be destroyed'));
-		});
-	});
-});
+  if (hasHardBlocks && hasSoftBlocks)
+    document.getElementById("bothMessage").hidden = false;
+  else if (hasHardBlocks)
+    document.getElementById("hardBlockMessage").hidden = false;
+  else
+    document.getElementById("softBlockMessage").hidden = false;
 
-test('peer should block the seed via explicit block', function(t) {
-	t.plan(3);
-	var peer = torrents(torrent, { dht: false });
-	peer.block('127.0.0.1:6882');
-	peer.once('ready', function() {
-		t.ok(true, 'peer should be ready');
-		peer.once('blocked-peer', function(addr) {
-			t.equal(addr, '127.0.0.1:6882');
-			peer.destroy(t.ok.bind(t, true, 'peer should be destroyed'));
-		});
-	});
-});
+  var link = document.getElementById("moreInfo");
+  if (list.length == 1 && list[0].url) {
+    link.setAttribute("href", list[0].url);
+  }
+  else {
+    var url = Services.urlFormatter.formatURLPref("extensions.blocklist.detailsURL");
+    link.setAttribute("href", url);
+  }
+}
 
-test('cleanup', function(t) {
-	t.plan(2);
-	seed.destroy(t.ok.bind(t, true, 'seed should be destroyed'));
-	server.close(t.ok.bind(t, true, 'tracker should be closed'));
-});
+function finish(shouldRestartNow) {
+  gArgs.restart = shouldRestartNow;
+  var list = gArgs.list;
+  var items = document.getElementById("addonList").childNodes;
+  for (let i = 0; i < list.length; i++) {
+    if (!list[i].blocked)
+      list[i].disable = items[i].checked;
+  }
+  return true;
+}

@@ -1,33 +1,3 @@
-/** internal
- *  class Processor
- *
- *  Used to create custom processors without need to extend [[Template]] by
- *  simply providing a function to the processor registration methods:
- *
- *      var name = 'my-pre-processor';
- *      var func = function (context, data, callback) {
- *        callback(null, data.toLowerCase());
- *      };
- *
- *      // register custom pre-processor
- *      environment.registerPreProcessor('text/css', name, func);
- *
- *      // unregister custom pre-processor
- *      environment.unregisterPreProcessor('text/css', name);
- *
- *
- *  ##### See Also:
- *
- *  - [[Context]]
- *  - [[Processing]]
- *
- *
- *  ##### SUBCLASS OF
- *
- *  [[Template]]
- **/
-
-
 'use strict';
 
 

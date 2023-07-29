@@ -1,140 +1,83 @@
-var Node = require('../../models/node'),
-  _ = require('underscore'),
-  async = require('async');
-
-exports.getParentsTree = function getParentsTree(id, callback) {
-  id = id.id || id;
-  Node.findOne({
-    _id: id
-  }, function(err, node) {
-    if (err) {
-      callback(err);
-    }
-    if (node) {
-      var reduce = {};
-      async.parallel([
-
-      function(cb) {
-        Node.find({
-          $or: [{
-            _id: {
-              $in: node.ancestors
-            }
-          }, {
-            _id: id
-          }]
-        }).sort({
-          "ancestors.length": -1
-        }).exec(cb);
-      }, function(cb) {
-        Node.find({
-          $or: [{
-            parent: {
-              $in: node.ancestors
-            }
-          }, {
-            _id: id
-          }]
-
-        }).exec(cb);
-      }],
-
-      function(err, results) {
-        if (err) {
-          callback(err)
-        }
-        var groups = _.groupBy(results[1], 'parent'),
-          memo = {},
-          toReturn = _.reduce(results[0], function(memo, value) {
-            memo.id = value.id;
-            memo.name = value.name;
-
-            var group = groups[_.find(Object.keys(groups), function(group) {
-              return group === value.id
-            })];
-            if (group) {
-              memo.sublevels = {
-                list: [{}],
-                selected: 0,
-                total: group.length
-              };
-              return memo.sublevels.list[0];
-            }
-            // last iteration
-            return;
-          }, memo)
-
-          callback(null, memo);
+'use strict';
 
 
-      })
-    }
-  })
-}
+
+angular.module('openWeatherApp.services', ['ngResource'])
+
+  //
+  // Simple value service (kept from angular-seed dist)
+  //
+  .value('version', '0.1.4')
 
 
-exports.getFullParentsTree = function getFullParentsTree(ids, callback) {
-  async.map(ids, exports.getParentsTree, function(err, trees) {
-    if (err) {
-      return callback(err)
-    }
-    if (trees.length < 2) {
-      return callback(null, trees);
-    }
-    //we got severals trees now we merge them 1 by 1
-    var myreduce = function(memo, tree) {
+  //
+  // Define a standard list of "example locations"
+  //
+  .value('exampleLocations',['Hamburg','Berlin','Tokyo','New York','Moscow','Clonakilty'])
+  //
+  // Storm "Xaver" special locations
+  //
+  .value('stormLocations',['Sylt','St. Peter-Ording','Husum','Bremerhaven','Hamburg','Kiel','Lübeck'])
 
-        var tomerge = _.find(memo, function(item) {
-          return item.id === tree.id
-        })
-        if (!tomerge) {
-          memo.push(tree)
-          return memo;
-        }
 
-        if (tomerge.sublevels) {
-          if (!tree.sublevels) {
-            return memo;
-          }
+  //
+  // Register service for openweathermap.com
+  //
+  // - Inject $resource from angular-resource context
+  // - Generate custom resource object able to query open weather map api with custom parameters
+  // -
+  // - Tricky: Avoid needing a server/proxy by forcing a JSONP request: Angular handles callback
+  //   if JSON_CALLBACK is set as function name parameter in which response should be wrapped
+  //   (subject to be made configurable through service initialization so that server mode using
+  //    "normal" json api is supported as well)
+  //
+  .factory('openWeatherMap', function($resource) {
 
-          // only case where the merge is harder
-          tomerge.sublevels.selected += tree.sublevels.selected;
-          //reducing lists
-          tomerge.sublevels.list = _.reduce(tree.sublevels.list, myreduce, tomerge.sublevels.list);
+    // API key is currently unused (work either with or without key)
+    var apiKey = '279b4be6d54c8bf6ea9b12275a567156';
+    var apiBaseUrl = 'http://api.openweathermap.org/data/2.5/';
 
-          return memo;
-
-        } else {
-          if (tree.sublevels) {
-            tomerge.sublevels = tree.sublevels
-          }
-          return memo;
-        }
-        //need to merge them
+    return $resource(apiBaseUrl + ':path/:subPath?q=:location',
+      {
+//        APPID: apiKey,
+        mode: 'jsonp',
+        callback: 'JSON_CALLBACK',
+        units: 'metric',
+        lang: 'en'
       },
-      toReturn = _.reduce(trees, myreduce, []);
-
-    callback(null, toReturn);
-  })
-
-}
-
-/**
-  idss, is an array of array of id*/
-exports.getFullParentsTrees = function getFullParentsTrees(idss, callback) {
-  async.map(idss, exports.getFullParentsTree, function(err, treess) {
-    if (err) return callback(err);
-    var filtered = _.reduce(treess, function(memo, item) {
-      var stringified = JSON.stringify(item);
-      memo[stringified] = memo[stringified] || item;
-      return memo;
-    }, {})
-
-    callback(null, _.map(Object.keys(filtered), function(key) {
-      return filtered[key]
-    }));
-
-
+      {
+        queryWeather: {
+          method: 'JSONP',
+          params: {
+            path: 'weather'
+          },
+          isArray: false,
+          headers: {
+            'x-api-key': apiKey
+          }
+        },
+        queryForecast: {
+          method: 'JSONP',
+          params: {
+            path: 'forecast'
+          },
+          isArray: false,
+          headers: {
+            'x-api-key': apiKey
+          }
+        },
+        queryForecastDaily: {
+          method: 'JSONP',
+          params: {
+            path: 'forecast',
+            subPath: 'daily',
+            cnt: 7
+          },
+          isArray: false,
+          headers: {
+            'x-api-key': apiKey
+          }
+        }
+      }
+    )
   });
-
-}

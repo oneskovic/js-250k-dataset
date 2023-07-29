@@ -1,7 +1,7 @@
 var escapeRegExp = require('../string/escapeRegExp'),
     isObjectLike = require('../internal/isObjectLike');
 
-/** `Object#toString` result references. */
+
 var funcTag = '[object Function]';
 
 /** Used to detect host constructors (Safari > 5). */

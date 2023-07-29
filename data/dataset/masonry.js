@@ -1,9 +1,3 @@
-/*!
- * Masonry layout mode
- * sub-classes Masonry
- * http://masonry.desandro.com
- */
-
 ( function( window, factory ) {
   'use strict';
   // universal module definition

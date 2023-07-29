@@ -1,9 +1,3 @@
-/*
- * Pixastic Lib - Crop - v0.1.1
- * Copyright (c) 2008-2009 Jacob Seidelin, jseidelin@nihilogic.dk, http://blog.nihilogic.dk/
- * License: [http://www.pixastic.com/lib/license.txt]
- */
-
 Pixastic.Actions.crop = {
 	process : function(params) {
 		if (Pixastic.Client.hasCanvas()) {

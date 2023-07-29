@@ -1,7 +1,3 @@
-/**
- * @fileoverview Vizi scene utilities
- * @author Tony Parisi
- */
 goog.provide('Vizi.SceneUtils');
 
 // Compute the bounding box of an object or hierarchy of objects

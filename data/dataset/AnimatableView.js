@@ -1,21 +1,8 @@
-// -------------------------------------------------------------------------- \\
-// File: AnimatableView.js                                                    \\
-// Module: Animation                                                          \\
-// Requires: Core, UA, Animation.js                                           \\
-// Author: Neil Jenkins                                                       \\
-// License: © 2010-2014 FastMail Pty Ltd. MIT Licensed.                       \\
-// -------------------------------------------------------------------------- \\
-
 "use strict";
 
 ( function ( NS ) {
 
-/**
-    Mixin: O.AnimatableView
 
-    Mix this into an <O.View> class to automatically animate all changes to the
-    view's <O.View#layerStyles> property.
-*/
 NS.AnimatableView = {
 
     /**

@@ -1,33 +1,7 @@
 var vow = require('vow'),
     notifyNextTick = require('./notifyNextTick');
 
-/**
- * It limits concurrently executed promises
- *
- * @param {Number} [maxPendingPromises=Infinity] max number of concurrently executed promises
- * @param {Number} [maxQueuedPromises=Infinity]  max number of queued promises
- * @constructor
- *
- * @example
- *
- * var limiter = new Limiter(1);
- *
- * limiter.add(function () {
- *     // resolve of this promise will resume next request
- *     return downloadTarballFromGithub(url, file);
- * })
- * .then(function (file) {
- *     doStuffWith(file);
- * });
- *
- * limiter.add(function () {
- *     return downloadTarballFromGithub(url, file);
- * })
- * // This request will be paused
- * .then(function (file) {
- *     doStuffWith(file);
- * });
- */
+
 function Limiter(maxPendingPromises, maxQueuedPromises) {
     this.pendingPromises = 0;
     this.maxPendingPromises = typeof maxPendingPromises !== 'undefined' ? maxPendingPromises : Infinity;

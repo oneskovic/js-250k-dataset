@@ -1,14 +1,9 @@
-
-
 var Http = require('http'),
 	Path = require('path'),
 	Url = require('url'),
 	HttpUtility = require('./httputility');
 
-/**
- * 提供创建和操作各 HTTP Cookie 的类型安全方法。
- * @class
- */
+
 function HttpCookie(name, value, options){
 	this.name = name;
 	this.value = value;

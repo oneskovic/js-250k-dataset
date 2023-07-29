@@ -1,5 +1,3 @@
-// If a job with the same name, queue, and args is already running, put this job back in the queue and try later
-
 var jobLock = function(worker, func, queue, job, args, options){
   var self = this;
   self.name = 'jobLock';

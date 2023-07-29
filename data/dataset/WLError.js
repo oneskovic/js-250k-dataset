@@ -1,15 +1,7 @@
 var util = require('util');
 var _ = require('lodash');
 
-/**
- * WLError
- *
- * All errors passed to a query callback in Waterline extend
- * from this base error class.
- *
- * @param  {Object} properties
- * @constructor {WLError}
- */
+
 function WLError (properties) {
   WLError.super_.call(this);
 

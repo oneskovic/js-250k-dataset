@@ -1,16 +1,5 @@
 define('jqueryui/effects/shake', ['jquery','jqueryui/effects/core'], function (jQuery) {
-/*!
- * jQuery UI Effects Shake @VERSION
- *
- * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT or GPL Version 2 licenses.
- * http://jquery.org/license
- *
- * http://docs.jquery.com/UI/Effects/Shake
- *
- * Depends:
- *	jquery.effects.core.js
- */
+
 (function( $, undefined ) {
 
 $.effects.shake = function(o) {

@@ -1,7 +1,7 @@
 'use strict';
 
 function paginatorHelper(options){
-  /* jshint validthis: true */
+  
   options = options || {};
 
   var current = options.current || this.page.current || 0;

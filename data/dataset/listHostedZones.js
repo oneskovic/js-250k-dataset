@@ -4,11 +4,7 @@ var
   aws = require('../aws'),
   _ = require('../util');
 
-/**
- * GET ListHostedZones
- *
- * @param   {Object}  args
- */
+
 var Request = module.exports.Request = function(args) {
   route53.Request.call(this, args, 'GET');
 

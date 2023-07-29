@@ -1,16 +1,3 @@
-/**
-  mediacheck will take a hash and execute the specified methods based on the current mediaquery status.
-
-  ex.
-  
-  mediaCheck({  
-    media: '(min-width: 500px)',  
-    entry: function() { ... },  
-    exit: function() { ... }  
-  });
-  
-  @param Object - options
-*/
 var mediaCheck = function( options ) {
   var mq;
     

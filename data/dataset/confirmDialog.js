@@ -1,5 +1,3 @@
-// Confirm Dialog View
-
 (function ($, _, Backbone) {
   "use strict";
 

@@ -14,7 +14,7 @@ uitest.define('run/feature/timeoutSensor', ['run/config', 'run/ready'], function
             var callback = function () {
                 delete timeouts[handle];
                 if (typeof fn === 'string') {
-                    /*jshint evil:true*/
+                    
                     window['eval'](fn);
                 } else {
                     fn();

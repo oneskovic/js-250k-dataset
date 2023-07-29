@@ -3,9 +3,7 @@
     var Alpaca = $.alpaca;
 
     Alpaca.Fields.URLField = Alpaca.Fields.TextField.extend(
-    /**
-     * @lends Alpaca.Fields.URLField.prototype
-     */
+    
     {
         /**
          * @see Alpaca.Fields.TextField#getFieldType

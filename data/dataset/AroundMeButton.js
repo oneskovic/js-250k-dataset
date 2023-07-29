@@ -1,4 +1,3 @@
-//'use strict';
 define('views/AroundMeButton', [
   'globals',
   'views/ToggleButton',

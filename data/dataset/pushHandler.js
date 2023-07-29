@@ -1,10 +1,3 @@
-/**
- * Created with JetBrains WebStorm.
- * User: youxiachai
- * Date: 13-6-17
- * Time: 上午12:52
- * To change this template use File | Settings | File Templates.
- */
 module.exports = function (app) {
     return new Handler(app);
 };

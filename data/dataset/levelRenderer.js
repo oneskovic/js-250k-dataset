@@ -1,8 +1,3 @@
-/**
-	Renders a playable level.
-	Code by Rob Kleffner, 2011
-*/
-
 Mario.LevelRenderer = function(level, width, height) {
     this.Width = width;
     this.Height = height;

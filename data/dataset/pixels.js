@@ -1,29 +1,3 @@
-/*
----
-
-name: "Context.Pixels"
-
-description: "LibCanvas.Context2D adds new canvas context '2d-libcanvas'"
-
-license:
-	- "[GNU Lesser General Public License](http://opensource.org/licenses/lgpl-license.php)"
-	- "[MIT License](http://opensource.org/licenses/mit-license.php)"
-
-authors:
-	- "Shock <shocksilien@gmail.com>"
-
-requires:
-	- LibCanvas
-	- Point
-	- Size
-	- Shapes.Rectangle
-	- Shapes.Circle
-
-provides: Context.Pixels
-
-...
-*/
-
 new function () {
 
 var toPoint = Point.from, toRectangle = Rectangle.from, size1x1 = new Size(1,1);

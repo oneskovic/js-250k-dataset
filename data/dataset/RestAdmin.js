@@ -1,8 +1,3 @@
-/*
-*restAdmin.js 是后台的controller 属于应用的文件
-*
-*exports fn(req, res)
-*/
 var outerror = require('./Outerror'),
 	RestUtils = require('./RestUtils'),
 	fs = require('fs'),

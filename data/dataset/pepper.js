@@ -1,6 +1,3 @@
-// This file contains various helper methods.
-
-
 // Sugar functions follow, some of which were inspired by
 // [ http://www.crockford.com/javascript/inheritance.html ]
 Function.prototype.method = function( name, lambda ){

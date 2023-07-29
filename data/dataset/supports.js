@@ -1,75 +1,115 @@
-/*!
- * Stylus - supports
- * Copyright(c) 2014 LearnBoost <dev@learnboost.com>
- * MIT Licensed
- */
+(function() {
+  var Prefixes, Supports, Value, findCondition, findDecl, list, postcss, split, utils;
 
-/**
- * Module dependencies.
- */
+  Prefixes = require('./prefixes');
 
-var Atrule = require('./atrule');
+  Value = require('./value');
 
-/**
- * Initialize a new supports node.
- *
- * @param {Expression} condition
- * @api public
- */
+  utils = require('./utils');
 
-var Supports = module.exports = function Supports(condition){
-  Atrule.call(this, 'supports');
-  this.condition = condition;
-};
+  postcss = require('postcss');
 
-/**
- * Inherit from `Atrule.prototype`.
- */
+  list = require('postcss/lib/list');
 
-Supports.prototype.__proto__ = Atrule.prototype;
+  split = /\(\s*([^\(\):]+)\s*:([^\)]+)/;
 
-/**
- * Return a clone of this node.
- *
- * @return {Node}
- * @api public
- */
+  findDecl = /\(\s*([^\(\):]+)\s*:\s*([^\)]+)\s*\)/g;
 
-Supports.prototype.clone = function(parent){
-  var clone = new Supports;
-  clone.condition = this.condition.clone(parent, clone);
-  clone.block = this.block.clone(parent, clone);
-  clone.lineno = this.lineno;
-  clone.column = this.column;
-  clone.filename = this.filename;
-  return clone;
-};
+  findCondition = /(not\s*)?\(\s*([^\(\):]+)\s*:\s*([^\)]+)\s*\)\s*or\s*/gi;
 
-/**
- * Return a JSON representation of this node.
- *
- * @return {Object}
- * @api public
- */
+  Supports = (function() {
+    function Supports(all) {
+      this.all = all;
+    }
 
-Supports.prototype.toJSON = function(){
-  return {
-    __type: 'Supports',
-    condition: this.condition,
-    block: this.block,
-    lineno: this.lineno,
-    column: this.column,
-    filename: this.filename
-  };
-};
+    Supports.prototype.virtual = function(prop, value) {
+      var rule;
+      rule = postcss.parse('a{}').first;
+      rule.append({
+        prop: prop,
+        value: value,
+        before: ''
+      });
+      return rule;
+    };
 
-/**
- * Return @supports
- *
- * @return {String}
- * @api public
- */
+    Supports.prototype.prefixed = function(prop, value) {
+      var decl, prefixer, rule, _i, _j, _len, _len1, _ref, _ref1;
+      rule = this.virtual(prop, value);
+      prefixer = this.all.add[prop];
+      if (prefixer != null) {
+        if (typeof prefixer.process === "function") {
+          prefixer.process(rule.first);
+        }
+      }
+      _ref = rule.childs;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        decl = _ref[_i];
+        _ref1 = this.all.values('add', prop);
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          value = _ref1[_j];
+          value.process(decl);
+        }
+        Value.save(this.all, decl);
+      }
+      return rule.childs;
+    };
 
-Supports.prototype.toString = function(){
-  return '@supports ' + this.condition;
-};
+    Supports.prototype.clean = function(params) {
+      return params.replace(findCondition, (function(_this) {
+        return function(all) {
+          var check, checker, prop, unprefixed, value, _, _i, _len, _ref, _ref1, _ref2;
+          if (all.slice(0, 3).toLowerCase() === 'not') {
+            return all;
+          }
+          _ref = all.match(split), _ = _ref[0], prop = _ref[1], value = _ref[2];
+          unprefixed = _this.all.unprefixed(prop);
+          if ((_ref1 = _this.all.cleaner().remove[prop]) != null ? _ref1.remove : void 0) {
+            check = new RegExp('(\\(|\\s)' + utils.escapeRegexp(unprefixed) + ':');
+            if (check.test(params)) {
+              return '';
+            }
+          }
+          _ref2 = _this.all.cleaner().values('remove', unprefixed);
+          for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+            checker = _ref2[_i];
+            if (checker.check(value)) {
+              return '';
+            }
+          }
+          return all;
+        };
+      })(this)).replace(/\(\s*\((.*)\)\s*\)/g, '($1)');
+    };
+
+    Supports.prototype.process = function(rule) {
+      rule.params = this.clean(rule.params);
+      return rule.params = rule.params.replace(findDecl, (function(_this) {
+        return function(all, prop, value) {
+          var i, stringed;
+          stringed = (function() {
+            var _i, _len, _ref, _results;
+            _ref = this.prefixed(prop, value);
+            _results = [];
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+              i = _ref[_i];
+              _results.push("(" + i.prop + ": " + i.value + ")");
+            }
+            return _results;
+          }).call(_this);
+          if (stringed.length === 1) {
+            return stringed[0];
+          } else {
+            return '(' + stringed.join(' or ') + ')';
+          }
+        };
+      })(this));
+    };
+
+    return Supports;
+
+  })();
+
+  module.exports = Supports;
+
+}).call(this);

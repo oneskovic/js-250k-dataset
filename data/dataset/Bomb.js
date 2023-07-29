@@ -4,20 +4,7 @@ goog.require('model.projectile.Projectile');
 goog.require('model.Weapon.Type');
 goog.require('math.Vector');
 
-/**
- * @constructor
- * @extends {model.projectile.Projectile}
- * @param {!Game} game
- * @param {!model.player.Player} owner
- * @param {number} level
- * @param {!math.Vector} position
- * @param {!math.Vector} velocity
- * @param {number} lifetime
- * @param {number} damage
- * @param {number} bounceCount
- * @param {number} blastRadius
- * @param {number} proxRadius
- */
+
 model.projectile.Bomb = function(game, owner, level, position, velocity, lifetime, damage, bounceCount, blastRadius, proxRadius) {
   goog.base(this, game, owner, level, lifetime, damage, bounceCount);
 

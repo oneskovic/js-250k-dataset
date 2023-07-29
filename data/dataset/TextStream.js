@@ -1,7 +1,3 @@
-
-/**
-	@constructor
-*/
 JSDOC.TextStream = function(text) {
 	if (typeof(text) == "undefined") text = "";
 	text = ""+text;

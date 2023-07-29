@@ -1,8 +1,3 @@
-/**
- * Script for making multiple numbers in a textfield incrementable/decrementable (like Firebug's CSS values)
- * @author Lea Verou
- * @version 1.1
- */
  
 (function(){
 

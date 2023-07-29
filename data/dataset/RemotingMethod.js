@@ -1,8 +1,3 @@
-/**
- * Small utility class used internally to represent a Direct method.
- * @class Ext.direct.RemotingMethod
- * @private
- */
 Ext.define('Ext.direct.RemotingMethod', {
     config: {
         name: null,

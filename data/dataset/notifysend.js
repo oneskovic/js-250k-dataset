@@ -1,6 +1,3 @@
-/**
- * Node.js wrapper for "notify-send".
- */
 var os = require('os'),
     which = require('which'),
     utils = require('../lib/utils');

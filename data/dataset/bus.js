@@ -1,60 +1,48 @@
-define(["Tone/core/Tone"], function(Tone){
+var _send = document.getElementById("bus-send"),
+    _receive = document.getElementById("bus-receive"),
+    _evt = document.createEvent("Events");
 
-	"use strict";
+_evt.initEvent('bus-init', true, true);
+document.dispatchEvent(_evt);
 
-	/**
-	 *  buses are another way of routing audio
-	 *
-	 *  augments Tone.prototype to include send and recieve
-	 */
+module.exports = {
+    send: function (msg, data, callback) {
+        var m = document.createElement("span");
+        m.dataset.msg = msg;
+        m.innerHTML = JSON.stringify(data);
 
-	 /**
-	  *  All of the routes
-	  *  
-	  *  @type {Object}
-	  *  @static
-	  *  @private
-	  */
-	var Buses = {};
+        if (callback) {
+            m.dataset.callback = Math.uuid();
+            this.receive(m.dataset.callback, callback);
+        }
 
-	/**
-	 *  send signal to a channel name
-	 *  defined in "Tone/core/Bus"
-	 *
-	 *  @param  {string} channelName 
-	 *  @param  {number} amount      
-	 *  @return {GainNode}             
-	 */
-	Tone.prototype.send = function(channelName, amount){
-		if (!Buses.hasOwnProperty(channelName)){
-			Buses[channelName] = this.context.createGain();
-		}
-		var sendKnob = this.context.createGain();
-		sendKnob.gain.value = this.defaultArg(amount, 1);
-		this.output.chain(sendKnob, Buses[channelName]);
-		return sendKnob;		
-	};
+        _send.appendChild(m);
+    },
 
-	/**
-	 *  recieve the input from the desired channelName to the input
-	 *  defined in "Tone/core/Bus"
-	 *
-	 *  @param  {string} channelName 
-	 *  @param {AudioNode} [input=this.input] if no input is selected, the
-	 *                                         input of the current node is
-	 *                                         chosen. 
-	 *  @returns {Tone} `this`
-	 */
-	Tone.prototype.receive = function(channelName, input){
-		if (!Buses.hasOwnProperty(channelName)){
-			Buses[channelName] = this.context.createGain();	
-		}
-		if (this.isUndef(input)){
-			input = this.input;
-		}
-		Buses[channelName].connect(input);
-		return this;
-	};
+    receive: function (msg, handler) {
+        if (!handler) {
+            return;
+        }
 
-	return Tone;
-});
+        _receive.addEventListener("DOMNodeInserted", function (evt) {
+            if (evt.target.dataset.msg === msg) {
+                handler(JSON.parse(evt.target.innerHTML));
+            }
+        });
+    },
+
+    ajax: function (method, url, data, success, fail) {
+        this.send("xhr", {
+            method: method,
+            url: url,
+            data: data
+        }, function (result) {
+            if (result.code === 200) {
+                success(result.data);
+            }
+            else {
+                fail(result);
+            }
+        });
+    }
+};

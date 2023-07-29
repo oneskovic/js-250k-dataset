@@ -1,5 +1,3 @@
-/*globals define*/
-
 define( [
     'src/controllers/CrudController',
     'src/views/crud/HeaderView'

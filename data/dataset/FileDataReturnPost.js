@@ -2,10 +2,7 @@
 
 tutao.provide('tutao.entity.tutanota.FileDataReturnPost');
 
-/**
- * @constructor
- * @param {Object=} data The json data to store in this entity.
- */
+
 tutao.entity.tutanota.FileDataReturnPost = function(data) {
   if (data) {
     this.updateData(data);

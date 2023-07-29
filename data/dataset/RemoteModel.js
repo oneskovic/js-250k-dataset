@@ -1,7 +1,3 @@
-// Copyright 2012 Tart. All Rights Reserved.
-//
-// @author Firat Yalavuz firat.yalavuz@tart.com.tr
-
 /**
  * @fileoverview tart.components.RemoteModel RemoteModel which gets data from Xhr.
  */

@@ -1,11 +1,3 @@
-/**
-* @author Andrew Fedoniouk <andrew@terrainformatica.com>
-* @name jQuery Single Page Application micro framework 
-* @license MIT
-* @purpose routing and dynamic content on single page web applications
-*/
-
-
 (function($,window){
 
   var pageHandlers = {};

@@ -1,8 +1,3 @@
-/*
-Language: Scala
-Author: Jan Berkel <jan.berkel@gmail.com>
-*/
-
 function(hljs) {
   var ANNOTATION = {
     className: 'annotation', begin: '@[A-Za-z]+'

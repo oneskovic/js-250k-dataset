@@ -1,4 +1,3 @@
-//V3.01.A - http://www.openjs.com/scripts/jx/
 jx = {	
 	getHTTPObject : function() {
 		var http = false;

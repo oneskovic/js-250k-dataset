@@ -1,4 +1,3 @@
-/* jshint -W058 */
 var Stream = require('bufferedstream');
 var Promise = require('../utils/Promise');
 var readFile = require('../utils/readFile');

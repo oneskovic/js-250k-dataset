@@ -1,9 +1,4 @@
 /**
- * @author Mat Groves http://matgroves.com/ @Doormat23
- * @author Richard Davey http://www.photonstorm.com @photonstorm
- */
-
-/**
 * @class PixiFastShader
 * @constructor
 * @param gl {WebGLContext} the current WebGL drawing context

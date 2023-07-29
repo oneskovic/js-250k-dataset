@@ -1,13 +1,3 @@
-/**
- * Engine/MapEngine/Group.js
- *
- * Manage group/party
- *
- * This file is part of ROBrowser, Ragnarok Online in the Web Browser (http://www.robrowser.com/).
- *
- * @author Vincent Thibault
- */
-
 define(function( require )
 {
 	'use strict';

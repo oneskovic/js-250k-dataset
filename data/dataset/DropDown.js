@@ -1,88 +1,52 @@
-/*
- * This is the code for the dropdown menus. It uses the following markup:
- *
- * <dl class="actionMenu" id="uniqueIdForThisMenu">
- *   <dt class="actionMenuHeader">
- *     <!-- The following a-tag needs to be clicked to dropdown the menu -->
- *     <a href="some_destination">A Title</a>
- *   </dt>
- *   <dd class="actionMenuContent">
- *     <!-- Here can be any content you want -->
- *   </dd>
- * </dl>
- *
- * When the menu is toggled, then the dl with the class actionMenu will get an
- * additional class which switches between 'activated' and 'deactivated'.
- * You can use this to style it accordingly, for example:
- *
- * .actionMenu.activated {
- *   display: block;
- * }
- *
- * .actionMenu.deactivated {
- *   display: none;
- * }
- *
- * When you click somewhere else than the menu, then all open menus will be
- * deactivated. When you move your mouse over the a-tag of another menu, then
- * that one will be activated and all others deactivated. When you click on a
- * link inside the actionMenuContent element, then the menu will be closed and
- * the link followed.
- *
- */
+var DropDown = React.createClass({displayName: "DropDown",
+    render: function() {
+        var style = {
+            display: this.props.visible ? 'block' : 'none'
+        };
 
-/*
- * Provides globals:
- * actionMenuDocumentMouseDown, actionMenuMouseOver, document, hideAllMenus, 
- * initializeMenus, jQuery, toggleMenuHandler 
-*/
+        return (
+            React.createElement("div", {
+            className: this.props.className, 
+            style: style}, 
+                this.renderOptions()
+            )
+        );
+    },
 
-function hideAllMenus() {
-    jQuery('dl.actionMenu').removeClass('activated').addClass('deactivated');
-}
+    
+    renderOptions: function() {
+        return this.props.options.map(function(option, index) {
+            var key = 'react-ui-combo-box-option-' + index;
 
-function toggleMenuHandler(event) {
-    // swap between activated and deactivated
-    jQuery(this).parents('.actionMenu:first')
-        .toggleClass('deactivated')
-        .toggleClass('activated');
-    return false;
-}
+            return (
+                React.createElement("div", {
+                className: this.getOptionClassName(option), 
+                key: key, 
+                onMouseDown: this.props.onOptionMouseDown.bind(null, option, index)}, 
+                    this.props.renderOption(option)
+                )
+            );
+        }, this);
+    },
 
-function actionMenuDocumentMouseDown(event) {
-    if (jQuery(event.target).parents('.actionMenu:first').length) {
-        // target is part of the menu, so just return and do the default
-        return true;
+    /**
+     * @method getOptionClassName
+     * Gets a className for the option.
+     * If the option is the selected option, include the selectedClassName.
+     * @param {Object} option - The option for which to get a className.
+     * @returns {String} - The option's className.
+     */
+    getOptionClassName: function(option) {
+        if (this.props.valueProp && option[this.props.valueProp] === this.props.selected[this.props.valueProp]) {
+            return this.props.optionClassName + ' ' + this.props.selectedClassName;
+        }
+
+        if (option === this.props.selected) {
+            return this.props.optionClassName + ' ' + this.props.selectedClassName;
+        }
+
+        return this.props.optionClassName;
     }
+});
 
-    hideAllMenus();
-}
-
-function actionMenuMouseOver(event) {
-    var menu_id = jQuery(this).parents('.actionMenu:first').attr('id'),
-        switch_menu;
-    if (!menu_id) {return true;}
-
-    switch_menu = jQuery('dl.actionMenu.activated').length > 0;
-    jQuery('dl.actionMenu').removeClass('activated').addClass('deactivated');
-    if (switch_menu) {
-        jQuery('#' + menu_id).removeClass('deactivated').addClass('activated');
-    }
-}
-
-function initializeMenus() {
-    jQuery(document).mousedown(actionMenuDocumentMouseDown);
-
-    hideAllMenus();
-
-    // add toggle function to header links
-    jQuery('dl.actionMenu dt.actionMenuHeader a')
-        .click(toggleMenuHandler)
-        .mouseover(actionMenuMouseOver);
-        
-    // add hide function to all links in the dropdown, so the dropdown closes
-    // when any link is clicked
-    jQuery('dl.actionMenu > dd.actionMenuContent').click(hideAllMenus);
-}
-
-jQuery(initializeMenus);
+module.exports = DropDown;

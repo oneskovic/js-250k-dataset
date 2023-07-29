@@ -1,4 +1,3 @@
-
 function setupTent(el) {
   var href = el.href;
 

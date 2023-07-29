@@ -8,8 +8,7 @@ var HALF_PI = Math.PI/2;
 var EPSLN = 1.0e-10;
 var asinz = require('../common/asinz');
 exports.init = function() {
-  /* Place parameters in static storage for common use
-    -------------------------------------------------*/
+  
 
 
   if (!this.sphere) {

@@ -1,4 +1,3 @@
-
 var async = require('async');
 var EventEmitter = require('regexemitter');
 

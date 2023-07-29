@@ -11,9 +11,7 @@ var copyFromOriginal = function copyFromOriginal(original, destination, properti
     }
 };
 
-/*
- parse is used whilst parsing
- */
+
 var parseCopyProperties = [
     // options
     'paths',            // option - unmodified - paths to search for imports on

@@ -1,12 +1,4 @@
 /**
- * A Digital Pad button.<br>
- * <br>
- * v1.0 Initial version
- * 
- * @version 1.0 - 17/09/2014
- * @author	ratalaika / ratalaikaGames
- */
-/**
  * Creates a new <code>FlxPadButton</code> object with a gray background and a
  * callback function on the UI thread.
  * 

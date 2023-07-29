@@ -1,4 +1,3 @@
-// Map data to a usable format
 var mapData = function(d) {
     var result = [];
     for (var i in d) {

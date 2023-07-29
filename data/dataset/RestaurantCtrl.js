@@ -1,9 +1,3 @@
-/*
-This controller handles the restaurant list. 
-It listens for filter selection on the home page and update 
-the list accordingly. It has also expose sorting 
-functionalities to rank restaurant by Name, rating or price.
-*/
 app.controller('RestaurantCtrl', ['$scope', '$http', 'globalVariable',
 	function RestaurantCtrl($scope, $http, globalVariable) {
 

@@ -1,8 +1,3 @@
-/**
- * Gets stats for the recent changes:
- *  - most active editors
- *  - most actively edited articles
- */
 'use strict';
 
 var bot = require('..'),

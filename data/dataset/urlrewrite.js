@@ -1,8 +1,3 @@
-/**
- * 用于支持 URL 重写。
- * @author xuld
- */
-
 var Url = require('url');
 var Http = require('http');
 

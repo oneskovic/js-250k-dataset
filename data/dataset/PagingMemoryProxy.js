@@ -1,6 +1,3 @@
-/**
- * Paging Memory Proxy, allows to use paging grid with in memory dataset
- */
 Ext.define('Ext.ux.data.PagingMemoryProxy', {
     extend: 'Ext.data.proxy.Memory',
     alias: 'proxy.pagingmemory',

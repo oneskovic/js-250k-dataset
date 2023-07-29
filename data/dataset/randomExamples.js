@@ -1,6 +1,6 @@
 "use strict";
 
-/* global LAMBDA : true */
+
 
 $(document).ready( function() {
 

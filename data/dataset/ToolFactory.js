@@ -1,10 +1,3 @@
-/**
- * Factory for tools.
- *
- * @class
- * @extends OO.Factory
- * @constructor
- */
 OO.ui.ToolFactory = function OoUiToolFactory() {
 	// Parent constructor
 	OO.ui.ToolFactory.super.call( this );

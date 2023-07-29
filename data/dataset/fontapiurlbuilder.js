@@ -1,8 +1,6 @@
 goog.provide('webfont.modules.google.FontApiUrlBuilder');
 
-/**
- * @constructor
- */
+
 webfont.modules.google.FontApiUrlBuilder = function(apiUrl, protocol, text) {
   if (apiUrl) {
     this.apiUrl_ = apiUrl;

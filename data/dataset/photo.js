@@ -1,4 +1,3 @@
-/*jslint node: true */
 var fs = require('fs');
 var logger = require('loge');
 var util = require('util');

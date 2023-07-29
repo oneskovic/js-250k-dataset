@@ -1,6 +1,3 @@
-/**
- * Splash Widget
- */
 Humble( function () {
 
     var C_SPLASH        = 'humble-dvc-splash',

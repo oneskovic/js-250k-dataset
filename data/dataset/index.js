@@ -1,71 +1,132 @@
-(function (octocard) {
-    // editor
-    var editor = ace.edit('editor');
-    editor.renderer.setShowGutter(false);
-    editor.getSession().setMode('ace/mode/html');
-    var previewBtn = document.getElementById('preview');
-    var octocardContainer = document.getElementById('octocard');
+process.chdir(__dirname);
 
-    var configKeys = [
-        'name', 'element', 'modules', 'theme',
-        'reposNum', 'reposIgnored', 'orgsNum',
-        'api', 'noFooter', 'noIsolated'
-    ];
-    var defaultValue = {
-        'api': '/api'
-    };
-    var avaliableModules = {
-        'base': 1,
-        'details': 1,
-        'stats': 1,
-        'repos': 1,
-        'eventsStatis': 1,
-        'orgs': 1
-    };
-    var valueUpdater = {
-        'modules': function (oldValue) {
-            var modules = oldValue.split(',');
-            var robustModules = [];
-            for (var i = 0, l = modules.length; i < l; i++) {
-                if (avaliableModules[modules[i]]) {
-                    robustModules.push(modules[i]);
-                }
-            }
-            return robustModules.join(',');
-        }
-    };
+var fs        = require('fs');
+var humanize  = require('humanize');
+var microtime = require('microtime');
+var Sifter    = require('../lib/sifter');
 
-    // read config value from codes by key
-    function getValue(key, code) {
-        var reg = new RegExp('data\\-' + key + '="([^"]+)"');
-        var r = code.match(reg);
-        if (r) {
-            return r[1];
-        }
-    }
+var measure_time = function(fn) {
+	var start, end;
+	global.gc();
+	start = microtime.now();
+	fn();
+	end = microtime.now();
+	global.gc();
+	return end - start;
+};
 
-    // preview octocard
-    function preview() {
-        octocardContainer.innerHTML = '';
+var time_baseline = measure_time(function() {
+	var i, x;
+	for (i = 0; i < 10000000; i++) {
+		x = Math.sin(i * Math.PI);
+	}
+});
 
-        var code = editor.getValue();
-        var config = {};
+// create corpus (search set)
+var corpus = (function() {
+	var lines, i, n, items;
 
-        for (i = 0; i < configKeys.length; i++) {
-            var key = configKeys[i];
-            var value = getValue(key, code);
-            var updater = valueUpdater[key];
-            if (value) {
-                config[key] = updater ? updater(value) : value;
-            }
-            else {
-                config[key] = defaultValue[key];
-            }
-        }
+	lines = fs.readFileSync('corpus.csv', 'utf8').split('\n');
+	lines.shift();
 
-        octocard(config);
-    }
+	items = [];
+	for (i = 0, n = Math.floor(lines.length / 5); i < n; i++) {
+		items.push({
+			a: lines[i*5],
+			b: lines[i*5+1],
+			c: lines[i*5+2],
+			d: lines[i*5+3],
+			e: lines[i*5+4],
+			index: i
+		});
+	}
 
-    previewBtn.onclick = preview;
-    preview();
-})(octocard);
+	return items;
+})();
+
+// run trials
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+var path_report      = 'report.json';
+var searches_limit   = 128;
+var searches_mixed   = fs.readFileSync('searches_mixed.txt', 'utf8').split('\n').slice(0, searches_limit);
+var searches_1letter = fs.readFileSync('searches_1letter.txt', 'utf8').split('\n').slice(0, searches_limit);
+var searches_2letter = fs.readFileSync('searches_2letter.txt', 'utf8').split('\n').slice(0, searches_limit);
+var searches_3letter = fs.readFileSync('searches_3letter.txt', 'utf8').split('\n').slice(0, searches_limit);
+var reports_old      = {};
+var reports_new      = {};
+
+try { reports_old = JSON.parse(fs.readFileSync(path_report, 'utf8')); } catch (e) {}
+
+var timed_report = function(title, fn) {
+	var t_new   = measure_time(fn);
+	var t_old   = reports_old[title];
+	var t_delta = t_new - t_old;
+	var p_delta = Math.round(t_delta / t_old * 100, 1);
+
+	reports_new[title] = t_new;
+	process.stdout.write('\033[1;39m' + humanize.numberFormat(t_new / 1000) + ' ms\033[0;39m \033[1;30m(score: ' + (t_new / time_baseline).toFixed(6) + ')\033[0;39m ');
+	if (t_old) {
+		process.stdout.write('\t' + (Math.abs(p_delta) < 5 ? '\033[1;30m' : (t_delta > 0 ? '\033[31m' : '\033[32m')));
+		process.stdout.write((t_delta > 0 ? '-' : '+') + Math.abs(p_delta) + '% (' + (t_delta > 0 ? '+' : '') + humanize.numberFormat(Math.round(t_delta / 1000), 0) + 'ms)');
+		process.stdout.write('\033[0;39m');
+	}
+	process.stdout.write('\t' + title);
+	process.stdout.write('\n');
+};
+
+var trial = function(title, searches, options) {
+	timed_report(title, function() {
+		var sifter = new Sifter(corpus);
+		for (var i = 0, n = searches_limit; i < n; i++) {
+			sifter.search(options.query || searches[i % searches.length], options.options);
+		}
+	});
+};
+
+console.log('sifter.js Benchmark');
+console.log('\033[1;30m' + humanize.numberFormat(searches_limit, 0) + ' trials (searches)\033[0;39m');
+console.log('\033[1;30m' + humanize.numberFormat(corpus.length, 0) + ' options (index size)\033[0;39m');
+console.log('\n\033[32mResults:\033[0;39m');
+
+trial('No query', searches_mixed, {query: '', options: {fields: ['a'], sort: [{field: 'a'}], direction: 'asc'}});
+
+console.log('');
+trial('1 field search', searches_mixed, {options: {fields: ['a'], sort: [{field: 'a'}], direction: 'asc'}});
+trial('1 field search (1 letter)', searches_1letter, {options: {fields: ['a'], sort: [{field: 'a'}], direction: 'asc'}});
+trial('1 field search (2 letter)', searches_2letter, {options: {fields: ['a'], sort: [{field: 'a'}], direction: 'asc'}});
+trial('1 field search (3 letter)', searches_3letter, {options: {fields: ['a'], sort: [{field: 'a'}], direction: 'asc'}});
+trial('1 field search (limit 100)', searches_mixed, {options: {fields: ['a'], sort: [{field: 'a'}], direction: 'asc', limit: 100}});
+
+console.log('');
+trial('2 field search', searches_mixed, {options: {fields: ['a','b'], sort: [{field: 'a'}], direction: 'asc'}});
+trial('2 field search (1 letter)', searches_1letter, {options: {fields: ['a','b'], sort: [{field: 'a'}], direction: 'asc'}});
+trial('2 field search (2 letter)', searches_2letter, {options: {fields: ['a','b'], sort: [{field: 'a'}], direction: 'asc'}});
+trial('2 field search (3 letter)', searches_3letter, {options: {fields: ['a','b'], sort: [{field: 'a'}], direction: 'asc'}});
+trial('2 field search (limit 100)', searches_mixed, {options: {fields: ['a','b'], sort: [{field: 'a'}], direction: 'asc', limit: 100}});
+
+console.log('');
+trial('3 field search', searches_mixed, {options: {fields: ['a','b','c'], sort: [{field: 'a'}], direction: 'asc'}});
+trial('3 field search (1 letter)', searches_1letter, {options: {fields: ['a','b','c'], sort: [{field: 'a'}], direction: 'asc'}});
+trial('3 field search (2 letter)', searches_2letter, {options: {fields: ['a','b','c'], sort: [{field: 'a'}], direction: 'asc'}});
+trial('3 field search (3 letter)', searches_3letter, {options: {fields: ['a','b','c'], sort: [{field: 'a'}], direction: 'asc'}});
+trial('3 field search (limit 100)', searches_mixed, {options: {fields: ['a','b','c'], sort: [{field: 'a'}], direction: 'asc', limit: 100}});
+
+console.log('');
+trial('4 field search', searches_mixed, {options: {fields: ['a','b','c','d'], sort: [{field: 'a'}], direction: 'asc'}});
+trial('4 field search (limit 100)', searches_mixed, {options: {fields: ['a','b','c','d'], sort: [{field: 'a'}], direction: 'asc', limit: 100}});
+trial('4 field search (1 letter)', searches_1letter, {options: {fields: ['a','b','c','d'], sort: [{field: 'a'}], direction: 'asc'}});
+trial('4 field search (2 letter)', searches_2letter, {options: {fields: ['a','b','c','d'], sort: [{field: 'a'}], direction: 'asc'}});
+trial('4 field search (3 letter)', searches_3letter, {options: {fields: ['a','b','c','d'], sort: [{field: 'a'}], direction: 'asc'}});
+
+console.log('');
+trial('5 field search', searches_mixed, {options: {fields: ['a','b','c','d','e'], sort: [{field: 'a'}], direction: 'asc'}});
+trial('5 field search (1 letter)', searches_1letter, {options: {fields: ['a','b','c','d','e'], sort: [{field: 'a'}], direction: 'asc'}});
+trial('5 field search (2 letter)', searches_2letter, {options: {fields: ['a','b','c','d','e'], sort: [{field: 'a'}], direction: 'asc'}});
+trial('5 field search (3 letter)', searches_3letter, {options: {fields: ['a','b','c','d','e'], sort: [{field: 'a'}], direction: 'asc'}});
+trial('5 field search (limit 100)', searches_mixed, {options: {fields: ['a','b','c','d','e'], sort: [{field: 'a'}], direction: 'asc', limit: 100}});
+
+if (process.argv.indexOf('--no-save') === -1) {
+	fs.writeFileSync(path_report, JSON.stringify(reports_new), 'utf8');
+	console.log('\nReport written to ' + path_report);
+}

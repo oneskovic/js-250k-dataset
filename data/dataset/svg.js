@@ -1,5 +1,3 @@
-/* global stats, valueToPoint */
-
 casper.test.begin('svg', 18, function (test) {
   
   casper

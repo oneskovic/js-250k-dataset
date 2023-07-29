@@ -1,5 +1,6 @@
-this.contentTypes = {
+module.exports = {
   "aiff": "audio/x-aiff",
+  "appcache": "text/cache-manifest",
   "arj": "application/x-arj-compressed",
   "asf": "video/x-ms-asf",
   "asx": "video/x-ms-asx",
@@ -45,18 +46,17 @@ this.contentTypes = {
   "js": "text/javascript",
   "json": "application/json",
   "latex": "application/x-latex",
-  "less": "text/css",
   "lsp": "application/x-lisp",
   "lzh": "application/octet-stream",
   "m": "text/plain",
   "m3u": "audio/x-mpegurl",
   "man": "application/x-troff-man",
-  "manifest": "text/cache-manifest",
   "me": "application/x-troff-me",
   "midi": "audio/midi",
   "mif": "application/x-mif",
   "mime": "www/mime",
   "movie": "video/x-sgi-movie",
+  "mustache": "text/plain",
   "mp4": "video/mp4",
   "mpg": "video/mpeg",
   "mpga": "audio/mpeg",
@@ -115,7 +115,6 @@ this.contentTypes = {
   "tsi": "audio/TSP-audio",
   "tsp": "application/dsptype",
   "tsv": "text/tab-separated-values",
-  "txt": "text/plain",
   "unv": "application/i-deas",
   "ustar": "application/x-ustar",
   "vcd": "application/x-cdlink",
@@ -135,5 +134,5 @@ this.contentTypes = {
   "xpm": "image/x-xpixmap",
   "xwd": "image/x-xwindowdump",
   "xyz": "chemical/x-pdb",
-  "zip": "application/zip"
+  "zip": "application/zip",
 };

@@ -1,19 +1,6 @@
 "use strict";
 
-/**
-* TileSprite class
-*
-* @namespace Entity
-* @class TileSprite
-* @constructor
-* @param {Phaser.Game} game
-* @param {number} x
-* @param {number} y
-* @param {width} x
-* @param {height} y
-* @param {string} texture Key of the texture to be used
-* @param {stirng} name Name of the GameObject attached
-*/
+
 LR.Entity.TileSprite = function(_game, _x, _y, _width, _height, _texture,_name) {
 
 	if( _width == null ) _width = 32;

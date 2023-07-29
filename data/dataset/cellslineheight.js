@@ -1,4 +1,3 @@
-
 TrexMessage.addMsg({
 	'@cellslineheight.subtitle1': '1pt',
 	'@cellslineheight.subtitle2': '2pt',

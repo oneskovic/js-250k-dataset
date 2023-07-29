@@ -1,7 +1,5 @@
 Drupal.dreditor.issue = {};
-/**
- * Gets the issue node id.
- */
+
 Drupal.dreditor.issue.getNid = function() {
   var href = $('#tabs a:first').attr('href');
   if (href.length) {

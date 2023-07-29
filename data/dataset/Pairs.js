@@ -1,9 +1,3 @@
-/**
-* _Internal Class_, not generally used outside of the engine's internals.
-*
-* @class Pairs
-*/
-
 var Pairs = {};
 
 (function() {

@@ -1,55 +1,60 @@
-(function() {
-  var $;
-  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
-    for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
-    function ctor() { this.constructor = child; }
-    ctor.prototype = parent.prototype;
-    child.prototype = new ctor;
-    child.__super__ = parent.prototype;
-    return child;
-  };
-  if (typeof Spine === "undefined" || Spine === null) Spine = require("spine");
-  $ = Spine.$;
-  Spine.List = (function() {
-    __extends(List, Spine.Controller);
-    List.prototype.events = {
-      "click .item": "click"
-    };
-    List.prototype.selectFirst = false;
-    function List() {
-      this.change = __bind(this.change, this);      List.__super__.constructor.apply(this, arguments);
-      this.bind("change", this.change);
-    }
-    List.prototype.template = function() {
-      return arguments[0];
-    };
-    List.prototype.change = function(item) {
-      if (!item) return;
-      this.current = item;
-      this.children().removeClass("active");
-      return this.children().forItem(this.current).addClass("active");
-    };
-    List.prototype.render = function(items) {
-      if (items) this.items = items;
-      this.html(this.template(this.items));
-      this.change(this.current);
-      if (this.selectFirst) {
-        if (!(this.children(".active").length || this.current)) {
-          return this.children(":first").click();
+var expect = require('expect.js');
+var helpers = require('../../helpers');
+
+var cacheList = helpers.command('cache/list');
+
+describe('bower cache list', function () {
+
+    var cacheDir = new helpers.TempDir({
+        '87323d6d4e48be291a9616a033d4cc6c/1.3.8/.bower.json': {
+            name: 'angular',
+            version: '1.3.8'
+        },
+        '87323d6d4e48be291a9616a033d4cc6c/1.3.9/.bower.json': {
+            name: 'angular',
+            version: '1.3.9'
+        },
+        '9eaed103d6a7e78d91f673cfad796850/1.0.0/.bower.json': {
+            name: 'jquery',
+            version: '1.0.0'
         }
-      }
-    };
-    List.prototype.children = function(sel) {
-      return this.el.children(sel);
-    };
-    List.prototype.click = function(e) {
-      var item;
-      item = $(e.target).item();
-      return this.trigger("change", item);
-    };
-    return List;
-  })();
-  if (typeof module !== "undefined" && module !== null) {
-    module.exports = Spine.List;
-  }
-}).call(this);
+    });
+
+    it('correctly reads arguments', function() {
+        expect(cacheList.readOptions(['jquery', 'angular']))
+        .to.eql([['jquery', 'angular'], {}]);
+    });
+
+    it('lists packages from cache', function () {
+        cacheDir.prepare();
+
+        return helpers.run(cacheList, [undefined, {}, {
+            storage: {
+                packages: cacheDir.path
+            }
+        }]).spread(function(result) {
+            expect(result[0].canonicalDir)
+            .to.be(cacheDir.getPath('87323d6d4e48be291a9616a033d4cc6c/1.3.8'));
+            expect(result[0].pkgMeta.version).to.be('1.3.8');
+            expect(result[1].pkgMeta.version).to.be('1.3.9');
+            expect(result[2].pkgMeta.version).to.be('1.0.0');
+        });
+
+    });
+
+    it('lists selected package names', function () {
+        cacheDir.prepare();
+
+        return helpers.run(cacheList, [['angular'], {}, {
+            storage: {
+                packages: cacheDir.path
+            }
+        }]).spread(function(result) {
+            expect(result[0].canonicalDir)
+            .to.be(cacheDir.getPath('87323d6d4e48be291a9616a033d4cc6c/1.3.8'));
+            expect(result[0].pkgMeta.version).to.be('1.3.8');
+            expect(result[1].pkgMeta.version).to.be('1.3.9');
+        });
+
+    });
+});

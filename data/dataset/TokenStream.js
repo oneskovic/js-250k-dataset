@@ -1,16 +1,12 @@
 if (typeof JSDOC == "undefined") JSDOC = {};
 
-/**
-  @constructor
-*/
+
 JSDOC.TokenStream = function(tokens) {
   this.tokens = (tokens || []);
   this.rewind();
 }
 
-/**
-  @constructor
-  @private
+/*  @private
 */
 function VoidToken(/**String*/type) {
   this.toString = function() {return "<VOID type=\""+type+"\">"};

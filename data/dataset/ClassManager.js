@@ -1,10 +1,6 @@
 var _ = require('alloy')._;
 	
-/**
- * @property {Function} dummyClass Empty function that is used as a class/constructor by the define-method to create a valid
- *  prototype-chain, without invoking actual parent constructor.
- * @private
- */
+
 var dummyClass = function() {};
 
 /**

@@ -1,11 +1,3 @@
-/*!
- * Reactor
- * https://github.com/Sinova/Reactor
- *
- * Copyright 2015 Samuel Hodge
- * Released under the GPL license
- * http://www.gnu.org/copyleft/gpl.html
- */
 (function(context) {
 	'use strict';
 

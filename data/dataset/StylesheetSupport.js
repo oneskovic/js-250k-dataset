@@ -1,13 +1,5 @@
 (function (enyo, scope) {
-	/**
-	* The {@link enyo.StylesheetSupport} {@glossary mixin} is used to add a
-	* "side-car" inline stylesheet to a [control]{@link enyo.Control}, specifically
-	* for procedurally-generated CSS that can't live in the more appropriate
-	* location (i.e., in a CSS/LESS file).
-	*
-	* @mixin enyo.StylesheetSupport
-	* @public
-	*/
+	
 	enyo.StylesheetSupport = {
 		
 		/**

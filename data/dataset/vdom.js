@@ -1,9 +1,3 @@
-
-/*
- Virtual dom is an array of custom tags on the document.
- Updates and unmounts propagate downwards from parent to children.
-*/
-
 var virtual_dom = [],
     tag_impl = {}
 

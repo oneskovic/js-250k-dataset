@@ -1,8 +1,3 @@
-/**
- * @file sendRequest
- * @import widget/suggestion/suggestion.js
- */
-
 (function( $, win ) {
 
     $.extend( gmu.Suggestion.options, {

@@ -12,10 +12,7 @@ describe('RouteInfo', function () {
 	var invalidMMPath = 'oh/alderaan';
 	var invalidMMPathWithFolder = 'oh/noes/alderaan';
 
-	/*
-	It should  be flexible to catch some inconsistencies or typos, but catching
-	all cases for a bad URL path is not this function's task.
-	*/
+	
 	describe('#sanitizeUrlPath()', function () {
 		it('should return the URL path if it is already valid', function () {
 			(new RouteInfo).sanitizeUrlPath('/').should.equal('/');

@@ -3,14 +3,7 @@
 var FrameUtils = require('./FrameUtils');
 var EventTypes = require('./EventTypes');
 
-/**
- * RenderLayer hit testing
- *
- * @param {Event} e
- * @param {RenderLayer} rootLayer
- * @param {?HTMLElement} rootNode
- * @return {RenderLayer}
- */
+
 function hitTest (e, rootLayer, rootNode) {
   var touch = e.touches ? e.touches[0] : e;
   var touchX = touch.pageX;

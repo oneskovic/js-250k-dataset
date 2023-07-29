@@ -19,12 +19,7 @@ $class('tau.stocks.SettingController').extend(tau.ui.SceneController).define({
     table.addNumOfCells(len);
   },
 
-  /**
-   * event listener, it will be notified when data to make a cell is ready
-   * creates new TableCell instance and adds as a row
-   * payload.data: an element of the loaded data(array)
-   * payload.index: the index(0-based) of rows
-   */
+  
   makeTableCell: function (e, payload) {
     var table = this.getTable();
     var path = payload.index + payload.offset;

@@ -1,9 +1,3 @@
-
-/*
- * Main LED constructor
- * Process options
- * Tell the board to set it up
- */
 var Led = function (options) {
   if (!options || !options.board) throw new Error('Must supply required options to LED');
   this.board = options.board;

@@ -1,103 +1,73 @@
-describe('enable validators', function() {
-    beforeEach(function() {
-        $([
-            '<form class="form-horizontal" id="enableForm">',
-                '<div class="form-group">',
-                    '<input type="text" name="fullName" class="form-control" />',
-                '</div>',
-            '</form>'
-        ].join('\n')).appendTo('body');
+"use strict";
 
-        $('#enableForm').formValidation({
-            fields: {
-                fullName: {
-                    validators: {
-                        notEmpty: {
-                            message: 'The full name is required and cannot be empty'
-                        },
-                        stringLength: {
-                            min: 8,
-                            max: 40,
-                            message: 'The full name must be more than %s and less than %s characters long'
-                        },
-                        regexp: {
-                            enabled: false,
-                            regexp: /^[a-zA-Z\s]+$/,
-                            message: 'The full name can only consist of alphabetical, number, and space'
-                        }
-                    }
-                }
+
+
+module.exports = function(server) {
+
+    server.registerCapability("ENABLE");
+
+    server.enableAvailable = [];
+    server.connectionHandlers.push(function(connection) {
+        connection.enabled = [];
+    });
+
+    server.setCommandHandler("ENABLE", function(connection, parsed, data, callback) {
+        var capability, i, len;
+
+        if (["Authenticated"].indexOf(connection.state) < 0) {
+            connection.send({
+                tag: parsed.tag,
+                command: "BAD",
+                attributes: [{
+                    type: "TEXT",
+                    value: "ENABLE not allowed now."
+                }]
+            }, "ENABLE FAILED", parsed, data);
+            return callback();
+        }
+
+        if (!parsed.attributes) {
+            connection.send({
+                tag: parsed.tag,
+                command: "BAD",
+                attributes: [{
+                    type: "TEXT",
+                    value: "ENABLE expects capability list"
+                }]
+            }, "INVALID COMMAND", parsed, data);
+            return callback();
+        }
+
+        for (i = 0, len = parsed.attributes.length; i < len; i++) {
+            if (parsed.attributes[i].type !== "ATOM") {
+                connection.send({
+                    tag: parsed.tag,
+                    command: "BAD",
+                    attributes: [{
+                        type: "TEXT",
+                        value: "Attribute nr " + (i + 1) + " is not an ATOM"
+                    }]
+                }, "INVALID COMMAND", parsed, data);
+                return callback();
             }
-        });
+        }
 
-        this.fv        = $('#enableForm').data('formValidation');
-        this.$fullName = this.fv.getFieldElements('fullName');
+        for (i = 0, len = parsed.attributes.length; i < len; i++) {
+            capability = parsed.attributes[i].value.toUpperCase();
+            if (connection.enabled.indexOf(capability) < 0 && server.enableAvailable.indexOf(capability) >= 0) {
+                connection.enabled.push(capability);
+            }
+        }
+
+        connection.send({
+            tag: parsed.tag,
+            command: "OK",
+            attributes: [{
+                type: "TEXT",
+                value: "ENABLE completed"
+            }]
+        }, "ENABLE", parsed, data);
+
+        return callback();
     });
-
-    afterEach(function() {
-        $('#enableForm').formValidation('destroy').remove();
-    });
-
-    it('enable all validators', function() {
-        this.$fullName.val('@ $full N@m3');
-        this.fv.validate();
-        expect(this.fv.isValid()).toBeTruthy();
-
-        this.fv.resetForm();
-        this.$fullName.val('Contain#$@');
-        this.fv.enableFieldValidators('fullName', true);
-        this.fv.validate();
-        expect(this.fv.isValidField('fullName')).toEqual(false);
-        expect(this.fv.isValid()).toEqual(false);
-    });
-
-    it('disable all validators', function() {
-        this.fv.resetForm();
-        this.fv.enableFieldValidators('fullName', false);
-        this.fv.validate();
-        expect(this.fv.isValid()).toBeTruthy();
-    });
-
-    it('enabled option particular validator', function() {
-        this.$fullName.val('Contain@#$');
-        this.fv.validate();
-        expect(this.fv.isValid()).toBeTruthy();
-
-        var messages = this.fv.getMessages('fullName');
-        expect(messages.length).toEqual(0);
-    });
-
-    it('enable particular validators', function() {
-        // Enable stringLength validator
-        this.fv.resetForm();
-        this.fv.enableFieldValidators('fullName', true, 'stringLength');
-        this.fv.enableFieldValidators('fullName', true, 'regexp');
-        this.$fullName.val('Full@');
-        this.fv.validate();
-        expect(this.fv.isValid()).toEqual(false);
-
-        var messages = this.fv.getMessages('fullName');
-        expect($.inArray('The full name must be more than 8 and less than 40 characters long', messages)).toBeGreaterThan(-1);
-        expect($.inArray('The full name can only consist of alphabetical, number, and space', messages)).toBeGreaterThan(-1);
-    });
-
-    it('disable particular validators', function() {
-        // Disable stringLength validator
-        this.fv.enableFieldValidators('fullName', false, 'stringLength');
-        this.$fullName.val('Full');
-        this.fv.validate();
-        expect(this.fv.isValid()).toBeTruthy();
-
-        var messages = this.fv.getMessages('fullName');
-        expect($.inArray('The full name must be more than 8 and less than 40 characters long', messages)).toEqual(-1);
-
-        // Disable regexp validator
-        this.fv.enableFieldValidators('fullName', false, 'regexp');
-        this.$fullName.val('Special@#$');
-        this.fv.validate();
-        expect(this.fv.isValid()).toBeTruthy();
-
-        var messages = this.fv.getMessages('fullName');
-        expect($.inArray('The full name can only consist of alphabetical, number, and space', messages)).toEqual(-1);
-    });
-});
+};

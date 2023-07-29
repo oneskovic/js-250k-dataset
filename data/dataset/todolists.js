@@ -1,11 +1,4 @@
-﻿/***
- * Controller/ViewModel: todolists 
- *
- * Support a view of all TodoLists
- *
- * Handles fetch and save of these lists
- *
- ***/
+﻿
 (function () {
     'use strict';
 

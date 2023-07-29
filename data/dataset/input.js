@@ -1,63 +1,129 @@
-/*************************************************************************
-## Asynchronous Input Module
+// Pre-load our images for hover effects
+image3 = new Image();
+image3.src =  'images/input/no.png';
+image4 = new Image();
+image4.src = 'images/input/noSel.png';
+image5 = new Image();
+image5.src = 'images/input/off.png';
+image6 = new Image();
+image6.src = 'images/input/offSel.png';
+image7 = new Image();
+image7.src = 'images/input/on.png';
+image8 = new Image();
+image8.src =  'images/input/onSel.png';	
+image9 = new Image();
+image9.src =  'images/input/yes.png';
+image10 = new Image();
+image10.src =  'images/input/yesSel.png';
 
-The `input` module provides a simple way to prompt players for input at the 
-in-game prompt. In Javascript browser environments the `prompt()` function provides
-a way to block execution and ask the user for input. Execution is blocked until the user
-provides input using the modal dialog and clicks OK. Unfortunately Minecraft provides no 
-equivalent modal dialog which can be used to gather player text input. The only way to gather text 
-input from the player in Minecraft is to do so asynchronously. That is - a prompt message can be 
-sent to the player but the player is not obliged to provide input immediately, nor does the program
-execution block until the player does so.
+var cityIndex = 2;
 
-So ScriptCraft has no `prompt()` implementation because `prompt()` is a synchronous function and 
-Minecraft's API provides no equivalent functions or classes which can be used to implement this synchronously. 
-The Minecraft API does however have a 'Conversation' API which allows for prompting of the player and asynchronously gathering text input from the player. 
 
-This new `input()` function is best illustrated by example. The following code is for a number-guessing game:
+addEventListener('load',doInputLoad,false);
 
-```javascript
-var input = require('input');
-exports.numberguess = function(player){
-  var randomNumber = Math.ceil(Math.random() * 10);
-  input( player, 'Think of a number between 1 and 10 (q to quit)', function( guess, guesser, repeat ) {
-    if ( guess == 'q'){
-      return;
+function doInputLoad() {
+    var element = document.getElementById('edit1');
+    element.style.width = screen.width - element.offsetLeft - 30 + 'px';
+    element = document.getElementById('edit2');
+    element.style.width = screen.width - element.offsetLeft - 30 + 'px';
+}
+
+function doSelect() {
+    resetImages();
+    var button = document.getElementById('button');
+    button.style.backgroundPosition = 'bottom right';
+    button.firstChild.style.backgroundPosition = 'bottom left';
+}
+
+function evaluateYesNo(id) {
+    var element = document.getElementById(id);
+    if (element.src.indexOf('/yes') > -1)
+        return true;	
+    else if (element.src.indexOf('/on') > -1)
+        return true;	
+    else
+        return false;		    
+}
+
+function doYesNoClick(id) {
+    resetImages();  
+    var element = document.getElementById(id);
+    if (element.src.indexOf('images/input/yes') > -1)
+        element.src = 'images/input/noSel.png';	
+    else if (element.src.indexOf('images/input/on') > -1)
+        element.src = 'images/input/offSel.png';	
+    else if (element.src.indexOf('images/input/no') > -1)
+        element.src = 'images/input/yesSel.png';	
+    else if (element.src.indexOf('images/input/off') > -1)
+        element.src = 'images/input/onSel.png';	    
+}
+
+function doYesNoSelect(id) {
+    if (blackberry.focus.getFocus() != id) 
+        return;
+    resetImages();
+
+    var element = document.getElementById(id);
+    if (element.src.indexOf('/yes.png') > -1)
+        element.src = 'images/input/yesSel.png';	
+    else if (element.src.indexOf('/on.png') > -1)
+        element.src = 'images/input/onSel.png';	
+    else if (element.src.indexOf('/off.png') > -1)
+        element.src = 'images/input/offSel.png';
+    else if (element.src.indexOf('/no.png') > -1)
+        element.src = 'images/input/noSel.png';
+}
+
+function doYesNoUnSelect(element) {
+    if (element.src.indexOf('images/input/yes') > -1)
+        element.src = 'images/input/yes.png';	
+    else if (element.src.indexOf('images/input/on') > -1)
+        element.src = 'images/input/on.png';	 
+    else if (element.src.indexOf('images/input/off') > -1)
+        element.src = 'images/input/off.png';
+    else if (element.src.indexOf('images/input/no') > -1)
+        element.src = 'images/input/no.png';	 	 
+}
+
+
+function resetImages() {
+    var button = document.getElementById('button');
+    button.style.backgroundPosition = 'top right';
+    button.firstChild.style.backgroundPosition = 'top left';
+    doYesNoUnSelect(document.getElementById('a'));
+    doYesNoUnSelect(document.getElementById('b'));
+    doYesNoUnSelect(document.getElementById('c'));
+    doYesNoUnSelect(document.getElementById('d'));
+}
+
+function openSpinner() {
+    doSelect();   
+	
+	var rowHeight;
+    var visibleRows;
+
+    // Populate our items
+    var items = new Array('Barcelona', 'Beijing', 'Brasilia', 'Melbourne', 'Moscow', 'New York', 'Paris' );
+
+    // Figure out our height and rows based on screen size
+    if (screen.height < 480){
+      rowHeight = 60;
+      visibleRows = 3;
     }
-    if ( +guess !== randomNumber ) { 
-      if (+guess < randomNumber ) {
-        echo( guesser, 'Too low - guess again');
-      }
-      if (+guess > randomNumber ) {
-        echo( guesser, 'Too high - guess again');
-      }
-      repeat();
-    } else {
-      echo( guesser, 'You guessed correctly');
+    else {
+      rowHeight = 75;
+      visibleRows = 4;
     }
-  });
-};
-```
 
-The `input()` function takes 3 parameters, the player, a prompt message and a callback which will be invoked when the player has entered some text at the in-game command prompt. 
-The callback is bound to an object which has the following properties:
+    // Configure the options 
+    var options = {'title': 'Choose A City:',
+      'rowHeight': rowHeight,
+      'visibleRows': visibleRows,
+      'selectedIndex': 2,
+      'items' : items};
 
- * sender : The player who input the text
- * value : The value of the text which has been input.
- * message: The message prompt.
- * repeat: A function which when invoked will repeat the original prompt. (this is for flow control)
-
-The callback function as well as being bound to an object with the above properties (so you can use this.value inside your callback to get the value which has just been input), can also take the following parameters (in exact order):
-
- * value
- * sender
- * repeat
-
-The `value` parameter will be the same as `this.value`, the `repeat` parameter will be the same as `this.repeat` and so on.
-
-***/
-if (__plugin.canary) {
-  module.exports = require('./canary/input');
-} else {
-  module.exports = require('./bukkit/input');
+	blackberry.ui.Spinner.open(options, function (selectedIndex) {
+          if (selectedIndex != undefined)
+			document.getElementById('button').firstChild.innerHTML = items[selectedIndex]; }     
+    );  
 }

@@ -1,7 +1,3 @@
-// Based on https://github.com/madrobby/zepto/blob/master/src/detect.js
-//     Zepto.js
-//     (c) 2010-2014 Thomas Fuchs
-//     Zepto.js may be freely distributed under the MIT license.
 /*jshint asi: true, boss: true, curly: false, eqeqeq: false */
 
 module.exports = function($, window){

@@ -1,5 +1,3 @@
-/*globals define*/
-
 define( [
     'src/BaseApp', 'src/utils/env'
   ], function(

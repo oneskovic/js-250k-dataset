@@ -1,13 +1,6 @@
 var ns = namespace('dr.acme.view')
 
-/**
- * Checkout View
- * 
- * Will render the model in different ways depending on the function
- * called. They replace the html template in the layout specified
- * with the provided model
- * 
- */
+
 ns.ThanksView = ns.BaseView.extend({
 	
  	/**

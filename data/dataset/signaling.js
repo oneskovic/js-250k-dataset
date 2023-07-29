@@ -1,5 +1,3 @@
-
-
 var Signaling = {
 
     sUrl : "http://localhost:8080", 

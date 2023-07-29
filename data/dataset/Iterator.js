@@ -3,15 +3,7 @@ openerp.unleashed.module('web_unleashed', function(base, _, Backbone){
      var BaseModel = base.models('BaseModel'),
         _super = BaseModel.prototype;
      
-    /*
-     * @class
-     * @module      web_unleashed
-     * @name        Iterator
-     * @classdesc   Iterator Model, with selection support
-     * @mixes       BaseModel
-     * 
-     * @author Michel Meyer <michel[at]zazabe.fr>
-     */ 
+     
     var Iterator = BaseModel.extend({
         
         /*

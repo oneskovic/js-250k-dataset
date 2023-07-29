@@ -1,7 +1,3 @@
-//
-// Browser requests, mirrors the syntax of the node requests
-//
-
 var when = require('when');
 
 var form = require('./form');

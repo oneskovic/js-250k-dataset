@@ -1,4 +1,3 @@
-
 var urlopen = require('../lib/urlopen.js');
 
 exports.testDetectContentType = function(test) {

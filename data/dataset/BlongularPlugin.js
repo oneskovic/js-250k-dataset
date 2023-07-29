@@ -1,12 +1,4 @@
 /**
- * Blongular -> BlongularPlugin
- *
- * @copyright: Copyright &copy; 2013- Pedro Nasser &reg;
- * @page: http://github.com/blongular/blungular
- * @license: http://github.com/blongular/blongular/blob/master/LICENSE
- */
-
-/**
  * No description yet.
  *
  * @author Pedro Nasser

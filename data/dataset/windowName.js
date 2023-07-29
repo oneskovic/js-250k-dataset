@@ -1,3 +1,5 @@
+if(!dojo._hasResource["dojox.io.tests.xhrPlugins"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
+dojo._hasResource["dojox.io.tests.xhrPlugins"] = true;
 dojo.provide("dojox.io.tests.xhrPlugins");
 dojo.require("dojox.io.xhrPlugins");
 
@@ -57,3 +59,5 @@ doh.register("dojox.io.tests.xhrPlugins", [
 		return d;
 	}
 ]);
+
+}

@@ -1,23 +1,3 @@
-/**
-   # Either
-
-       Either a b = Left a + Right b
-
-   Represents a tagged disjunction between two sets of values; `a` or
-   `b`. Methods are right-biased.
-
-   * fold(a, b) - `a` applied to value if `left`, `b` if `right`
-   * swap() - turns `left` into `right` and vice-versa
-   * isLeft - `true` iff `this` is `left`
-   * isRight - `true` iff `this` is `right`
-   * toOption() - `none` if `left`, `some` value of `right`
-   * toArray() - `[]` if `left`, singleton value if `right`
-   * flatMap(f) - monadic flatMap/bind
-   * map(f) - functor map
-   * ap(s) - applicative ap(ply)
-   * concat(s, plus) - semigroup concat
-**/
-
 var Either = taggedSum({
     left: ['x'],
     right: ['x']

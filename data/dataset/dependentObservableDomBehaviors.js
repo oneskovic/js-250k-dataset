@@ -1,4 +1,3 @@
-
 describe('Dependent Observable DOM', function() {
     beforeEach(jasmine.prepareTestNode);
 

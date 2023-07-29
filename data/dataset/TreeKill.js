@@ -1,12 +1,3 @@
-/**
- *
- * Reference: https://github.com/pkrumins/node-tree-kill
- * Author   : pkrumins
- *
- * Update   : PM2 team
- *
- */
-
 var exec = require('child_process').exec,
     isWin = process.platform === 'win32',
     downgradePs = false;

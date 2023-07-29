@@ -1,7 +1,3 @@
-/*
- * See copyright file.
- */
-
 define('crm/Views/RelatedEditWidget', [
     'dojo/_base/declare',
     'dojo/_base/lang',

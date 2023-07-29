@@ -1,8 +1,4 @@
 /**
- * @author Mat Groves http://matgroves.com/ @Doormat23
- */
-
-/**
  *
  * This turns your displayObjects to black and white.
  * @class GrayFilter

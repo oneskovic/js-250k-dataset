@@ -1,4 +1,3 @@
-/* global require: false, exports: false */
 /**
  * @description
  *

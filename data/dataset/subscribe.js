@@ -1,76 +1,60 @@
-windowFunctions['Subscribe'] = function (evt) {
-    var win = createWindow();
-    var offset = addBackButton(win);
-    var content = Ti.UI.createScrollView({
-        top: offset + u,
-        contentHeight: 'auto',
-        layout: 'vertical'
-    });
-    win.add(content);
+"use strict";
 
-    if (!pushDeviceToken) {
-        content.add(Ti.UI.createLabel({
-            text: 'Please visit Push Notifications > Settings to enable push!',
-            textAlign: 'center',
-            color: '#000',
-            height: 'auto'
-        }));
-        win.open();
-        return;
+module.exports = function(connection, parsed, data, callback) {
+
+    if (!parsed.attributes ||
+        parsed.attributes.length !== 1 ||
+        !parsed.attributes[0] ||
+        ["STRING", "LITERAL", "ATOM"].indexOf(parsed.attributes[0].type) < 0
+    ) {
+
+        connection.send({
+            tag: parsed.tag,
+            command: "BAD",
+            attributes: [{
+                type: "TEXT",
+                value: "SUBSCRIBE expects mailbox name"
+            }]
+        }, "INVALID COMMAND", parsed, data);
+        return callback();
     }
 
-    var channel = Ti.UI.createTextField({
-        hintText: 'Channel',
-        top: 10 + u, left: 10 + u, right: 10 + u,
-        height: 40 + u,
-        borderStyle: Ti.UI.INPUT_BORDERSTYLE_ROUNDED,
-        autocapitalization: Ti.UI.TEXT_AUTOCAPITALIZATION_NONE,
-        autocorrect: false
-    });
-    content.add(channel);
-
-    var button = Ti.UI.createButton({
-        title: 'Subscribe',
-        top: 10 + u, left: 10 + u, right: 10 + u, bottom: 10 + u,
-        height: 40 + u
-    });
-    content.add(button);
-
-    var fields = [ channel ];
-
-    function submitForm() {
-        for (var i = 0; i < fields.length; i++) {
-            if (!fields[i].value.length) {
-                fields[i].focus();
-                return;
-            }
-            fields[i].blur();
-        }
-        button.hide();
-
-        Cloud.PushNotifications.subscribe({
-            channel: channel.value,
-            device_token: pushDeviceToken,
-            type: Ti.Platform.name === 'iPhone OS' ? 'ios' : Ti.Platform.name
-        }, function (e) {
-            if (e.success) {
-                channel.value = '';
-                alert('Subscribed!');
-            }
-            else {
-                error(e);
-            }
-            button.show();
-        });
+    if (["Authenticated", "Selected"].indexOf(connection.state) < 0) {
+        connection.send({
+            tag: parsed.tag,
+            command: "BAD",
+            attributes: [{
+                type: "TEXT",
+                value: "Log in first"
+            }]
+        }, "SUBSCRIBE FAILED", parsed, data);
+        return callback();
     }
 
-    button.addEventListener('click', submitForm);
-    for (var i = 0; i < fields.length; i++) {
-        fields[i].addEventListener('return', submitForm);
+    var path = parsed.attributes[0].value,
+        mailbox = connection.server.getMailbox(path);
+
+    if (!mailbox || mailbox.flags.indexOf("\\Noselect") >= 0) {
+        connection.send({
+            tag: parsed.tag,
+            command: "BAD",
+            attributes: [{
+                type: "TEXT",
+                value: "Invalid mailbox name"
+            }]
+        }, "SUBSCRIBE FAILED", parsed, data);
+        return callback();
     }
 
-    win.addEventListener('open', function () {
-        channel.focus();
-    });
-    win.open();
+    mailbox.subscribed = true;
+
+    connection.send({
+        tag: parsed.tag,
+        command: "OK",
+        attributes: [{
+            type: "TEXT",
+            value: "Status completed"
+        }]
+    }, "SUBSCRIBE", parsed, data);
+    return callback();
 };

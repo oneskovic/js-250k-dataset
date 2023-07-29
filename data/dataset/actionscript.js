@@ -1,8 +1,3 @@
-/*
-Language: ActionScript
-Author: Alexander Myadzel <myadzel@gmail.com>
-*/
-
 hljs.LANGUAGES.actionscript = function() {
   var IDENT_RE = '[a-zA-Z_$][a-zA-Z0-9_$]*';
   var IDENT_FUNC_RETURN_TYPE_RE = '([*]|[a-zA-Z_$][a-zA-Z0-9_$]*)';

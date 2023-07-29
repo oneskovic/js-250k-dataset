@@ -1,14 +1,3 @@
-/**
- * @class Ext.calendar.template.DayBody
- * @extends Ext.XTemplate
- * <p>This is the template used to render the scrolling body container used in {@link Ext.calendar.DayView DayView} and 
- * {@link Ext.calendar.WeekView WeekView}. This template is automatically bound to the underlying event store by the 
- * calendar components and expects records of type {@link Ext.calendar.EventRecord}.</p>
- * <p>Note that this template would not normally be used directly. Instead you would use the {@link Ext.calendar.DayViewTemplate}
- * that internally creates an instance of this template along with a {@link Ext.calendar.DayHeaderTemplate}.</p>
- * @constructor
- * @param {Object} config The config object
- */
 Ext.define('Ext.calendar.template.DayBody', {
     extend: 'Ext.XTemplate',
     requires: [

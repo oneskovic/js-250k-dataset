@@ -1,4 +1,3 @@
-/*global describe, beforeEach, module, inject, it, spyOn, expect, $, angular, afterEach, runs, waits */
 describe('uiTinymce', function () {
   'use strict';
 

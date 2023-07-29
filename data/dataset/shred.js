@@ -1,9 +1,3 @@
-// Shred is an HTTP client library intended to simplify the use of Node's
-// built-in HTTP library. In particular, we wanted to make it easier to interact
-// with HTTP-based APIs.
-// 
-// See the [examples](./examples.html) for more details.
-
 var _ = require("underscore")
 // Ax is a nice logging library we wrote. You can use any logger, providing it
 // has `info`, `warn`, `debug`, and `error` methods that take a string.

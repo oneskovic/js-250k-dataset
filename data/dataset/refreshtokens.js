@@ -1,4 +1,3 @@
-/*jslint node: true */
 /*global exports */
 /*global mongodb */
 'use strict';

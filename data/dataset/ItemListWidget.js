@@ -1,6 +1,3 @@
-/**
- * This widget shows a list of items under a given folder.
- */
 girder.views.ItemListWidget = girder.View.extend({
     events: {
         'click a.g-item-list-link': function (event) {

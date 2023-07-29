@@ -1,6 +1,3 @@
-/**
- * Demonstrates how use Ext.chart.series.Line
- */
 //<feature charts>
 Ext.define('Kitchensink.view.OHLCChart', {
     extend: 'Ext.Panel',

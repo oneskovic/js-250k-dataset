@@ -1,4 +1,3 @@
-
 var net = require('net');
 var sys = require('sys');
 var WsStream = require('./wsstream');

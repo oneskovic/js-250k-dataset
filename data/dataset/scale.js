@@ -1,118 +1,129 @@
-// TODO nice
-function d3_time_scale(linear, methods, format) {
+///import baidu.dom.g;
+///import baidu.dom.show;
+///import baidu.browser.ie;
+///import baidu.dom.getStyle;
+///import baidu.object.extend;
 
-  function scale(x) {
-    return linear(x);
-  }
+///import baidu.fx.create;
 
-  scale.invert = function(x) {
-    return d3_time_scaleDate(linear.invert(x));
-  };
+/**
+ * 将DOM元素放大
+ * 2010-07-02 添加opacityTrend属性定制，可以手动控制透明的趋势
+ *
+ * @param   {HTMLElement}   element     DOM元素或者ID
+ * @param   {JSON}          options     类实例化时的参数配置
+ *          {transformOrigin, from,     to, restoreAfterFinish}
+ *          {"0px 0px"        number    number}
+ * @return  {fx}     效果类的实例
+ */
+baidu.fx.scale = function(element, options) {
+    if (!(element = baidu.dom.g(element))) return null;
+    options = baidu.object.extend({from : 0.1,to : 1}, options || {});
 
-  scale.domain = function(x) {
-    if (!arguments.length) return linear.domain().map(d3_time_scaleDate);
-    linear.domain(x);
-    return scale;
-  };
+    // "0px 0px" "50% 50%" "top left"
+    var r = /^(-?\d+px|\d?\d(\.\d+)?%|100%|left|center|right)(\s+(-?\d+px|\d?\d(\.\d+)?%|100%|top|center|bottom))?/i;
+    !r.test(options.transformOrigin) && (options.transformOrigin = "0px 0px");
 
-  scale.ticks = function(m, k) {
-    var extent = d3_time_scaleExtent(scale.domain());
-    if (typeof m !== "function") {
-      var span = extent[1] - extent[0],
-          target = span / m,
-          i = d3.bisect(d3_time_scaleSteps, target, 1, d3_time_scaleSteps.length - 1);
-      if (Math.log(target / d3_time_scaleSteps[i - 1]) < Math.log(d3_time_scaleSteps[i] / target)) --i;
-      m = methods[i];
-      k = m[1];
-      m = m[0];
-    }
-    return m(extent[0], extent[1], k);
-  };
+    var original = {},
+        fx = baidu.fx.create(element, baidu.object.extend({
+        //[Implement Interface] initialize
+        initialize : function() {
+            baidu.dom.show(element);
+            var me = this,
+                o = original,
+                s = element.style,
+                save    = function(k){me.protect(k)};
 
-  scale.tickFormat = function() {
-    return format;
-  };
+            // IE浏览器使用 zoom 样式放大
+            if (baidu.browser.ie) {
+                save("top");
+                save("left");
+                save("position");
+                save("zoom");
+                save("filter");
 
-  scale.copy = function() {
-    return d3_time_scale(linear.copy(), methods, format);
-  };
+                this.offsetX = parseInt(baidu.dom.getStyle(element, "left")) || 0;
+                this.offsetY = parseInt(baidu.dom.getStyle(element, "top"))  || 0;
 
-  // TOOD expose d3_scale_linear_rebind?
-  return d3.rebind(scale, linear, "range", "rangeRound", "interpolate", "clamp");
-}
+                if (baidu.dom.getStyle(element, "position") == "static") {
+                    s.position = "relative";
+                }
 
-// TODO expose d3_scaleExtent?
-function d3_time_scaleExtent(domain) {
-  var start = domain[0], stop = domain[domain.length - 1];
-  return start < stop ? [start, stop] : [stop, start];
-}
+                // IE 的ZOOM没有起始点，以下代码就是实现起始点
+                r.test(this.transformOrigin);
+                var t1 = RegExp["\x241"].toLowerCase(),
+                    t2 = RegExp["\x244"].toLowerCase(),
+                    ew = this.element.offsetWidth,
+                    eh = this.element.offsetHeight,
+                    dx, dy;
 
-function d3_time_scaleDate(t) {
-  return new Date(t);
-}
+                if (/\d+%/.test(t1)) dx = parseInt(t1, 10) / 100 * ew;
+                else if (/\d+px/.test(t1)) dx = parseInt(t1);
+                else if (t1 == "left") dx = 0;
+                else if (t1 == "center") dx = ew / 2;
+                else if (t1 == "right") dx = ew;
 
-function d3_time_scaleFormat(formats) {
-  return function(date) {
-    var i = formats.length - 1, f = formats[i];
-    while (!f[1](date)) f = formats[--i];
-    return f[0](date);
-  };
-}
+                if (!t2) dy = eh / 2;
+                else {
+                    if (/\d+%/.test(t2)) dy = parseInt(t2, 10) / 100 * eh;
+                    else if (/\d+px/.test(t2)) dy = parseInt(t2);
+                    else if (t2 == "top") dy = 0;
+                    else if (t2 == "center") dy = eh / 2;
+                    else if (t2 == "bottom") dy = eh;
+                }
 
-var d3_time_scaleSteps = [
-  1e3,    // 1-second
-  5e3,    // 5-second
-  15e3,   // 15-second
-  3e4,    // 30-second
-  6e4,    // 1-minute
-  3e5,    // 5-minute
-  9e5,    // 15-minute
-  18e5,   // 30-minute
-  36e5,   // 1-hour
-  108e5,  // 3-hour
-  216e5,  // 6-hour
-  432e5,  // 12-hour
-  864e5,  // 1-day
-  1728e5, // 2-day
-  6048e5, // 1-week
-  1728e6, // 1-month
-  7776e6, // 3-month
-  31536e6 // 1-year
-];
+                // 设置初始的比例
+                s.zoom = this.from;
+                o.cx = dx; o.cy = dy;   // 放大效果起始原点坐标
+            } else {
+                save("WebkitTransform");
+                save("WebkitTransformOrigin");   // Chrome Safari
+                save("MozTransform");
+                save("MozTransformOrigin");         // Firefox Mozllia
+                save("OTransform");
+                save("OTransformOrigin");             // Opera 10.5 +
+                save("transform");
+                save("transformOrigin");               // CSS3
+                save("opacity");
+                save("KHTMLOpacity");
 
-var d3_time_scaleLocalMethods = [
-  [d3.time.seconds, 1],
-  [d3.time.seconds, 5],
-  [d3.time.seconds, 15],
-  [d3.time.seconds, 30],
-  [d3.time.minutes, 1],
-  [d3.time.minutes, 5],
-  [d3.time.minutes, 15],
-  [d3.time.minutes, 30],
-  [d3.time.hours, 1],
-  [d3.time.hours, 3],
-  [d3.time.hours, 6],
-  [d3.time.hours, 12],
-  [d3.time.days, 1],
-  [d3.time.days, 2],
-  [d3.time.weeks, 1],
-  [d3.time.months, 1],
-  [d3.time.months, 3],
-  [d3.time.years, 1]
-];
+                // 设置初始的比例和效果起始点
+                s.WebkitTransform =
+                    s.MozTransform =
+                    s.OTransform =
+                    s.transform = "scale("+ this.from +")";
 
-var d3_time_scaleLocalFormats = [
-  [d3.time.format("%Y"), function(d) { return true; }],
-  [d3.time.format("%B"), function(d) { return d.getMonth(); }],
-  [d3.time.format("%b %d"), function(d) { return d.getDate() != 1; }],
-  [d3.time.format("%a %d"), function(d) { return d.getDay() && d.getDate() != 1; }],
-  [d3.time.format("%I %p"), function(d) { return d.getHours(); }],
-  [d3.time.format("%I:%M"), function(d) { return d.getMinutes(); }],
-  [d3.time.format(":%S"), function(d) { return d.getSeconds() || d.getMilliseconds(); }]
-];
+                s.WebkitTransformOrigin = 
+                    s.MozTransformOrigin = 
+                    s.OTransformOrigin =
+                    s.transformOrigin = this.transformOrigin;
+            }
+        }
 
-var d3_time_scaleLocalFormat = d3_time_scaleFormat(d3_time_scaleLocalFormats);
+        //[Implement Interface] render
+        ,render : function(schedule) {
+            var s = element.style,
+                b = this.to == 1,
+                b = typeof this.opacityTrend == "boolean" ? this.opacityTrend : b,
+                p = b ? this.percent : 1 - this.percent,
+                n = this.to * schedule + this.from * (1 - schedule);
 
-d3.time.scale = function() {
-  return d3_time_scale(d3.scale.linear(), d3_time_scaleLocalMethods, d3_time_scaleLocalFormat);
+            if (baidu.browser.ie) {
+                s.zoom = n;
+                s.filter = "progid:DXImageTransform.Microsoft.Alpha(opacity:"+
+                    Math.floor(p * 100) +")";
+                // IE 下得计算 transform-origin 变化
+                s.top = this.offsetY + original.cy * (1 - n);
+                s.left= this.offsetX + original.cx * (1 - n);
+            } else {
+                s.WebkitTransform =
+                    s.MozTransform =
+                    s.OTransform =
+                    s.transform = "scale("+ n +")";
+                s.KHTMLOpacity = s.opacity = p;
+            }
+        }
+    }, options), "baidu.fx.scale");
+
+    return fx.launch();
 };

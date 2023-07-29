@@ -2,16 +2,9 @@ define(["require", "exports", "module", "../../internals"], function(require, ex
 
 var internals = require('../../internals');
 
-/**
- * ArraySet
- * toxi/core/util/datatypes/ArraySet
- * implements relevant portions of the java version as well as those from java's AbstractSet
- */
 
-/**
- * @class
- * @member toxi
- */
+
+
 var ArraySet = function(collection){
 	Array.apply(this);
 	if(arguments.length >= 1){

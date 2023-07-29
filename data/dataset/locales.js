@@ -1,100 +1,102 @@
-"use strict";
+(function(Application, Window, GUI, Dialogs, VFS) {
+  'use strict';
 
-var _ = require('./lodash');
-var config = require('./config');
-var utils = require('./utils');
+  /////////////////////////////////////////////////////////////////////////////
+  // LOCALES
+  /////////////////////////////////////////////////////////////////////////////
 
-var Locales = {
-  en: {
-    general: {
-      'delete':           'Delete?',
-      'drop':             'Drag __block__ here',
-      'paste':            'Or paste URL here',
-      'upload':           '...or choose a file',
-      'close':            'close',
-      'position':         'Position',
-      'wait':             'Please wait...',
-      'link':             'Enter a link'
+  var _Locales = {
+    no_NO : {
+      'Playlist' : 'Spilleliste',
+      'Playback aborted' : 'Avspilling avbrutt',
+      'Network or communication error' : 'Nettverks- eller kommunikasjonsfeil',
+      'Decoding failed. Corruption or unsupported media' : 'Dekoding feilet. Korrupt eller ustøttet media',
+      'Media source not supported' : 'Media-kilde ikke støttet',
+      'Failed to play file' : 'Klarte ikke spille av fil',
+      'Artist' : 'Artist',
+      'Album' : 'Album',
+      'Track' : 'Låt',
+      'Time' : 'Tid',
+      'Media information query failed' : 'Media-informasjon forespursel feil',
+      'seek unavailable in format' : 'spoling utilgjenglig i format',
+      'The audio type is not supported: {0}' : 'Denne lyd-typen er ikke støttet: {0}',
     },
-    errors: {
-      'title': "You have the following errors:",
-      'validation_fail': "__type__ block is invalid",
-      'block_empty': "__name__ must not be empty",
-      'type_missing': "You must have a block of type __type__",
-      'required_type_empty': "A required block type __type__ is empty",
-      'load_fail': "There was a problem loading the contents of the document"
+    pl_PL : {
+      'Playlist' : 'Playlista',
+      'Playback aborted' : 'Odtwarzanie Przerwane',
+      'Network or communication error' : 'Błąd Sieci lub Komunikacji',
+      'Decoding failed. Corruption or unsupported media' : 'Dekodowanie nie powiodło się. Uszkodzony lub nieobsługiwany plik',
+      'Media source not supported' : 'Plik nie jest wspierany',
+      'Failed to play file' : 'Nie można odtworzyć pliku',
+      'Artist' : 'Artysta',
+      'Album' : 'Album',
+      'Track' : 'Ścieżka',
+      'Time' : 'Czas',
+      'Media information query failed' : 'Brak informacji',
+      'seek unavailable in format' : 'Przewijanie nie jest obsługiwane w tym formacie',
+      'The audio type is not supported: {0}' : 'Ten typ audio nie jest obsługiwany: {0}',
     },
-    blocks: {
-      text: {
-        'title': "Text"
-      },
-      list: {
-        'title': "List"
-      },
-      quote: {
-        'title': "Quote",
-        'credit_field': "Credit"
-      },
-      image: {
-        'title': "Image",
-        'upload_error': "There was a problem with your upload"
-      },
-      video: {
-        'title': "Video"
-      },
-      tweet: {
-        'title': "Tweet",
-        'fetch_error': "There was a problem fetching your tweet"
-      },
-      embedly: {
-        'title': "Embedly",
-        'fetch_error': "There was a problem fetching your embed",
-        'key_missing': "An Embedly API key must be present"
-      },
-      heading: {
-        'title': "Heading"
-      }
-    }
-  }
-};
-
-if (window.i18n === undefined) {
-  // Minimal i18n stub that only reads the English strings
-  utils.log("Using i18n stub");
-  window.i18n = {
-    t: function(key, options) {
-      var parts = key.split(':'), str, obj, part, i;
-
-      obj = Locales[config.language];
-
-      for(i = 0; i < parts.length; i++) {
-        part = parts[i];
-
-        if(!_.isUndefined(obj[part])) {
-          obj = obj[part];
-        }
-      }
-
-      str = obj;
-
-      if (!_.isString(str)) { return ""; }
-
-      if (str.indexOf('__') >= 0) {
-        Object.keys(options).forEach(function(opt) {
-          str = str.replace('__' + opt + '__', options[opt]);
-        });
-      }
-
-      return str;
+    de_DE : {
+      'Playlist' : 'Wiedergabeliste',
+      'Playback aborted' : 'Wiedergabe abgebrochen',
+      'Network or communication error' : 'Netzwerk Kommunikationsfehler',
+      'Decoding failed. Corruption or unsupported media' : 'Dekodierung gescheitert. Fehlerhafte oder nicht unterstützte Datei',
+      'Media source not supported' : 'Medienquelle nicht unterstützt',
+      'Failed to play file' : 'Wiedergabe der Datei gescheitert',
+      'Artist' : 'Künstler',
+      'Album' : 'Album',
+      'Track' : 'Titel',
+      'Time' : 'Zeit',
+      'Media information query failed' : 'Media Informationssuche gescheitert',
+      'seek unavailable in format' : 'Spulen im Format nicht verfügbar',
+      'The audio type is not supported: {0}' : 'Der Audio-Typ {0} ist nicht unterstützt',
+    },
+    fr_FR : {
+    },
+    ru_RU : {
+      'Playlist' : 'Список воспроизведения',
+      'Playback aborted' : 'Воспроизведение прервано',
+      'Network or communication error' : 'Ошибка соединения',
+      'Decoding failed. Corruption or unsupported media' : 'Не удалось декодировать файл. Файл поврежден или данынй формат не поддерживается',
+      'Media source not supported' : 'Медиа этого типа не поддерживается',
+      'Failed to play file' : 'Ошибка воспроизведения',
+      'Artist' : 'Артист',
+      'Album' : 'Альбом',
+      'Track' : 'Трек',
+      'Time' : 'Время',
+      'Media information query failed' : 'Ошибка в запросе медиа-информации',
+      'seek unavailable in format' : 'Перемотка недоступна в этом формате',
+      'The audio type is not supported: {0}' : 'Тип аудио не поддерживается: {0}'
+    },
+    nl_NL : {
+      'Playlist' : 'Afspeel lijst',
+      'Playback aborted' : 'Spelen onderbroken',
+      'Network or communication error' : 'Netwerk communicatie fout',
+      'Decoding failed. Corruption or unsupported media' : 'Dekoderen lukt niet: bestandstype wordt niet ondersteund',
+      'Media source not supported' : 'Media bron wordt niet ondersteund',
+      'Failed to play file' : 'Afspelen lukt niet',
+      'Artist' : 'Artiest',
+      'Album' : 'Album',
+      'Track' : 'Naam',
+      'Time' : 'Tijd',
+      'Media information query failed' : 'Zoeken naar media is niet gelukt',
+      'seek unavailable in format' : 'Voor/acteruit spoelen is niet beschikbaar in dit formaat',
+      'The audio type is not supported: {0}' : 'Audio type {0} wordt niet ondersteund',
     }
   };
-} else {
-  utils.log("Using i18next");
-  // Only use i18next when the library has been loaded by the user, keeps
-  // dependencies slim
-  i18n.init({ resStore: Locales, fallbackLng: config.language,
-            ns: { namespaces: ['general', 'blocks'], defaultNs: 'general' }
-  });
-}
 
-module.exports = Locales;
+  function _() {
+    var args = Array.prototype.slice.call(arguments, 0);
+    args.unshift(_Locales);
+    return OSjs.API.__.apply(this, args);
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
+  // EXPORTS
+  /////////////////////////////////////////////////////////////////////////////
+
+  OSjs.Applications = OSjs.Applications || {};
+  OSjs.Applications.ApplicationMusicPlayer = OSjs.Applications.ApplicationMusicPlayer || {};
+  OSjs.Applications.ApplicationMusicPlayer._ = _;
+
+})(OSjs.Core.Application, OSjs.Core.Window, OSjs.GUI, OSjs.Dialogs, OSjs.VFS);

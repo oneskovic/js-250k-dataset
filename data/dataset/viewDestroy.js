@@ -1,4 +1,3 @@
-
 describe('viewDestroy', function() {
 	var options;
 

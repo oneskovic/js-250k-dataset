@@ -1,78 +1,117 @@
-var detective = require('detective');
-var http = require('http-browserify');
-var path = require('path');
+/**
+ * @author benvanik@google.com (Ben Vanik)
+ */
 
-function load (file) {
-    fetch(path.resolve(window.location.pathname, file), function (src) {
-        src.run();
-    });
-}
+goog.provide('gf.io.Entry');
 
-(function () {
-    function onready () {
-        if (document.readyState === 'loading') return;
-        document.removeEventListener('readystatechange', onready);
-        var scripts = document.querySelectorAll('script[type="text/wreq"]');
-        for (var i = 0; i < scripts.length; i++) {
-            if (scripts[i].src) {
-                var file = scripts[i].src.replace(/^https?:\/\/[^\/]+/, '');
-                load(file);
-            }
-            else {
-                var file = '#' + Math.random().toString().slice(2);
-                store(file, scripts[i].innerHTML, function (src) {
-                    src.run();
-                });
-            }
-        }
-    }
-    onready();
-    document.addEventListener('readystatechange', onready);
-})();
 
-var sources = {};
 
-function run (src) {
-    if (src.cache) return src.cache;
-    
-    var fn = Function([ 'require', 'module', 'exports' ], src.source);
-    var m = { exports : {} };
-    fn.apply(null, [
-        function require (p) { return src.requires[p].run() },
-        m, m.exports
-    ]);
-    return m.exports;
-}
+/**
+ * Base file system entry type.
+ *
+ * @interface
+ */
+gf.io.Entry = function() {};
 
-function fetch (file, cb) {
-    if (sources[file]) return cb(sources[file]);
-    sources[file] = {};
-    var opts = { path : file };
-    
-    http.get(opts, function (res) {
-        var data = '';
-        res.on('data', function (buf) { data += buf });
-        res.on('end', function () {
-            store(file, data, cb);
-        });
-    });
-}
 
-function store (file, data, cb) {
-    var requires = detective(data);
-    var pending = requires.length;
-    sources[file].source = data + '\n//@ sourceURL=' + file;
-    sources[file].requires = {};
-    sources[file].run = function () {
-        return run(sources[file]);
-    };
-    
-    if (pending === 0) cb(sources[file]);
-    
-    requires.forEach(function (r) {
-        fetch(path.resolve(path.dirname(file), r), function (src) {
-            sources[file].requires[r] = src;
-            if (--pending === 0) cb(sources[file]);
-        });
-    });
-}
+/**
+ * The type of the file system entry.
+ * @enum {number}
+ */
+gf.io.Entry.Type = {
+  /** The entry is a file ({@see gf.io.FileEntry}). */
+  FILE: 0,
+  /** The entry is a directory ({@see gf.io.DirectoryEntry}). */
+  DIRECTORY: 1
+};
+
+
+/**
+ * The file system that this entry is from.
+ * @type {!gf.io.FileSystem}
+ */
+gf.io.Entry.prototype.fileSystem;
+
+
+/**
+ * The full path of the entry in the file system.
+ * @type {string}
+ */
+gf.io.Entry.prototype.fullPath;
+
+
+/**
+ * The name of the entry.
+ * @type {string}
+ */
+gf.io.Entry.prototype.name;
+
+
+/**
+ * Type of the entry.
+ * @type {gf.io.Entry.Type}
+ */
+gf.io.Entry.prototype.type;
+
+
+/**
+ * @return {boolean} Whether or not this entry is a file.
+ */
+gf.io.Entry.prototype.isFile = goog.nullFunction;
+
+
+/**
+ * @return {boolean} Whether or not this entry is a directory.
+ */
+gf.io.Entry.prototype.isDirectory = goog.nullFunction;
+
+
+/**
+ * Queries an entry for its parent.
+ * @return {!goog.async.Deferred} A deferred fulfilled when the query completes.
+ *     Successful callbacks receive a {@see gf.io.Entry} for the parent, or
+ *     null if the entry is the root of the file system.
+ */
+gf.io.Entry.prototype.queryParentEntry = goog.nullFunction;
+
+
+/**
+ * Queries an entry for additional metadata.
+ * @return {!goog.async.Deferred} A deferred fulfilled when the query completes.
+ *     Successful callbacks receive a {@see gf.io.EntryMetadata}.
+ */
+gf.io.Entry.prototype.queryMetadata = goog.nullFunction;
+
+
+/**
+ * Removes a file or directory.
+ * It is an error to remove a directory that is not empty or the root of the
+ * filesystem.
+ * @return {!goog.async.Deferred} A deferred fulfilled when the file has been
+ *    removed from the file system.
+ */
+gf.io.Entry.prototype.remove = goog.nullFunction;
+
+
+/**
+ * Copies the entry to a new location.
+ * @param {!gf.io.DirectoryEntry} parent New parent directory.
+ * @param {string=} opt_newName New name of the entry, otherwise the current
+ *     name will be used.
+ * @return {!goog.async.Deferred} A deferred fulfilled when the copy has
+ *     completed. A successful callback will receive the new entry as either a
+ *     {@see gf.io.FileEntry} or {@see gf.io.DirectoryEntry}.
+ */
+gf.io.Entry.prototype.copyTo = goog.nullFunction;
+
+
+/**
+ * Moves the entry to a new location.
+ * @param {!gf.io.DirectoryEntry} parent New parent directory.
+ * @param {string=} opt_newName New name of the entry, otherwise the current
+ *     name will be used.
+ * @return {!goog.async.Deferred} A deferred fulfilled when the move has
+ *     completed. A successful callback will receive the new entry as either a
+ *     {@see gf.io.FileEntry} or {@see gf.io.DirectoryEntry}.
+ */
+gf.io.Entry.prototype.moveTo = goog.nullFunction;

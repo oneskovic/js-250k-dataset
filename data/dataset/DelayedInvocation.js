@@ -1,5 +1,3 @@
-// Copyright (c) 2013 David Gallardo Moreno. All rights reserved.
-
 /**
  * @fileoverview Representation of a delayed in time function call. 
  * Implements ss2d.IAnimatable interface to be used with ss2d.Juggler class.

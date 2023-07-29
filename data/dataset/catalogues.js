@@ -1,4 +1,3 @@
-// use taffy db for internal representation of catalogue data
 var db = require( "../../lib/taffy" );
 
 /**

@@ -1,9 +1,5 @@
 'use strict';
-/**
- * 水平布局算法，计算图片位置spritepos_left和spritepos_top，大图的宽度高度
- * @param {object} images 图片对象，记录align, height, width, repeat
- * @param {object} spriteConfig 图片对应的css规则
- */
+
 function Horizontal(spriteConfig){
   this.spriteConfig = spriteConfig;
   this.width = 0;

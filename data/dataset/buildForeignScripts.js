@@ -1,15 +1,3 @@
-/**
- * Angular Builder middleware module.
- *
- * @module middleware/buildForeignScripts
- * @requires module:middleware/makeDebugBuild
- * @requires module:middleware/makeReleaseBuild
- *
- * @license
- * Copyright 2013 Cláudio Manuel Brás da Silva
- * http://github.com/claudio-silva
- * Licensed under the MIT license.
- */
 'use strict';
 
 exports.middleware = BuildForeignScriptsMiddleware;

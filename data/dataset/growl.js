@@ -1,97 +1,91 @@
-/**
- * Moui
- * OO-based UI behavior modules behind CardKit(mobile webapp framework)'s view components
- * 
- * using AMD (Asynchronous Module Definition) API with OzJS
- * see http://ozjs.org for details
- *
- * Copyright (C) 2010-2013, Dexter.Yy, MIT License
- * vim: et:ts=4:sw=4:sts=4
- */
-define('moui/growl', [
-    'dollar',
-    'mo/lang',
-    'mo/template',
-    'moui/overlay'
-], function($, _, tpl, overlay) {
+;(function($){
+  
+  var growlContainer;
 
-    var NS = 'mouiGrowl',
-        TPL_VIEW =
-           '<div id="{{id}}" class="moui-growl">\
-                <header><h2></h2></header>\
-                <article></article>\
-            </div>',
-        CORNER = 'corner-',
+  $.Growl = {
 
-        default_config = {
-            className: 'moui-growl',
-            closeDelay: 300,
-            corner: 'center',
-            expires: 1400,
-            keepalive: false
-        };
+    show: function(message, options){
+    
+      var options = options || {};
 
-    var Growl = _.construct(overlay.Overlay);
+      if(options.webnotification && window["webkitNotifications"]){
+        
+        if (webkitNotifications.checkPermission() === 0) {
+          
+          var title = options["title"] ? options.title:" ";
 
-    _.mix(Growl.prototype, {
-
-        _ns: NS,
-        _template: TPL_VIEW,
-        _defaults: _.mix({}, Growl.prototype._defaults, default_config),
-
-        set: function(opt) {
-            var self = this;
-            self.superMethod('set', [opt]);
-
-            if (opt.corner && opt.corner !== self._currentCorner) {
-                if (self._currentCorner) {
-                    self._node.removeClass(CORNER + self._currentCorner);
-                }
-                self._node.addClass(CORNER + opt.corner);
-                self._currentCorner = opt.corner;
-            }
-
-            if (opt.expires !== undefined) {
-                clearTimeout(self._exptimer);
-                if (self.isOpened) {
-                    set_expires(self);
-                }
-            }
-
-            return self;
-        },
-
-        applyOpen: function(){
-            clearTimeout(this._exptimer);
-            if (this._config.expires != -1) {
-                set_expires(this);
-            }
-            return this.superMethod('applyOpen', arguments);
-        },
-
-        applyClose: function(){
-            this.isOpened = false;
-            this._node.removeClass('rendered');
-            this.event.fire('close', [this]);
-            if (!this._config.keepalive) {
-                this.destroy();
-            }
+          return webkitNotifications.createNotification('data:image/gif;base64,R0lGODlhAQABAJEAAAAAAP///////wAAACH5BAEHAAIALAAAAAABAAEAAAICVAEAOw==', title, $('<div>'+message+'</div>').text()).show();
+        }else{
+          webkitNotifications.requestPermission();
         }
+      }
 
+      if(!growlContainer) {
+        growlContainer = $('<div id="growlcontainer"></div>').appendTo("body");
+      }
+
+      return new Status(message, options);
+    }
+  };
+
+  /*
+    Status object
+  */
+
+  function Status(message, options) {
+      
+    var $this = this;
+
+    this.settings = $.extend({
+      "title": false,
+      "message": message,
+      "speed": 500,
+      "timeout": 3000
+    }, options);
+
+    this.status = $('<div class="growlstatus" style="display:none;"><div class="growlstatus-close"></div>'+this.settings.message+'</div>');
+
+    //append status
+    growlContainer.prepend(this.status);
+
+    //bind close button
+    this.status.delegate(".growlstatus-close", 'click', function(){
+      $this.cancel(true);
     });
 
-    function set_expires(self){
-        self._exptimer = setTimeout(function(){
-            self.close();
-        }, self._config.expires);
+    //show title
+    if(this.settings.title!==false){
+      this.status.prepend('<div class="growltitle">'+this.settings.title+'</div>');
     }
 
-    function exports(opt){
-        return new exports.Growl(opt);
-    }
+    this.status
+    //do not hide on hover
+    .hover(
+      function(){
+        $this.status.data("growlhover", true);
+      },
+      function(){
+        $this.status.data("growlhover", false);
+        if($this.settings.timeout!==false){
+          window.setTimeout(function(){$this.status.cancel();}, $this.settings.timeout);
+        }
+      }
+    )      
+    //show status+handle timeout
+    .fadeIn(this.settings.speed,function(){
+      if($this.settings.timeout!==false){
+        window.setTimeout(function(){$this.cancel();}, $this.settings.timeout);
+      }
+    });
+    
+    this.cancel = function(force){
+    
+      if(!this.status.data("growlhover") || force){
+        $this.status.animate({opacity:"0.0"}, $this.settings.speed).slideUp(function(){
+              $this.status.remove();
+        });
+      }
+    };
+  }
 
-    exports.Growl = Growl;
-
-    return exports;
-
-});
+})(jQuery);

@@ -1,5 +1,3 @@
-/** @license MIT License (c) copyright B Cavalier & J Hann */
-
 /**
  * Tarjan directed graph cycle detection
  * @author: brian@hovercraftstudios.com

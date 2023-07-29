@@ -1,4 +1,3 @@
-
 var ctorKey = '__ko_typed_array_ctor__',
     underlyingKey = '__ko_typed_array_underlying__',
     toArray = function(args){

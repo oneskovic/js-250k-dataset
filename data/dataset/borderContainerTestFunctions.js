@@ -1,4 +1,4 @@
-			function checkInside(/*Widget*/ child, /*Widget*/ parent, /*String?*/ comment){
+			function checkInside( child,  parent, /*String?*/ comment){
 				// summary:
 				//		Test that child is fully inside of parent
 
@@ -14,7 +14,7 @@
 					(comment ? comment + ": " : "") + child.region + " inside " + parent.id + dojo.toJson(cp) + dojo.toJson(pp)
 				);
 			}
-			function checkAbove(/*String*/ comment, /*Widget*/ above, /*Widget*/ below){
+			function checkAbove(/*String*/ comment,  above,  below){
 				// summary:
 				//		Test that child is fully above parent
 
@@ -28,7 +28,7 @@
 					comment + " " + above.region + " above " + below.region + dojo.toJson(ap) + dojo.toJson(bp)
 				);
 			}
-			function checkLeft(/*String*/ comment, /*Widget*/ left, /*Widget*/ right){
+			function checkLeft(/*String*/ comment,  left,  right){
 				// summary:
 				//		Test that child is fully left of parent
 

@@ -1,20 +1,6 @@
 define(function(require){
     var expect = chai.expect;
-    /*
-    http://chaijs.com/guide/styles/
-    chai.use(function(chai, utils){
-        var Assertion = chai.Assertion;
-        console.log(chai);
-        console.log(utils);
-        var myAssert = new Assertion('Arthur Dent');
-        utils.flag(myAssert, 'owner', 'me'); 
-        var owner = utils.flag(myAssert, 'owner'); 
-        console.log(myAssert._obj,owner);
-        var myAssert = new Assertion('Arthur Dent');
-        var obj = utils.flag(myAssert, 'object'); // obj === 'Arthur Dent';
-        console.log(myAssert._obj);
-    });
-    */
+    
     describe('Runtime ua测试', function () {
             beforeEach(function () {
                 console.log(this);

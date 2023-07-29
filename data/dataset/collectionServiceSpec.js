@@ -1,4 +1,3 @@
-//test data
 var imageOne = {
     id: 1,
     name: "imageOne",

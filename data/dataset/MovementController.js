@@ -1,7 +1,3 @@
-/// <reference path="../Assets/Vectors/Vector2d.ts" />
-/// <reference path="../Interfaces/IMoveable.ts" />
-/// <reference path="../Interfaces/IUpdateable.ts" />
-/// <reference path="../GameTime.ts" />
 var EndGate;
 (function (EndGate) {
     (function (MovementControllers) {

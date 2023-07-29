@@ -1,18 +1,3 @@
-/**
- *
- * Send a sequence of key strokes to the active element. This command is similar to the
- * send keys command in every aspect except the implicit termination: The modifiers are
- * *not* released at the end of the call. Rather, the state of the modifier keys is kept
- * between calls, so mouse interactions can be performed while modifier keys are depressed.
- *
- * @param {String|String[]} value  The sequence of keys to type. An array must be provided. The server should flatten the array items to a single string to be typed.
- * @callbackParameter error, response
- *
- * @see  https://code.google.com/p/selenium/wiki/JsonWireProtocol#/session/:sessionId/keys
- * @type protocol
- *
- */
-
 var unicodeChars = require('../utils/unicodeChars'),
     ErrorHandler = require('../utils/ErrorHandler.js');
 

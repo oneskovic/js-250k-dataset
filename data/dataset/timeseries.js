@@ -1,9 +1,3 @@
-/**
- * TimeSeries: Nested array
- * Facilitates analysis of time series.
- * @author Fredrick Galoso
- */
-
 (function() {
   var Collection = (typeof window === 'undefined') ?
     require('./collection') : window.gauss.Collection;

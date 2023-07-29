@@ -16,7 +16,7 @@ LazySocket.createConnection = function(port, host) {
   return socket;
 };
 
-LazySocket.prototype.write = function(/* data, encoding, cb */) {
+LazySocket.prototype.write = function() {
   var self = this;
   var args = Array.prototype.slice.call(arguments);
   var cb   = args[args.length - 1];

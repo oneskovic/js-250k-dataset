@@ -1,5 +1,3 @@
-
-
 module('About Backbone.Model');
     
     test('Can be created with default values for its attributes.', function() {

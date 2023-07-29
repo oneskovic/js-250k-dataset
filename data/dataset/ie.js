@@ -1,6 +1,6 @@
 'use strict';
 
-/*global BrV*/
+
 var globalBrV;
 if (typeof BrV !== 'undefined') {
 	globalBrV = BrV;

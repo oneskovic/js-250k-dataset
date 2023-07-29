@@ -1,10 +1,4 @@
 /**
- * Exports script adapted from lodash v2.4.1 Modern Build
- *
- * @see http://lodash.com/
- */
-
-/**
  * Valid object type map
  *
  * @type Object

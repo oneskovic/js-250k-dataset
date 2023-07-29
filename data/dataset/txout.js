@@ -1,11 +1,3 @@
-/**
- * Transaction Output
- * ==================
- *
- * An output to a transaction. The way you normally want to make one is with
- * Txout(valuebn, script) (i.e., just as with Txin, you can leave out the
- * scriptvi, since it can be computed automatically.
-*/
 var BN = require('./bn');
 var BR = require('./br');
 var BW = require('./bw');

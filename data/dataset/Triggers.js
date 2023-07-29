@@ -1,73 +1,60 @@
-var fs       = require('fs'),
-    join     = require('path').join,
-    actions  = require('./actions'),
-    hooks    = require('./hooks'),
-    logger   = require('./common').logger.prefix('triggers');
+/**
+ * A manager for mouse triggers. It stores all of the objects that
+ * cause mouse events, such as mouseleave and click, to fire, Each trigger
+ * is a pair of a mesh object and a triggerId. A triggerId is a way of
+ * distinguishing between sets of meshes that behave the same on mouse events.
+ * The Model's event handlers have access to the triggerId via the Event passed
+ * to them.
+ *
+ * @constructor
+ */
+function Triggers() {}
 
-var watchers = [],
-    events_list = {},
-    triggers_list;
 
-var triggers_path = join(__dirname, 'triggers');
+/**
+ * Adds a trigger.
+ *
+ * A single mesh can only have one trigger id at a time.
+ *
+ * @param {THREE.Object3D} object Object that triggers mouse events.
+ * @param {string|number=} opt_triggerId Optional event id.
+ */
+Triggers.prototype['add'] = function(object, opt_triggerId) {};
 
-var load_trigger = function(name) {
-  try {
-    return require(join(triggers_path, name));
-  } catch(e) {
-    hooks.trigger('error', e);
-  }
-}
 
-exports.map = function(cb){
-
-  if (triggers_list)
-    return cb(null, triggers_list);
-
-  fs.readdir(triggers_path, function(err, files){
-    if (err) return cb(err);
-
-    triggers_list = {};
-
-    files.forEach(function(trigger_name) {
-      if (trigger_name.match('README'))
-        return;
-
-      var module = load_trigger(join(triggers_path, trigger_name));
-      if (!module) return;
-
-      triggers_list[trigger_name] = module.events;
-
-      module.events.forEach(function(evt){
-        events_list[evt] = trigger_name;
-      });
-
-    });
-
-    cb(null, events_list);
-  });
-
-}
-
-exports.add = function(trigger_name) {
-  actions.start_trigger(trigger_name, function(err) {
-    if (!err)
-      watchers.push(trigger_name);
-  });
+/**
+ * Sets the cursor that shows when the mouse moves over a trigger.
+ *
+ * @this {ThreeJsTriggers_}
+ *
+ * @param {string} cursor CSS cursor style.
+ */
+Triggers.prototype['cursor'] = function(cursor) {
+  this.cursor_ = cursor;
 };
 
-exports.remove = function(trigger_name) {
-  actions.stop(trigger_name);
-};
 
-exports.watch = function(list, cb) {
-  if (!list || !list[0])
-    return cb && cb(new Error('Empty trigger list.'));
+/**
+ * Removes a trigger.
+ *
+ * @param {THREE.Object3D} object Object that triggers mouse events.
+ */
+Triggers.prototype['remove'] = function(object) {};
 
-  logger.info('Watching: ' + list.join(', '));
-  list.forEach(exports.add);
-  cb && cb();
-}
 
-exports.unwatch = function() {
-  watchers.forEach(exports.remove)
-}
+/**
+ * Destroys the triggers container.
+ *
+ * @private
+ * @this {ThreeJsTriggers_}
+ */
+Triggers.prototype.destroy_ = function() {};
+
+
+/**
+ * The cursor displayed when the mouse is over a trigger.
+ *
+ * @private
+ * @type {string}
+ */
+Triggers.prototype.cursor_ = 'auto';

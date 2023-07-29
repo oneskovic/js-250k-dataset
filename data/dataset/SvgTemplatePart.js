@@ -4,16 +4,7 @@ goog.require('goog.crypt.base64');
 goog.require('tvs.AnnotatorCore');
 goog.require('tvs.ImageTemplatePart');
 
-/**
- * @constructor
- * @param {string} svgContent
- * @param {number} canvasWidth
- * @param {number} canvasHeight
- * @param {string} templWidth
- * @param {string} drawMode
- * @extends {tvs.ImageTemplatePart}
- * @export
- */
+
 tvs.SvgTemplatePart = function(
     svgContent, canvasWidth, canvasHeight, templWidth, drawMode) {
 

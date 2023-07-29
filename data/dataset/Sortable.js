@@ -1,6 +1,3 @@
-/*
- * draggable unit tests
- */
 (function($) {
 //
 // Sortable Test Helper Functions

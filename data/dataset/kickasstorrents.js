@@ -1,11 +1,3 @@
-/*
- * Easy Put.io
- *
- * Created by Baptiste Vincent on 2013-08-14.
- * Copyright (c) 2013 Baptiste Vincent. All rights reserved.
- *
- */
-
 Kickasstorrents = {
     query:null,
 

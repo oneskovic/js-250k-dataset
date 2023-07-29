@@ -9,10 +9,7 @@ NamedScope.prototype.where = function () {
   return q;
 };
 
-/**
- * @param {NamedScope} target
- * @param {Object} getters
- */
+
 NamedScope.prototype.decorate = function (target, getters) {
   var name = this.name
     , block = this.block

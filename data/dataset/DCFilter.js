@@ -1,7 +1,3 @@
-/*!
- * @depends ../core/AudioletNode.js
- */
-
 /**
  * Filter for leaking DC offset.  Maths is taken from
  * https://ccrma.stanford.edu/~jos/filters/DC_Blocker.html

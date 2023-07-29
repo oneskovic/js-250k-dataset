@@ -9,9 +9,7 @@ Ext.define('Meetcha.controller.CommonInteractions', {
         stores: ['GroupMemberStore', 'RsvpMemberStore'],
         views: ['MeetupList', 'CustomOverlay', 'CommentForm', 'MeetupCommentsPanel', 'MeetupCommentList', 'AtMeetup', 'MeetupSummary', 'MemberList']
     },
-    /*
-     * Handles a user clicking on the details link of a MeetupList
-     */
+    
     onDetailsClick: function(record) {
         this.overlayClick({
             xtype: 'container',

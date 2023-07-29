@@ -1,9 +1,3 @@
-/**
- * Extracts Fujifilm flavored Makernotes which are always stored in little
- * endian, no matter what the rest of the file is. Additionally the offsets
- * are relative to the start of the Makernote instead of the start of the
- * TIFF header.
- */
 exports.extractMakernotes = function (data, makernoteOffset, tiffOffset) {
 
   var makernoteData = {};

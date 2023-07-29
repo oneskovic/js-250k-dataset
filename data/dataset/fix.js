@@ -1,7 +1,3 @@
-/**
- * Markdown Test Suite Fixer
- */
-
 // this file is responsible for "fixing"
 // the markdown test suite. there are
 // certain aspects of the suite that

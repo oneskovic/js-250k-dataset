@@ -1,6 +1,3 @@
-// Author tantaman
-// License MIT
-// http://github.com/tantaman/imgup
 define(function() {
 	var root = {};
 	

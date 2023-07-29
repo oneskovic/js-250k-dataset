@@ -6,11 +6,7 @@ var _global = catrequire("cat.global"),
 
 
 
-/**
- * Initial settings
- * - Loading colors module
- * - Loading cat configuration
- */
+
 function init() {
 
 

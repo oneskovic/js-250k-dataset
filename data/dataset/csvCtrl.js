@@ -1,6 +1,3 @@
-/*
-* @desc controllers associated with the csv modal which manage interaction between csv service and users   
-*/
 var csvCtrl = function($scope, $modalInstance, csv, query, mapping){
 	// Initializing controller's vars
 	$scope.data = csv.info;

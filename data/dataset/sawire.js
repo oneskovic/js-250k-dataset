@@ -4,10 +4,7 @@ var sawire= {
 	 			   "modules":modules,
            adapter: Y.WiringEditor.adapters.WebStorage
 	},
-   /**
-    * @method init
-    * @static
-    */
+   
    init: function() {
 		  this.editor = new sawire.WiringEditor(this.language);  
 		  // Open the infos panel

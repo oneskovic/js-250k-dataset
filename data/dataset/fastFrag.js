@@ -1,15 +1,5 @@
 (function(){
-    /*
-            fastFrag
-                Turn JSON into HTML, http://github.com/gregory80/fastFrag
-                
-            Usage: fastFrag.create( { content : "hello world" });
-            // creates Document Fragment: <div>hello world</div>
-            
-            Learn more: http://github.com/gregory80/fastFrag/blob/master/README.md or http://fastfrag.org
-            
-            Convert HTML to fastFrag (fast!): http://json.fastfrag.org/
-    */
+    
 
     var fastFrag = {
         create : function( params ) {

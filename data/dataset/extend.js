@@ -1,103 +1,73 @@
+var is = require('is');
+
+function extend() {
+  var target = arguments[0] || {};
+  var i = 1;
+  var length = arguments.length;
+  var deep = false;
+  var options, name, src, copy, copy_is_array, clone;
+
+  // Handle a deep copy situation
+  if (typeof target === 'boolean') {
+    deep = target;
+    target = arguments[1] || {};
+    // skip the boolean and the target
+    i = 2;
+  }
+
+  // Handle case when target is a string or something (possible in deep copy)
+  if (typeof target !== 'object' && !is.fn(target)) {
+    target = {};
+  }
+
+  for (; i < length; i++) {
+    // Only deal with non-null/undefined values
+    options = arguments[i]
+    if (options != null) {
+      if (typeof options === 'string') {
+          options = options.split('');
+      }
+      // Extend the base object
+      for (name in options) {
+        src = target[name];
+        copy = options[name];
+
+        // Prevent never-ending loop
+        if (target === copy) {
+          continue;
+        }
+
+        // Recurse if we're merging plain objects or arrays
+        if (deep && copy && (is.hash(copy) || (copy_is_array = is.array(copy)))) {
+          if (copy_is_array) {
+            copy_is_array = false;
+            clone = src && is.array(src) ? src : [];
+          } else {
+            clone = src && is.hash(src) ? src : {};
+          }
+
+          // Never move original objects, clone them
+          target[name] = extend(deep, clone, copy);
+
+        // Don't bring in undefined values
+        } else if (typeof copy !== 'undefined') {
+          target[name] = copy;
+        }
+      }
+    }
+  }
+
+  // Return the modified object
+  return target;
+};
+
 /**
- * @depend ../sinon.js
+ * @public
  */
-"use strict";
+extend.version = '1.0.8';
 
-(function (sinon) {
-    function makeApi(sinon) {
+/**
+ * Exports module.
+ */
+module.exports = extend;
 
-        // Adapted from https://developer.mozilla.org/en/docs/ECMAScript_DontEnum_attribute#JScript_DontEnum_Bug
-        var hasDontEnumBug = (function () {
-            var obj = {
-                constructor: function () {
-                    return "0";
-                },
-                toString: function () {
-                    return "1";
-                },
-                valueOf: function () {
-                    return "2";
-                },
-                toLocaleString: function () {
-                    return "3";
-                },
-                prototype: function () {
-                    return "4";
-                },
-                isPrototypeOf: function () {
-                    return "5";
-                },
-                propertyIsEnumerable: function () {
-                    return "6";
-                },
-                hasOwnProperty: function () {
-                    return "7";
-                },
-                length: function () {
-                    return "8";
-                },
-                unique: function () {
-                    return "9"
-                }
-            };
-
-            var result = [];
-            for (var prop in obj) {
-                result.push(obj[prop]());
-            }
-            return result.join("") !== "0123456789";
-        })();
-
-        /* Public: Extend target in place with all (own) properties from sources in-order. Thus, last source will
-         *         override properties in previous sources.
-         *
-         * target - The Object to extend
-         * sources - Objects to copy properties from.
-         *
-         * Returns the extended target
-         */
-        function extend(target /*, sources */) {
-            var sources = Array.prototype.slice.call(arguments, 1),
-                source, i, prop;
-
-            for (i = 0; i < sources.length; i++) {
-                source = sources[i];
-
-                for (prop in source) {
-                    if (source.hasOwnProperty(prop)) {
-                        target[prop] = source[prop];
-                    }
-                }
-
-                // Make sure we copy (own) toString method even when in JScript with DontEnum bug
-                // See https://developer.mozilla.org/en/docs/ECMAScript_DontEnum_attribute#JScript_DontEnum_Bug
-                if (hasDontEnumBug && source.hasOwnProperty("toString") && source.toString !== target.toString) {
-                    target.toString = source.toString;
-                }
-            }
-
-            return target;
-        };
-
-        sinon.extend = extend;
-        return sinon.extend;
-    }
-
-    function loadDependencies(require, exports, module) {
-        var sinon = require("./util/core");
-        module.exports = makeApi(sinon);
-    }
-
-    var isNode = typeof module !== "undefined" && module.exports && typeof require == "function";
-    var isAMD = typeof define === "function" && typeof define.amd === "object" && define.amd;
-
-    if (isAMD) {
-        define(loadDependencies);
-    } else if (isNode) {
-        loadDependencies(require, module.exports, module);
-    } else if (!sinon) {
-        return;
-    } else {
-        makeApi(sinon);
-    }
-}(typeof sinon == "object" && sinon || null));

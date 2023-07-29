@@ -10,13 +10,7 @@
     }
 }(function (uijet) {
 
-    /**
-     * Toggled mixin class.
-     * 
-     * @mixin Toggled
-     * @category Mixin
-     * @extends BaseWidget
-     */
+    
     uijet.Mixin('Toggled', {
         /**
          * @member {Object} Toggled#options

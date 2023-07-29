@@ -1,8 +1,6 @@
 var gamejs = require('gamejs');
 
-/*
-   A simple moving star map with a given number of stars and default speed.
-*/
+
 exports.StarMap = function (size) {
    this.count = 20;
    this.speed = 50;

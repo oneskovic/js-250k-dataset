@@ -13,7 +13,7 @@
             orderHasExtraCostOptions: orderHasExtraCostOptions
         };
         
-        /** Both calculates and sets the order.itemsTotal **/
+        
         function calcOrderItemsTotal(order) {
             if (!order) { return 0; }
             try {

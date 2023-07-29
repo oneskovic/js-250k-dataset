@@ -1,11 +1,3 @@
-/*
- * grunt-hashres
- * https://github.com/luismahou/grunt-hashres
- *
- * Copyright (c) 2013 Luismahou
- * Licensed under the MIT license.
- */
-
 'use strict';
 
 var fs    = require('fs'),

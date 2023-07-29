@@ -2,21 +2,7 @@
 
 var Spec = require('./Spec');
 
-/** Swarm is based on the Lamport model of time and events in a
-  * distributed system, so Lamport timestamps are essential to
-  * its functioning. In most of the cases, it is useful to
-  * use actuall wall clock time to create timestamps. This
-  * class creates second-precise Lamport timestamps.
-  * Timestamp ordering is alphanumeric, length may vary.
-  *
-  * @param processId id of the process/clock to add to every
-  *        timestamp (like !timeseq+gritzko~ssn, where gritzko
-  *        is the user and ssn is a session id, so processId
-  *        is "gritzko~ssn").
-  * @param initTime normally, that is server-supplied timestamp
-  *        to init our time offset; there is no guarantee about
-  *        clock correctness on the client side
-  */
+
 var SecondPreciseClock = function (processId, timeOffsetMs) {
     if (!Spec.reTok.test(processId)) {
         throw new Error('invalid process id: '+processId);

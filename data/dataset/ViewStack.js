@@ -1,25 +1,3 @@
-/*
----
-
-name: ViewStack
-
-description: Provides a view that handles an infinite number of views arrenged
-             as a stack, one on the top of each others.
-
-license: MIT-style license.
-
-authors:
-	- Jean-Philippe Dery (jeanphilippe.dery@gmail.com)
-
-requires:
-	- View
-
-provides:
-	- ViewStack
-
-...
-*/
-
 /**
  * @see    http://moobilejs.com/doc/latest/View/ViewStack
  * @author Jean-Philippe Dery (jeanphilippe.dery@gmail.com)

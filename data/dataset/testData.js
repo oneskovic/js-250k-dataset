@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2011 Kevin Decker (http://www.incaseofstairs.com/)
- * See LICENSE for license information
- */
 $(document).ready(function() {
     function drawGradient(x, y, r1, r2) {
         var radialGradient = context.createRadialGradient(x, y, r1, x, y, r2);

@@ -1,4 +1,3 @@
-
   var View = require('app.ext.view').View;
   var DataObject = require('basis.data').Object;
   var Dataset = require('basis.data').Dataset;

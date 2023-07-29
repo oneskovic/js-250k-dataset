@@ -1,10 +1,4 @@
 /**
- * Source: IconLayer.js
- * Copyright (c) 2013-2014 Oculus Info Inc.
- * @fileOverview Aperture Icon Layer Implementation
- */
-
-/**
  * @namespace
  * @ignore
  * Ensure namespace exists

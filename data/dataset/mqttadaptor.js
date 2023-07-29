@@ -66,18 +66,7 @@ Adaptor.prototype.onPubAck = function(client, packet) {
   client.emit('message', req);
 };
 
-/**
- * Publish message or subscription ack.
- *
- * if packet.id exist and this.subReqs[packet.id] exist then packet is a suback.
- * Subscription is request/response mode.
- * packet.id is pass from client in packet.messageId and record in Pomelo context and attached to the subscribe response packet.
- * packet.body is the context that returned by subscribe next callback.
- *
- * if packet.id not exist then packet is a publish message.
- *
- * otherwise packet is a illegal packet.
- */
+
 Adaptor.prototype.publish = function(client, packet) {
   var mid = packet.id;
   var subreq = this.subReqs[mid];

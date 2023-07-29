@@ -4,7 +4,7 @@ var baseAt = require('../internal/baseAt'),
     isIndex = require('../internal/isIndex'),
     restParam = require('../function/restParam');
 
-/** Used for native method references. */
+
 var arrayProto = Array.prototype;
 
 /** Native method references. */

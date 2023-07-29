@@ -1,5 +1,3 @@
-//#include group.js
-
 //
 // An organization is like a group, but different. Most of the logic is handled in group.js.
 // Only organization-specific code is here. For the most part, we just branch elsewhere based on class_tsid

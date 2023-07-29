@@ -1,11 +1,3 @@
-/**
- * This example shows how to use multiple floating axes in a polar chart. Similar to the
- * Plot Line Chart example, floating axes don\'t have a fixed position, instead they track
- * a specified value on another axis that is running in the opposite direction.
- *
- * The example makes use of the 'rotate' interaction. To use it, click or tap and then
- * drag anywhere on the chart.
- */
 Ext.define('KitchenSink.view.charts.radial.MultiAxis', {
     extend: 'Ext.Panel',
     xtype: 'radial-multi-axis',

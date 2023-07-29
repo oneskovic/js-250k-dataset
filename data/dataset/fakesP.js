@@ -1,5 +1,3 @@
-
-
 if (global.useQ)
     var lifter = require('q').denodeify;
 else if (global.useBluebird)

@@ -4,9 +4,7 @@ var moment   = require('moment');
 var response = require('response');
 var hbase;
 
-/**
- * Reports
- */
+
 
 var Reports = function (req, res, next) {
   var options = prepareOptions();

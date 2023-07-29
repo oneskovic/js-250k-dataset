@@ -1,9 +1,4 @@
 /**
- * @author Mat Groves http://matgroves.com/ @Doormat23
- * original filter: https://github.com/evanw/glfx.js/blob/master/src/filters/fun/dotscreen.js
- */
-
-/**
  *
  * This filter applies a dotscreen effect making display objects appear to be made out of black and white halftone dots like an old printer
  * @class DotScreenFilter

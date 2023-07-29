@@ -1,9 +1,3 @@
-/**
- * Represents a Bill
- *
- * Field documentation is available here:
- * http://services.sunlightlabs.com/docs/Real_Time_Congress_API/bills/
- */
 Ext.define('GeoCon.model.Bill', {
     extend: 'Ext.data.Model',
 

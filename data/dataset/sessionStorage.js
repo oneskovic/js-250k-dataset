@@ -1,34 +1,3 @@
-/**
- *
- * Protocol bindings for all sessionStorage operations.
- *
- * <example>
-    :sessionStorage.js
-    // get the storage item for the given key
-    client.sessionStorage('GET', someKey, function(err,res) { ... });
-
-    // get all keys of the storage
-    client.sessionStorage(function(err,res) { ... });
-
-    // set the storage item for the given key
-    client.sessionStorage('POST', {key: someKey, value: someValue});
-
-    // remove the storage item for the given key
-    client.sessionStorage('DELETE', 'someKey');
-
-    // clear the storage
-    client.sessionStorage('DELETE');
- * </example>
- *
- * @param {String=}        method  method for storage operation
- * @param {Object|String=} args    operation arguments
- * @callbackParameter error, response
- *
- * @see  https://code.google.com/p/selenium/wiki/JsonWireProtocol#/session/:sessionId/session_storage
- * @type protocol
- *
- */
-
 module.exports = function sessionStorage (method, args) {
 
     // set default options

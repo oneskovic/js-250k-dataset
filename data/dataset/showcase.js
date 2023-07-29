@@ -1,6 +1,3 @@
-// Color pickers in different flavors.
-// -----------------------------------
-
 var cpDefault = ColorPicker(document.getElementById('default'), updateInputs);
 var cpSmall = ColorPicker(document.getElementById('small'), updateInputs);
 var cpFancy = ColorPicker(document.getElementById('fancy'), updateInputs);

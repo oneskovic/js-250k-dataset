@@ -2,7 +2,7 @@ var http = require('http');
 var apn = require('apn');
 var url = require('url');
  
-/* The registration id returned upon the call to register in the app - this would be retrieved from a db where originally stored */
+
 var iPhone6 = "7f6c896c6491e32c61bbd2aac154ccb22568fab1b822052db1b81a99e9322048";
 var iPhone5 = "3canc1493275761472e9a0b93fad10e0176e4b4692e1f48449462ff71fdbb013";
  

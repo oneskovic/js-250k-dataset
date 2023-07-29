@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 1997-2013, SalesLogix, NA., LLC. All rights reserved.
- */
-
 /**
  * @class crm.Views.MainToolbar
  *

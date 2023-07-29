@@ -1,13 +1,3 @@
-/*
- * storageClient.js: A base StorageClient for Openstack &
- * Rackspace storage clients
- *
- * (C) 2013 Rackspace
- *      Ken Perkins
- * MIT LICENSE
- *
- */
-
 var urlJoin = require('url-join'),
     _ = require('underscore');
 

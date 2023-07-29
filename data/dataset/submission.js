@@ -12,9 +12,7 @@ module.exports = BaseRouter.extend({
   routes: {
     get : {
 
-      /*
-        Gets all submissions
-       */
+      
       "/" : [
         Controller.getAll,
         Controller.serialize

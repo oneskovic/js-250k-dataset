@@ -22,15 +22,7 @@ function FlexBoxSectionIniter(aElt, aRuleset)
   CheckToggle(gDialog.stretchSelfAlignButton,  as == "stretch");
   CheckToggle(gDialog.autoSelfAlignButton,     as == "auto");
 
-  /* NOT YET IMPLEMENTED BY GECKO
-  var ac = CssInspector.getCascadedValue(aRuleset, "align-content");
-  CheckToggle(gDialog.startAlignContentButton,    ac == "flex-start");
-  CheckToggle(gDialog.centerAlignContentButton,   ac == "center");
-  CheckToggle(gDialog.endAlignContentButton,      ac == "flex-end");
-  CheckToggle(gDialog.stretchAlignContentButton,  ac == "stretch");
-  CheckToggle(gDialog.spaceAroundAlignContentButton,     ac == "space-around");
-  CheckToggle(gDialog.spaceAroundAlignContentButton,     ac == "space-between");
-  */
+  
 
   var jc = CssInspector.getCascadedValue(aRuleset, "justify-content");
   CheckToggle(gDialog.startJustifyContentButton,    jc == "flex-start");

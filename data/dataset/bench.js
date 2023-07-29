@@ -1,4 +1,3 @@
-
 var sliced = require('./')
 var Bench = require('benchmark');
 var s = new Bench.Suite;
@@ -83,13 +82,4 @@ s.add('Array.prototype.slice.call(arguments, -2, -1)', function () {
 })
 .run();
 
-/**
- * Output:
- *
- * Array.prototype.slice.call x 1,289,592 ops/sec ±2.88% (87 runs sampled)
- * [].slice.call x 1,345,451 ops/sec ±1.68% (97 runs sampled)
- * cached slice.call x 10,719,886 ops/sec ±1.04% (99 runs sampled)
- * sliced x 15,809,545 ops/sec ±1.46% (93 runs sampled)
- * fastest is sliced
- *
- */
+

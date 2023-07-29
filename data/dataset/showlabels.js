@@ -1,8 +1,3 @@
-/**
- * 内部显示Labels的控件扩展
- * @ignore
- */
-
 define('bui/chart/showlabels',['bui/chart/labels'],function (require) {
 	var BUI = require('bui/common'),
 		Labels = require('bui/chart/labels');

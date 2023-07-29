@@ -8,16 +8,7 @@
 
   window.customizeStrings = function () {
     return {
-      /** Customize string
-       *
-       * @return (string} The result of doing a lookup against the tables
-       * defined in www/customAppStrings.json and www/appStrings.json, in
-       * that order.  The first matching mapping is returned, or if no
-       * mappings are found, the original string is returned.
-       *
-       * @param {string} stringKey the customization string
-       * @param {object} options (currently unused)
-       */
+      
       customizeString: function (stringKey, options) {
         var got = window.customizeStrings.stringsTable[stringKey];
         return (typeof got !== "string") ? stringKey : got;

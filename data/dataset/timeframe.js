@@ -1,7 +1,3 @@
-/*
- * @author Daisuke Homma
- */
-
 // Time Frames
 
 new function() { //block

@@ -1,16 +1,7 @@
-/**
- * ACME Worker Context
- *
- * @module acme-app/app/worker/context/acme
- * @author Hermann Mayer <hermann.mayer92@gmail.com>
- */
-
 var util    = require('util');
 var express = require('express');
 
-/**
- * @constructor
- */
+
 var ACMEContext = function()
 {
     // Call the super constructor

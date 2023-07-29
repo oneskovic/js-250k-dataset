@@ -1,5 +1,3 @@
-// Requires ../charts/line.js
-
 charts.extend({
 	DRA: function(obj) {
 		// var xMax = (obj.deadline && typeof obj.deadline === 'number') ? obj.deadline + .5 : undefined,

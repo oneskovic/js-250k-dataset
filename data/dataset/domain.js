@@ -19,12 +19,7 @@ var DomainSchema = new Schema({
 
 DomainSchema.statics = {
 
-  /**
-   * check the existence of a Domain where company_name: name
-   *
-   * @param {String} name
-   * @param {Function} cb
-   */
+  
   testCompany: function(name, cb) {
     var qname = trim(name).toLowerCase();
     var query = {company_name: qname};

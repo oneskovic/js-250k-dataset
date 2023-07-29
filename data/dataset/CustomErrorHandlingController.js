@@ -5,18 +5,7 @@ Ext.define('KitchenSink.view.form.CustomErrorHandlingController', {
     submitRegistration: function() {
         var form = this.getView().getForm();
 
-        /* Normally we would submit the form to the server here and handle the response...
-        form.submit({
-            clientValidation: true,
-            url: 'register.php',
-            success: function(form, action) {
-               //...
-            },
-            failure: function(form, action) {
-                //...
-            }
-        });
-        */
+        
 
         if (form.isValid()) {
             var out = [];

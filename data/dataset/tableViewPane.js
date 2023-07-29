@@ -1,4 +1,3 @@
-
 // Format an array of RDF statements as an HTML table.
 //
 // This can operate in one of three modes: when the class of object is given

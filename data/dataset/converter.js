@@ -1,10 +1,3 @@
-/**
- * Provides common conversion, validation, and formatting functions for
- * different types of values.
- *
- * @module montage/core/converter/converter
- * @requires montage/core/core
- */
 var Montage = require("../core").Montage;
 
 /**

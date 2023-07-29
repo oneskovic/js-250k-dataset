@@ -1,11 +1,3 @@
-/** internal
- *  mixin Caching
- *
- *  An internal mixin whose public methods are exposed on the [[Environment]]
- *  and [[Index]] classes.
- **/
-
-
 ////////////////////////////////////////////////////////////////////////////////
 
 

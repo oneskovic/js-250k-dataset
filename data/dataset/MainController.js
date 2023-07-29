@@ -1,10 +1,3 @@
-/**
- * MainController
- *
- * @description :: Server-side logic for managing mains
- * @help        :: See http://links.sailsjs.org/docs/controllers
- */
-
 var FACEBOOK_ID = process.env.FACEBOOK_ID;
 var FACEBOOK_TOKEN = process.env.FACEBOOK_TOKEN;
 

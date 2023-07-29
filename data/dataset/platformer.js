@@ -1,8 +1,3 @@
-
-/**
- * Module dependencies.
- */
-
 var Canvas = require('../')
   , tty = require('tty')
   , size = process.stdout.getWindowSize();

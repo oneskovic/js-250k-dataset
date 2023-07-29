@@ -1,7 +1,5 @@
 Meteor.startup(function() {
-  /*
-   * Sitemap
-   */
+  
   sitemaps.add("/sitemap.xml", function() {
     var _getLatest = function(viewParamKey, terms) {
       var params = getPostsParameters(

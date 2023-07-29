@@ -1,7 +1,3 @@
-///import core
-///commands 当输入内容超过编辑器高度时，编辑器自动增高
-///commandsName  AutoHeight,autoHeightEnabled
-///commandsTitle  自动增高
 /**
  * @description 自动伸展
  * @author zhanyi

@@ -52,11 +52,7 @@ function buildOverlay(domElem, fullPage) {
     $("html").append(overlay);
 }
 
-/**
- * Accepts a top level SVG node and deconstructs it by extracting data, marks, and the
- * mappings between them.
- * @param svgNode - Top level SVG node of a D3 visualization.
- */
+
 function visDeconstruct(svgNode) {
     var deconstructed = VisDeconstruct.deconstruct(svgNode);
 

@@ -1,5 +1,3 @@
-/*global phantom, casper, patchRequire, require:true*/
-
 var require = patchRequire(require);
 var colorizer = require('colorizer').create('Colorizer');
 var fs = require('fs');

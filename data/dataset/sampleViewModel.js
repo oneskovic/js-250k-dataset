@@ -1,5 +1,3 @@
-/// <reference path="..\breeze.debug.js" />
-
 (function (root) {
         var ko = root.ko,
             breeze = root.breeze,

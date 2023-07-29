@@ -1,4 +1,3 @@
-/*jshint globalstrict: true*/
 'use strict';
 (function(window, idbModules){
     function shim(name, value) {

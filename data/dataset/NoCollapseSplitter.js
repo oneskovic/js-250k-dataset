@@ -2,12 +2,7 @@ Ext.define('Ozone.components.resizer.NoCollapseSplitter', {
     extend: 'Ext.resizer.Splitter',
     alias: 'widget.nocollapsesplitter',
 
-    /**
-     * @property orientation
-     * @type String
-     * Orientation of this Splitter. <code>'vertical'</code> when used in an hbox layout, <code>'horizontal'</code>
-     * when used in a vbox layout.
-     */
+    
 
     onRender: function() {
         var me = this,

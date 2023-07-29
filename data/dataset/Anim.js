@@ -3,42 +3,13 @@ var System = require('./system');
 var Utils = require('burner').Utils;
 var Vector = require('burner').Vector;
 
-/**
- * Creates a new Anim. Use for frame-based animation in a
- * Bit-Shadow Machine rendering.
- *
- * An Anim is a simple hidden point with a 'frames' property
- * that describes additional Bit-Shadows to position relative
- * to the Anim's location. An Anim also has an advanceFrame
- * method that cycles through all entries in the frames property.
- *
- * @constructor
- */
+
 function Anim() {
   Item.call(this);
 }
 Utils.extend(Anim, Item);
 
-/**
- * Initializes the Anim.
- * @param {Object} [opt_options=] A map of initial properties.
- * @param {number} [opt_options.scale = 0] Scale. Set to a higher value for debugging.
- * @param {Array} [opt_options.color = [0, 0, 0]] Color. Set color for debugging if scale > 0.
- * @param {number} [opt_options.zIndex = 0] zIndex. Set to a higher value to place this pixel on a higher layer.
- * @param {Object} [opt_options.location = new Vector] Location.
- * @param {Array} [opt_options.frames = []] The frames to animate.
- * @param {number} [opt_options.currentFrame = 0] The current animation frame.
- *
- * @example The 'frames' property should be formatted like:
- * var frames = [
- *   {"items":
- *     [
- *       {"x": 9, "y": -30, "color": [255, 255, 255], "opacity": 1, "scale": 1},
- *       {"x": 17,"y": -30, "color": [255, 255, 255], "opacity": 1, "scale": 1}
- *     ]
- *   }
- * ];
- */
+
 Anim.prototype.init = function(world, opt_options) {
   Anim._superClass.init.call(this, world, opt_options);
 

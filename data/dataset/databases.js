@@ -1,10 +1,3 @@
-/*
- * database.js: Database methods for working with databases from MongoHQ
- *
- * (C) 2012 Charlie Robbins, Ken Perkins, Ross Kukulinski & the Contributors.
- *
- */
-
  var errs     = require('errs'),
      url      = require('url');
 

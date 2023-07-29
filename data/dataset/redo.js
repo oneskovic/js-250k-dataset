@@ -1,9 +1,3 @@
-/**
- * @fileoverview 
- * Tool 'Redo' Source,
- * Class Trex.Tool.ReDo 와 configuration을 포함    
- *     
- */
 TrexConfig.addTool(
 	"redo",
 	{

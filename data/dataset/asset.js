@@ -1,134 +1,144 @@
-def('qiniu.Asset', [ 'qiniu.utils', 'qiniu.Fop' ], function(require, exports, module) {
+var loginModule = require("./login");
+//tests the asset manager
+casper.test.begin('Test Asset Manager', 7, function suite(test) {
+    loginModule.login();
 
-  var configData = {};
+    casper.then(function() {
+	    this.wait(500, function() {});
+	    test.assertExists("a[class='project-layout-list']", "Menu is there");
+    });
 
-  if ('undefined' !== typeof define && define.amd) {
-    var utils  = arguments[0];
-    var Fop    = arguments[1];
-  } else {
-    var utils  = require('qiniu.utils');
-    var Fop    = require('qiniu.Fop');
-  }
 
-  /**
-   * Asset Class
-   * @param {String} key    Asset's key
-   * @param {Bucket} parent Bucket object
-   */
-  function Asset(key, parent, config) {
-    this.key = key;
-    this.parent = parent;
+    //checks if menu exists and opens it
+    casper.then(function() {
+        test.assertExists("a[class='navigation-item navigation-global-menu']", "Menu button at top left exists ");
+    });
+    casper.then(function() {
+        this.click("a[class='navigation-item navigation-global-menu']");
+    });
+    casper.then(function() {
+    	this.wait(1000, function() {
+    		this.capture("./test_frontend/img/asset/01-submenu open.png");
+    	});
+    });
 
-    this.config = config || {};
-  }
+    //clicks on the asset manager button
+    casper.then(function() {
+		this.click("div.global-menu-item:nth-child(2) > a:nth-child(1)");
+    });
 
-  /**
-   * return the asset url
-   * @return {String} url
-   */
-  Asset.prototype.url = function() {
-    return utils.parent.url() + '/' + this.key;
-  };
+    casper.then(function() {
+    	this.wait(1000, function() {
+    		this.capture("./test_frontend/img/asset/02-opened asset page.png");
+    	});
+    });
 
-  /**
-   * return the encoded entry url of the asset
-   * @return {String} entry url
-   */
-  Asset.prototype.entryUrl = function() {
-    return utils.safeEncode(utils.format(
-      '%s:%s',
-      this.parent.name, this.key
-    ));
-  };
+    casper.then(function() {
+        casper.test.comment("Filter with no results");
+    });
+    //enters a value into the search box that doesn't match any of the files
+    casper.then(function() {
+        casper.evaluate(function() {
+            document.querySelector('input[name="search"]').setAttribute("value","no results");
+        });
+        
+    });
+    casper.then(function() {
+        this.click("button[type=submit]");
+    });
+    casper.then(function() {
+        this.wait(1000, function() {
+            this.capture("./test_frontend/img/asset/03-no results in filter.png");
+        });
+    });
 
-  /**
-   * return the qrcode image of the asset
-   * @param  {Object}   opts     options
-   * @return {String}            url
-   */
-  Asset.prototype.qrcode = function(opts, callback) {
-    switch (true) {
-      case utils.isFunction(opts):
-        callback = opts;
-        opts = { mode: 0, level: 'L' };
-        break;
-      case utils.isObject(opts) && utils.isUndefined(callback):
-        callback = noop;
-        break;
-      case utils.isUndefined(opts):
-        opts = { mode: 0, level: 'L' };
-        callback = noop;
-        break;
-    }
+    //checks for an error message being displayed on the page
+    casper.then(function() {
+        this.wait(1000, function() {
+            test.assertSelectorHasText('.unit-40', 'No assets found');
+        });
+    });
 
-    var url = utils.format('%s?qrcode/%d/level/%s', this.url(), opts.mode, opts.level);
+    casper.then(function() {
+        casper.test.comment("Adding an asset");
+    });
 
-    var img = new Image();
-    img.src = img.url = url;
+    casper.then(function() {
+    	casper.test.comment("Testing uploading");
+    	test.assertExists(".asset-nav-tabs > ul:nth-child(1) > li:nth-child(2) > a:nth-child(1)", "Able to upload a new file");
+    });
 
-    return img;
-  };
+    //clicks on the "Upload new asset" tab
+    casper.then(function() {
+    	this.click(".asset-nav-tabs > ul:nth-child(1) > li:nth-child(2) > a:nth-child(1)");
+    });
 
-  Asset.prototype.fop = function(config) {
-    return new Fop(this, config);
-  };
+    casper.then(function() {
+    	this.wait(2000);
+	});
 
-  /**
-   * return a image with a established format
-   * @param  {String}   alias    alias name
-   * @return {String}            url
-   */
-  Asset.prototype.alias = function(alias) {
-    var url = this.url();
+    //fill in the form
+	casper.then(function() {
+    	this.fill("form.asset-form", {
+    	'file' : config.assetPath
+		});
+	});
 
-    url += utils.format('%s%s', this.config.separate, alias);
+    casper.then(function() {
+        this.fill("form.asset-form", {
+        'title' : 'testing',
+        'description' : 'description'
+        }, true);
+    });
 
-    return url;
-  };
+	casper.then(function() {
+    	this.capture("./test_frontend/img/asset/04-uploading an image.png");
+	});
 
-  /**
-   * Markdown to HTML
-   * @param  {Object}   opts     options
-   * @return {Promise}           promise object
-   */
-  Asset.prototype.md2html = function(opts) {
+    //submits the image
+	casper.then(function() {
+		this.click("button[type=submit]");
+    });
 
-    if (utils.isFunction(opts)) {
-      callback = opts;
-      opts = {
-        mode: false,
-        css: false
-      };
-    } else if (utils.isObject(opts)) {
-      callback = callback || noop;
-    } else {
-      callback = callback || noop;
-      opts = {
-        mode: false,
-        css: false
-      };
-    }
+    //clicks the "Filters" tab
+    casper.then(function() {
+       this.click(".asset-nav-tabs > ul:nth-child(1) > li:nth-child(1) > a:nth-child(1)") 
+    });
 
-    var url = this.url() + '?md2html';
+    casper.then(function() {
+        this.capture("./test_frontend/img/asset/05-back to filter tab.png");
+    });
 
-    if (opts.mode) {
-      url += utils.format('/%s', opts.mode);
-    }
+    casper.then(function() {
+        casper.test.comment("Filter with results");
+    });
 
-    if (opts.css) {
-      url += utils.format('/css/%s', utils.safeEncode(opts.css));
-    }
+    //inputs a name that should match one of the files
+    casper.then(function() {
+        casper.evaluate(function() {
+            document.querySelector('input[name="search"]').setAttribute("value", "testing");
+        });
+        
+    });
 
-    var image = new Image();
-    image.src = url;
+    casper.then(function() {
+        this.wait(1000, function() {
+            this.click("button[type=submit]");
+        });
+    });
 
-    return image;
-  };
+    casper.then(function() {
+        this.wait(1000, function() {
+        this.capture("./test_frontend/img/asset/06-filter showing result.png");
+        });
+    });
 
-  function noop() { return false; }
+    //checks to make sure the error text isn't on the page
+    casper.then(function() {
+        test.assertSelectorDoesntHaveText('.unit-40', 'No assets found');
+    });
 
-  return function(config) {
-    configData = config;
-    return Asset;
-  };
+    casper.run(function() {
+        test.done();
+    }); 	
 });

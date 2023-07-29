@@ -1,5 +1,3 @@
-/* global RAML, describe, it */
-
 'use strict';
 
 if (typeof window === 'undefined') {

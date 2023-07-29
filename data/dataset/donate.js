@@ -1,16 +1,4 @@
-﻿/*
- * 
- * Yodel - an unofficial Yik Yak client for Windows Phone
- * (c) 2014-2015 soren121 and contributors.
- *
- * pages/donate/donate.js
- * 
- * Licensed under the terms of the MIT license.
- * See LICENSE.txt for more information.
- * 
- * http://github.com/soren121/yodel
- * 
- */
+﻿
 
 (function () {
     "use strict";

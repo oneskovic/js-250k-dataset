@@ -4,10 +4,7 @@ define(function(require) {
 
     var Camera = require('../Camera');
 
-    /**
-     * @constructor qtek.camera.Perspective
-     * @extends qtek.Camera
-     */
+    
     var Perspective = Camera.derive(
     /** @lends qtek.camera.Perspective# */
     {

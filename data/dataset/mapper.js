@@ -4,16 +4,7 @@ var path   = require('path')
   , logger = require(path.join(__dirname, '..', 'logger')).child({component : 'mapper'})
   ;
 
-/**
- * To tighten up the metrics JSON, the collector will maintain a list of
- * mappings from metric names (which sometimes include scopes as well) to
- * numeric IDs. As the agent sends new metric names to the collector, the
- * collector will return corresponding metric IDs, in the expectation that the
- * agent will uses those IDs instead of the names going forward.
- *
- * @param {Array} raw A list of metric spec -> ID mappings represented as
- *                    2-element arrays: [{name : 'Metric', scope : 'Scope'}, 1]
- */
+
 function MetricMapper(raw) {
   this.unscoped = {};
   this.scoped   = {};

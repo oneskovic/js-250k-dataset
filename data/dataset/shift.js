@@ -1,6 +1,3 @@
-//#include ../core/link.js
-//#include ./remove.js
-
 /**
  * Удалить элемент из начала коллекции,
  * аналог Array.prototype.shift

@@ -7,23 +7,7 @@ define([
 ], function(dojo, array, xhr, query, generateRandomUuid){
 	dojo.getObject("io.xhrMultiPart", true, dojox);
 
-	/*=====
-	var __xhrContentArgs = {
-		// name: String
-		//		Name of the form value.
-		// content: String
-		//		The contents of the value.
-		// filename: String?
-		//		An optional filename to pass to the server, as defined by the boundary.
-		// contentType: String?
-		//		An optional content-type (MIME) to pass to the server, if value is being
-		//		treated as a file.
-		// charset: String?
-		//		Optional charset to pass, for the server to interpret the file correctly.
-		// contentTransferEncoding: String?
-		//		Optional transfer encoding header value.
-	};
-	=====*/
+	
 	function _createPart(/*__xhrContentArgs */args, /* String */boundary){
 		// summary:
 		//		Assemble an array of boundary parts based on the passed values in args.

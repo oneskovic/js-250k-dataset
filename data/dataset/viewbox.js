@@ -1,7 +1,6 @@
-
 SVG.ViewBox = function(element) {
   var x, y, width, height
-    , wm   = 1 /* width multiplier */
+    , wm   = 1 
     , hm   = 1 /* height multiplier */
     , box  = element.bbox()
     , view = (element.attr('viewBox') || '').match(/-?[\d\.]+/g)

@@ -4,12 +4,7 @@ var Promise = require("nodegit-promise");
 
 var oldSorting = Revwalk.prototype.sorting;
 
-/**
- * Set the sort order for the revwalk. This function takes variable arguments
- * like `revwalk.sorting(NodeGit.RevWalk.Topological, NodeGit.RevWalk.Reverse).`
- *
- * @param {Number} sort
- */
+
 Revwalk.prototype.sorting = function() {
   var sort = 0;
 

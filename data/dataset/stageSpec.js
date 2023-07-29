@@ -1,5 +1,3 @@
-/* jasmine specs for Stage.js go here */
-
 describe('Stage', function() {
     var stage;
 

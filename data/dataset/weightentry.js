@@ -1,9 +1,3 @@
-/**
- * Shows a dial entry for the user to enter their weight. Will then dispatch
- * a custom event to the app with the value entered.
- *
- * @license see /LICENSE
- */
 WT.View.WeightEntry = function(elementId) {
 
 	var dialEntry = new WT.View.DialEntry("newweight");

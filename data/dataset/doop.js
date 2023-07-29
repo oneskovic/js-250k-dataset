@@ -1,4 +1,3 @@
-/*global describe: true, it: true */
 describe('jsdoc/util/doop', function() {
     var doop = require('jsdoc/util/doop');
 

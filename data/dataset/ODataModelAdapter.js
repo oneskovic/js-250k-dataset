@@ -1,7 +1,3 @@
-/*!
- * ${copyright}
- */
-
 /**
  * Analytical Adapter for ODataModels
  * 

@@ -1,5 +1,3 @@
-//#include include/garden.js
-
 var label = "Garden";
 var version = "1324500880";
 var name_single = "Garden";

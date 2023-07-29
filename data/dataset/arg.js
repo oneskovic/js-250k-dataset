@@ -1,12 +1,3 @@
-// borrow some ideas from here https://github.com/zvictor/ArgueJS/blob/master/argue.js
-
-/*
-// extend native type is not a good idea, sweet.js fails
-var argumentClass = null;
-
-!function () { argumentClass = arguments.__proto__; }();
-*/
-
 GLOBAL.Arg = {};
 
 var typeOf = function typeOf (variable) {

@@ -1,4 +1,3 @@
-/* global angular */
 var torrentHealth = require('torrent-health');
 var sourcesHealth = {};
 

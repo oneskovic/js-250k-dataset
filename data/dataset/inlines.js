@@ -1,19 +1,3 @@
-/**
- * Django admin inlines
- *
- * Based on jQuery Formset 1.1
- * @author Stanislaus Madueke (stan DOT madueke AT gmail DOT com)
- * @requires jQuery 1.2.6 or later
- *
- * Copyright (c) 2009, Stanislaus Madueke
- * All rights reserved.
- *
- * Spiced up with Code from Zain Memon's GSoC project 2009
- * and modified for Django by Jannis Leidel
- *
- * Licensed under the New BSD License
- * See: http://www.opensource.org/licenses/bsd-license.php
- */
 (function($) {
     $.fn.formset = function(opts) {
         var options = $.extend({}, $.fn.formset.defaults, opts);

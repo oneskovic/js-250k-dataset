@@ -1,11 +1,7 @@
 Ext.define('Ext.ux.form.field.FilterCombo', {
     extend: 'Ext.form.field.ComboBox',
     alias: 'widget.filtercombo',
-    /**
-    * @cfg {string} recordField
-    * @required
-    * The fieldname of the record that contains the filtervalue
-    */
+    
 
     /**
     * @cfg {string} searchField

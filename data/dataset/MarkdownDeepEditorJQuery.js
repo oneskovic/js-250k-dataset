@@ -1,6 +1,3 @@
-//! MarkdownDeep  http://toptensoftware.com/MarkdownDeep
-//! Copyright (C) 2010 Topten Software. Some Rights Reserved
-
 var MarkdownDeepJQuery=new function(){
 
     // private:priv.

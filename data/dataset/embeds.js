@@ -1,36 +1,3 @@
-/**
- * Dirac Embeds
- * Helps facilitate embedding foreign objects
- *
- * options: {
- *   // The methods to apply `after` filters to for embeds
- *   operations: ['findOne']
- * }
- *
- * How to use:
- * dirac.register({
- *   name: 'user'
- * , schema: {
- *     id:    { type: 'serial', primaryKey: true }
- *   , name:  { type: 'text' }
- *   }
- *
- * , defaultEmbeds: {
- *     groups: true
- *   }
- *
- *   // Describes how to embed foreign tables
- * , embeds: {
- *     // Naive example, but shows how to use it
- *     groups: function( results, $query, callback ){
- *       if ( results.length === 0 ) return callback();
- *
- *       dirac.dals.groups.find({ user_id: results[0].id }, callback );
- *     }
- *   }
- * });
- */
-
 var async = require('async');
 var _     = require('lodash');
 

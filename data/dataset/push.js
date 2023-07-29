@@ -1,58 +1,126 @@
-var pipeline = require('../');
-var through = require('through2');
-var split = require('split');
-var concat = require('concat-stream');
-var test = require('tape');
+describe("webworks push", function () {
+    var push = require('ripple/platform/webworks.handset/2.0.0/server/push'),
+        client = require('ripple/platform/webworks.handset/2.0.0/client/push'),
+        transport = require('ripple/platform/webworks.core/2.0.0/client/transport'),
+        PushData = require('ripple/platform/webworks.handset/2.0.0/client/PushData'),
+        event = require('ripple/event'),
+        MockBaton = function () {
+            this.take = jasmine.createSpy("baton.take");
+            this.pass = jasmine.createSpy("baton.pass");
+        },
+        dataActual = {
+            headerField: ["21f39092"],
+            requestURI: "/",
+            source: "ripple",
+            isChannelEncrypted: false,
+            payload: "My payload"
+        };
 
-test('push', function (t) {
-    var expected = {};
-    expected.first = [ 333, 444, 555, 666, 777 ];
-    expected.second = [ 6.66, 7.77 ];
-    expected.output = [ 3.33, 4.44, 5.55, 3, 2 ];
-    
-    t.plan(5 + 2 + 5 + 3);
-    
-    var a = split();
-    var b = through.obj(function (row, enc, next) {
-        this.push(JSON.parse(row));
-        next();
+    describe("using server", function () {
+        it("exposes the push module", function () {
+            var webworks = require('ripple/platform/webworks.handset/2.0.0/server');
+            expect(webworks.blackberry.push).toEqual(push);
+        });
     });
-    var c = through.obj(function (row, enc, next) { this.push(row.x); next() });
-    var d = through.obj(function (x, enc, next) { this.push(x * 111); next() });
-    
-    var first = through.obj(function (row, enc, next) {
-        if (expected.first.length === 2) {
-            t.equal(p.length, 5);
-            p.push(second);
-            t.equal(p.length, 6);
-        }
-        
-        var ex = expected.first.shift();
-        t.deepEqual(row, ex);
-        
-        this.push(row / 100);
-        next();
+
+    describe("in spec", function () {
+        it("includes push module according to proper object structure", function () {
+            var spec = require('ripple/platform/webworks.handset/2.0.0/spec');
+            expect(spec.objects.blackberry.children.push.path)
+                .toEqual("webworks.handset/2.0.0/client/push");
+        });
     });
-    var second = through.obj(function (row, enc, next) {
-        var ex = expected.second.shift();
-        t.deepEqual(row, ex);
-        this.push(Math.floor(10 - row));
-        next();
+
+    describe("client", function () {
+        describe("onPushListener", function () {
+            it("polls the transport appropriately", function () {
+                spyOn(transport, "poll");
+                client.openPushListener(null, 2, "bb transport", "max queue cap");
+                expect(transport.poll.argsForCall[0][0]).toEqual("blackberry/push/onPush");
+                expect(transport.poll.argsForCall[0][1]).toEqual({
+                    get: {
+                        port: 2,
+                        bbTransport: "bb transport",
+                        maxQueueCap: "max queue cap"
+                    }
+                });
+                expect(typeof transport.poll.argsForCall[0][2]).toEqual("function");
+            });
+            // TODO: test the callback logic
+        });
     });
-    
-    var p = pipeline.obj([ a, b, c, d, first ]);
-    t.equal(p.length, 5);
-    
-    p.pipe(through.obj(function (row, enc, next) {
-        var ex = expected.output.shift();
-        t.deepEqual(row, ex);
-        next();
-    }));
-    
-    p.write('{"x":3}\n');
-    p.write('{"x":4}\n');
-    p.write('{"x":5}\n');
-    p.write('{"x":6}\n');
-    p.write('{"x":7}');
-    p.end();
+
+    describe("when calling onPush", function () {
+        it("takes the baton", function () {
+            var baton = new MockBaton();
+            push.onPush({port: 123}, null, baton);
+            expect(baton.take).toHaveBeenCalled();
+        });
+
+        it("throws an exception if no port provided", function () {
+            expect(push.onPush).toThrow();
+        });
+
+        it("throws an exception if an invalid port is specified", function () {
+            expect(function () {
+                push.onPush({port: "abc"}, null, new MockBaton());
+            }).toThrow();
+
+        });
+
+        it("passes the baton when the Push event is raised", function () {
+            var baton = new MockBaton();
+            push.onPush({port: 123}, null, baton);
+            event.trigger("Push", [dataActual, 123], true);
+            expect(baton.pass).toHaveBeenCalled();
+        });
+
+        it("only passes the baton once", function () {
+            var baton = new MockBaton();
+            push.onPush({port: 123}, null, baton);
+
+            event.trigger("Push", [dataActual, 123], true);
+            event.trigger("Push", [dataActual, 123], true);
+
+            expect(baton.pass.callCount).toBe(1);
+        });
+    });
+
+    describe("using push.data", function () {
+
+        describe("getHeaderField", function () {
+            it("returns the value of the header field", function () {
+                var data = new PushData(dataActual, 123);
+                expect(data.getHeaderField(0)).toBe(dataActual.headerField[0]);
+            });
+        });
+
+        describe("getRequestURI", function () {
+            it("returns the value of the request URI", function () {
+                var data = new PushData(dataActual, 123);
+                expect(data.getRequestURI()).toBe(dataActual.requestURI);
+            });
+        });
+
+        describe("getSource", function () {
+            it("returns the value of the source field", function () {
+                var data = new PushData(dataActual, 123);
+                expect(data.getSource()).toBe(dataActual.source);
+            });
+        });
+
+        describe("isChannelEncrypted", function () {
+            it("returns the value of the isChannelEncrypted field", function () {
+                var data = new PushData(dataActual, 123);
+                expect(data.isChannelEncrypted).toBe(dataActual.isChannelEncrypted);
+            });
+        });
+
+        describe("payload", function () {
+            it("returns the value of the payload field", function () {
+                var data = new PushData(dataActual, 123);
+                expect(data.payload).toBe(dataActual.payload);
+            });
+        });
+    });
 });

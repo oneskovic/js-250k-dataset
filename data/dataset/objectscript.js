@@ -1,4 +1,3 @@
-
 Kata.require([
     "katajs/oh/Script.js"
 ], function() {

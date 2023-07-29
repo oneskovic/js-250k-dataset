@@ -1,7 +1,3 @@
-// Call the init method with sessionId, dashboardId and afterDataFetchFn
-// Refresh will automatically poll to completion
-// Poll will call afterDataFetchFn after completion.
-
 angular.module('dashApi', [], function($provide) { 
         $provide.factory('dashApiService', ['$http', '$timeout', 
             function($http, $timeout){

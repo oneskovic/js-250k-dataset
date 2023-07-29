@@ -1,8 +1,6 @@
 (function (enyo, scope) {
 	
-	/**
-	* @private
-	*/
+	
 	var pointerEvents;
 	if (window.navigator.pointerEnabled) {
 		pointerEvents = [

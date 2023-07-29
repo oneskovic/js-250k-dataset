@@ -1,6 +1,3 @@
-/**
- * Shows how the Slider control can be used in a form and participate like a form field.
- */
 Ext.define('KitchenSink.view.form.SliderField', {
     extend: 'Ext.form.Panel',
     

@@ -1,9 +1,3 @@
-// Droplicious v.3.0 Created May 21, 2009
-// Copyright @2009 http://headfirstproductions.ca Author: Darren Terhune
-// Contributors: Jan Sovak http://canada-jack.com,  Mason Meyer http://www.masonmeyer.com
-// This software is licensed under the Creative Commons Attribution 2.5 Canada License 
-// <http://creativecommons.org/licenses/by/2.5/ca//>
-
 var dropliciousMenu = Class.create({
 
 	// Properties

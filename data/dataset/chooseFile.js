@@ -1,18 +1,3 @@
-/**
- *
- * Given a selector corresponding to an `<input type=file>`, will upload the local
- * file to the browser machine and fill the form accordingly. It does not submit
- * the form for you.
- *
- * @param {String} selector   input element
- * @param {String} localPath  local path to file to be uploaded
- * @callbackParameter error
- *
- * @uses utility/uploadFile, action/addValue
- * @type utility
- *
- */
-
 var fs = require('fs'),
     async = require('async'),
     ErrorHandler = require('../utils/ErrorHandler.js');

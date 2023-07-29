@@ -1,11 +1,3 @@
-/**
-* The backup worker is meant to run as a cron job that runs periodically.
-* It downloads the full JSON data from the firebase that contains all the sites
-* then uploads it to the backup bucket in google cloud storage. This way we
-* have a full backup of all the sites/information/users that we can restore
-* if we need to
-*/
-
 var request = require('request');
 var cloudStorage = require('./cloudStorage.js');
 var firebase = require('firebase');

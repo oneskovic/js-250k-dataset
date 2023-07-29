@@ -6,13 +6,7 @@ var Definition = require('../definitionBase'),
   debug = require('debug')('domain:businessRule'),
   BusinessRuleError = require('../errors/businessRuleError');
 
-/**
- * BusinessRule constructor
- * @param {Object}   meta           Meta infos like: { name: 'name', priority: 1, description: 'bla bla' }
- * @param {Function} businessRuleFn Function handle
- *                                  `function(changed, previous, events, command, callback){}`
- * @constructor
- */
+
 function BusinessRule (meta, businessRuleFn) {
   Definition.call(this, meta);
 

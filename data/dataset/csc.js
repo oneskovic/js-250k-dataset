@@ -16,27 +16,7 @@ module.exports = function (math, config) {
 
       bigCsc = util.bignumber.cos_sin_sec_csc;
 
-  /**
-   * Calculate the cosecant of a value, defined as `csc(x) = 1/sin(x)`.
-   *
-   * For matrices, the function is evaluated element wise.
-   *
-   * Syntax:
-   *
-   *    math.csc(x)
-   *
-   * Examples:
-   *
-   *    math.csc(2);      // returns Number 1.099750170294617
-   *    1 / math.sin(2);  // returns Number 1.099750170294617
-   *
-   * See also:
-   *
-   *    sin, sec, cot
-   *
-   * @param {Number | Boolean | Complex | Unit | Array | Matrix | null} x  Function input
-   * @return {Number | Complex | Array | Matrix} Cosecant of x
-   */
+  
   math.csc = function csc(x) {
     if (arguments.length != 1) {
       throw new math.error.ArgumentsError('csc', arguments.length, 1);

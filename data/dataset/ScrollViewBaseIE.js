@@ -1,9 +1,3 @@
-/**
- * IE specific support for the scrollview-base module.
- *
- * @module scrollview-base-ie
- */
-
 Y.mix(Y.ScrollView.prototype, {
 
     /**

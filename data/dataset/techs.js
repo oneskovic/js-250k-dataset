@@ -8,9 +8,7 @@ var alwaysUsedTechs = [ 'angular', 'browsersync', 'gulp', 'jasmine', 'karma', 'p
 
 module.exports = function(GulpAngularGenerator) {
 
-  /**
-   * Format list techs used to generate app included in main view of sample
-   */
+  
   GulpAngularGenerator.prototype.computeTechs = function computeTechs() {
     var usedTechs = alwaysUsedTechs.concat([
       this.props.jQuery.name,

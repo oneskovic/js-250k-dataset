@@ -1,19 +1,3 @@
-/**
-
-  A word tokenizer that tokenizes sentences using the conventions
-  used by the Penn Treebank.  Contractions, such as "can't", are
-  split in to two tokens.  E.g.:
-
-    - can't S{->} ca n't
-    - he'll S{->} he 'll
-    - weren't S{-} were n't
-
-  This tokenizer assumes that the text has already been segmented into
-  sentences.  Any periods -- apart from those at the end of a string --
-  are assumed to be part of the word they are attached to (e.g. for
-  abbreviations, etc), and are not separately tokenized.
-
-**/
 var util = require("util");
 var _ = require('underscore')._;
 

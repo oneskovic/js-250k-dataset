@@ -1,12 +1,3 @@
-/*
- * Chrome-Last.fm-Scrobbler Megalyrics.ru connector by Dunaeva Natalia 
- * https://github.com/plushsteel
- * http://www.lastfm.ru/user/SlaveOfBeauty
- * 
- * (based on Pandora.com connector by Jordan Perr)
- *
- */
-
 /********* Configuration: ***********/
 
 // changes to the DOM in this container will trigger an update.

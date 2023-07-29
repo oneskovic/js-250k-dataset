@@ -1,8 +1,3 @@
-
-/**
- * Module dependencies.
- */
-
 if(!process.bridge) {
   process.initbridge();
 }

@@ -1,9 +1,3 @@
-/**
- * QR
- *
- * Directive to render a QR code.
- */
-
 var module = angular.module('qr', []);
 
 /**

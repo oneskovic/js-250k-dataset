@@ -1,11 +1,3 @@
-/*
-Language: Apache
-Author: Ruslan Keba <rukeba@gmail.com>
-Contributors: Ivan Sagalaev <maniac@softwaremaniacs.org>
-Website: http://rukeba.com/
-Description: language definition for Apache configuration files (httpd.conf & .htaccess)
-*/
-
 function(hljs) {
   var NUMBER = {className: 'number', begin: '[\\$%]\\d+'};
   return {

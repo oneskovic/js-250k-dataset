@@ -1,63 +1,121 @@
-CodeMirror.defineMode("properties", function() {
-  return {
-    token: function(stream, state) {
-      var sol = stream.sol() || state.afterSection;
-      var eol = stream.eol();
+function props(_args) {
+	var win = Titanium.UI.createWindow({
+		title:_args.title
+	});
+	
+	
+	function resultHelper(result, expected) {
+				
+		if (result instanceof Array) {
+			var sourceResult = JSON.stringify(result);
+			var expectedResult = JSON.stringify(expected);
+			
+			return resultHelper(sourceResult, expectedResult);
+		} 
+		
+		if (result == expected) {
+			return "Test Success ("+result+"=="+expected+")";
+		} else {
+			return "Test Failure: result (" + result + ") != expected (" + expected + ")";
+		}
+	}
+	
+	
+	var l = Titanium.UI.createLabel({
+		text:'See Log for output',
+		height:'auto',
+		width:'auto'
+	});
+	win.add(l);
+	
+	var array = [
+		{name:'Name 1', address:'1 Main St'},
+		{name:'Name 2', address:'2 Main St'},
+		{name:'Name 3', address:'3 Main St'},
+		{name:'Name 4', address:'4 Main St'}	
+	];
+	
+	//
+	// Test Default handling
+	//
+	
+	//Valid Defaults
+	Titanium.API.debug('Bool: ' + resultHelper(Ti.App.Properties.getBool('whatever',true),true));
+	Titanium.API.debug('Double: ' + resultHelper(Ti.App.Properties.getDouble('whatever',2.5),2.5));
+	Titanium.API.debug('int: ' + resultHelper(Ti.App.Properties.getInt('whatever',1),1));
+	Titanium.API.debug('String: ' + resultHelper(Ti.App.Properties.getString('whatever',"Fred"),"Fred"));
+	
+	// First StringList Test
+	var defaultString = new Array("testOne","testTwo");
+	
+	Titanium.API.debug('StringList-1: ' + resultHelper(Ti.App.Properties.getList('whatever',defaultString),defaultString));
+	// Second StringList Test
+	defaultString = new Array();
+	Titanium.API.debug('StringList-2: ' + resultHelper(Ti.App.Properties.getList('whatever',defaultString),defaultString));
+	
+	
+	//No Defaults
+	Titanium.API.debug('Bool: ' + resultHelper(Ti.App.Properties.getBool('whatever'),null));
+	Titanium.API.debug('Double: ' + resultHelper(Ti.App.Properties.getDouble('whatever'),null));
+	Titanium.API.debug('int: ' + resultHelper(Ti.App.Properties.getInt('whatever'),null));
+	Titanium.API.debug('String: ' + resultHelper(Ti.App.Properties.getString('whatever'),null));
+	
+	Titanium.API.debug('StringList: ' + resultHelper(Ti.App.Properties.getList('whatever'),null));
+	
+	//
+	// Round-trip tests
+	//
+	//
+	// test setters
+	//
+	Titanium.App.Properties.setString('String','I am a String Value ');
+	Titanium.App.Properties.setInt('Int',10);
+	Titanium.App.Properties.setBool('Bool',true);
+	Titanium.App.Properties.setDouble('Double',10.6);
+	Titanium.App.Properties.setList('MyList',array);
+	
+	//
+	// test getters
+	//
+	Titanium.API.info('String: '+ Titanium.App.Properties.getString('String'));
+	Titanium.API.info('Int: '+ Titanium.App.Properties.getString('Int'));
+	Titanium.API.info('Bool: '+ Titanium.App.Properties.getString('Bool'));
+	Titanium.API.info('Double: '+ Titanium.App.Properties.getString('Double'));
+	Titanium.API.info('List:');
+	
+	var list = Titanium.App.Properties.getList('MyList');
+	for (var i=0;i<list.length;i++)
+	{
+		Titanium.API.info('row['+i+'].name=' + list[i].name + ' row['+i+'].address=' + list[i].address );
+	}
+	
+	//
+	//  test listProperties
+	//
+	var props = Titanium.App.Properties.listProperties();
+	for (var i=0;i<props.length;i++)
+	{
+		Titanium.API.info('property: ' + props[i]);
+	}
+	//
+	// test out remove property and setting to null
+	//
+	Titanium.App.Properties.setString('String',null);
+	Titanium.App.Properties.removeProperty('Int');
+	Titanium.API.info("String should be null - value = " + resultHelper(Titanium.App.Properties.getString('String'),null));
+	Titanium.API.info("Int should be null - value = " + resultHelper(Titanium.App.Properties.getString('Int'),null));
+	
+	//
+	// application settings testing
+	//
+	if (Titanium.Platform.name != 'android')
+	{
+		Titanium.API.info("AppSetting Name = " + Titanium.App.Properties.getString('name_preference'));
+		Titanium.API.info("AppSetting Enabled = " + Titanium.App.Properties.getString('enabled_preference'));
+		Titanium.API.info("AppSetting Slider = " + Titanium.App.Properties.getString('slider_preference'));
+	}
+	
+	return win;
+};
 
-      state.afterSection = false;
-
-      if (sol) {
-        if (state.nextMultiline) {
-          state.inMultiline = true;
-          state.nextMultiline = false;
-        } else {
-          state.position = "def";
-        }
-      }
-
-      if (eol && ! state.nextMultiline) {
-        state.inMultiline = false;
-        state.position = "def";
-      }
-
-      if (sol) {
-        while(stream.eatSpace());
-      }
-
-      var ch = stream.next();
-
-      if (sol && (ch === "#" || ch === "!" || ch === ";")) {
-        state.position = "comment";
-        stream.skipToEnd();
-        return "comment";
-      } else if (sol && ch === "[") {
-        state.afterSection = true;
-        stream.skipTo("]"); stream.eat("]");
-        return "header";
-      } else if (ch === "=" || ch === ":") {
-        state.position = "quote";
-        return null;
-      } else if (ch === "\\" && state.position === "quote") {
-        if (stream.next() !== "u") {    // u = Unicode sequence \u1234
-          // Multiline value
-          state.nextMultiline = true;
-        }
-      }
-
-      return state.position;
-    },
-
-    startState: function() {
-      return {
-        position : "def",       // Current position, "def", "quote" or "comment"
-        nextMultiline : false,  // Is the next line multiline value
-        inMultiline : false,    // Is the current line a multiline value
-        afterSection : false    // Did we just open a section
-      };
-    }
-
-  };
-});
-
-CodeMirror.defineMIME("text/x-properties", "properties");
-CodeMirror.defineMIME("text/x-ini", "properties");
+module.exports = props;

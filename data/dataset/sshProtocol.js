@@ -1,14 +1,3 @@
-/*----------------------------------------------------------------------
- * nsChromeExtensionHandler
- * By Ed Anuff <ed@anuff.com>
- * Protocol handler code based on techniques from:
- *
- *  http://www.nexgenmedia.net/docs/protocol/
- *  http://simile.mit.edu/piggy-bank/
- *
- *----------------------------------------------------------------------
- */
-
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");                               // makes life easier
 
 // Custom protocol related

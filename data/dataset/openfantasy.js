@@ -1,5 +1,5 @@
 "use strict";
-/*global templates*/
+
 
 var openfantasy = openfantasy || {
 	templates: {

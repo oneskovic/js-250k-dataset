@@ -4,16 +4,7 @@ dojo.require("dojox.charting.action2d.Base");
 dojo.require("dojox.gfx.matrix");
 dojo.require("dojo.fx");
 
-/*=====
-dojo.declare("dojox.charting.action2d.__MagnifyCtorArgs", dojox.charting.action2d.__BaseCtorArgs, {
-	//	summary:
-	//		Additional arguments for highlighting actions.
 
-	//	scale: Number?
-	//		The amount to magnify the given object to.  Default is 2.
-	scale: 2
-});
-=====*/
 (function(){
 	var DEFAULT_SCALE = 2,
 		m = dojox.gfx.matrix,

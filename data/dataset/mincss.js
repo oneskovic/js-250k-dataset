@@ -1,11 +1,3 @@
-/*
- * grunt-contrib-mincss
- * http://gruntjs.com/
- *
- * Copyright (c) 2012 Tim Branyen, contributors
- * Licensed under the MIT license.
- */
-
 module.exports = function(grunt) {
   'use strict';
 

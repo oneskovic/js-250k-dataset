@@ -1,31 +1,3 @@
-/**
-	_enyo.Repeater_ is a simple control for making lists of items.
-
-	Components of a repeater are copied for each item created, and are wrapped
-	in a control that keeps the state of the item index.
-
-	Example:
-
-		{kind: "Repeater", count: 2, onSetupItem: "setImageSource", components: [
-			{kind: "Image"}
-		]}
-
-		setImageSource: function(inSender, inEvent) {
-			var index = inEvent.index;
-			var item = inEvent.item;
-			item.$.image.setSrc(this.imageSources[index]);
-			return true;
-		}
-
-	Be sure to return true from your _onSetupItem_ handler to avoid having other
-	event handlers further up the tree try to modify your item control.
-
-	The repeater will always be rebuilt after a call to _setCount_, even if the
-	count didn't change.  This differs from the behavior of most properties, in
-	which no action happens when a set-value call doesn't modify the value.
-	This is to accomodate potential changes to the data model for the repeater,
-	which may happen to have the same item count as before.
-*/
 enyo.kind({
 	name: "enyo.Repeater",
 	published: {

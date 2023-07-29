@@ -1,7 +1,3 @@
-/**
- * @module br/presenter/testing/KnockoutInvocationCountPlugin
- */
-
 br.Core.thirdparty("presenter-knockout");
 
 /**

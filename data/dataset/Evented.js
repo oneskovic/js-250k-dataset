@@ -1,6 +1,3 @@
-/**
- * @private
- */
 Ext.define('Ext.Evented', {
 
     alternateClassName: 'Ext.EventedBase',

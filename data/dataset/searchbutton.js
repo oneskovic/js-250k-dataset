@@ -1,9 +1,5 @@
 "use strict"
-/**
- * @class  elFinder toolbar search button widget.
- *
- * @author Dmitry (dio) Levashov
- **/
+
 $.fn.elfindersearchbutton = function(cmd) {
 	return this.each(function() {
 		var result = false,

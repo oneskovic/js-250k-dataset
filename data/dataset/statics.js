@@ -1,7 +1,3 @@
-/**
- * Module Dependencies
- */
-
 var model = require('../'),
     expect = require('expect.js');
 

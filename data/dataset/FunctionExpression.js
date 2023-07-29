@@ -1,4 +1,3 @@
-/*globals describe, it, beforeEach */
 var assert = require('assert');
 var program = require('../..');
 var valueFactory = require('../../lib/factory/value.js');

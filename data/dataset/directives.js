@@ -1,67 +1,90 @@
-'use strict';
+(function() {
+  var module = angular.module('protractorApp');
 
-/* Directives */
+  /**
+   * Used to print code bound to the scope.
+   * <pre ptor-code="scopeVar"></pre>
+   */
+  module.directive('ptorCode', function() {
+    return {
+      scope: {
+        code: '=ptorCode'
+      },
+      link: function(scope, element) {
+        scope.$watch('code', function() {
+          element.html(prettyPrintOne(scope.code));
+        });
+      }
+    };
+  });
 
-angular.module('angularProject.directives', ['http-auth-interceptor'])
-	.directive('authApplication', function($cookieStore, $http, $rootScope) {
- 		return {
- 			restrict: 'A',
-    		link: function (scope, elem, attrs) {
+  /**
+   * Used to pretty print code inside a <code> tag. The tag must have a class
+   * 'lang-js' or 'lang-javascript' in order to be painted.
+   *
+   */
+  module.directive('code', function() {
+    return {
+      restrict: 'E',
+      compile: function(tElement, attrs) {
+        var prettyHtml,
+            shouldPaint = /lang-j.*/.test(attrs.class);
 
-    		  var main = document.getElementById("main");
-    		  var login = document.getElementById("login-holder");
+        if (shouldPaint) {
+          prettyHtml = prettyPrintOne(tElement.html());
+        }
 
-    		  var applyLogin = function(good) {
-    		  	if (good) {
-	    		  	main.style.display = "block";
-	        		login.style.display = "none";
-	        	} else {
-	        		main.style.display = "none";
-	        		login.style.display = "block";
-	        	}
-    		  }
+        return function(scope, element) {
+          if (shouldPaint) {
+            element.html(prettyHtml);
+          }
+        }
+      }
+    };
+  });
 
-          scope.$on('event:auth-loginRequired', function () {
-            applyLogin(false)
-          });
+  /**
+   * Show the child functions.
+   */
+  module.directive('ptorFunctionList', function() {
+    return {
+      scope: {
+        list: '=ptorFunctionList'
+      },
+      templateUrl: 'partials/ptor-function-list.html'
+    };
+  });
 
-          scope.$on('event:auth-loginConfirmed', function () {
-            applyLogin(true);
-          });
+  /**
+   * Twitter button. Copy pasted from:
+   * https://about.twitter.com/resources/buttons#follow
+   */
+  module.directive('ptorTwitter', function() {
+    var showFollowButton = function() {
+      var tagName = 'script',
+          id = 'twitter-wjs',
+          fjs = document.getElementsByTagName(tagName)[0],
+          protocol = /^http:/.test(document.location) ? 'http' : 'https';
 
-    		}
- 		}
- 	})
- 	.directive('login', function($http, $cookieStore, authService) {
- 		return {
- 			restrict: 'A',
- 			template: " <form> " +
-     					    "<label>Username</label>" +
-      						"<input type='text' ng-model='username'>" +
-      						"<label>Password</label>" +
-      						"<input type='password' ng-model='password'>" +
-      						"<br>" +
-      						"<input type='submit'>" +
-    					"</form>",
- 			link: function(scope, elem, attrs) {
+      if (!document.getElementById(id)) {
+        var js = document.createElement(tagName);
+        js.id = id;
+        js.src = protocol + '://platform.twitter.com/widgets.js';
+        fjs.parentNode.insertBefore(js, fjs);
+      } else {
+        // The twitter script was loaded already.
+        window.twttr.widgets.load();
+      }
+    };
 
- 				elem.bind('submit', function() {
-
-					var user_data = {
-		                "username": scope.username,
-		                "password": scope.password,
-		            };
-					
-					//$http.post(constants.serverAddress + "api-token-auth", user_data)
-		            $http.post("http://localhost:8001/api-token-auth/", user_data)
-		                .success(function(response) {
-		                	$cookieStore.put('djangotoken', response.token);
-		                    $http.defaults.headers.common['Authorization'] = 'Token ' + response.token;
-		                    authService.loginConfirmed();
-		            }); 
-
- 				});
-
- 			}
- 		}
- 	});
+    return {
+      link: function() {
+        showFollowButton();
+      },
+      template: '<div class="twitter">' +
+      '<a href="https://twitter.com/ProtractorTest" ' +
+      'class="twitter-follow-button" data-show-count="false" ' +
+      'data-size="large">Follow @ProtractorTest</a></div>'
+    };
+  });
+})();

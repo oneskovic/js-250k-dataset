@@ -1,102 +1,51 @@
-/*
- * Qt+WebKit powered headless test runner using Phantomjs
- *
- * Phantomjs installation: http://code.google.com/p/phantomjs/wiki/BuildInstructions
- *
- * Run with:
- *  phantomjs runner.js [url-of-your-qunit-testsuite]
- *
- * E.g.
- *      phantomjs runner.js http://localhost/qunit/test
- */
+/*global require, module, console, process, blitz */
 
-var url = phantom.args[0];
+(function () {
+    var api = require('./api'),
+        EventEmitter = require('events').EventEmitter,
+        Sprint = require('./sprint'),
+        Rush = require('./rush'),
+        Util = require('util');
 
-var page = require('webpage').create();
+    function Runner(credentials) {
+        var self = this,
+            user = credentials.username,
+            pass = credentials.apiKey,
+            host = credentials.host,
+            port = credentials.port,
+            client = new api.Client(user, pass, host, port);
 
-// Route "console.log()" calls from within the Page context to the main Phantom context (i.e. current "this")
-page.onConsoleMessage = function(msg) {
-	console.log(msg);
-};
+        function extend(source) {
+            var target = self,
+                properties = Object.getOwnPropertyNames(source);
+            properties.forEach(function(name) {
+                var descriptor = Object.getOwnPropertyDescriptor(source, name);
+                Object.defineProperty(target, name, descriptor);
+            });
+        }
 
-page.onInitialized = function() {
-	page.evaluate(addLogging);
-};
-page.open(url, function(status){
-	if (status !== "success") {
-		console.log("Unable to access network: " + status);
-		phantom.exit(1);
-	} else {
-		// page.evaluate(addLogging);
-		var interval = setInterval(function() {
-			if (finished()) {
-				clearInterval(interval);
-				onfinishedTests();
-			}
-		}, 500);
-	}
-});
+        self.execute = function (text) {
+            client.parse(text).on('parse', function(options) {
+                // extends test to propagate events 
+                var command = options.command,
+                    test = command.pattern ? new Rush() : new Sprint();
 
-function finished() {
-	return page.evaluate(function(){
-		return !!window.qunitDone;
-	});
-}
+                extend(test);
 
-function onfinishedTests() {
-	var output = page.evaluate(function() {
-			return JSON.stringify(window.qunitDone);
-	});
-	phantom.exit(JSON.parse(output).failed > 0 ? 1 : 0);
-}
+                setTimeout(function () {
+                    self.create(credentials, command).execute();
+                }, 2000);
+                
+            }).on('error', function (message) {
+                // propagate error
+                self.emit('error', message);
+            });
 
-function addLogging() {
-	window.document.addEventListener( "DOMContentLoaded", function() {
-		var current_test_assertions = [];
-		var module;
+            return self;
+        };
 
-		QUnit.moduleStart(function(context) {
-			module = context.name;
-		});
-
-		QUnit.testDone(function(result) {
-			var name = module + ': ' + result.name;
-			var i;
-
-			if (result.failed) {
-				console.log('Assertion Failed: ' + name);
-
-				for (i = 0; i < current_test_assertions.length; i++) {
-					console.log('    ' + current_test_assertions[i]);
-				}
-			}
-
-			current_test_assertions = [];
-		});
-
-		QUnit.log(function(details) {
-			var response;
-
-			if (details.result) {
-				return;
-			}
-
-			response = details.message || '';
-
-			if (typeof details.expected !== 'undefined') {
-				if (response) {
-					response += ', ';
-				}
-
-				response += 'expected: ' + details.expected + ', but was: ' + details.actual;
-			}
-
-			current_test_assertions.push('Failed assertion: ' + response);
-		});
-
-		QUnit.done(function(result){
-			console.log('Took ' + result.runtime +  'ms to run ' + result.total + ' tests. ' + result.passed + ' passed, ' + result.failed + ' failed.');
-			window.qunitDone = result;
-		});
-	}, false );
-}
+        return self;
+    }
+    Util.inherits(Runner, EventEmitter);
+    module.exports = Runner;
+}());

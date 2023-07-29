@@ -1,7 +1,3 @@
-/**
- * Module dependencies.
- */
-
 var util = require('util');
 var dgram = require('dgram');
 var BasePoller = require('../basePoller');

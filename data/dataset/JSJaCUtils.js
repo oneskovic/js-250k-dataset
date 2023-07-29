@@ -1,5 +1,3 @@
-/*exported JSJaCUtils */
-
 /**
  * Various utilities put together so that they don't pollute global
  * name space.

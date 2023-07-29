@@ -1,5 +1,5 @@
 var CodeMirror = module.exports = require("code-mirror");
-CodeMirror.multiplexingMode = function(outer /*, others */) {
+CodeMirror.multiplexingMode = function(outer ) {
   // Others should be {open, close, mode [, delimStyle] [, innerStyle]} objects
   var others = Array.prototype.slice.call(arguments, 1);
   var n_others = others.length;

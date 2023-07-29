@@ -1,7 +1,3 @@
-/**
- * @fileoverview Compact reporter
- * @author Nicholas C. Zakas
- */
 "use strict";
 
 //------------------------------------------------------------------------------

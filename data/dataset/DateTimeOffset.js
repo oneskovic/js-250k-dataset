@@ -1,7 +1,3 @@
-/*!
- * ${copyright}
- */
-
 sap.ui.define(['sap/ui/model/odata/type/DateTimeBase'],
 	function(DateTimeBase) {
 	"use strict";

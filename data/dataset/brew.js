@@ -1,11 +1,6 @@
 var brewResource = require('../resources/brew');
 
-/*
- * Read
- *
- * @method read
- * @return {Promise}
- */
+
 exports.read = function () {
 
   // Promise

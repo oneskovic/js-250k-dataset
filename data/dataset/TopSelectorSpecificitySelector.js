@@ -1,5 +1,3 @@
-/*! Parker v0.0.0 - MIT license */
-
 'use strict';
 
 var _ = require('lodash');

@@ -1,9 +1,3 @@
-/**
- * @fileOverview Mockviewdata Controller
- * @name mockview.js<f/static/router>
- * @author Kei Funagayama <funagayama_kei@cyberagent.co.jp>
- */
-
 var _ = require('underscore');
 
 var beezlib = require('beezlib');

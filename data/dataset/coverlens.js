@@ -20,15 +20,7 @@ lime.customNodes.CoverLens = function() {
 };
 goog.inherits(lime.customNodes.CoverLens, lime.CoverNode);
 
-/*
-Object.defineProperty(lime.Node.prototype, 'center', {
-   get: function() {return this.center_;},
-   set: function(value) {
-        lime.setObjectDirty(goog.bind(this.update,this));
-        this.center_ = value;
-   }
-});
-*/
+
 lime.customNodes.CoverLens.prototype.getCenter = function() {
     return this.center_;
 };

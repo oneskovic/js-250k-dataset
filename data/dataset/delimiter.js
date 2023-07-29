@@ -1,7 +1,3 @@
-/*!
- * 分割符
- */
-
 define( function ( require ) {
 
     var kity = require( "kity" ),

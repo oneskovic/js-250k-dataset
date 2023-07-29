@@ -13,11 +13,7 @@ define([
 
 return declare( ActionBarDialog,
 
-    /**
-     * Dijit Dialog subclass that pops up prompt for the user to
-     * manually set a new highlight.
-     * @lends JBrowse.View.InfoDialog
-     */
+    
 {
     autofocus: false,
     title: 'Set highlight',

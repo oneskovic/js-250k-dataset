@@ -1,8 +1,3 @@
-/**
- * Ajax Adapter. Expect JSON response for all queries.
- * @class WireIt.WiringEditor.adapters.Ajax
- * @static 
- */
 WireIt.WiringEditor.adapters.Ajax = {
 	
 	/**

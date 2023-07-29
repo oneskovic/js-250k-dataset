@@ -1,4 +1,3 @@
-
 (function() {
 
 if(typeof(google) == "undefined" || typeof(google.maps) == "undefined")

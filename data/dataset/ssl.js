@@ -1,23 +1,3 @@
-// Example of using a TLS/SSL connection. Note that the server must be
-// configured to accept SSL connections; see, for example,
-// http://www.rabbitmq.com/ssl.html.
-//
-// When trying this out, I followed the RabbitMQ SSL guide above,
-// almost verbatim. I set the CN of the server certificate to
-// 'localhost' rather than $(hostname) (since on my MBP hostname ends
-// up being "<blah>.local", which is just weird). My client
-// certificates etc., are in `../etc/client/`. My testca certificate
-// is in `../etc/testca` and server certs etc., in `../etc/server`,
-// and I've made a `rabbitmq.config` file, with which I start
-// RabbitMQ:
-//
-//     RABBITMQ_CONFIG_FILE=`pwd`/../etc/server/rabbitmq \
-//       /usr/local/sbin/rabbitmq-server &
-//
-// A way to check RabbitMQ's running with SSL OK is to use
-//
-//     openssl s_client -connect localhost:5671
-
 var amqp = require('../');
 var fs = require('fs');
 

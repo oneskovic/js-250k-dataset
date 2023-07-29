@@ -1,4 +1,3 @@
-// Create a class and extended it from the MAF.system.FullscreenView
 var transportOverlay = new MAF.Class({
 	Extends: MAF.system.FullscreenView,
 

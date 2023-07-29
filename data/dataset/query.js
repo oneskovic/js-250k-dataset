@@ -1,89 +1,61 @@
-var hookio = require('./hook'),
-    async  = require('async'),
-    path   = require('path');
+Lawnchair.plugin((function(){        
+    // 
+    var interpolate = function(template, args) {
+        var parts = template.split('?').filter(function(i) { return i != ''})
+        ,   query = ''
 
-exports.query = function (params, callback) {
-
-  //
-  // Performs a query on the hook to get details about other hooks.
-  // takes an object as first parameter, which should look like:
-  //   {name:'name-of-the-targetted-hook'}
-  // or
-  //   {type:'type-of-the-targetted-hook'}
-  // or
-  //   {host:'hostname-hosting-some-hook-or-its-IP'}
-  //
-  // the result can be received either as:
-  // - a callback(error, details) if callback is provided as a standard callback
-  //
-  //    * error parameter will be returned if result is empty
-  //    * details will be a String (or undefined) if we have queried by name
-  //
-  // - a query::out({query: originalQuery, details: arrayOfDetails}) event
-  //   if callback is not defined.
-  //
-  //    * details is then always an Array of details, and if nothing is available
-  //        for the passed query, Array is just empty.
-  //    * query contains the original query, in order for your hook to check
-  //        it's one similar to what it was looking for, or not.
-  //
-  // Each details provided is of the form :
-  // {
-  //   name: 'hook-name',
-  //   type:'hook-type',
-  //   remote:{ host:'ip address', port:99999/*port number*/}
-  // }
-  //
-
-  var self = this;
-
-  params = params || {};
-  var name = params.name,
-      type = params.type,
-      host = params.host;
-
-  if (!self.server) {
-    return;
-  }
-
-  if (typeof callback !== "function") {
-    callback = function (err, details) {
-      if (!Array.isArray(details)) {
-        details = [details];
-      }
-      return self.emit("query::out", {query: params, details: details})};
-  }
-  if (name) {
-    if (self._names[name]) {
-      //console.log(callback);
-      callback(null, self._names[name]);
+        for (var i = 0, l = parts.length; i < l; i++) {
+            query += parts[i] + args[i]    
+        }
+        return query
     }
-    else {
-      callback(new Error("No hook named "+name+" is connected (anymore?)"));
+     
+    var sorter = function(p) {
+        return function(a, b) {
+            if (a[p] < b[p]) return -1
+            if (a[p] > b[p]) return 1
+            return 0
+        }
     }
-  } else if (type) {
-    var details = Object.keys(self._names)
-      .map(function (key) { if (self._names[key].type === type) return self._names[key]; })
-      .filter(function (detail) {return detail});
+    //
+    return {
+        // query the storage obj
+        where: function() {
+            // ever notice we do this sort thing lots?
+            var args = [].slice.call(arguments)
+            ,   tmpl = args.shift()
+            ,   last = args[args.length - 1]
+            ,   qs   = tmpl.match(/\?/g)
+            ,   q    = qs && qs.length > 0 ? interpolate(tmpl, args.slice(0, qs.length)) : tmpl
+            ,   is   = new Function(this.record, 'return !!(' + q + ')')
+            ,   r    = []
+            ,   cb
+            // iterate the entire collection
+            // TODO should we allow for chained where() to filter __results? (I'm thinking no b/c creates funny behvaiors w/ callbacks)
+            this.all(function(all){
+                for (var i = 0, l = all.length; i < l; i++) {
+                    if (is.call(all[i], all[i])) r.push(all[i])
+                }
+                // overwrite working results
+                this.__results = r
+                // callback / chain
+                if (args.length === 1) this.fn(this.name, last).call(this, this.__results)   
+            })
+            return this 
+        },  
 
-    if (details.length>0) {
-      callback(null, details);
-    } else {
-      callback(new Error("No hook of type "+type+" is connected (anymore?)"),[]);
-    }
+	    // FIXME should be able to call without this.__results	
+        // ascending sort the working storage obj on a property (or nested property)
+        asc: function(property, callback) {
+            this.fn(this.name, callback).call(this, this.__results.sort(sorter(property))) 
+            return this
+        },
 
-  } else if (host) {
-      self.toIPs(host, function onIP(err, hosts) {
-        var details = Object.keys(self._names).map(function getHooks(key) {
-          if ( hosts.some( function hasHost (host) {return host === self._names[key].remote.host} ) )
-            return self._names[key];
-        }).filter(function (detail) {return detail});
-
-        if (details.length>0)
-          callback(null, details);
-        else
-          callback(new Error("No hook for host "+host+" is connected (anymore?)"),[]);
-      });
-  }
-
-};
+        // descending sort on working storage object on a property 
+        desc: function(property, callback) {
+            this.fn(this.name, callback).call(this, this.__results.sort(sorter(property)).reverse())
+            return this
+        }
+    } 
+///// 
+})());

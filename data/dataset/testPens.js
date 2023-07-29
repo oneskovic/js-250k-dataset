@@ -1,15 +1,3 @@
-/**
- * Copyright (c) 2011, Lasse Fister lasse@graphicore.de, http://graphicore.de
- * 
- * You should have received a copy of the MIT License along with this program.
- * If not, see http://www.opensource.org/licenses/mit-license.php
- * 
- * These pens are used within the unit tests. They store the last method
- * name and its arguments in an array at pen.commands so that we can assert
- * on the values of the call. Use pen.flush() to receive all previous
- * commands since the last pen.flush()
- */
-
 define(
     [
         'ufojs/main'

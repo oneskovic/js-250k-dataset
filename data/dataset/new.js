@@ -1,55 +1,50 @@
-define(function(require) {
-  'use strict';
+var requireMock = require('a').requireMock;
+var mock = require('a').mock;
+var newSingleCommand = requireMock('./delete/newSingleCommand');
 
-  var module = require('../module');
-  require('../resources/rest');
+var table = {};
+var filter = {};
+var singleCommand = {};
+var childStrategy1 = {},
+	childStrategy2 = {};
+var strategy = {child1: childStrategy1, child2 : childStrategy2};
+var alias = '_2;'
+var expected = {};
+var fooRelation = {},
+	barRelation = {};
+var relations = [fooRelation, barRelation];
+var childRelation1 = {};
+var joinRelation1 = {};
+var childRelation2 = {};
+var joinRelation2 = {};
 
-  module.controller('BookmarksNewCtrl', BookmarksNewCtrl);
+var childTable1 = {};
+var childTable2 = {};
 
-  //---
+childRelation1.childTable = childTable1;
+childRelation1.joinRelation = joinRelation1;
+childRelation2.childTable = childTable2;
+childRelation2.joinRelation = joinRelation2;
 
-  BookmarksNewCtrl.$inject = [
-    '$rootScope', '$scope',
-    'BookmarksResource', 'InputFocusFactory'
-  ];
+table._relations = {};
 
-  function BookmarksNewCtrl($rootScope, $scope, Resource, input) {
-    var vm = this;
+table._relations.child1 = childRelation1;
+table._relations.child2 = childRelation2;
 
-    vm.title = 'New Bookmark';
 
-    vm.bookmark = new Resource({
-      'id':0,
-      'name':'',
-      'description':'',
-      'url':''
-    });
+function act(c) {
+	c.queries2 = {};
+	c.queries = {};
+	c.queries.push = mock();
+	c.queries.push.expect(singleCommand);
+	
+	newSingleCommand.expect(table,filter,relations).return(singleCommand);
 
-    vm.save = save;
+	c.nextDeleteCommand = requireMock('./newDeleteCommand');
+	c.nextDeleteCommand.expect(c.queries, childTable1, filter, childStrategy1, [joinRelation1, fooRelation, barRelation]);
+	c.nextDeleteCommand.expect(c.queries, childTable2, filter, childStrategy2, [joinRelation2, fooRelation, barRelation]);
 
-    //---
+	c.returned = require('../newDeleteCommand')(c.queries,table,filter,strategy,relations);
+}
 
-    var ctrlName = 'BookmarksNewCtrl';
-    input = input.get(ctrlName);
-
-    input.config(
-      $scope,
-      [
-        'focusBookmarkNameInput'
-      ]);
-
-    input.setFocus('focusBookmarkNameInput', 200);
-
-    //console.debug(input);
-
-    //---
-
-    function save() {
-      vm.bookmark.$save(function(res) {
-        $rootScope.$emit('bookmarks:add:event', 'added');
-      });
-    }
-
-  }
-
-});
+module.exports = act;

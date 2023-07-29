@@ -4,9 +4,7 @@ var EventEmitter = require('events').EventEmitter;
 var ST_INITED = 0;
 var ST_CLOSED = 1;
 
-/**
- * Socket class that wraps socket.io socket to provide unified interface for up level.
- */
+
 var Socket = function(id, socket) {
   EventEmitter.call(this);
   this.id = id;

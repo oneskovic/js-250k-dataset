@@ -1,8 +1,3 @@
-/**
- * @fileOverview 
- * @ignore
- */
-
 define('bui/tab/tabpanelitem',['bui/common','bui/tab/tabitem','bui/tab/panelitem'],function (require) {
   
 

@@ -1,9 +1,3 @@
-/**
- * ModelBase.js
- *
- * Application-specific tailorings of Backbone.Model go here.
- *
- */
 (function (spiderOakApp, window, undefined) {
   "use strict";
   var console = window.console || {};

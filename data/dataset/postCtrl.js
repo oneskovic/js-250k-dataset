@@ -1,4 +1,3 @@
-/*global process,exports,require*/
 (function () {
     "use strict";
     var config = require("../config"),

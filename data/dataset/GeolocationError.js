@@ -1,6 +1,3 @@
-/**
- * Controller for geolocation error overlay.
- */
 Ext.define('Kort.controller.GeolocationError', {
     extend: 'Ext.app.Controller',
     requires: [

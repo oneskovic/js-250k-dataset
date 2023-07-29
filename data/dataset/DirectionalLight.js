@@ -1,8 +1,3 @@
-/**
- * @author mrdoob / http://mrdoob.com/
- * @author alteredq / http://alteredqualia.com/
- */
-
 THREE.DirectionalLight = function ( color, intensity ) {
 
 	THREE.Light.call( this, color );

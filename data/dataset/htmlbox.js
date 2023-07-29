@@ -1,4 +1,3 @@
-// Make the html element editable :) (c) doxtop@synrc.com
 +function($){ "use strict";
 
     var Htmlbox = function (element, options) {

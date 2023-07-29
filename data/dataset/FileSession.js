@@ -1,8 +1,3 @@
-/**
- * 文件Session
- * @return {[type]} [description]
- */
-
 var os = require('os');
 module.exports = Class(thinkRequire('FileCache'), function(){
   'use strict';

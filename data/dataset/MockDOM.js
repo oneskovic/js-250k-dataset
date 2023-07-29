@@ -1,20 +1,13 @@
-/***
+if (typeof(MochiKit) == "undefined") {
+    MochiKit = {};
+}
 
-MochiKit.MockDOM 1.5
-
-See <http://mochikit.com/> for documentation, downloads, license, etc.
-
-(c) 2005 Bob Ippolito.  All rights Reserved.
-
-***/
-
-var MochiKit = MochiKit || {};
-
-MochiKit.MockDOM = MochiKit.MockDOM || {};
+if (typeof(MochiKit.MockDOM) == "undefined") {
+    MochiKit.MockDOM = {};
+}
 
 MochiKit.MockDOM.NAME = "MochiKit.MockDOM";
-MochiKit.MockDOM.VERSION = "1.5";
-MochiKit.MockDOM.__export__ = false;
+MochiKit.MockDOM.VERSION = "1.4";
 
 MochiKit.MockDOM.__repr__ = function () {
     return "[" + this.NAME + " " + this.VERSION + "]";
@@ -34,13 +27,9 @@ MochiKit.MockDOM.createDocument = function () {
 };
 
 /** @id MochiKit.MockDOM.MockElement */
-MochiKit.MockDOM.MockElement = function (name, data, ownerDocument) {
-    this.tagName = this.nodeName = name.toUpperCase();
-    this.ownerDocument = ownerDocument || null;
-    if (name == "DOCUMENT") {
-        this.nodeType = 9;
-        this.childNodes = [];
-    } else if (typeof(data) == "string") {
+MochiKit.MockDOM.MockElement = function (name, data) {
+    this.nodeName = name.toUpperCase();
+    if (typeof(data) == "string") {
         this.nodeValue = data;
         this.nodeType = 3;
     } else {
@@ -51,19 +40,19 @@ MochiKit.MockDOM.MockElement = function (name, data, ownerDocument) {
         var nameattr = name.substring(
             name.indexOf('"') + 1, name.lastIndexOf('"'));
         name = name.substring(1, name.indexOf(" "));
-        this.tagName = this.nodeName = name.toUpperCase();
+        this.nodeName = name.toUpperCase();
         this.setAttribute("name", nameattr);
     }
 };
 
 MochiKit.MockDOM.MockElement.prototype = {
     /** @id MochiKit.MockDOM.MockElement.prototype.createElement */
-    createElement: function (tagName) {
-        return new MochiKit.MockDOM.MockElement(tagName, null, this.nodeType == 9 ? this : this.ownerDocument);
+    createElement: function (nodeName) {
+        return new MochiKit.MockDOM.MockElement(nodeName);
     },
     /** @id MochiKit.MockDOM.MockElement.prototype.createTextNode */
     createTextNode: function (text) {
-        return new MochiKit.MockDOM.MockElement("text", text, this.nodeType == 9 ? this : this.ownerDocument);
+        return new MochiKit.MockDOM.MockElement("text", text);
     },
     /** @id MochiKit.MockDOM.MockElement.prototype.setAttribute */
     setAttribute: function (name, value) {
@@ -79,18 +68,7 @@ MochiKit.MockDOM.MockElement.prototype = {
     },
     /** @id MochiKit.MockDOM.MockElement.prototype.toString */
     toString: function () {
-        return "MockElement(" + this.tagName + ")";
-    },
-    /** @id MochiKit.MockDOM.MockElement.prototype.getElementsByTagName */
-    getElementsByTagName: function (tagName) {
-        var foundElements = [];
-        MochiKit.Base.nodeWalk(this, function(node){
-            if (tagName == '*' || tagName == node.tagName) {
-                foundElements.push(node);
-                return node.childNodes;
-            }
-        });
-        return foundElements;
+        return "MockElement(" + this.nodeName + ")";
     }
 };
 

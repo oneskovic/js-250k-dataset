@@ -1,54 +1,119 @@
-/*______________
-|       ______  |   U I Z E    J A V A S C R I P T    F R A M E W O R K
-|     /      /  |   ---------------------------------------------------
-|    /    O /   |    MODULE : Uize.Loc.Plurals.Langs.to Package
-|   /    / /    |
-|  /    / /  /| |    ONLINE : http://www.uize.com
-| /____/ /__/_| | COPYRIGHT : (c)2015 UIZE
-|          /___ |   LICENSE : Available under MIT License or GNU General Public License
-|_______________|             http://www.uize.com/license.html
-*/
+'use strict';
 
-/* Module Meta Data
-	type: Package
-	importance: 1
-	codeCompleteness: 100
-	docCompleteness: 100
-*/
+var extract = require('extract-github').url
+  , toString = Object.prototype.toString
+  , crypto = require('crypto')
+  , url = require('url');
 
-/*?
-	Introduction
-		The =Uize.Loc.Plurals.Langs.to= module implements a feature for determining a plural category from a number value for the to language.
+//
+// to.js is a small collection of parsers and utilities that makes it easier to
+// normalize the data structures that are returned from The npm Registry API.
+//
 
-		*DEVELOPERS:* `Chris van Rensburg`
+/**
+ * Get accurate type information for the given JavaScript class.
+ *
+ * @param {Mixed} of The thing who's type class we want to figure out.
+ * @returns {String} lowercase variant of the name.
+ * @api private
+ */
+exports.type = function type(of) {
+  return toString.call(of).slice(8, -1).toLowerCase();
+};
 
-		Plural Categories
-			........................................................
-			<< table >>
+/**
+ * Decide the best way of merging license data.
+ *
+ * @param {Mixed} data
+ * @param {Mixed} fallback
+ * @returns {Mixed} The one that should be merged.
+ */
+exports.licenses = function licenses(data, fallback) {
+  var fblicenses = fallback.licenses
+    , dlicenses = data.licenses
+    , fbok, dok;
 
-			title: Plural Categories
-			data:
-			:| Category | Rule |
-			:| other |  @integer 0~15, 100, 1000, 10000, 100000, 1000000, … @decimal 0.0~1.5, 10.0, 100.0, 1000.0, 10000.0, 100000.0, 1000000.0, … |
-			........................................................
-*/
+  fbok = Array.isArray(fblicenses) && fblicenses.every(function every(license) {
+    return 'string' === exports.type(license);
+  });
 
-Uize.module ({
-	name:'Uize.Loc.Plurals.Langs.to',
-	required:'Uize.Loc.Plurals.Util',
-	builder:function () {
-		'use strict';
+  dok = Array.isArray(dlicenses) && dlicenses.every(function every(license) {
+    return 'string' === exports.type(license);
+  });
 
-		return Uize.package ({
-			getPluralCategory:function (_value) {
-				return Uize.Loc.Plurals.Util.getPluralCategory (
-					_value,
-					function (n,i,f,t,v,w,within) {
-						return 'other';
-					}
-				);
-			}
-		});
-	}
-});
+  if (dok && !fbok) return dlicenses;
+  if (fbok && !dok) return fblicenses;
 
+  return dlicenses || fblicenses;
+};
+
+/**
+ * Create a gravatar for the given email.
+ *
+ * @param {Object} data Object that has an `email` property.
+ * @returns {Object} The data object.
+ * @private
+ */
+exports.gravatar = function gravatar(data) {
+  var email = (
+    'string' === typeof data.email
+      ? data.email
+      : ''
+  ).toLowerCase().trim();
+
+  if (!email || (data.gravatar && !~data.gravatar.indexOf('?'))) {
+    return data; // Gravatar's are constructed from email addresses.
+  }
+
+  data.gravatar_id = crypto.createHash('md5').update(email).digest('hex');
+  data.gravatar = 'https://secure.gravatar.com/avatar/'+ data.gravatar_id;
+
+   return data;
+};
+
+/**
+ * Default to something from github.
+ *
+ * @param {String} path The path we should append to the string.
+ * @returns {Function}
+ * @api public
+ */
+exports.github = function github(path) {
+  return function githubtransform(data) {
+    var type = exports.type(data)
+      , existing = extract(data);
+
+    if (!existing) {
+      if (!this.github) return undefined;
+
+      existing = 'https://github.com/'+ this.github.user +'/'+ this.github.repo;
+      if (path) existing += '/'+ path;
+    } else {
+      //
+      // Normalize the URL to something useful. As it could be that we were
+      // given some of the following URL structures:
+      //
+      // - git@github.com:primus/primus.git
+      // - git://github.com/primus/primus.git#branch
+      // - https://github.com/primus/primus.git
+      // - git+ssh://git@github.com/primus/primus.git#branch
+      //
+      existing = existing.replace(/^git@/, '').replace(/com\:/, 'com/');
+      existing = url.parse(existing);
+      existing.protocol = !existing.protocol || 'git:' === existing.protocol ? 'http:' : existing.protocol;
+      existing.slashes = true;
+      existing.path = existing.pathname = (existing.pathname || existing.path || '').replace(/\.git$/, '');
+      existing.hash = null;
+      existing = url.format(existing);
+    }
+
+    if ('object' !== type) return {
+      url: existing
+    };
+
+    data.url = existing;
+    delete data.web;
+
+    return data;
+  };
+};

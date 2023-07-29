@@ -1,6 +1,3 @@
-//ArticleAttachments.js: Client for the zendesk help center API.
-
-
 var util        = require('util'),
   Client      = require('../client').Client
 //defaultgroups = require('./helpers').defaultgroups;

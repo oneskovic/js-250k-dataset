@@ -1,64 +1,69 @@
-'use strict';
+(function(LogJS, global, undefined) {
 
-var LocalStorage = (function() {
+    var LocalStorageAppender = function(config) {
+        LogJS.BaseAppender.call(this);
 
-    var serialize = function(data) {
-        return JSON.stringify(data);
+        // Load the current log information from localStorage
+        this.logRoll = JSON.parse(global.localStorage.getItem('LogJS')) || [];
+        this.logRollSize = JSON.parse(global.localStorage.getItem('LogJS_size')) || 0;
+        this.changed = false;
+        this.config = {
+            timeoutInterval: this.configOpt('timeoutInterval', config, 10000),
+            maxSize: this.configOpt('maxSize', config, 2 * 1024 * 1024)
+        };
+
+        var LSAppender = this;
+        global.setTimeout(function synchronizeLog() {
+            // Serialize the log roll to localStorage every few seconds
+            LSAppender.serialize();
+            global.setTimeout(synchronizeLog, LSAppender.config.timeoutInterval);
+        }, this.config.timeoutInterval);
     };
 
-    var parse = function(data) {
-        return JSON.parse(data);
+    LocalStorageAppender.prototype = Object.create(LogJS.BaseAppender.prototype);
+
+    LocalStorageAppender.prototype.name = 'LocalStorageAppender';
+
+    LocalStorageAppender.prototype.log = function(type, timestamp, message, url, lineNumber) {
+
+        var logObject = { 't': type, 'ts': timestamp, 'm': message, 'u': url, 'l': lineNumber};
+        this.logRollSize += JSON.stringify(logObject).length;
+        this.logRoll.push(logObject);
+
+        // Keep the log roll to a maximum size of items
+        while (this.logRollSize > this.config.maxSize) {
+            var logMsg = this.logRoll.shift();
+            this.logRollSize -= JSON.stringify(logMsg).length;
+        }
+
+        this.changed = true;
+        if (type === LogJS.ERROR || type === LogJS.WARN) {
+            this.serialize();
+        }
     };
 
-    var read = function(location) {
-        var value = localStorage.getItem(location);
-
-        return value;
+    LocalStorageAppender.prototype.serialize = function() {
+        if (this.changed) {
+            global.localStorage.setItem('LogJS', JSON.stringify(this.logRoll));
+            global.localStorage.setItem('LogJS_size', this.logRollSize);
+            this.changed = false;
+        }
     };
 
-    var write = function(location, value) {
-        localStorage.setItem(location, value);
+    LocalStorageAppender.prototype.deserialize = function() {
+        return JSON.parse(global.localStorage.getItem('LogJS'));
     };
 
-    var insert = function(location, entity, cb) {
-        var entityCollection = parse(read(location)) || [],
-            entityValue = entity.get();
-
-        entityCollection.push(entityValue);
-        write(location, serialize(entityCollection));
-
-        cb(entityCollection);
+    LocalStorageAppender.prototype.clear = function() {
+        global.localStorage.removeItem('LogJS');
+        global.localStorage.removeItem('LogJS_size');
+        this.logRollSize = 0;
+        this.logRoll.length = 0;
+        this.changed = false;
     };
 
-    var remove = function(location, entity, cb) {
-        var entityCollection = parse(read(location)) || [];
+    if (global.localStorage) {
+        LogJS.addAppender(LocalStorageAppender);
+    }
 
-        var idx = -1;
-
-        entityCollection.some(function(en, i) {
-            if (entity.isIdenticalTo(en)) {
-                idx = i;
-            }
-        });
-        
-        entityCollection.splice(idx, 1);
-
-        write(location, serialize(entityCollection));
-
-        cb(entityCollection);
-    };
-
-    var query = function(location, filter, cb) {
-        var entityCollection = parse(read(location)) || [];
-
-        cb(entityCollection);
-    };
-
-    return {
-        insert: insert,
-        remove: remove,
-        query: query
-    };
-}());
-
-module.exports = LocalStorage;
+})(LogJS, this);

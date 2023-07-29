@@ -8,11 +8,7 @@ var SINGLE_TOUCH_INPUT_MAP = {
 var SINGLE_TOUCH_TARGET_EVENTS = 'touchstart';
 var SINGLE_TOUCH_WINDOW_EVENTS = 'touchstart touchmove touchend touchcancel';
 
-/**
- * Touch events input
- * @constructor
- * @extends Input
- */
+
 function SingleTouchInput() {
     this.evTarget = SINGLE_TOUCH_TARGET_EVENTS;
     this.evWin = SINGLE_TOUCH_WINDOW_EVENTS;

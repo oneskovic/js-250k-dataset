@@ -1,5 +1,3 @@
-/* global AutoForm */
-
 Template.afFormGroup.helpers({
   getTemplateName: function () {
     return AutoForm.getTemplateName('afFormGroup', this.template, this.name);

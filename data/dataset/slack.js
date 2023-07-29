@@ -1,111 +1,62 @@
+var _ = require('lodash');
+var utils = require('../utils');
 
-var token = process.env.TOKEN;
-var factDB = process.env.PROJECT;
-var topicDB = process.env.PROJECT;
+var commands = {};
+exports.commands = commands;
 
-// This is the main Bot interface
-var superscript = require("superscript");
-var mongoose = require("mongoose");
-var facts = require("sfacts");
-var Slack = require("slack-client");
+commands.slack = {
+  name: 'slack',
+  usage: 'overcast slack [message] [options...]',
+  description: [
+    'Sends a message to a Slack channel.',
+    'Requires a SLACK_WEBHOOK_URL property to be set in variables.json.',
+    'You can set that with the following command:',
+    'overcast var set SLACK_WEBHOOK_URL https://foo.slack.com/blah'
+  ],
+  examples: [
+    '$ overcast slack "Deploy completed." --icon-emoji ":satelite:"',
+    '$ overcast slack "Server stats" --channel "#general" --cpu "0.54 0.14 0.09"'
+  ],
+  required: [
+    { name: 'message', raw: true }
+  ],
+  options: [
+    { usage: '--channel NAME', default: '#alerts' },
+    { usage: '--icon-emoji EMOJI', default: ':cloud:' },
+    { usage: '--icon-url URL' },
+    { usage: '--user NAME', default: 'Overcast' },
+    { usage: '--KEY VALUE' }
+  ],
+  run: function (args) {
+    var options = {
+      channel: args.channel || '#alerts',
+      icon_emoji: args['icon-emoji'] || ':cloud:',
+      icon_url: args['icon-url'] || null,
+      text: args.message,
+      username: args.user || 'Overcast'
+    };
 
-mongoose.connect('mongodb://localhost/' + topicDB);
-
-var factSystem = facts.explore("botfacts");
-var TopicSystem = require("superscript/lib/topics/index")(mongoose, factDB);
-
-// How should we reply to the user? 
-// direct - sents a DM
-// atReply - sents a channel message with @username
-// public sends a channel reply with no username
-var replyType = "atReply"; 
-
-var atReplyRE = /<@(.*?)>/;
-var options = {};
-options['factSystem'] = factSystem;
-options['mongoose'] = mongoose;
-
-var slack = new Slack(token, true, true);
-
-var botHandle = function(err, bot) {
-  slack.login()
-
-  slack.on('error', function(error) {
-    console.error("Error:");
-    console.log(error)
-  })
-
-  slack.on('open', function(){
-    console.log("Welcome to Slack. You are %s of %s", slack.self.name, slack.team.name);
-  })
-
-  slack.on('close', function() {
-    console.warn("Disconnected");
-  })
-
-  slack.on('message', function(data) {
-    receiveData(slack, bot, data);
-  });
-}
-
-var receiveData = function(slack, bot, data) {
-
-  // Fetch the user who sent the message;
-  var user = data._client.users[data.user];
-  var channel;
-  var messageData = data.toJSON();
-  var message = "";
-
-  if (messageData && messageData.text) {
-    message = "" + messageData.text.trim();
-  }
-  
-  
-  var match = message.match(atReplyRE)
-  
-  // Are they talking to us?
-  if (match && match[1] === slack.self.id) {
-
-    message = message.replace(atReplyRE, '').trim();
-    if (message[0] == ':') {
-        message = message.substring(1).trim();
-    }
-
-    bot.reply(user.name, message, function(err, reply){
-      // We reply back direcly to the user
-
-      switch (replyType) {
-        case "direct": 
-          channel = slack.getChannelGroupOrDMByName(user.name);
-          break;
-        case "atReply": 
-          reply.string = "@" + user.name  + " " + reply.string;
-          channel = slack.getChannelGroupOrDMByID(messageData.channel);
-          break;
-        case "public":
-          channel = slack.getChannelGroupOrDMByID(messageData.channel);
-          break
-
-      }
-      if (reply.string) {
-        channel.send(reply.string);
-      }
-        
+    var custom_fields = _.extend({}, args);
+    var keys = ['_', 'channel', 'command', 'message', 'icon-emoji', 'icon-url', 'message', 'user'];
+    _.each(keys, function (key) {
+      delete custom_fields[key];
     });
 
-  } else if (messageData.channel[0] == "D") {
-    bot.reply(user.name, message, function(err, reply){
-      channel = slack.getChannelGroupOrDMByName(user.name);
-      if (reply.string) {
-        channel.send(reply.string);
-      }
-    });
-  } else {
-    console.log("Ignoring...", messageData)
-  }
-}
+    options.fields = custom_fields;
 
-// Main entry point
-new superscript(options, function(err, botInstance){
-  botHandle(null, botInstance);
-});
+    exports.send(options);
+  }
+};
+
+exports.send = function (options) {
+  var variables = utils.getVariables();
+  if (!variables.SLACK_WEBHOOK_URL) {
+    utils.grey('No message sent.');
+    utils.grey('Please add SLACK_WEBHOOK_URL to ' + utils.VARIABLES_JSON + '.');
+    return false;
+  }
+
+  var slack = require('slack-notify')(variables.SLACK_WEBHOOK_URL);
+  slack.send(options);
+  utils.success('Message sent to Slack.');
+};

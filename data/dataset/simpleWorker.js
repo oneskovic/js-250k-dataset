@@ -1,7 +1,3 @@
-/////////////////////////
-// REQUIRE THE PACKAGE //
-/////////////////////////
-
 var NR = require(__dirname + "/../index.js");
 // In your projects: var NR = require("node-resque");
 

@@ -1,8 +1,3 @@
-////////////////////////////////////////////////////////////////////////////////
-//the 3 functions below are needed to use Erichs generic framework for dynamic
-//programing problems.
-////////////////////////////////////////////////////////////////////////////////
-
 //function to compute the value of a specific nCk call.
 //comatible with Erichs fill table function
 var computeCell = function(data, n, k)

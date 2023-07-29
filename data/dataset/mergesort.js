@@ -1,19 +1,3 @@
-/*
----
-
-name: Jx.Sort.Mergesort
-
-description: An implementation of the merge sort algorithm
-
-license: MIT-style license.
-
-requires:
- - Jx.Sort
-
-provides: [Jx.Sort.Mergesort]
-
-...
- */
 // $Id$
 /**
  * class: Jx.Sort.Mergesort

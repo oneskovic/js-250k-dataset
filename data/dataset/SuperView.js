@@ -1,4 +1,3 @@
-/*global define*/
 define(['Ti/_/declare', 'Ti/UI', 'Ti/UI/View'], function(declare, UI, View) {
 
 	var windows = [];

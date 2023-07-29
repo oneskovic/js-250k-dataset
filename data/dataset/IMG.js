@@ -1,6 +1,3 @@
-/**
- * Img class
- */
 global.IMG = CLASS({
 
 	preset : function() {

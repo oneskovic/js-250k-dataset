@@ -1,9 +1,3 @@
-/*--
- Copyright 2009-2010 by Stefan Rusterholz.
- All rights reserved.
- You can choose between MIT and BSD-3-Clause license. License file will be added later.
- --*/
-
 /**
  * mixin cc.Codec
  */

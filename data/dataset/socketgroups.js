@@ -1,6 +1,3 @@
-// represents a collection of sockets that belong to a user.
-// allows to emit to all of them without itterating every time.
-
 function UserSockets() {
   this.sockets = new Array();
 }

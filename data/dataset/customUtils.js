@@ -1,8 +1,4 @@
 /**
- * Specific customUtils for the browser, where we don't have access to the Crypto and Buffer modules
- */
-
-/**
  * Taken from the crypto-browserify module
  * https://github.com/dominictarr/crypto-browserify
  * NOTE: Math.random() does not guarantee "cryptographic quality" but we actually don't need it

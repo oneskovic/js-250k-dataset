@@ -1,7 +1,3 @@
-/*
-	MIT License http://www.opensource.org/licenses/mit-license.php
-	Author Tobias Koppers @sokra
-*/
 var Module = require("./Module");
 var RawSource = require("webpack-core/lib/RawSource");
 

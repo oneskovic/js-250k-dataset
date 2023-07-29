@@ -1,59 +1,118 @@
-nb.define('progress', {
+/**
+ * Initialize a new `Progress` indicator.
+ */
 
-    oninit: function() {
-        var data = this.nbdata();
+function Progress() {
+    this.percent = 0;
+    this.size(0);
+    this.fontSize(12);
+    this.font('helvetica, arial, sans-serif');
+}
 
-        if (data && data.type) {
-            this.type = data.type;
-        }
+/**
+ * Set progress size to `n`.
+ *
+ * @param {Number} n
+ * @return {Progress} for chaining
+ * @api public
+ */
 
-        this.$title = this.$node.find('.js-title');
-        this.$control = this.$node.find('input');
-        this.$bar = this.$node.find('.js-bar');
-    },
+Progress.prototype.size = function (n) {
+    this._size = n;
+    return this;
+};
 
-    /**
-     * Set value of the progress
-     * @param {String|Number} value
-     * @fires 'nb-value-set'
-     * @returns {Object} nb.block
-     */
-    setValue: function(value) {
-        var val = parseFloat(value);
+/**
+ * Set text to `str`.
+ *
+ * @param {String} str
+ * @return {Progress} for chaining
+ * @api public
+ */
 
-        this.$control.val(val);
-        this.$bar.css({width: val + '%'});
+Progress.prototype.text = function (str) {
+    this._text = str;
+    return this;
+};
 
-        if (this.type == 'percentage') {
-            this.$title.html(val + '%');
-        }
-        this.trigger('nb-value-set', this);
-        return this;
-    },
+/**
+ * Set font size to `n`.
+ *
+ * @param {Number} n
+ * @return {Progress} for chaining
+ * @api public
+ */
 
-    /**
-     * Get value of the progress
-     * @returns {String} value
-     */
-    getValue: function() {
-        return this.$control.val();
-    },
+Progress.prototype.fontSize = function (n) {
+    this._fontSize = n;
+    return this;
+};
 
-    /**
-    * Change value of the progress by 1
-    * @fires 'nb-changed'
-    * @returns {Object} nb.block
-    */
-    tick: function() {
-        var val = parseFloat(this.getValue());
+/**
+ * Set font `family`.
+ *
+ * @param {String} family
+ * @return {Progress} for chaining
+ */
 
-        if (val < 100) {
-            val++;
-        }
+Progress.prototype.font = function (family) {
+    this._font = family;
+    return this;
+};
 
-        this.setValue(val);
-        this.trigger('nb-changed', this);
+/**
+ * Update percentage to `n`.
+ *
+ * @param {Number} n
+ * @return {Progress} for chaining
+ */
 
-        return this;
-    }
-}, 'base');
+Progress.prototype.update = function (n) {
+    this.percent = n;
+    return this;
+};
+
+/**
+ * Draw on `ctx`.
+ *
+ * @param {CanvasRenderingContext2d} ctx
+ * @return {Progress} for chaining
+ */
+
+Progress.prototype.draw = function (ctx) {
+    var percent = Math.min(this.percent, 100)
+        , size = this._size
+        , half = size / 2
+        , x = half
+        , y = half
+        , rad = half - 1
+        , fontSize = this._fontSize;
+
+    ctx.font = fontSize + 'px ' + this._font;
+
+    var angle = Math.PI * 2 * (percent / 100);
+    ctx.clearRect(0, 0, size, size);
+
+    // outer circle
+    ctx.strokeStyle = '#9f9f9f';
+    ctx.beginPath();
+    ctx.arc(x, y, rad, 0, angle, false);
+    ctx.stroke();
+
+    // inner circle
+    ctx.strokeStyle = '#eee';
+    ctx.beginPath();
+    ctx.arc(x, y, rad - 1, 0, angle, true);
+    ctx.stroke();
+
+    // text
+    var text = this._text || (percent | 0) + '%'
+        , w = ctx.measureText(text).width;
+
+    ctx.fillText(
+        text
+        , x - w / 2 + 1
+        , y + fontSize / 2 - 1);
+
+    return this;
+};

@@ -1,12 +1,3 @@
-/**
-* @author Virtuosi Media
-* @link http://www.virtuosimedia.com
-* @version 1.0
-* @copyright Copyright (c) 2012, Virtuosi Media
-* @license: MIT License
-* @description: Creates tooltips
-* Requirements: MooTools 1.4 Core - See http://mootools.net
-*/
 var Tips = new Class({
 
 	Implements: [Events, Options],

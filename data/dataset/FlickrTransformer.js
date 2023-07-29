@@ -1,4 +1,3 @@
-
 var flickr = require('flickr-reflection');
 var _ = require('underscore');
 

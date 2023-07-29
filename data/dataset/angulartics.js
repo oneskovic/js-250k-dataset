@@ -1,8 +1,3 @@
-/**
- * @license Angulartics v0.15.17
- * (c) 2013 Luis Farzati http://luisfarzati.github.io/angulartics
- * License: MIT
- */
 (function(angular, analytics) {
 'use strict';
 
@@ -16,10 +11,7 @@ angulartics.waitForVendorApi = function (objectName, delay, registerFn) {
   }
 };
 
-/**
- * @ngdoc overview
- * @name angulartics
- */
+
 angular.module('angulartics', [])
 .provider('$analytics', function () {
   var settings = {

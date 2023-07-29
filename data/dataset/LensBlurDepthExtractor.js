@@ -1,8 +1,3 @@
-/**
-MIT licensed
-https://github.com/spite/android-lens-blur-depth-extractor
-Copyright (C) 2014 Jaume Sanchez Elias http://twitter.com/thespite
-*/
 (function() {
 
 	'use strict';

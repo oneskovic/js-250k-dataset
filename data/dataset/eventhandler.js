@@ -1,13 +1,3 @@
-/**
- * EventHandler global event manager
- * http://www.linuxconsulting.ro
- * http://openpanzer.net
- *
- * Copyright (c) 2012 Nicu Pavel
- * Licensed under the GPL license:
- * http://www.gnu.org/licenses/gpl.html
- */
-
 var EventHandler = new function()
 {
 	this.events = {};

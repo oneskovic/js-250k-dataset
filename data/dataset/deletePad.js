@@ -1,7 +1,3 @@
-/*
-  A tool for deleting pads from the CLI, because sometimes a brick is required to fix a window.
-*/
-
 if(process.argv.length != 3)
 {
   console.error("Use: node deletePad.js $PADID");

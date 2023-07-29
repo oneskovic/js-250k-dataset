@@ -1,4 +1,3 @@
-// Sandboxed version creates an iframe sandbox to use for evals
 function SandboxedTuttiClient(window, host, port, roomID, console, commandFun){
     this.parentWindow = window
     this.console = console

@@ -1,5 +1,3 @@
-// Hotmess.js template engine (https://github.com/rlauck/hotmess)
-// @author Ryan Lauck
 /*
  * --------additions?
  * @ or #: context operator: idx/key/index = iterator, sep = separator on all but last, 

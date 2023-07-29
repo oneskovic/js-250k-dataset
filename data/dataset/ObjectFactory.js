@@ -4,17 +4,7 @@ var inherit = require('./inherit'),
     Rectangle = require('../geom/Rectangle'),
     BitmapText = require('../text/BitmapText');
 
-/**
- * The object factory makes it simple to create and add objects to a parent. One is added
- * to a State's world and camera by default, but they can be used for any parent but they
- * can only belong to a single state.
- *
- * @class ObjectFactory
- * @extends Object
- * @constructor
- * @param state {State} The game state this factory belongs to
- * @param parent {Container} The container to act as the parent for created objects
- */
+
 var ObjectFactory = function(state, parent) {
     this.state = state;
     this.game = state.game;

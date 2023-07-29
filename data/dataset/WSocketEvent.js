@@ -1,8 +1,3 @@
-/**
- * Copyright (c) 2011-2014 Jeff Hoefs <soundanalogous@gmail.com>
- * Released under the MIT license. See LICENSE file for details.
- */
-
 JSUTILS.namespace('BO.WSocketEvent');
 
 BO.WSocketEvent = (function () {

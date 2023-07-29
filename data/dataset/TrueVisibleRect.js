@@ -1,11 +1,3 @@
-// -------------------------------------------------------------------------- \\
-// File: TrueVisibleRect.js                                                   \\
-// Module: CollectionViews                                                    \\
-// Requires: Core, Foundation, View                                           \\
-// Author: Neil Jenkins                                                       \\
-// License: © 2010-2014 FastMail Pty Ltd. MIT Licensed.                       \\
-// -------------------------------------------------------------------------- \\
-
 "use strict";
 
 ( function ( NS ) {

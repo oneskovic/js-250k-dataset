@@ -1,99 +1,125 @@
-'use strict';
-/*global angular, jsGen*/
+define([
+	'jquery',
+	'underscore',
+	'backbone',
+	'bootstrap',
+	'collections/filelist',
+	'models/file',
+	'views/userdetails',
+	'views/header',
+	'views/authorization',
+	'views/file',
+	'views/filelist',
+	'views/picker',
+	'views/single',
+], function( $, _, Backbone, Router ) {
 
-jsGen
-.constant('app', {
-    version: Date.now()
-})
-.provider('getFile', ['app',
-    function (app) {
-        this.html = function (fileName) {
-            return '/static/tpl/' + fileName + '?v=' + app.version;
-        };
-        this.md = function (fileName) {
-            return '/static/md/' + fileName + '?v=' + app.version;
-        };
-        this.$get = function () {
-            return {
-                html: this.html,
-                md: this.md
-            };
-        };
-    }
-])
-.config(['$routeProvider', '$locationProvider',
+	app.Router = Backbone.Router.extend( {
+		currentViews: [],
 
-    function ($routeProvider, $locationProvider) {
-        var index = {
-            templateUrl: 'index.html',
-            controller: 'indexCtrl'
-        },
-            login = {
-                templateUrl: 'login.html',
-                controller: 'userLoginCtrl'
-            },
-            register = {
-                templateUrl: 'register.html',
-                controller: 'userRegisterCtrl'
-            },
-            home = {
-                templateUrl: 'user.html',
-                controller: 'homeCtrl'
-            },
-            admin = {
-                templateUrl: 'admin.html',
-                controller: 'adminCtrl'
-            },
-            edit = {
-                templateUrl: 'article-editor.html',
-                controller: 'articleEditorCtrl'
-            },
-            tag = {
-                templateUrl: 'index.html',
-                controller: 'tagCtrl'
-            },
-            reset = {
-                templateUrl: 'reset.html',
-                controller: 'userResetCtrl'
-            },
-            user = {
-                templateUrl: 'user.html',
-                controller: 'userCtrl'
-            },
-            article = {
-                templateUrl: 'article.html',
-                controller: 'articleCtrl'
-            },
-            collection = {
-                templateUrl: 'collection.html',
-                controller: 'collectionCtrl'
-            };
-        $routeProvider.
-        when('/hots', index).
-        when('/update', index).
-        when('/latest', index).
-        when('/T:ID', index).
-        when('/tag/:TAG', index).
-        when('/login', login).
-        when('/register', register).
-        when('/reset', reset).
-        when('/home', home).
-        when('/home/:OP', home).
-        when('/admin', admin).
-        when('/admin/:OP', admin).
-        when('/tag', tag).
-        when('/add', edit).
-        when('/A:ID/edit', edit).
-        when('/user/U:ID', user).
-        when('/user/U:ID/:OP', user).
-        when('/U:ID', user).
-        when('/U:ID/:OP', user).
-        when('/A:ID', article).
-        when('/C:ID', collection).
-        when('/', index).
-        otherwise({
-            redirectTo: '/'
-        });
-        $locationProvider.html5Mode(true).hashPrefix('!');
-    }
-]);
+		routes: {
+			'': 						'home',
+			'm': 						'home',
+			'authorize': 				'authorize',
+			'logout': 					'logout',
+			'view/:id':					'viewSingleItem',
+			'access_token=*fragment':	'getAuthFragment'
+		},
+
+		home: function() {
+			if ( app.filelistViewInstance ) {
+				return;
+			}
+
+			// So we access this instance in the uploader.
+			app.filelistViewInstance = new app.filelistView();
+
+			this.renderViews( [
+				new app.headerView(),
+				new app.pickerView(),
+				app.filelistViewInstance
+			] );
+		},
+
+		authorize: function() {
+			this.renderViews( [
+				new app.authorizationView()
+			] );
+		},
+
+		logout: function() {
+			app.auth = {};
+			localStorage.removeItem( 'access_token' );
+			localStorage.removeItem( 'site_id' );
+
+			this.navigate( 'authorize', { trigger: true, replace: true } );
+		},
+
+		viewSingleItem: function ( id ) {
+			// Remove existing single view items.
+			if ( app.singleItemViewInstance ) {
+				app.singleItemViewInstance.remove();
+			}
+
+			var singleItem = new app.fileModel( { id: id } );
+
+			singleItem.fetch().done( _.bind( function () {
+				app.singleItemViewInstance = new app.singleView( { model: singleItem } );
+
+				this.renderViews( [
+					app.singleItemViewInstance
+				], false );
+			}, this ) );
+		},
+
+		renderViews: function ( views, removeCurrentViews ) {
+			// Remove any current views
+			if ( _.isUndefined( removeCurrentViews ) && this.currentViews.length ) {
+				$.each( this.currentViews, function ( i, view ) {
+					if ( typeof view.remove == 'function' ) {
+						view.remove();
+					}
+				} );
+			}
+
+			if ( !views ) {
+				return false;
+			}
+
+			$.each( views, _.bind( function ( i, view ) {
+				var el = view.render().el;
+
+				$( '#main' ).append( el );
+
+				this.currentViews.push( view );
+			}, this ) );
+
+			return this;
+		},
+
+		getAuthFragment: function () {
+			// Extract the auth details from the # fragment returned by the API
+			var response = _.object(
+				_.compact(
+					_.map( location.hash.slice( 1 ).split( '&' ), function ( item ) {
+						if ( item ) {
+							return item.split( '=' );
+						}
+					} )
+				)
+			);
+
+			app.auth = {
+				accessToken: decodeURIComponent( response.access_token ),
+				siteID     : response.site_id
+			};
+
+			localStorage.setItem( 'access_token', app.auth.accessToken );
+			localStorage.setItem( 'site_id', app.auth.siteID );
+
+			this.navigate( '', {trigger: true} );
+		}
+	} );
+
+	return app.Router;
+});

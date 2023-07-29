@@ -1,5 +1,3 @@
-// Author: Boy Baukema
-// http://github.com/relaxnow
 module.exports =
 {
   reporter: function (results, data, opts)

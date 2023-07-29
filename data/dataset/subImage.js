@@ -1,4 +1,3 @@
-/* jshint undef: true, unused: true, browser:true, devel: true */
 /* global define */
 
 define(["typedefs"], function() {

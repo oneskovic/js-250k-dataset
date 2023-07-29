@@ -1,8 +1,3 @@
-
-/**
- * A lot of this entry file is based off of node's src/node.js.
- */
-
 var regenerator = require('regenerator');
 
 // grab a reference to the entry point script, then clean up the env

@@ -1,16 +1,3 @@
-// Unsharp mask filter
-//
-// http://stackoverflow.com/a/23322820/1031804
-// USM(O) = O + (2 * (Amount / 100) * (O - GB))
-// GB - gaussial blur.
-//
-// brightness = 0.299*R + 0.587*G + 0.114*B
-// http://stackoverflow.com/a/596243/1031804
-//
-// To simplify math, normalize brighness mutipliers to 2^16:
-//
-// brightness = (19595*R + 38470*G + 7471*B) / 65536
-
 'use strict';
 
 

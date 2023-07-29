@@ -1,10 +1,6 @@
 jui.define("chart.brush.over", [ "util.base" ], function(_) {
 
-    /**
-     * @class chart.brush.over 
-     * implements over brush 
-     * @extends chart.brush.core
-     */
+    
 	var OverBrush = function() {
 		var g;
 		var zeroX, height, half_height, over_height;

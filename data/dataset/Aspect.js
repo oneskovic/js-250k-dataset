@@ -1,39 +1,3 @@
-/* ************************************************************************
-
-   qooxdoo - the new era of web development
-
-   http://qooxdoo.org
-
-   Copyright:
-     2007-2008 1&1 Internet AG, Germany, http://www.1und1.de
-
-   License:
-     LGPL: http://www.gnu.org/licenses/lgpl.html
-     EPL: http://www.eclipse.org/org/documents/epl-v10.php
-     See the LICENSE file in the project's top-level directory for details.
-
-   Authors:
-     * Fabian Jakobs (fjakobs)
-     * Andreas Ecker (ecker)
-
-************************************************************************ */
-
-/**
- * Basis for Aspect Oriented features in qooxdoo.
- *
- * This class makes it possible to attach functions (aspects) before or
- * after each function call of any function defined in {@link qx.Class#define}.
- *
- * Classes, which define own aspects must add an explicit require to this class
- * in the header comment using the following code:
- *
- * <pre>
- * &#35;require(qx.core.Aspect)
- * &#35;ignore(auto-require)
- * </pre>
- *
- * One example for a qooxdoo aspect is profiling ({@link qx.dev.Profile}).
- */
 qx.Bootstrap.define("qx.core.Aspect",
 {
   statics :

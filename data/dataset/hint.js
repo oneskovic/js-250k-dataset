@@ -1,73 +1,108 @@
-(function() {
-  CodeMirror.hint = function(editor, getHints, dialog, json) {
-    // We want a single cursor position.
-    if (editor.somethingSelected()) return;
-    var result = getHints(editor);
-    if (!result || !result.list.length) return;
-    var completions = result.list;
-    function insert(str) {
-      editor.replaceRange(str, result.from, result.to);
-    }
-    // When there is only one completion, use it directly.
-    if (completions.length == 1) {insert(completions[0]); return true;}
+var fs = require('fs'),
+    minimatch = require('minimatch'),
+    path = require('path'),
+    jshint = require('./../packages/jshint/jshint.js'),
+    _reporter = require('./reporters/default').reporter,
+    _cache = {
+        directories: {}
+    };
 
-    // Build the select widget
-    var complete = document.createElement("div");
-    complete.className = "CodeMirror-completions";
-    var sel = complete.appendChild(document.createElement("select"));
-    // Opera doesn't move the selection when pressing up/down in a
-    // multi-select, but it does properly support the size property on
-    // single-selects, so no multi-select is necessary.
-    if (!window.opera) sel.multiple = true;
-    for (var i = 0; i < completions.length; ++i) {
-      var opt = sel.appendChild(document.createElement("option"));
-      opt.appendChild(document.createTextNode(completions[i]));
-    }
-    sel.firstChild.selected = true;
-    sel.size = Math.min(10, completions.length);
-    var pos = editor.cursorCoords();
-    complete.style.left = pos.x + "px";
-    complete.style.top = pos.yBot + "px";
-    complete.style.position="fixed";
-    dialog.body.appendChild(complete);
-    // If we're at the edge of the screen, then we want the menu to appear on the left of the cursor.
-//    var winW = window.innerWidth || Math.max(document.body.offsetWidth, document.documentElement.offsetWidth);
-//    if(winW - pos.x < sel.clientWidth)
-//      complete.style.left = (pos.x - sel.clientWidth) + "px";
-    // Hack to hide the scrollbar.
-    if (completions.length <= 10)
-      complete.style.width = (sel.clientWidth - 1) + "px";
+function _lint(file, results, config, data) {
+    var buffer,
+        lintdata;
 
-    var done = false;
-    function close() {
-      if (done) return;
-      done = true;
-      complete.parentNode.removeChild(complete);
+    try {
+        buffer = fs.readFileSync(file, 'utf-8');
+    } catch (e) {
+        process.stdout.write("Error: Cant open: " + file);
+        process.stdout.write(e + '\n');
     }
-    function pick() {
-      insert(completions[sel.selectedIndex]);
-      close();
-      setTimeout(function(){editor.focus();}, 50);
+
+    // Remove potential Unicode Byte Order Mark.
+    buffer = buffer.replace(/^\uFEFF/, '');
+
+    if (!jshint.JSHINT(buffer, config)) {
+        jshint.JSHINT.errors.forEach(function (error) {
+            if (error) {
+                results.push({file: file, error: error});
+            }
+        });
     }
-    CodeMirror.connect(sel, "blur", close);
-    CodeMirror.connect(sel, "keydown", function(event) {
-      var code = event.keyCode;
-      // Enter
-      if (code == 13) {CodeMirror.e_stop(event); pick();}
-      // Escape
-      else if (code == 27) {CodeMirror.e_stop(event); close(); editor.focus();}
-      else if (code != 38 && code != 40) {
-        close(); editor.focus();
-        // Pass the event to the CodeMirror instance so that it can handle things like backspace properly.
-        editor.triggerOnKeyDown(event);
-        setTimeout(function(){CodeMirror.hint(editor, getHints);}, 50);
-      }
+
+    lintdata = jshint.JSHINT.data();
+
+    if (lintdata) {
+        lintdata.file = file;
+        data.push(lintdata);
+    }
+}
+
+function isDirectory(aPath) {
+    var isDir;
+
+    try {
+        if (_cache.directories.hasOwnProperty(aPath)) {
+            isDir = _cache.directories[aPath];
+        } else {
+            isDir = fs.statSync(aPath).isDirectory();
+            _cache.directories[aPath] = isDir;
+        }
+    } catch (e) {
+        isDir = false;
+    }
+
+    return isDir;
+}
+
+
+function _shouldIgnore(somePath, ignore) {
+    function isIgnored(p) {
+        var fnmatch = minimatch(somePath, p, {nocase: true}),
+            lsmatch = isDirectory(p) && p.match(/^[^\/]*\/?$/) &&
+                somePath.match(new RegExp("^" + p + ".*"));
+
+        return !!(fnmatch || lsmatch);
+    }
+
+    return ignore.some(function (ignorePath) {
+        return isIgnored(ignorePath);
     });
-    CodeMirror.connect(sel, "dblclick", pick);
+}
 
-    sel.focus();
-    // Opera sometimes ignores focusing a freshly created node
-    if (window.opera) setTimeout(function(){if (!done) sel.focus();}, 100);
-    return true;
-  };
-})();
+function _collect(filePath, files, ignore) {
+    if (ignore && _shouldIgnore(filePath, ignore)) {
+        return;
+    }
+
+    if (fs.statSync(filePath).isDirectory()) {
+        fs.readdirSync(filePath).forEach(function (item) {
+            _collect(path.join(filePath, item), files, ignore);
+        });
+    } else if (filePath.match(/\.js$/)) {
+        files.push(filePath);
+    }
+}
+
+module.exports = {
+    hint: function (targets, config, reporter, ignore) {
+        var files = [],
+            results = [],
+            data = [];
+
+        targets.forEach(function (target) {
+            _collect(target, files, ignore);
+        });
+
+        files.forEach(function (file) {
+            _lint(file, results, config, data);
+        });
+
+        _cache = {
+            directories: {}
+        };
+
+        (reporter || _reporter)(results, data);
+
+        return results;
+    }
+};

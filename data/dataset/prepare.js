@@ -1,11 +1,4 @@
 /**
- * Copyright 2012 Google, Inc. All Rights Reserved.
- *
- * Use of this source code is governed by a BSD-style license that can be
- * found in the LICENSE file.
- */
-
-/**
  * @fileoverview Tracing preparation.
  * This file contains the prepare method used to initialize WTF tracing.
  * It's in its own file so that it can depend on files that many otherwise

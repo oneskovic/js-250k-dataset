@@ -1,5 +1,3 @@
-
-
 test("addYears", function() {
 	var d1 = new XDate(2011, 2, 1);
 	d1.addYears(10);

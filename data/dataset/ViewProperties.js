@@ -1,5 +1,3 @@
-/*global goog, lanyard */
-
 /**
  * Lanyard is Copyright 2010 Jonathan Bringhurst.
  *

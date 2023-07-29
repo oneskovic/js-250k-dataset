@@ -1,13 +1,3 @@
-/**
-* Minute Constraint (m)
-* (c) 2013 Bill, BunKat LLC.
-*
-* Definition for a minute constraint type.
-*
-* Later is freely distributable under the MIT license.
-* For all details and documentation:
-*     http://github.com/bunkat/later
-*/
 later.minute = later.m = {
 
   /**

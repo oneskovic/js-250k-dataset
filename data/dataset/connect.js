@@ -1,98 +1,85 @@
-/** @license MIT License (c) copyright B Cavalier & J Hann */
-
 /**
- * wire/connect plugin
- * wire plugin that can connect synthetic events (method calls) on one
- * component to methods of another object.  For example, connecting a
- * view's onClick event (method) to a controller's _handleViewClick method:
- *
- * view: {
- *     create: 'myView',
- *     ...
- * },
- * controller: {
- *     create: 'myController',
- *     connect: {
- *         'view.onClick': '_handleViewClick'
- *     }
- * }
- *
- * It also supports arbitrary transforms on the data that flows over the
- * connection.
- *
- * transformer: {
- *     module: 'myTransformFunction'
- * },
- * view: {
- *     create: 'myView',
- *     ...
- * },
- * controller: {
- *     create: 'myController',
- *     connect: {
- *         'view.onClick': 'transformer | _handleViewClick'
- *     }
- * }
- *
- * wire is part of the cujo.js family of libraries (http://cujojs.com/)
- *
- * Licensed under the MIT License at:
- * http://www.opensource.org/licenses/mit-license.php
+ * Module dependencies.
  */
 
-(function(define) {
-define(['when', 'meld', './lib/functional', './lib/connection'],
-function(when, meld, functional, connection) {
+var EventEmitter = require('events').EventEmitter
+  , proto = require('./proto')
+  , utils = require('./utils')
+  , path = require('path')
+  , basename = path.basename
+  , fs = require('fs');
 
-	return function eventsPlugin(/* options */) {
+// node patches
 
-		var connectHandles = [];
+require('./patch');
 
-		function handleConnection(instance, methodName, handler) {
-			connectHandles.push(meld.on(instance, methodName, handler));
-		}
+// expose createServer() as the module
 
-		function doConnect(proxy, connect, options, wire) {
-			return connection.parse(proxy, connect, options, wire, handleConnection);
-		}
+exports = module.exports = createServer;
 
-		function connectFacet(wire, facet) {
-			var promises, connects;
+/**
+ * Framework version.
+ */
 
-			connects = facet.options;
-			promises = Object.keys(connects).map(function(key) {
-				return doConnect(facet, key, connects[key], wire);
-			});
+exports.version = '2.4.5';
 
-			return when.all(promises);
-		}
+/**
+ * Expose mime module.
+ */
 
-		return {
-			context: {
-				destroy: function(resolver) {
-					connectHandles.forEach(function(handle) {
-						handle.remove();
-					});
-					resolver.resolve();
-				}
-			},
-			facets: {
-				// A facet named "connect" that runs during the connect
-				// lifecycle phase
-				connect: {
-					connect: function(resolver, facet, wire) {
-						resolver.resolve(connectFacet(wire, facet));
-					}
-				}
-			}
-		};
-    };
+exports.mime = require('./middleware/static').mime;
+
+/**
+ * Expose the prototype.
+ */
+
+exports.proto = proto;
+
+/**
+ * Auto-load middleware getters.
+ */
+
+exports.middleware = {};
+
+/**
+ * Expose utilities.
+ */
+
+exports.utils = utils;
+
+/**
+ * Create a new connect server.
+ *
+ * @return {Function}
+ * @api public
+ */
+
+function createServer() {
+  function app(req, res){ app.handle(req, res); }
+  utils.merge(app, proto);
+  utils.merge(app, EventEmitter.prototype);
+  app.route = '/';
+  app.stack = [];
+  for (var i = 0; i < arguments.length; ++i) {
+    app.use(arguments[i]);
+  }
+  return app;
+};
+
+/**
+ * Support old `.createServer()` method.
+ */
+
+createServer.createServer = createServer;
+
+/**
+ * Auto-load bundled middleware with getters.
+ */
+
+fs.readdirSync(__dirname + '/middleware').forEach(function(filename){
+  if (!/\.js$/.test(filename)) return;
+  var name = basename(filename, '.js');
+  function load(){ return require('./middleware/' + name); }
+  exports.middleware.__defineGetter__(name, load);
+  exports.__defineGetter__(name, load);
 });
-})(typeof define == 'function'
-	? define
-	: function(deps, factory) {
-		module.exports = factory.apply(this, deps.map(function(x) {
-			return require(x);
-		}));
-	}
-);

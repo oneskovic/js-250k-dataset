@@ -1,16 +1,3 @@
-
-/*
-	Author       : Jay Garcia
-	Site         : http://tdg-i.com
-	Blog post    : http://tdg-i.com/63/how-to-integrate-the-progress-bar-with-the-paging-toolbar
-	Contact Info : jgarcia@tdg-i.com
-	Purpose      : An integrated progress bar for the Paging toolbar 
-	Warranty     : none
-	Price        : free
-	Version      : b1
-	Date         : 01/29/2009
-	
-*/
 Ext.ns('Ext.ux', 'Ext.ux.plugins');
 Ext.ux.plugins.ProgressPagingToolbar = Ext.extend(Ext.PagingToolbar, {
 	defaultAnimCfg : {

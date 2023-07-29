@@ -30,14 +30,14 @@ verb.task('apidocs', function () {
 });
 
 verb.task('lint', function() {
-  /* deps:jshint-stylish */
-  verb.src(['index.js', 'lib/**/*.js', 'test/*.js'])
+  
+  verb.src(['index.js', 'lib*.js', 'test/*.js'])
     .pipe(jshint())
     .pipe(jshint.reporter('jshint-stylish'));
 });
 
 verb.task('test', function (cb) {
-  verb.src(['index.js', 'lib/**/*.js', 'bin/*.js'])
+  verb.src(['index.js', 'lib*.js', 'bin/*.js'])
     .pipe(istanbul())
     .pipe(istanbul.hookRequire())
     .on('finish', function () {

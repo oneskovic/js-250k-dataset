@@ -1,5 +1,3 @@
-/*global enyo, ares */
-
 enyo.kind({
 	name: "GenZip",
 	kind: "enyo.Component",

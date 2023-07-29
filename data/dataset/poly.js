@@ -9,8 +9,7 @@ var EPSLN = 1.0e-10;
 var gN = require('../common/gN');
 var MAX_ITER = 20;
 exports.init = function() {
-  /* Place parameters in static storage for common use
-      -------------------------------------------------*/
+  
   this.temp = this.b / this.a;
   this.es = 1 - Math.pow(this.temp, 2); // devait etre dans tmerc.js mais n y est pas donc je commente sinon retour de valeurs nulles
   this.e = Math.sqrt(this.es);

@@ -1,26 +1,3 @@
-/**
- *
- * Clear a `<textarea>` or text `<input>` element’s value.
- *
- * <example>
-    :clearElement.js
-    client
-        .setValue('.input', 'test123')
-        .clearElement('.input')
-        .getValue('.input', function(err, value) {
-            assert(err === null);
-            assert(value === ''); // true
-        });
- * </example>
- *
- * @param {String} selector input element
- * @callbackParameter error
- *
- * @uses protocol/elements, protocol/elementIdClear
- * @type action
- *
- */
-
 var async = require('async'),
     ErrorHandler = require('../utils/ErrorHandler.js');
 

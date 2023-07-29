@@ -1,17 +1,3 @@
-// Copyright 2006 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 /**
  * @fileoverview Shared test function to reset the constants in
  * goog.userAgent.*
@@ -20,7 +6,15 @@
 goog.provide('goog.userAgentTestUtil');
 goog.provide('goog.userAgentTestUtil.UserAgents');
 
+goog.require('goog.labs.userAgent.browser');
+goog.require('goog.labs.userAgent.engine');
+goog.require('goog.labs.userAgent.platform');
 goog.require('goog.userAgent');
+goog.require('goog.userAgent.keyboard');
+goog.require('goog.userAgent.platform');
+goog.require('goog.userAgent.product');
+/** @suppress {extraRequire} */
+goog.require('goog.userAgent.product.isVersion');
 
 goog.setTestOnly('goog.userAgentTestUtil');
 
@@ -30,24 +24,47 @@ goog.setTestOnly('goog.userAgentTestUtil');
  * @suppress {accessControls}
  */
 goog.userAgentTestUtil.reinitializeUserAgent = function() {
-
-  goog.userAgent.init_();
-
   // Unfortunately we can't isolate the useragent setting in a function
   // we can call, because things rely on it compiling to nothing when
   // one of the ASSUME flags is set, and the compiler isn't smart enough
   // to do that when the setting is done inside a function that's inlined.
-  goog.userAgent.OPERA = goog.userAgent.detectedOpera_;
-  goog.userAgent.IE = goog.userAgent.detectedIe_;
-  goog.userAgent.GECKO = goog.userAgent.detectedGecko_;
-  goog.userAgent.WEBKIT = goog.userAgent.detectedWebkit_;
-  goog.userAgent.MOBILE = goog.userAgent.detectedMobile_;
+  goog.userAgent.OPERA = goog.labs.userAgent.browser.isOpera();
+  goog.userAgent.IE = goog.labs.userAgent.browser.isIE();
+  goog.userAgent.GECKO = goog.labs.userAgent.engine.isGecko();
+  goog.userAgent.WEBKIT = goog.labs.userAgent.engine.isWebKit();
+  goog.userAgent.MOBILE = goog.userAgent.isMobile_();
   goog.userAgent.SAFARI = goog.userAgent.WEBKIT;
 
-
-  goog.userAgent.initPlatform_();
+  // Platform in goog.userAgent.
   goog.userAgent.PLATFORM = goog.userAgent.determinePlatform_();
+
+  goog.userAgent.MAC = goog.labs.userAgent.platform.isMacintosh();
+  goog.userAgent.WINDOWS = goog.labs.userAgent.platform.isWindows();
+  goog.userAgent.LINUX = goog.userAgent.isLegacyLinux_();
+  goog.userAgent.X11 = goog.userAgent.isX11_();
+  goog.userAgent.ANDROID = goog.labs.userAgent.platform.isAndroid();
+  goog.userAgent.IPAD = goog.labs.userAgent.platform.isIpad();
+  goog.userAgent.IPHONE = goog.labs.userAgent.platform.isIphone();
   goog.userAgent.VERSION = goog.userAgent.determineVersion_();
+
+  // Platform in goog.userAgent.platform.
+  goog.userAgent.platform.VERSION = goog.userAgent.platform.determineVersion_();
+
+  // Update goog.userAgent.product
+  goog.userAgent.product.init_();
+  goog.userAgent.product.ANDROID = goog.userAgent.product.detectedAndroid_;
+  goog.userAgent.product.CHROME = goog.userAgent.product.detectedChrome_;
+  goog.userAgent.product.FIREFOX = goog.userAgent.product.detectedFirefox_;
+  goog.userAgent.product.IE = goog.userAgent.IE;
+  goog.userAgent.product.IPAD = goog.userAgent.product.detectedIpad_;
+  goog.userAgent.product.IPHONE = goog.userAgent.product.detectedIphone_;
+  goog.userAgent.product.OPERA = goog.userAgent.OPERA;
+  goog.userAgent.product.SAFARI = goog.userAgent.product.detectedSafari_;
+  goog.userAgent.product.VERSION = goog.userAgent.product.determineVersion_();
+
+  // goog.userAgent.keyboard
+  goog.userAgent.keyboard.MAC_KEYBOARD =
+      goog.userAgent.keyboard.determineMacKeyboard_();
 };
 
 

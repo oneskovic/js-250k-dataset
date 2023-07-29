@@ -1,4 +1,3 @@
-/*jslint node: true, vars: true, white: true, devel: true*/
 /*global bhlBooksAdvanced: false, bhlBooksParse: false */
 "use strict";
 var tools = require('./tools');

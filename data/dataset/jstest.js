@@ -1,6 +1,3 @@
-// Test the SchemeNumber implementations of ECMA standard number
-// formatting functions toFixed, toExponential, and toPrecision.
-
 var BigInteger, SchemeNumber;
 
 if (typeof require === "undefined") {

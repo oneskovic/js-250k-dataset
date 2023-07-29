@@ -1,9 +1,5 @@
 module.exports = (function () {
-    /**
-     * @constructor
-     * @param {jQuery} image
-     * @param {Array} candidates
-     */
+    
     function ResponsiveImage(image, candidates) {
         this.image = image;
         this.candidates = candidates;

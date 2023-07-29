@@ -1,53 +1,66 @@
-Joose.Managed.Property.MethodModifier.Override = new Joose.Proto.Class('Joose.Managed.Property.MethodModifier.Override', {
-    
-    isa : Joose.Managed.Property.MethodModifier,
+var cursorProto = FindFaster._getCursorProto();
+var collectionProto = Meteor.Collection.prototype;
 
-    
-    prepareWrapper : function (params) {
-        
-        var modifier        = params.modifier
-        var originalCall    = params.originalCall
-        var superProto      = params.superProto
-        var superMetaConst  = superProto.meta.constructor
-        
-        //call to Joose.Proto level, require some additional processing
-        var isCallToProto = (superMetaConst == Joose.Proto.Class || superMetaConst == Joose.Proto.Object) && !(params.isOwn && originalCall.IS_OVERRIDE) 
-        
-        var original = originalCall
-        
-        if (isCallToProto) original = function () {
-            var beforeSUPER = this.SUPER
-            
-            this.SUPER  = superProto.SUPER
-            
-            var res = originalCall.apply(this, arguments)
-            
-            this.SUPER = beforeSUPER
-            
-            return res
-        }
+//fetch
+var originalFetch = cursorProto.fetch;
+cursorProto.fetch = function() {
+  if(FindFaster._canUseFindFaster(this)) {
+    return FindFaster._fetch(this);
+  } else {
+    return originalFetch.apply(this, arguments);
+  }
+};
 
-        var override = function () {
-            
-            var beforeSUPER = this.SUPER
-            
-            this.SUPER  = original
-            
-            var res = modifier.apply(this, arguments)
-            
-            this.SUPER = beforeSUPER
-            
-            return res
-        }
-        
-        override.IS_OVERRIDE = true
-        
-        return override
-    },
-    
-    getDisplayName : function (target) {
-        return target.meta.name + '[override ' + this.name + ']'
-    }
-    
-    
-}).c
+//forEach
+var originalForEach = cursorProto.forEach;
+cursorProto.forEach = function(callback, thisArg) {
+  if(FindFaster._canUseFindFaster(this)) {
+    var docs = FindFaster._fetch(this);
+    var cursor = this;
+
+    docs.forEach(function(doc, index) {
+      callback.call(thisArg, doc, index, cursor);
+    });
+  } else {
+    return originalForEach.apply(this, arguments);
+  }
+};
+
+// Map
+var originalMap = cursorProto.map;
+cursorProto.map = function(callback, thisArg) {
+  if(FindFaster._canUseFindFaster(this)) {
+    var result = [];
+    var cursor = this;
+
+    var docs = FindFaster._fetch(this);
+    docs.forEach(function(doc, index) {
+      result.push(callback.call(thisArg, doc, index, cursor));
+    });
+    return result;
+  } else {
+    return originalMap.call(this, callback, thisArg);
+  }
+};
+
+// Extending Meteor.Collection
+collectionProto.findFaster = function(selector, options) {
+  var args = _.toArray(arguments);
+  selector = this._getFindSelector(args)
+  options = this._getFindOptions(args)
+
+  options.findFaster = true;
+  return this.find(selector, options);
+};
+
+collectionProto.findOneFaster = function(selector, options) {
+  var args = _.toArray(arguments);
+  selector = this._getFindSelector(args)
+  options = this._getFindOptions(args)
+
+  options.findFaster = true;
+  // this is need since, Meteor rejects to use oplog
+  // if there is no sort specifier
+  options.sort = options.sort || {_id: 1};
+  return this.findOne(selector, options);
+};

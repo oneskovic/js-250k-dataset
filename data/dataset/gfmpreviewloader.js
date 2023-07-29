@@ -1,8 +1,4 @@
 /*
-    GFMarkdownEditor 0.2
-    please see https://github.com/romaricdrigon/GFMarkdownEditor
- */
-/*
     this is the "view" of the preview,
     here in the left pane
  */

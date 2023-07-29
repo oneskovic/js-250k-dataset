@@ -1,13 +1,3 @@
-// # Regular Expressions
-//
-// Regular expressions are used to match certain patterns of strings within other strings.
-//
-// They can be a useful tool for extracting _patterns_ rather than exact strings, for example:
-// telephone numbers (sequences of numbers of a specific length,) street numbers or email
-// addresses.
-//
-// ## Finding Strings
-
 var str = "how much wood would a woodchuck chuck if a woodchuck could chuck wood";
 var regex = /wood/;
 

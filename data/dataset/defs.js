@@ -3,7 +3,7 @@ var parseProj = require('./projString');
 var wkt = require('./wkt');
 
 function defs(name) {
-  /*global console*/
+  
   var that = this;
   if (arguments.length === 2) {
     var def = arguments[1];

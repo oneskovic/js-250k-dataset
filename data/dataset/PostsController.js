@@ -1,5 +1,5 @@
 PostsController = MeteorisController.extend({
-    /* get subscribtion from server with parameter criteria, and sort/limit */
+    
     subscriptions: function() {
         var sort = MeteorisGridView.getSorting();
         sort.limit = this.limit();

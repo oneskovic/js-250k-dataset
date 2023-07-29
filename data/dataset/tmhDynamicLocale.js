@@ -7,12 +7,7 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() 
         storage,
         storeKey = 'tmhDynamicLocale.locale';
 
-    /**
-   * Loads a script asynchronously
-   *
-   * @param {string} url The url for the script
-   @ @param {function) callback A function to be called once the script is loaded
-   */
+    
     function loadScript(url, callback) {
         var script = document.createElement('script'),
             body = document.getElementsByTagName('body')[0];

@@ -1,23 +1,3 @@
-// 'cb' - Promise extension
-//
-// promise.cb(cb)
-//
-// Handles asynchronous function style callback (which is run in next event loop
-// the earliest). Returns self promise. Callback is optional.
-//
-// Useful when we want to configure typical asynchronous function which logic is
-// internally configured with promises.
-//
-// Extension can be used as follows:
-//
-// var foo = function (arg1, arg2, cb) {
-//     var d = deferred();
-//     // ... implementation
-//     return d.promise.cb(cb);
-// };
-//
-// `cb` extension returns promise and handles eventual callback (optional)
-
 'use strict';
 
 var callable   = require('es5-ext/object/valid-callable')

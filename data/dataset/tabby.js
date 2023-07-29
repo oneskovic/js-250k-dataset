@@ -1,14 +1,3 @@
-/* =============================================================
-
-    Tabby v3.2
-    Simple, mobile-first toggle tabs by Chris Ferdinandi
-    http://gomakethings.com
-
-    Free to use under the MIT License.
-    http://gomakethings.com/mit/
-    
- * ============================================================= */
-
 (function() {
 
     'use strict';

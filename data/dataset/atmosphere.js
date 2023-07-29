@@ -1,5 +1,3 @@
-/* Atmosphere integration */
-
 Atmosphere = {
   MIN_INTERVAL: undefined,  // at most, a gap of...  TODO
   MAX_INTERVAL: 3600 * 10   // at least, once every 10 mins

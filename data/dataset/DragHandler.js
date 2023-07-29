@@ -1,10 +1,7 @@
 (function () {
   var ns = $.namespace('pskl.controller.drawing');
 
-  /**
-   * Multiplier applied between the mouse movement and viewport movement
-   * @type {Number}
-   */
+  
   var MULTIPLIER = 2;
 
   /**

@@ -1,4 +1,3 @@
-
 describe('DOM node disposal', function() {
     beforeEach(jasmine.prepareTestNode);
 

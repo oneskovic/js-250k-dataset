@@ -1,6 +1,4 @@
-/**
- * @Event
- */ 
+ 
 namespace('notes.events').SLIDES_LOADED = "ActivityModel.SLIDES_LOADED";
 
 

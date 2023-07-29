@@ -1,119 +1,74 @@
-var ns = namespace('dr.acme.view')
-
-/**
- * Home View
- * 
- * Will render the model in different ways depending on the function
- * called. They replace the html template in the layout specified
- * with the provided model
- * 
- */
-ns.HomeView = ns.BaseView.extend({
-	/**
-     * Name of the root element for this view
-     */
-    elementSelector: "#contentArea",
-    layoutTemplate: "#homeTpl",
-    
-    /**
-     * Events this view dispatches
-     */
-    events: {
-        ADD_TO_CART: "AddToCart",
-        CATEGORY_SELECTED: "CategorySelected"
+define([
+  'backbone',
+  'handlebars',
+  'globals',
+  'models/userModel',
+  'views/activityView',
+  'views/repoView'
+], function(Backbone, Handlebars, Globals, UserModel, ActivityView, RepoView) {
+  var HomeView = Backbone.View.extend({
+    template: Handlebars.templates.home(),
+    attributes: {
+      'id': 'home-page',
+      'data-role': 'page'
+    },
+    events :function(){ 
+      var me = this,
+        events = 'ontouchstart' in document ? {
+          'touchstart #find-user': function(e){            
+            me.findUser();
+          },
+          'touchstart #get-user-activity': function(e){            
+            me.getUserActivity();
+          },
+          'touchstart #get-user-repositores': function(e){            
+            me.getUserRepositories();
+          }
+        } : {
+          'click #find-user': 'findUser',
+          'click #get-user-activity': 'getUserActivity',
+          'click #get-user-repositores': 'getUserRepositories'
+        };
         
+      return events;
     },
-    
-    /**
-     * Handlers for the DOM events must be registered in this method
-     */
-    initDOMEventHandlers: function() {
-        this.addDomHandler(".btn-add-to-cart", "click", this.onAddToCartButtonClick);
-        this.addDomHandler(".homeCategories .drop_down_menu", "change", this.onCategorySelected);
+    initialize: function(){
+      this.render();
+      this.input = this.$('#gh-username');
+      this.avatar = this.$('#gh-avatar');
+      this.avatarContainer = this.$('.avatar-container');
     },
-    
-    /**
-     * "Add to Cart" button click handler
-     */
-    onAddToCartButtonClick: function(e, productId) {
-        this.dispatchEvent(this.events.ADD_TO_CART, {productId: $(e.target).attr("data-product-id")});
+    render: function() {      
+      this.$el.html(this.template);
+      return this;
     },
-    
-    onCategorySelected: function(e){
-    	this.dispatchEvent(this.events.CATEGORY_SELECTED, {value: e.currentTarget.value});
+    findUser: function(evt) {
+      evt.preventDefault();      
+      this.model = new UserModel({id: this.input.val()});
+      this.listenToOnce(this.model, 'sync', this.showAdditionalButtons);
+      this.model.fetch();
     },
-        
-	/**
-	 * Render loader or the actual product
-	 */
-	render: function() {
-	    this.applyTemplate(this.elementSelector, this.layoutTemplate);   
-	       $('.item').first().addClass('active');
-	},
-	bindEvent:function(){
-		this._super(".nav-collapse ul.nav li a", function(){
-			$(".collapse").collapse('hide');
-		});
-	},
-	
-	/*********************************************************/
-	
-	/**
-	 * Promotional offers Loader rendering while waiting for the Apigee response
-	 */
-	renderOffersLoader: function() {
-		this.applyTemplate("#feature-product", "#loader",{message: "Loading Offers..."});
-	},
-	
-	/**
-	 * Promotional offers rendering as a slider
-	 */
-	renderOffers: function(model) {
-		// If the offer has products shows them
-		if(model.featuresProducts){
-			this.applyTemplate("#feature-product", "#promotionalTemplate",model);
-		}else{
-			// Otherwise show an empty message
-			this.applyTemplate("#feature-product", "#promotionalTemplateEmptyOrError");
-		}	    
-        this.renderSlider();
-	},
-	
-	/**
-	 * Renders an error on the featured products if the service call fails
-	 */
-	renderOfferError: function(error) {
-		this.applyTemplate("#feature-product", "#promotionalTemplateEmptyOrError",error);	    
-        this.renderSlider();
-	},
-	
-	/**
-	 * Categories left side menu Loader rendering while waiting for the Apigee response
-	 */
-	renderCategoriesLoader: function() {
-		this.applyTemplate("#categories-product", "#loader",{message: "Loading Categories..."});      
-	},
-	
-	/**
-	 * Categories left side menu rendering
-	 */
-	renderCategories: function(model) {
-		this.applyTemplate("#categories-product", "#categoryLeftMenu", model);	    
-	},
-	
-	/**
-	 * Renders the offers slider
-	 */
-	renderSlider:function(){
-		 $('.carouselDiv').flexslider({
-             animation: "slide",
-             slideshowSpeed: 2000, 
-             controlNav: true, 
-             animationLoop: true, 
-             directionNav: true, 
-             pauseOnHover: true,
-             prevText: "‹",
-             nextText: "›",
-             controlsContainer: ".flexslider-controls"});	 
-	}
+    showAdditionalButtons: function() {
+      if(this.model.has('username')) {
+        this.avatar.attr('src','http://www.gravatar.com/avatar/'+this.model.get('gravatar_id')+'?s=200');
+        this.avatarContainer.slideDown();
+      } else {
+        this.avatarContainer.slideUp('slow', function() {
+          alert('No User Found');
+        });
+      }
+    },
+    getUserActivity: function(evt) {
+      evt.preventDefault();
+      Globals.controller.goToActivityPage({user: this.input.val(), el: '#events-container'});
+    },
+    getUserRepositories: function(evt) {
+      evt.preventDefault();
+      Globals.events.trigger("page:destroy", 'repo-category-page');
+      Globals.events.trigger("page:destroy", 'repo-page');
+      Globals.controller.goToRepoCategoryPage({user: this.input.val(), el: '#repos-category-container'});
+    }
+  });
+  
+  return HomeView;
 });

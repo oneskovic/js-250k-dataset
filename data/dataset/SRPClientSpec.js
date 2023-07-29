@@ -1,8 +1,3 @@
-/*
- * Verification of the correctness of the SRP
- * algorithm using the official test vectors.
- * See http://tools.ietf.org/html/rfc5054#appendix-B
- */
  
 describe("SRPClient", function() {
 

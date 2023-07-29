@@ -1,8 +1,3 @@
-/**
- * User: tadiraman
- * Date: 11/22/11
- * Time: 1:07 PM
- */
 (function () { // self-invoking function
     /**
      * @param {String} baseUrl (not including the name of the svc, must end in '/')

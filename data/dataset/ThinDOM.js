@@ -1,6 +1,3 @@
-/**
- * A little thin DOM wrapper with chaining
- */
 function ThinDOM(tag, attributes) {
     this.el = document.createElement(tag);
     if(typeof attributes != 'undefined') {

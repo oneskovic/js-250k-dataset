@@ -1,8 +1,4 @@
-﻿/*
-*   editorPlain
-*   author: ronglin
-*   create date: 2012.3.2
-*/
+﻿
 
 (function (ctx, $) {
 

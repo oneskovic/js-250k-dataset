@@ -1,12 +1,3 @@
-
-/*
- * node-runkeeper - Node.js Client for Runkeeper Health Graph API
- *
- * runkeeper.js:  Defines the HealthGraph class
- *
- * author: Mark Soper (masoper@gmail.com)
- */
-
 var request = require('request'),
     API = require('./api').API;
 

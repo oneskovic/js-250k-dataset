@@ -1,12 +1,3 @@
-/*
- * grunt
- * http://gruntjs.com/
- *
- * Copyright (c) 2012 "Cowboy" Ben Alman
- * Licensed under the MIT license.
- * https://github.com/gruntjs/grunt/blob/master/LICENSE-MIT
- */
-
 // Basic template description.
 exports.description = 'Create a commonjs module, including Nodeunit unit tests.';
 

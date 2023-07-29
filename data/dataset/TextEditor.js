@@ -1,25 +1,3 @@
-/**
- * @class YAHOO.ext.grid.TextEditor
- * @extends YAHOO.ext.grid.CellEditor
-Provides basic text editing for a cells and supports the following configuration options:
-<ul class="list">
-<li><i>allowBlank</i> - True if the cell is allowed to be empty.</li>
-<li><i>minLength</i> - The minimum length the cell will accept.</li>
-<li><i>maxLength</i> - The maximum length the cell will allow.</li>
-<li><i>minText</i> - The tooltip to display when the length of the value in the cell is below the minimum.</li>
-<li><i>maxText</i> - The tooltip to display when the length of the value in the cell is above the maximum.</li>
-<li><i>selectOnFocus</i> - True to select the text when the editor is activated.</li>
-<li><i>blankText</i> - The tooltip (error message) to display when the cell is empty and is not allowed to be.</li>
-<li><i>regex</i> - A regular expression to match if the value is valid. If the regex.test(value) returns false, the value is considered invalid.</li>
-<li><i>regexText</i> - The tooltip (error message) to display when regex does not match.</li>
-<li><i>validator</i> - Any custom validation function you want called. The function must return true if the data is valid or an error message otherwise.</li>
-<li><i>validationDelay</i> - The delay in milliseconds for validation. Each time the user types something the field is validated after a specified delay, setting this value allows you to customize that delay (for example, if your custom validation routine is slow).</li>
-</ul>
-For more information on using this editor, see <a href="http://www.jackslocum.com/yui/2006/09/10/adding-built-in-editing-support-to-the-yahoo-ui-extensions-grid/">this blog post</a>.
-* @constructor
-* Create a new TextEditor
-* @param {Object} config
- */
 YAHOO.ext.grid.TextEditor = function(config){
     var element = document.createElement('input');
     element.type = 'text';

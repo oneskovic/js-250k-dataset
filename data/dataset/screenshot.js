@@ -1,4 +1,3 @@
-
 //Config
 var configPath = "./screenshot.json",
     destPath = "../../screenshots",

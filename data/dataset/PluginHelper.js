@@ -1,7 +1,3 @@
-/**
- * Helper methods used for plugin parsing
- */
-
 exports.getPluginIdAndIId = function (namespace) {
     var pl = namespace.split('_');
     return {pluginId: pl[0], iId: pl[1]}

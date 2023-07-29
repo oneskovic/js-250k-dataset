@@ -2,12 +2,7 @@ var TemplateGame = TemplateGame || {};
 
 TemplateGame.Play = new Kiwi.State('Play');
 
-/**
-* The PlayState in the core state that is used in the game. 
-*
-* It is the state where majority of the functionality occurs 'in-game' occurs.
-* 
-*/
+
 
 
 /**

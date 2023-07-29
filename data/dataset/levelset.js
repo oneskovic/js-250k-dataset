@@ -1,8 +1,6 @@
 'use strict';
 
-/**
- * @constructor
- */
+
 xss.levelset.Levelset = function() {
     this.title = '';
     /** @type {Array.<xss.level.Level>} */

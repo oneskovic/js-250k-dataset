@@ -1,6 +1,3 @@
-// from Mozilla
-// see http://mxr.mozilla.org/mozilla2.0/source/toolkit/mozapps/preferences/fontbuilder.js
-
 var FontBuilder = {
   _enumerator: null,
   get enumerator ()

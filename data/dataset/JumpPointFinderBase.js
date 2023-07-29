@@ -1,6 +1,3 @@
-/**
- * @author imor / https://github.com/imor
- */
 var Heap       = require('heap');
 var Util       = require('../core/Util');
 var Heuristic  = require('../core/Heuristic');

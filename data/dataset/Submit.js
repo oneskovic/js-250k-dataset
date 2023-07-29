@@ -1,24 +1,3 @@
-/*
----
- 
-script: Submit.js
- 
-description: Does a request or navigates url to the link
- 
-license: Public domain (http://unlicense.org).
-
-authors: Yaroslaff Fedin
- 
-requires:
-  - LSD.Action
- 
-provides:
-  - LSD.Action.Submit
- 
-...
-*/
-
-
 LSD.Action.Submit = LSD.Action.build({
   enable: function(target, event) {
     if (this.retrieve(target)) return;

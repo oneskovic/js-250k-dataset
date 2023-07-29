@@ -1,4 +1,3 @@
-// wrap in closure to avoid global vars.
 (function() {
 
 Ext.regModel('Cars', {

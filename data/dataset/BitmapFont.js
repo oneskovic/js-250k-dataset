@@ -1,5 +1,3 @@
-// Copyright (c) 2013 David Gallardo Moreno. All rights reserved.
-
 /**
  * @fileoverview A texture atlas component for TexturePacker JSON (hash) output files.
  * @author David Gallardo Moreno (portalg@gmail.com)

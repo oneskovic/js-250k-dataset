@@ -1,91 +1,66 @@
-"use strict";
-/*global ajaxify, templates, config, RELATIVE_PATH*/
+var voicejs = require('../voice.js');
 
-(function(ajaxify) {
-	ajaxify.widgets = {};
+var client = new voicejs.Client({
+	email: process.argv[2] || 'email@gmail.com',
+	password: process.argv[3] || 'password',
+	tokens: require('./tokens.json')
+});
 
-	ajaxify.widgets.reposition = function(location) {
-		$('body [no-widget-class]').each(function() {
-			var $this = $(this);
-			if ($this.attr('no-widget-target') === location) {
-				$this.removeClass();
-				$this.addClass($this.attr('no-widget-class'));
-			}
-		});
-	};
+// This example lists all webcall widgets, then adds a new one, updates it, then deletes it
 
-	ajaxify.widgets.render = function(template, url, callback) {
-		var widgetLocations = ['sidebar', 'footer', 'header'], numLocations;
 
-		$('#content [widget-area]').each(function() {
-			var location = $(this).attr('widget-area');
-			if ($.inArray(location, widgetLocations) === -1) {
-				widgetLocations.push(location);
-			}
-		});
-
-		numLocations = widgetLocations.length;
-
-		if (!numLocations) {
-			ajaxify.widgets.reposition();
+// Display all widgets
+client.widgets('get', function(error, response, data){
+	if(error){
+		return console.log(error);
+	}
+	
+	var widgets = data.settings.webCallButtons;
+	
+	console.log('\nWebcall widgets:');
+	
+	widgets.forEach(function(widget){
+		console.log(
+			'\n', 'id:', widget.id,
+			'\n', widget.disabled ? 'disabled' : 'enabled',
+			'\n', 'greeting id:', widget.greetingId,
+			'\n', 'directConnect:', widget.directConnect,
+			'\n', 'Disabled forwarding phones:', Object.keys(widget.disabledForwardingIds).join(', ') 
+		);
+	});
+	
+	
+	// Create a new widget, but disable it
+	client.widgets('new', {
+		name: 'New Widget',
+		disabled: true
+	}, function(error, response, data){
+		if(error){
+			return console.log(error);
 		}
-
-		function renderWidgets(locations) {
-			var areaDatas = [];
-
-			$.get(RELATIVE_PATH + '/api/widgets/render' + (config['cache-buster'] ? '?v=' + config['cache-buster'] : ''), {
-				locations: locations,
-				template: template + '.tpl',
-				url: url
-			}, function(renderedAreas) {
-				for (var x=0; x<renderedAreas.length; ++x) {
-					var renderedWidgets = renderedAreas[x].widgets,
-						location = renderedAreas[x].location,
-						html = '';
-
-					for (var i=0; i<renderedWidgets.length; ++i) {
-						html += templates.parse(renderedWidgets[i].html, {});
-					}
-
-					var area = $('#content [widget-area="' + location + '"]');
-
-					if (!area.length && window.location.pathname.indexOf('/admin') === -1 && renderedWidgets.length) {
-						if (location === 'footer' && !$('#content [widget-area="footer"]').length) {
-							$('#content').append($('<div class="row"><div widget-area="footer" class="col-xs-12"></div></div>'));
-						} else if (location === 'sidebar' && !$('#content [widget-area="sidebar"]').length) {
-							$('#content > *').wrapAll($('<div class="row"><div class="col-lg-9 col-xs-12"></div><div widget-area="sidebar" class="col-lg-3 col-xs-12"></div></div></div>'));
-						} else if (location === 'header' && !$('#content [widget-area="header"]').length) {
-							$('#content').prepend($('<div class="row"><div widget-area="header" class="col-xs-12"></div></div>'));
-						}
-
-						area = $('#content [widget-area="' + location + '"]');
-					}
-
-					area.html(html);
-
-					if (!renderedWidgets.length) {
-						area.addClass('hidden');
-						ajaxify.widgets.reposition(location);
-					}
-				}
-
-				var widgetAreas = $('#content [widget-area]');
-				widgetAreas.find('img:not(.user-img)').addClass('img-responsive');
-				widgetAreas.find('.timeago').timeago();
-				widgetAreas.find('img[title].teaser-pic,img[title].user-img').each(function() {
-					$(this).tooltip({
-						placement: 'top',
-						title: $(this).attr('title')
-					});
-				});
-				$(window).trigger('action:widgets.loaded', {});
-
-				if (typeof callback === 'function') {
-					callback();
-				}
+		console.log('\nNew webcall widget:');
+		console.log(data.webCallButton);
+		
+		
+		// Enable the new widget, but disable it from ringing forwarding phone 9
+		// Any options not passed will be RESET by Google to default values, so we could just as well leave out the 'disabled:false' and it would be set to false anyway
+		client.widgets('edit', {
+			id: data.webCallButton.id, // if this id does not match a current webcall widget it, a NEW ONE will be created
+			name: 'New Widget',
+			disabled: false,
+			disabledPhoneIds: [9]
+		}, function(error, response, data){
+			if(error){
+				return console.log(error);
+			}
+			console.log('\nNew webcall widget settings:');
+			console.log(data.webCallButton); // could check response widget to make sure that it's not a newly-created one (see above comment next to id)
+			
+			
+			// Delete the widget
+			client.widgets('delete', {id: data.webCallButton.id}, function(error, response, data){
+				console.log(error ? '\nError deleting widget: '+ error : '\nDeleted widget successfully')
 			});
-		}
-
-		renderWidgets(widgetLocations);
-	};
-}(ajaxify || {}));
+		});	
+	});
+});

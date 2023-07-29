@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2014 Juniper Networks, Inc. All rights reserved.
- */
-
 /* This file uses pareseURL.xml and creates the file featureRoutes.api.js */
 var fs = require('fs'),
     xml2js = require('xml2js'),

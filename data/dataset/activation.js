@@ -1,4 +1,3 @@
-// __Dependencies__
 var RestError = require('rest-error');
 var Controller = require('../Controller');
 // __Private Module Members__

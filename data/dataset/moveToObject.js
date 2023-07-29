@@ -1,20 +1,3 @@
-/**
- *
- * Move the mouse by an offset of the specificed element. If no element is specified,
- * the move is relative to the current mouse cursor. If an element is provided but no
- * offset, the mouse will be moved to the center of the element. If the element is not
- * visible, it will be scrolled into view.
- *
- * @param {String} selector element to move to
- * @param {Number} xoffset  X offset to move to, relative to the top-left corner of the element. If not specified, the mouse will move to the middle of the element.
- * @param {Number} yoffset  Y offset to move to, relative to the top-left corner of the element. If not specified, the mouse will move to the middle of the element.
- * @callbackParameter error
- *
- * @uses protocol/element, protocol/elementIdLocation
- * @type action
- *
- */
-
 var async = require('async'),
     ErrorHandler = require('../utils/ErrorHandler.js');
 

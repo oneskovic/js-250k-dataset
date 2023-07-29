@@ -1,56 +1,72 @@
-module("Basics");
+'use strict';
 
-test("Path Pattern Test", function() {
-    expect(2);
-    $.getJSON("path-pattern-test/firstCommand", function(data) {
-        equals(data.cmd, "firstCommand");
-    });
+var agent = require('superagent');
+var apigeetool = require('apigeetool');
+var assert = require('assert');
+var childProcess = require('child_process');
+var path = require('path');
 
-    $.getJSON("path-pattern-test/secondCommand", function(data) {
-        equals(data.cmd, "secondCommand");
+var testConfig = require('../../testconfig/testconfig-apigee');
+var config = testConfig.config;
+
+var TEST_ENVIRONMENT = 'test';
+var PROXY_NAME = 'volostests';
+var LONG_TIMEOUT = 120000;
+
+describe('Apigee Server Tests', function() {
+  var deployedRevision;
+
+  before(function() {
+    if (!config.testUriBase) {
+      throw new Error('Configuration is missing the "testUriBase" parameter');
+    }
+  });
+
+/* Doesn't seem to work at all
+  describe('Cache via remote Express', function() {
+    var test = require('../../cache/test/verifycache.js');
+    test.verify(config.testUriBase + '/volostests-apigeecache');
+  });
+  */
+
+  describe('Cache SPI from inside Apigee', function() {
+    it('SPI test', function(done) {
+      this.timeout(10000);
+      remoteMochaTest(config.testUriBase + '/volostests-mocha/cache', done);
     });
+  });
+
+  describe('Quota via remote Express', function() {
+    var test = require('../../quota/test/verifyquota.js');
+    test.verify(config.testUriBase + '/volostests-apigeequota');
+  });
+
+  describe('Quota SPI from inside Apigee', function() {
+    this.timeout(120000);
+    it('SPI test', function(done) {
+      remoteMochaTest(config.testUriBase + '/volostests-mocha/quota', done);
+    });
+  });
+
+  describe('OAuth via remote Express and Argo', function() {
+    var test = require('../../oauth/test/rfc6749_common.js');
+    test.verifyOauth(testConfig, config.testUriBase + '/volostests-apigeeoauth');
+  });
+
 });
-
-test("Post Echo Test", function() {
-    expect(4);
-
-    var postData = { name: "Daniel", time: "now" }
-
-    $.post("echo", postData, function(data) {
-        //data  = $.parseJSON(data);
-        equals(data.name, "Daniel");
-        equals(data.time, "now");
-    }, "json");
-
-    $.post("echo", postData, function(data) {
-        data = $.parseJSON(data);
-        equals(data.name, "Daniel");
-        equals(data.time, "now");
-    });
-});
-
-module("Session Data");
-
-test("Counter Test", function() {
-    expect(2);
-    $.getJSON("counter", function(data) {
-        equals(data[0], 1);
-        $.getJSON("counter", function(data) {
-            equals(data[0], 2);
-        });
-    });
-});
-
-module("Include Extenral HTML");
-
-test("Load include fragment", function() {
-    expect(2);
-    var body = $("body");
-    ok(body);
-    
-    body.load("html/include.html", function() {
-        //equals($("#helloWorld").html(), "Hello World Text");
-        equals($("#someData").html(), "Some data"); // <p id="someData">Some data</p>
-    });
-});
-
+function remoteMochaTest(uri, done) {
+  agent.post(uri).end(function(err, resp) {
+    if (err) {
+      console.error('Mocha test error: %j', err);
+      done(err);
+    } else {
+      console.log('Mocha test result: %s', resp.text);
+      try {
+        assert.equal(resp.text, '0');
+        done();
+      } catch (e) {
+        done(e);
+      }
+    }
+  });
+}

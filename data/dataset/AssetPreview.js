@@ -1,7 +1,3 @@
-//===================
-//	Preview.js
-//	preview asset
-//===================
 define(function(require, exports, module){
 
 	var Model = Backbone.Model.extend({

@@ -6,9 +6,7 @@ var Validator = require('./validator');
 
 var EPOCH_OFFSET = 946684800;
 
-/**
- * LedgerStream
- */
+
 
 function LedgerStream(options) {
   var self    = this;

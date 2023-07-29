@@ -1,24 +1,3 @@
-/*
-JSONstring v 1.01
-copyright 2006 Thomas Frank
-(small sanitizer added to the toObject-method, May 2008)
-
-This EULA grants you the following rights:
-
-Installation and Use. You may install and use an unlimited number of copies of the SOFTWARE PRODUCT.
-
-Reproduction and Distribution. You may reproduce and distribute an unlimited number of copies of the SOFTWARE PRODUCT either in whole or in part; each copy should include all copyright and trademark notices, and shall be accompanied by a copy of this EULA. Copies of the SOFTWARE PRODUCT may be distributed as a standalone product or included with your own product.
-
-Commercial Use. You may sell for profit and freely distribute scripts and/or compiled scripts that were created with the SOFTWARE PRODUCT.
-
-Based on Steve Yen's implementation:
-http://trimpath.com/project/wiki/JsonLibrary
-
-Sanitizer regExp:
-Andrea Giammarchi 2007
-
-*/
-
 JSONstring={
 	compactOutput:false, 		
 	includeProtos:false, 	

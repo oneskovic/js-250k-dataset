@@ -1,6 +1,3 @@
-/**
- * Demonstrates how use Ext.chart.series.Radar
- */
 //<feature charts>
 Ext.define('Kitchensink.view.RadarChart', {
     extend: 'Ext.Panel',

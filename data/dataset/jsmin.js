@@ -1,10 +1,3 @@
-/**
- * jsmin - Refer to LICENSE in base directory
- * @param {String} input JavaScript to minifiy
- * @return {Object} retObj
- * @return {String} retObj.code Minified JavaScript
- * @return {Object} retObj.codeMap Point to point map from source JavaScript to minified JavaScript
- */
 var jsminc = require('./jsmin.c.index');
 function jsmin(input) {
   var EOF = -1,

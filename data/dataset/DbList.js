@@ -1,7 +1,3 @@
-/**
-A control designed to display data stored in a mojodb database as a list of rows.
-A DbList uses an <a href="#enyo.VirtualList">enyo.VirtualList</a> to manage list rendering.
-*/
 enyo.kind({
 	name: "enyo.DbList",
 	kind: enyo.VirtualList,

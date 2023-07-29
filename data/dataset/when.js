@@ -8,16 +8,7 @@
     }
 }(this, function (uijet, when) {
 
-    /**
-     * when.js promises module.
-     * 
-     * @module promises/when
-     * @category Module
-     * @sub-category Promises
-     * @extends uijet
-     * @see {@link https://github.com/cujojs/when/wiki}
-     * @exports when
-     */
+    
     uijet.use({
         /**
          * Constructs a promise object.

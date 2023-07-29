@@ -1,8 +1,6 @@
 'use strict';
 
-/**
- * @fileOverview Defines the Google Cloud Messaging (GCM) interface prototype and its methods.
- */
+
 module.exports = GCM;
 
 var config = require("./config");

@@ -1,12 +1,3 @@
-/*
- * Ext JS Library 2.2
- * Copyright(c) 2006-2008, Ext JS, LLC.
- * licensing@extjs.com
- * 
- * http://extjs.com/license
- */
-
-
 // Very simple plugin for adding a close context menu to tabs
 
 Ext.ux.TabCloseMenu = function(){

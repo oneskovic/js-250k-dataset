@@ -1,11 +1,7 @@
 var Montage = require("./core").Montage;
 var logger = require("./logger").logger("exception");
 
-/**
- * @module montage/core/exception
- * @requires montage/core/core
- * @requires montage/core/logger
-*/
+
 
 /**
  * @class Exception

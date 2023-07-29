@@ -1,4 +1,3 @@
-// Constructor
 SceneViewer = function()
 {
 	Sim.App.call(this);

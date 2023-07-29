@@ -1,6 +1,3 @@
-// ***************************************************
-// Write concerns
-// ***************************************************
 var _hasWriteConcern = function(errorOptions) {
   return errorOptions == true
     || errorOptions.w > 0

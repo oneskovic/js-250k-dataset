@@ -1,95 +1,88 @@
+/*global define */
+define([
+    'js/util',
+    './Variable'
+], function (
+    util,
+    Variable
+) {
+    'use strict';
 
-/**
- * This simple example shows how you can easily pass variables across fibers tree
- * it's very useful when you have concurrent program (http server) which deals with a lot of simultenous requests
- * and you need to maintain the context (e.g. req, res variables) for each local execution stack
- * without passing it through function arguments endlessly
- *
- * In this example, the tree will be looking like:
- *
- * --> Request #1
- *     Fiber #1
- *         someGatewayMethod.future()
- *              Fiber #1.1
- *
- * --> Request #2
- *     Fiber #2
- *         someGatewayMethod.future()
- *              Fiber #2.1
- *
- * So, this program will output:
- * request #1
- * request #2
- */
+    var hasOwn = {}.hasOwnProperty;
 
-var Sync = require('..');
+    function Scope(callStack, valueFactory, thisObject, currentClass) {
+        var thisObjectVariable;
 
-var x = function() {
-    
-    //Sync.sleep(100);
-    
-    throw new Error('hehe');
-    console.log(scope.req);
+        this.currentClass = currentClass;
+        this.errorsSuppressed = false;
+        this.callStack = callStack;
+        this.thisObject = thisObject;
+        this.valueFactory = valueFactory;
+        this.variables = {};
 
-}.async();
+        if (thisObject) {
+            thisObjectVariable = new Variable(callStack, valueFactory, 'this');
+            thisObjectVariable.setValue(thisObject);
+            this.variables['this'] = thisObjectVariable;
+        }
+    }
 
-var someGatewayMethod = function() {
-    
-    var scope = Sync.scope;
-    
-    //throw new Error('hehe');
-    //Sync.sleep(100);
-    
-    //x.future();
-    
-    x.future();
-    //x();
-    
-    return;
-    
-    setTimeout(function(){
-        
-        //console.log(Fiber.current)
-        //throw new Error('hehe');
-        
-        var x = function() {
-            
-            throw new Error('hehe');
-            console.log(scope.req);
+    util.extend(Scope.prototype, {
+        defineVariable: function (name) {
+            var scope = this,
+                variable = new Variable(scope.callStack, scope.valueFactory, name);
 
-        }.async();
-        
-        x.future();
-        //x();
-        
-        
-    }.async(), 100)
-    
-    
-}.async()
+            scope.variables[name] = variable;
 
+            return variable;
+        },
 
-// One fiber (e.g. user's http request)
-Sync(function(){
-    
-    Sync.scope.req = 'request #1';
-    
-    // future() runs someGatewayMethod in a separate "forked" fiber
-    someGatewayMethod.future();
-    //someGatewayMethod();
-    
-    //console.log(f.error);
-    
-    //someGatewayMethod();
-    //Sync.waitFutures();
-    
-}, Sync.log)
+        defineVariables: function (names) {
+            var scope = this;
 
-// Another fiber (e.g. user's http request)
-/*Sync(function(){
-    
-    Sync.scope.req = 'request #2';
-    
-    // future() runs someGatewayMethod in a separate "forked" fiber
-    someGatewayMethod.future();
-})*/
+            util.each(names, function (name) {
+                scope.defineVariable(name);
+            });
+        },
+
+        expose: function (object, name) {
+            var scope = this,
+                valueFactory = scope.valueFactory;
+
+            scope.defineVariable(name).setValue(valueFactory.coerce(object));
+        },
+
+        getCurrentClass: function () {
+            return this.currentClass;
+        },
+
+        getThisObject: function () {
+            return this.thisObject;
+        },
+
+        getVariable: function (name) {
+            var scope = this;
+
+            if (!hasOwn.call(scope.variables, name)) {
+                // Implicitly define the variable
+                scope.variables[name] = new Variable(scope.callStack, scope.valueFactory, name);
+            }
+
+            return scope.variables[name];
+        },
+
+        suppressErrors: function () {
+            this.errorsSuppressed = true;
+        },
+
+        suppressesErrors: function () {
+            return this.errorsSuppressed;
+        },
+
+        unsuppressErrors: function () {
+            this.errorsSuppressed = false;
+        }
+    });
+
+    return Scope;
+});

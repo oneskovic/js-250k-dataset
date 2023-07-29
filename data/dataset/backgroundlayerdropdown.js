@@ -11,7 +11,7 @@ goog.require('ol.source.OSM');
 goog.require('ol.source.Stamen');
 
 
-/** @const **/
+
 var app = {};
 
 

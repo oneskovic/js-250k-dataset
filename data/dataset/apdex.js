@@ -1,10 +1,6 @@
 'use strict';
 
-/*
- *
- * CONSTANTS
- *
- */
+
 var FROM_MILLIS = 1000;
 
 
@@ -35,10 +31,7 @@ ApdexStats.prototype.recordValueInMillis = function (timeInMillis) {
   this.recordValue(timeInMillis / FROM_MILLIS);
 };
 
-/**
- * Used by the error handler to indicate that a user was frustrated by a page
- * error.
- */
+
 ApdexStats.prototype.incrementFrustrating = function () {
   this.frustrating++;
 };

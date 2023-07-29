@@ -6,11 +6,7 @@
   }
 }
 
-/**
- * Check if a string appears to be a number, that is, all letters in the
- * string are numbers. Does not take in to account decimals. Clones the
- * behaviour of str.isdigit in python
- */
+
 String.prototype.isdigit = function()
 {
   return this.length && !(/\D/.test(this));

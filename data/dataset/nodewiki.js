@@ -1,5 +1,3 @@
-/*global require, exports, unescape */
-
 String.prototype.escapeHTML = function() {
 	return this.replace(/</g,'&lt;').replace(/>/g,'&gt;');
 };

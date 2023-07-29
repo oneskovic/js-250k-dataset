@@ -1,4 +1,3 @@
-
 var activities = {};
 var origin = null;
 var callid = 0;

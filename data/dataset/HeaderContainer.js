@@ -1,13 +1,3 @@
-/**
- * @class Ext.ux.grid.property.HeaderContainer
- * @extends Ext.grid.header.Container
- * 
- * A custom HeaderContainer for the {@link Ext.grid.property.Grid}. Generally
- * it should not need to be used directly.
- * 
- * @author Harald Hanek (c) 2011-2012
- * @license http://harrydeluxe.mit-license.org
- */
 Ext.define('Ext.ux.grid.property.HeaderContainer', {
     extend: 'Ext.grid.header.Container',
     nameWidth: 115,

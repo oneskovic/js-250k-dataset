@@ -3,16 +3,7 @@ var Class = base.Class
 var helper = require('./helper')
 var Combiner = require('./Combiner')
 
-/*
-// ==> transiton: padding .36s ease -1s;
 
-.transition {
-  transition-property: padding;
-  transition-duration: .36s;
-  transition-timing-function: ease;
-  transition-delay: -1s;
-}
-*/
 var TransitionCombiner = new Class(Combiner, function() {
 
     this.__init__ = function(self, name, attrs) {

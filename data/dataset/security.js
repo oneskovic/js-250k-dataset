@@ -1,103 +1,50 @@
-function findPartyId(formElement) {
-  return formElement.up("form").id.split("_").last();
+/**
+ * Security hook.
+ */
+function isAllowed(action){
+	if(action == 'login' || action == 'new_user' || action == 'authenticate')
+		return true;
+
+	return (session.user instanceof AXSuperUser);
 }
 
-function extractObjectIds(elements) {
-  return elements.map(function(e) {
-    return e.id.split("_").last();
-  }).join(',');
+/**
+ * Unauthorized handler
+ */
+function unauthorized(){
+	var error = '';
+	var came_from = req.get('http_referer');
+	if(came_from && came_from.match(/login$/)){ error='?error=true';}
+	res.redirect(this.getURI('login'+error));
 }
 
-function initializeSecurityFields() {
-
-  $$("#groups input.group[type=checkbox]").each(function(el) {
-    el.observe("change", function(e) {
-      var element = Event.element(e);
-      var party_id = findPartyId(element);
-
-      massUpdate(element.checked, [element], "/admin/memberships",
-          "group_ids", "groups_indicator");
-    });
-  });
-
-  $$("#permissions input[type=checkbox]").each(function(el) {
-    el.observe("change", function(e) {
-      var element = Event.element(e);
-      var party_id = findPartyId(element);
-
-      massUpdate(element.checked, [element], "/admin/roles",
-          "permission_ids", "permissions_indicator");
-    });
-  });
-
-  $$("#groups input.denial[type=checkbox]").each(function(el) {
-    el.observe("change", function(e) {
-      var element = Event.element(e);
-      var party_id = findPartyId(element);
-
-      massUpdate(!element.checked, [element], "/admin/denied_permissions",
-          "permission_ids", "groups_indicator");
-    });
-  });
-
-  $$("#groups a.toggle.open").each(function(e) {
-    e.show();
-    Event.observe(e, "click", toggleGroupPermissions.bindAsEventListener(e));
-  });
-
-  $$("#groups a.toggle.close").each(function(e) {
-    Event.observe(e, "click", toggleGroupPermissions.bindAsEventListener(e));
-  });
+/**
+ * If an admin account has been created, return the login screen,
+ * otherwise return the admin account creation screen.
+ */
+function login(){
+	var action = (app.getHits('AXSuperUser', {}).length == 0) ? 'create_user' : 'login_screen';
+	return this.wrap({content: action});
 }
 
-function toggleGroupPermissions(e) {
-  var parts = this.id.split("_");
-  var permissions_id = parts.slice(0, -2).join("_") + "_permissions";
-  var open_id = permissions_id + "_open";
-  var close_id = permissions_id + "_close";
-  var elements = [open_id, close_id, permissions_id];
+/**
+ * Validates username and password, logs in user if correct.
+ */
+function authenticate(){
+	var user_hits = app.getHits('AXSuperUser', {username: req.data.username, password: req.data.password.md5()});
+	if(user_hits.length == 0){
+		this.unauthorized();
+	} else {
+		session.login(user_hits.objects(0,1)[0]);
+		res.redirect(this.getURI());
+	}
 
-  elements.each(Element.toggle);
-  Event.stop(e);
-  return false;
 }
 
-function togglePermissionDenials(element) {
-  var root = $("group_" + element.id.split("_").last() + "_permissions");
-  if (!root) return
-
-  var elements = root.getElementsBySelector("input.denial[type=checkbox]");
-  elements.each(function(e) {
-    e.checked = e.disabled;
-    e.disabled = !e.disabled;
-  });
-}
-
-function massUpdate(newValue, elements, url, paramName, indicator) {
-  if (elements.length == 0) return;
-
-  var params = {};
-  params['party_id'] = findPartyId(elements.first());
-  params[paramName] = extractObjectIds(elements);
-
-  elements.each(togglePermissionDenials);
-
-  indicator = $(indicator);
-  indicator.show()
-  new Ajax.Request(url, {
-      method: newValue ? "post" : "delete",
-      evalScripts: true,
-      onComplete: function() {indicator.hide()},
-      parameters: params
-  });
-}
-
-function massPermissionsUpdate(newValue, elements) {
-  return massUpdate(newValue, elements, "/admin/roles",
-      "permission_ids", $("permissions_indicator"));
-}
-
-function massGroupsUpdate(newValue, elements) {
-  return massUpdate(newValue, elements, "/admin/memberships",
-      "group_ids", $("groups_indicator"));
+/**
+ * Logout the current user.
+ */
+function logout(){
+	session.logout();
+	res.redirect(this.getURI('login'));
 }

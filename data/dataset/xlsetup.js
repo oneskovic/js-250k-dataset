@@ -1,4 +1,3 @@
-///// xl.setup /////
 Ext.namespace('xl.setup');
 
 xl.setup.generateFooterToolbar = function () {

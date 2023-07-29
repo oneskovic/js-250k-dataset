@@ -1,90 +1,82 @@
-/*
- * @author Daisuke Homma
- */
+steal('can/util', 'can/map', function (can) {
 
-new function() { // block
-
-// Cubic Bezier Curve Parameters
-
-var self = an.Curve;
-
-/// get information ////////////////////////////////////////////////////////////
-
-self.prototype.getAnchorPointZero = function() {
-  return { x: this.p0x, y: this.p0y };
-};
-
-self.prototype.getAnchorPointOne = function() {
-  return { x: this.p1x, y: this.p1y };
-}
-
-self.prototype.getPath = function() {
-
-  if(this.path == null) {
-    console.log("an.Curve#getPath failed. see an.Path#addEdge for the detail");
-  }
-
-  return this.path;
-}
-
-self.prototype.smoothConnectToNext = function() {
-
-  if(this.next) {
-    return this.smoothConnect;
-  }
-
-  return false;
-
-}
-
-self.prototype.smoothConnectFromPrev = function() {
-
-  if(this.prev) {
-    return this.prev.smoothConnectToNext();
-  }
-
-  return false;
-
-}
-
-/**
- * @description set/unset smoothly connect to next curve
- * @param {Boolean} f
- */
-self.prototype.setSmoothConnect = function(f) {
-
-  this.smoothConnect = f;
-
-}
-
-// ( this.c1 - this.p1 ) / ( this.next.c0 - this.next.p0 )
-self.prototype.getConnectRatio = function() {
-
-  var ratio;
-
-  var dx = this.c1x - this.p1x;
-  var dy = this.c1y - this.p1y;
-  var len = this.lineLength(dx, dy);
-
-  var ndx = this.next.c0x - this.next.p0x;
-  var ndy = this.next.c0y - this.next.p0y;
-  var nlen = this.lineLength(ndx, ndy);
-
-  if( (len == 0) || (nlen == 0) ) {
-    ratio = 0;
-  } else {
-    ratio = len / nlen;
-  }
-
-  return ratio;
-
-}
-
-self.prototype.keepConnectRatio = function() {
-
-  // disabled for now
-  return false;
-
-}
-
-} // block
+	can.classize = function (s, join) {
+		// this can be moved out ..
+		// used for getter setter
+		var parts = s.split(can.undHash),
+			i = 0;
+		for (; i < parts.length; i++) {
+			parts[i] = can.capitalize(parts[i]);
+		}
+		return parts.join(join || '');
+	};
+	var classize = can.classize,
+		proto = can.Map.prototype,
+		old = proto.__set;
+	proto.__set = function (prop, value, current, success, error) {
+		//!steal-remove-start
+		var asyncTimer;
+		can.dev.warn("can/map/setter is a deprecated plugin and will be removed in a future release. "+
+			"can/map/define provides the same functionality in a more complete API.");
+		//!steal-remove-end
+		
+		// check if there's a setter
+		var cap = classize(prop),
+			setName = 'set' + cap,
+			errorCallback = function (errors) {
+				//!steal-remove-start
+				clearTimeout(asyncTimer);
+				//!steal-remove-end
+				
+				var stub = error && error.call(self, errors);
+				// if 'validations' is on the page it will trigger
+				// the error itself and we dont want to trigger
+				// the event twice. :)
+				if (stub !== false) {
+					can.trigger(self, 'error', [
+						prop,
+						errors
+					], true);
+				}
+				return false;
+			}, self = this;
+			
+		
+			
+		// if we have a setter
+		if (this[setName] ) {
+			// call the setter, if returned value is undefined,
+			// this means the setter is async so we
+			// do not call update property and return right away
+			can.batch.start();
+			
+			value = this[setName](value, function (value) {
+				old.call(self, prop, value, current, success, errorCallback);
+				//!steal-remove-start
+				clearTimeout(asyncTimer);
+				//!steal-remove-end
+			}, errorCallback);
+			
+			
+			if(value === undefined) {
+				//!steal-remove-start
+				asyncTimer = setTimeout(function(){
+					can.dev.warn('can/map/setter.js: Setter ' + setName+' did not return a value or call the setter callback.');
+				},can.dev.warnTimeout);
+				//!steal-remove-end
+				can.batch.stop();
+				return;
+			} else {
+				old.call(self, prop, value, current, success, errorCallback);
+				can.batch.stop();
+				return this;
+			}
+			
+		} else {
+			old.call(self, prop, value, current, success, errorCallback);
+		}
+		
+		return this;
+	};
+	return can.Map;
+});

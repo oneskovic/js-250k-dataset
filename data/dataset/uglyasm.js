@@ -1,7 +1,3 @@
-/**
- * Idea taken from https://github.com/fpirsch/twin-bcrypt/blob/master/Gearfile.js
-*/
-
 'use strict';
 
 var fs = require('fs');

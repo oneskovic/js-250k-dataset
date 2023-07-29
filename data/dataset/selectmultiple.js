@@ -1,12 +1,3 @@
-/**
- * @author Ryan Johnson <http://saucytiger.com/>
- * @copyright 2008 PersonalGrid Corporation <http://personalgrid.com/>
- * @package LivePipe UI
- * @license MIT
- * @url http://livepipe.net/control/rating
- * @require prototype.js, livepipe.js
- */
-
 if(typeof(Prototype) == "undefined")
 	throw "Control.SelectMultiple requires Prototype to be loaded.";
 if(typeof(Object.Event) == "undefined")

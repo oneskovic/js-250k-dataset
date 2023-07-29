@@ -1,7 +1,5 @@
 module.exports = (function() {
-  /**
-   * Represents an Objective-C class "ivar", or instance variable.
-   */
+  
 
   /*!
    * Module dependencies.

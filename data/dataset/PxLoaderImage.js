@@ -1,5 +1,3 @@
-// @depends PxLoader.js
-
 /**
  * PxLoader plugin to load images
  */

@@ -1,57 +1,127 @@
-//<feature logger>
-Ext.define('Ext.log.writer.Writer', {
-    extend: 'Ext.log.Base',
+var Writer = function(size) {
+  this.size = size || 1024;
+  this.buffer = Buffer(this.size + 5);
+  this.offset = 5;
+  this.headerPosition = 0;
+};
 
-    requires: ['Ext.log.formatter.Formatter'],
+var p = Writer.prototype;
 
-    config: {
-        formatter: null,
-        filters: {}
-    },
+//resizes internal buffer if not enough size left
+p._ensure = function(size) {
+  var remaining = this.buffer.length - this.offset;
+  if(remaining < size) {
+    var oldBuffer = this.buffer;
+    this.buffer = new Buffer(oldBuffer.length + size);
+    oldBuffer.copy(this.buffer);
+  }
+}
 
-    constructor: function() {
-        this.activeFilters = [];
+p.addInt32 = function(num) {
+  this._ensure(4)
+  this.buffer[this.offset++] = (num >>> 24 & 0xFF)
+  this.buffer[this.offset++] = (num >>> 16 & 0xFF)
+  this.buffer[this.offset++] = (num >>>  8 & 0xFF)
+  this.buffer[this.offset++] = (num >>>  0 & 0xFF)
+  return this;
+}
 
-        return this.callParent(arguments);
-    },
+p.addInt16 = function(num) {
+  this._ensure(2)
+  this.buffer[this.offset++] = (num >>>  8 & 0xFF)
+  this.buffer[this.offset++] = (num >>>  0 & 0xFF)
+  return this;
+}
 
-    updateFilters: function(filters) {
-        var activeFilters = this.activeFilters,
-            i, filter;
+//for versions of node requiring 'length' as 3rd argument to buffer.write
+var writeString = function(buffer, string, offset, len) {
+  buffer.write(string, offset, len);
+}
 
-        activeFilters.length = 0;
+//overwrite function for older versions of node
+if(Buffer.prototype.write.length === 3) {
+  writeString = function(buffer, string, offset, len) {
+    buffer.write(string, offset);
+  }
+}
 
-        for (i in filters) {
-            if (filters.hasOwnProperty(i)) {
-                filter = filters[i];
-                activeFilters.push(filter);
-            }
-        }
-    },
+p.addCString = function(string) {
+  //just write a 0 for empty or null strings
+  if(!string) {
+    this._ensure(1);
+  } else {
+    var len = Buffer.byteLength(string);
+    this._ensure(len + 1); //+1 for null terminator
+    writeString(this.buffer, string, this.offset, len);
+    this.offset += len;
+  }
 
-    write: function(event) {
-        var filters = this.activeFilters,
-            formatter = this.getFormatter(),
-            i, ln, filter;
+  this.buffer[this.offset++] = 0; // null terminator
+  return this;
+}
 
-        for (i = 0,ln = filters.length; i < ln; i++) {
-            filter = filters[i];
+p.addChar = function(char) {
+  this._ensure(1);
+  writeString(this.buffer, char, this.offset, 1);
+  this.offset++;
+  return this;
+}
 
-            if (!filters[i].accept(event)) {
-                return this;
-            }
-        }
+p.addString = function(string) {
+  var string = string || "";
+  var len = Buffer.byteLength(string);
+  this._ensure(len);
+  this.buffer.write(string, this.offset);
+  this.offset += len;
+  return this;
+}
 
-        if (formatter) {
-            event.message = formatter.format(event);
-        }
+p.getByteLength = function() {
+  return this.offset - 5;
+}
 
-        this.doWrite(event);
+p.add = function(otherBuffer) {
+  this._ensure(otherBuffer.length);
+  otherBuffer.copy(this.buffer, this.offset);
+  this.offset += otherBuffer.length;
+  return this;
+}
 
-        return this;
-    },
+p.clear = function() {
+  this.offset = 5;
+  this.headerPosition = 0;
+  this.lastEnd = 0;
+}
 
-    // @private
-    doWrite: Ext.emptyFn
-});
-//</feature>
+//appends a header block to all the written data since the last
+//subsequent header or to the beginning if there is only one data block
+p.addHeader = function(code, last) {
+  var origOffset = this.offset;
+  this.offset = this.headerPosition;
+  this.buffer[this.offset++] = code;
+  //length is everything in this packet minus the code
+  this.addInt32(origOffset - (this.headerPosition+1))
+  //set next header position
+  this.headerPosition = origOffset;
+  //make space for next header
+  this.offset = origOffset;
+  if(!last) {
+    this._ensure(5);
+    this.offset += 5;
+  }
+}
+
+p.join = function(code) {
+  if(code) {
+    this.addHeader(code, true);
+  }
+  return this.buffer.slice(code ? 0 : 5, this.offset);
+}
+
+p.flush = function(code) {
+  var result = this.join(code);
+  this.clear();
+  return result;
+}
+
+module.exports = Writer;

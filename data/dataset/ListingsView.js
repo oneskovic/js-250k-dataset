@@ -10,11 +10,7 @@ define(function(require) {
   require('rdust!templates/listings');
   require('rdust!templates/listings-list-item');
 
-  /**
-   * @class app.ui.ListingsView
-   * @super app.ui.BaseView
-   * Example view type
-   */
+  
   var ListingsView = BaseView.extend(function() {
     BaseView.apply(this, arguments);
     this.mapEvent({

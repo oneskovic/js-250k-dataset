@@ -1,12 +1,3 @@
-/** Class: Battery
- * Battery.js - a tiny little wrapper for the HTML5 Battery Status API.
- *
- * Author:
- * - Patrick Stadler <patrick.stadler@gmail.com>
- *
- * Copyright:
- * (c) 2014 Patrick Stadler. All rights reserved.
- */
 var Battery = (function() {
   var _events = 'chargingchange chargingtimechange dischargingtimechange levelchange'
     , _battery = navigator.battery || navigator.mozBattery || navigator.getBattery

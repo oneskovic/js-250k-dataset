@@ -1,4 +1,3 @@
-// DATA_TEMPLATE: empty_table
 oTest.fnStart( "fnInitComplete" );
 
 /* Fairly boring function compared to the others! */

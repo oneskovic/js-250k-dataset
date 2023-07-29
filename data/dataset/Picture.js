@@ -1,4 +1,3 @@
-//A wrapper for the HTML5 image object.
 Irenic.Picture = function(args)
 {
     var picture = this;

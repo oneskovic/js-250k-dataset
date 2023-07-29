@@ -1,8 +1,3 @@
-/*
- * JavaScript functions for agenda.
- *
- */
-
 function hideClosedSlides(hide) {
     if (hide) {
         $('#hidelink').attr('title', 'show');

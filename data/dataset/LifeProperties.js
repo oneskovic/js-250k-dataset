@@ -1,14 +1,3 @@
-/**
- *
- *Ported to JavaScript From:
-  Pro Java 6 3D Game Development
-  Andrew Davison
-  Apress, April 2007
-  ISBN: 1590598172 
-  http://www.apress.com/book/bookDisplay.html?bID=10256
-  Web Site for the book: http://fivedots.coe.psu.ac.th/~ad/jg2
-
- */
 var LifeProperties = Class.create({
 		initialize: function(json) {
 			this.life3DProps = json;

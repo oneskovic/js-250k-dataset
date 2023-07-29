@@ -1,21 +1,3 @@
-/*
----
-description: InlineEditorGroup - Groups together a number of InlineEditors
-
-license: MIT-style
-
-authors:
-- Nathan Reed
-- Pete Allison
-
-requires:
-- core/1.2.4: [Class, Event, Element, Selectors, JSON, Request]
-
-provides:
-- InlineEditorGroup
-- Object.make
-...
-*/
 var InlineEditorGroup = {
 	components: [],
 

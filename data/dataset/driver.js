@@ -1,133 +1,65 @@
-var childProcess = require('child_process');
-var phantomjs = require('phantomjs');
-var path = require('path');
-var events = require('events');
-var phBin = phantomjs.path;
+(function() {
+	if ( wappalyzer == null ) { return };
 
+	var w = wappalyzer;
 
-/**
- * @param {Array.<string>} urls
- * @param {object=} options
- * @param {function} callback
- * @api
- */
+	w.driver = {
+		
+		log: function(args) {
+			if ( console != null ) { console[args.type](args.message) };
+		},
 
-function helium(urls, options, callback) {
-    if (typeof options == 'function' && typeof callback == 'undefined') {
-        callback = options;
-        options = {};
-    }
+		/**
+		 * Initialize
+		 */
+		init: function() {
+			// Load apps.json
+			var xhr = new XMLHttpRequest();
 
+			xhr.open('GET', 'apps.json', true);
 
-    if (typeof urls === 'string')
-        urls = [urls];
+			xhr.overrideMimeType('application/json');
 
-    // build phantomjs arguments
-    var childArgs = [];
+			xhr.onload = function() {
+				var json = JSON.parse(xhr.responseText);
 
-    if (options.__ && options.__.length) {
-        Array.prototype.push.apply(childArgs, options.__);
-    }
+				w.categories = json.categories;
+				w.apps       = json.apps;
 
-    childArgs.push(
-        path.join(__dirname, 'helium-script.js')
-    );
+				window.document.addEventListener('DOMContentLoaded', function() {
+					w.analyze('google.com', 'http://google.com', {
+						html:    '<script src="jquery.js"><meta name="generator" content="WordPress"/>',
+						headers: { 'Server': 'Apache' },
+						env:     [ 'Mootools' ]
+					});
+				});
+			};
 
-    var scriptConfig = {
-        curlScript: path.join(__dirname, "curl.js")
-    };
+			xhr.send(null);
+		},
 
-    if (options.userAgent)
-        scriptConfig.userAgent = options.userAgent;
+		/**
+		 * Display apps
+		 */
+		displayApps: function() {
+			var
+				app,
+				url = Object.keys(w.detected)[0];
 
-    if (options.referer)
-        scriptConfig.referer = options.referer;
+			document.getElementById('apps').innerHTML = '';
 
-    childArgs.push(JSON.stringify(scriptConfig));
+			for ( app in w.detected[url] ) {
+				document.getElementById('apps').innerHTML += '<img src="images/icons/' + app + '.png" width="16" height="16"/> ' + app + '<br/>';
+			};
+		},
 
-    var results = '';
-    var error = '';
+		/**
+		 * Go to URL
+		 */
+		goToURL: function(args) {
+			window.open(args.url);
+		}
+	};
 
-
-    Array.prototype.push.apply(childArgs, urls);
-
-    var ph = childProcess.spawn(phBin, childArgs);
-
-    ph.stdout.setEncoding('utf8');
-    ph.stderr.setEncoding('utf8');
-
-    ph.stdout.on('data', function(data) {
-        results += data;
-    });
-
-    ph.stderr.on('data', function(data) {
-        if (helium.debug)
-            process.stderr.write(data);
-        // collecting debug/error information
-        error += data;
-    });
-
-    ph.on('close', function(code) {
-        if (code === 0) { // running successfully
-            var rs;
-            try {
-                rs = JSON.parse(results);
-            } catch (e) {
-                return callback(e, results);
-            }
-
-            if (rs) {
-                var csses = rs.csses.map(function(css) {
-                    var data = {};
-                    data.name = css.name;
-                    data.url = css.name;
-
-                    if (css.err) {
-                        data.err = css.err;
-                        data.error = css.error;
-                        data.msg = css.msg;
-                    } else {
-                        data.unused = [];
-
-                        var total = 0,
-                            unused = 0,
-                            selectors = css.selectors;
-
-                        for (var selector in selectors) {
-                            total++;
-
-                            var visible = selectors[selector];
-                            if (visible === false) {
-                                unused++;
-                                data.unused.push(selector);
-                            } else if (typeof visible === 'string') {
-                                if (!data.hasOwnProperty(visible))
-                                    data[visible] = [];
-                                data[visible].push(selector);
-                            }
-                        }
-                        data.unused_perc = (unused / total * 100).toFixed(2);
-                    }
-                    return data;
-                });
-
-                callback(null, {
-                    csses: csses,
-                    pages: rs.pages
-                });
-            } else {
-                callback("can not parse results");
-            }
-        } else {
-            // exist abnormal, means analysis failed
-            callback({
-                code: code,
-                err: error // contain the error information
-            }, results);
-        }
-    });
-}
-
-helium.message = new events.EventEmitter();
-
-module.exports = helium;
+	w.init();
+})();

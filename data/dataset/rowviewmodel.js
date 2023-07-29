@@ -1,6 +1,3 @@
-/*
- * Copyright (C) 2012 by CoNarrative
- */
 /* DOCS DISABLED FOR NOW
  * @class glu.RowViewmodel
  * An extremely lightweight version of a view model that just has formulas (for now).

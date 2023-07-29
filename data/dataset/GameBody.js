@@ -1,6 +1,3 @@
-/**
- * @author lufy
- */
 function GameBody(){
 	base(this,LSprite,[]);
 	this.init();

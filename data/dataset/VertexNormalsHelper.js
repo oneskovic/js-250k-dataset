@@ -1,8 +1,3 @@
-/**
- * @author mrdoob / http://mrdoob.com/
- * @author WestLangley / http://github.com/WestLangley
-*/
-
 THREE.VertexNormalsHelper = function ( object, size, hex, linewidth ) {
 
 	this.object = object;

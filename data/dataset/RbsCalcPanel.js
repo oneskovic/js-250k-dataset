@@ -1,9 +1,3 @@
-
-/*
-  TODO: this shouldn't be an instance. it should be instantiatable
-        as it is now, if you close the tab, and re-open, it won't work.
- */
-
 var rbs_calculate_input_textarea = new Ext.form.TextArea({
         id: 'rbs_calculate_input_textarea',
         fieldLabel: 'Sequence',

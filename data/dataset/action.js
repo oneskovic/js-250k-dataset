@@ -1,111 +1,94 @@
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-'use strict';
+var AB;
+(function (AB) {
 
-module.metadata = {
-  'stability': 'experimental',
-  'engines': {
-    'Firefox': '> 28'
-  }
-};
+    var Node = (function () {
+        function Node() {
+            // Members
+            this.rect = null;
+            this.text = null;
+            this.line = null;
 
-const { Class } = require('../../core/heritage');
-const { merge } = require('../../util/object');
-const { Disposable } = require('../../core/disposable');
-const { on, off, emit, setListeners } = require('../../event/core');
-const { EventTarget } = require('../../event/target');
-const { getNodeView } = require('../../view/core');
+            this.action = null;
 
-const view = require('./view');
-const { buttonContract, stateContract } = require('./contract');
-const { properties, render, state, register, unregister,
-        getDerivedStateFor } = require('../state');
-const { events: stateEvents } = require('../state/events');
-const { events: viewEvents } = require('./view/events');
-const events = require('../../event/utils');
+            this.detached = false;
+            this.minimized = false;
+        }
 
-const { getActiveTab } = require('../../tabs/utils');
+        // Get node's object attribute
+        // element: The element to get the attribute
+        // attribute: the attribute name "text, "width", etc.
+        // value: optional, if not reading mode but writing mode
+        Node.prototype.attr = function(element, attribute, value) {
+            if (value)
+                element.attr(attribute, value);
+            else
+                return element.attr(attribute);
+        }
 
-const { id: addonID } = require('../../self');
-const { identify } = require('../id');
+        // Returns the point at (x, y) is inside the node
+        // x: the x position of the point
+        // y: the y position of the point
+        Node.prototype.isPointInside = function (x, y) {
+            return this.rect.isPointInside(x, y) || this.text.isPointInside(x, y);
+        }
 
-const buttons = new Map();
+        return Node;
+    })();
 
-const toWidgetId = id =>
-  ('action-button--' + addonID.toLowerCase()+ '-' + id).
-    replace(/[^a-z0-9_-]/g, '');
+    var Action = (function() {
+        function Action(node) {
+            // Graph related
+            this.parent = null;
+            this.children = new Array();
+            this.node = node;
 
-const ActionButton = Class({
-  extends: EventTarget,
-  implements: [
-    properties(stateContract),
-    state(stateContract),
-    Disposable
-  ],
-  setup: function setup(options) {
-    let state = merge({
-      disabled: false
-    }, buttonContract(options));
+            // Action
+            this.name = "";
+            this.type = AB.ActionsBuilder.Type.OBJECT;
+            this.propertiesResults = new Array();
+            this.properties = new Array();
 
-    let id = toWidgetId(options.id);
+            // Extra
+            this.combine = false;
+            this.combineArray = new Array();
+            this.hub = null;
+        }
 
-    register(this, state);
+        // Adds a child to the action
+        // object: the child
+        Action.prototype.addChild = function (object) {
+            if (object == null)
+                return false;
 
-    // Setup listeners.
-    setListeners(this, options);
+            this.children.push(object);
+            object.parent = this;
 
-    buttons.set(id, this);
+            return true;
+        }
 
-    view.create(merge({}, state, { id: id }));
-  },
+        // Removes a child from the action
+        // object: the child to remove
+        Action.prototype.removeChild = function (object) {
+            var indice = this.children.indexOf(object);
 
-  dispose: function dispose() {
-    let id = toWidgetId(this.id);
-    buttons.delete(id);
+            if (indice != -1) {
+                this.children.splice(indice, 1);
+                return true;
+            }
 
-    off(this);
+            return false;
+        }
 
-    view.dispose(id);
+        // Clears all the children of the action
+        Action.prototype.clearChildren = function () {
+            this.children = new Array();
+        }
 
-    unregister(this);
-  },
+        return Action;
 
-  get id() this.state().id,
+    })();
 
-  click: function click() { view.click(toWidgetId(this.id)) }
-});
-exports.ActionButton = ActionButton;
+    AB.Action = Action;
+    AB.Node = Node;
 
-identify.define(ActionButton, ({id}) => toWidgetId(id));
-
-getNodeView.define(ActionButton, button =>
-  view.nodeFor(toWidgetId(button.id))
-);
-
-let actionButtonStateEvents = events.filter(stateEvents,
-  e => e.target instanceof ActionButton);
-
-let actionButtonViewEvents = events.filter(viewEvents,
-  e => buttons.has(e.target));
-
-let clickEvents = events.filter(actionButtonViewEvents, e => e.type === 'click');
-let updateEvents = events.filter(actionButtonViewEvents, e => e.type === 'update');
-
-on(clickEvents, 'data', ({target: id, window}) => {
-  let button = buttons.get(id);
-  let state = getDerivedStateFor(button, getActiveTab(window));
-
-  emit(button, 'click', state);
-});
-
-on(updateEvents, 'data', ({target: id, window}) => {
-  render(buttons.get(id), window);
-});
-
-on(actionButtonStateEvents, 'data', ({target, window, state}) => {
-  let id = toWidgetId(target.id);
-  view.setIcon(id, window, state.icon);
-  view.setLabel(id, window, state.label);
-  view.setDisabled(id, window, state.disabled);
-});
+})(AB || (AB = { }));

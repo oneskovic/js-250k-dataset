@@ -1,127 +1,106 @@
-var WebdriverIO = require('../../../../index.js'),
-    conf = require('../../../conf/index.js');
+function getElementCoordinates(element, event) {
+    var c = getAbsolutePosition(element);
+    c.x = event.x - c.x;
+    c.y = event.y - c.y;
+    
+    var position = c;
+    
+    // This isn't the best, should abstract better.
+    if (isNaN(c.y)) {
+        var eventInfo = {event:event, element:element};
+        position = getRelativeCoordinates(eventInfo);
+    }    
+    
+    return position;
+}
 
-/* global beforeEach */
-describe('event handling executed by single multibrowser instance', function() {
-    describe('is able to emit and listen to driver specific events and', function() {
+function getAbsolutePosition(element) {
+  var r = { x: element.offsetLeft, y: element.offsetTop };
+  if (element.offsetParent) {
+    var tmp = getAbsolutePosition(element.offsetParent);
+    r.x += tmp.x;
+    r.y += tmp.y;
+  }
+  return r;
+};
 
-        var isCommandHandlerEmitted = false,
-            isErrorHandlerEmitted = false,
-            isInitHandlerEmitted = false,
-            isEndHandlerEmitted = false,
-            uri = null,
-            desiredCapabilties = null,
-            matrix, browserA;
 
-        before(function() {
-            matrix = WebdriverIO.multiremote(conf.capabilities);
-            browserA = matrix.select('browserA');
+function getRelativeCoordinates(eventInfo, opt_reference) {
+    var x, y;
+    var event = eventInfo.event;
+    var element = eventInfo.element;
+    var reference = opt_reference || eventInfo.element;
+    if (!window.opera && typeof event.offsetX != 'undefined') {
+      // Use offset coordinates and find common offsetParent
+      var pos = { x: event.offsetX, y: event.offsetY };
+      // Send the coordinates upwards through the offsetParent chain.
+      var e = element;
+      while (e) {
+        e.mouseX = pos.x;
+        e.mouseY = pos.y;
+        pos.x += e.offsetLeft;
+        pos.y += e.offsetTop;
+        e = e.offsetParent;
+      }
+      // Look for the coordinates starting from the reference element.
+      var e = reference;
+      var offset = { x: 0, y: 0 }
+      while (e) {
+        if (typeof e.mouseX != 'undefined') {
+          x = e.mouseX - offset.x;
+          y = e.mouseY - offset.y;
+          break;
+        }
+        offset.x += e.offsetLeft;
+        offset.y += e.offsetTop;
+        e = e.offsetParent;
+      }
+      // Reset stored coordinates
+      e = element;
+      while (e) {
+        e.mouseX = undefined;
+        e.mouseY = undefined;
+        e = e.offsetParent;
+      }
+    } else {
+      // Use absolute coordinates
+      var pos = getAbsolutePosition(reference);
+      x = event.pageX - pos.x;
+      y = event.pageY - pos.y;
+    }
+    // Subtract distance to middle
+    return { x: x, y: y };
+  };
 
-            browserA.on('end', function() {
-                isEndHandlerEmitted = true;
-            });
-            browserA.on('init', function() {
-                isInitHandlerEmitted = true;
-            });
-            browserA.on('error', function() {
-                isErrorHandlerEmitted = true;
-            });
-            browserA.on('command', function(e) {
 
-                // assign variables only on first command
-                if (isCommandHandlerEmitted) {
-                    return;
-                }
 
-                isCommandHandlerEmitted = true;
-                desiredCapabilties = e.data.desiredCapabilities.browserName;
-                uri = e.uri;
-            });
-        });
 
-        it('should emit an init event after calling the init command', function(done) {
-            browserA
-                .init()
-                .call(function() {
-                    assert.ok(isInitHandlerEmitted, 'init handler wasn\'t called');
-                    assert.strictEqual(uri.host, 'localhost:4444');
-                    assert.strictEqual(desiredCapabilties, 'phantomjs');
-                })
-                .call(done);
-        });
+  function addSlider(name) {
+    var controls = document.getElementById("controls");
 
-        it('should emit an error event after querying a non existing element', function(done) {
+    var divName = name + "Slider";
 
-            browserA
-                .url(conf.testPage.start)
-                // click on non existing element to cause an error
-                .click('#notExistentant', function(err) {
-                    assert(err.message.match(/Problem: Unable to find element with id 'notExistentant'/));
-                })
-                .call(function() {
-                    assert.ok(isErrorHandlerEmitted, 'error handler wasn\'t called');
-                })
-                .call(done);
 
-        });
+    var sliderText = '<div> <input id="' + divName + '" '
+     + 'type="range" min="0" max="1" step="0.01" value="0" style="height: 20px; width: 200px;"> <span id="'
+     + name
+     + '-value" style="position:relative; top:-5px;">'
+     + name
+     + '</span> </div> <br>  ';
 
-        it('should emit an end event after calling the end command', function(done) {
+    controls.innerHTML = controls.innerHTML + sliderText;
+  }
 
-            browserA
-                .end()
-                .call(function() {
-                    assert.ok(isEndHandlerEmitted, 'end handler wasn\'t called');
-                })
-                .call(done);
+  function configureSlider(name, value, min, max, handler) {
+      // var controls = document.getElementById("controls");
+      // 
 
-        });
-    });
+      var divName = name + "Slider";
 
-    describe('costume events', function() {
-        var iShouldBeGetTriggered = false,
-            eventWasTriggeredAtLeastOnce = false;
+      var slider = document.getElementById(divName);
 
-        before(h.setupMultibrowser());
-
-        beforeEach(function() {
-            iShouldBeGetTriggered = 0;
-            eventWasTriggeredAtLeastOnce = false;
-            this.browserA.removeAllListeners('testme');
-        });
-
-        it('should register and fire events with on/emit', function(done) {
-
-            this.browserA
-                .emit('testme')
-                .on('testme', function() {
-                    iShouldBeGetTriggered.should.be.true;
-                    eventWasTriggeredAtLeastOnce = true;
-                })
-                .call(function() {
-                    iShouldBeGetTriggered = true;
-                })
-                .emit('testme')
-                .call(function() {
-                    if (eventWasTriggeredAtLeastOnce) {
-                        done();
-                    } else {
-                        done(new Error('event wasn\'t thrown'));
-                    }
-                });
-
-        });
-
-        it('should register and fire events with once/emit', function(done) {
-
-            this.browserA
-                .once('testme', function() {
-                    ++iShouldBeGetTriggered;
-                    iShouldBeGetTriggered.should.be.equal(1);
-                })
-                .emit('testme')
-                .emit('testme')
-                .call(done);
-
-        });
-    });
-});
+      slider.min = min;
+      slider.max = max;
+      slider.value = value;
+      slider.onchange = function() { handler(0, this); };
+  }

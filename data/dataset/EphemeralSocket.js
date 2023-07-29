@@ -1,6 +1,3 @@
-/* Test the Ephemeral socket
- */
-
 var EphemeralSocket = require('../lib/EphemeralSocket'),
     FakeServer = require('./FakeServer'),
     assert = require('chai').assert;

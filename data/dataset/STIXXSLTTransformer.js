@@ -1,17 +1,3 @@
-/*
- * Copyright (c) 2015 - The MITRE Corporation
- * All rights reserved. See LICENSE.txt for complete terms.
- *
- * The STIXXSLTTransformer uses a simple Java RPC protocol to spawn requests
- * for the XSLT Transform to be performed by the Java library using Saxon HE. 
- * 
- * 
- * created 2013
- * gertner@mitre.org
- * lubar@mitre.org
- * 
- */
-
 var client = require('./public/js/JavaRpcClient');
 
 

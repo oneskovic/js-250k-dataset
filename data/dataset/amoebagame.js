@@ -1,6 +1,3 @@
-/*
- * amoebagame.js
- */
 module.exports = function() {
     var id;
     var name = "Evolution Game";

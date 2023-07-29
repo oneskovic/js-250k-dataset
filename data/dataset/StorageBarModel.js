@@ -1,4 +1,3 @@
-/*jshint expr:true */
 describe('StorageBarModel', function() {
   beforeEach(function() {
     this.server = sinon.fakeServer.create();

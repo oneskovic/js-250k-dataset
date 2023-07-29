@@ -1,7 +1,3 @@
-// 把所有包的 owners 和 publisher 字段
-// 替换为 { name: 'xx', id: 12 } 这样的对象
-// 修复 https://github.com/spmjs/spmjs.io/issues/101
-// ---
 var async = require('async');
 
 // load global config

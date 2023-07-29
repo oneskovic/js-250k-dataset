@@ -14,29 +14,7 @@ module.exports = function (math) {
 
       bigArcSin = util.bignumber.arcsin_arccsc;
 
-  /**
-   * Calculate the inverse sine of a value.
-   *
-   * For matrices, the function is evaluated element wise.
-   *
-   * Syntax:
-   *
-   *    math.asin(x)
-   *
-   * Examples:
-   *
-   *    math.asin(0.5);           // returns Number 0.5235987755982989
-   *    math.asin(math.sin(1.5)); // returns Number ~1.5
-   *
-   *    math.asin(2);             // returns Complex 1.5707963267948966 -1.3169578969248166 i
-   *
-   * See also:
-   *
-   *    sin, atan, acos
-   *
-   * @param {Number | BigNumber | Boolean | Complex | Array | Matrix | null} x   Function input
-   * @return {Number | BigNumber | Complex | Array | Matrix} The arc sine of x
-   */
+  
   math.asin = function asin(x) {
     if (arguments.length != 1) {
       throw new math.error.ArgumentsError('asin', arguments.length, 1);

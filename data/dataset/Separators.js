@@ -1,6 +1,3 @@
-//#ifndef __browser_dom_query_Separators__
-//#define __browser_dom_query_Separators__
-
 //#ifdef HIDDEN
 /**
  * Some code in this file is based on Mootools.net and adapted to the

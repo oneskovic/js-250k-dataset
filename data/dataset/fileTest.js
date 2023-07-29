@@ -1,75 +1,92 @@
-/* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1
- *
- * The contents of this file are subject to the Mozilla Public License
- * Version 1.1 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS"
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * See the License for the specific language governing rights and
- * limitations under the License.
- *
- * The Original Code is Bespin.
- *
- * The Initial Developer of the Original Code is Mozilla.
- * Portions created by the Initial Developer are Copyright (C) 2009
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *   Bespin Team (bespin@mozilla.com)
- *
- * ***** END LICENSE BLOCK ***** */
+/*global define */
+define([
+    '../../tools',
+    '../../../tools',
+    'js/util'
+], function (
+    engineTools,
+    phpTools,
+    util
+) {
+    'use strict';
 
-dojo.provide("bespin.cmd.fileTest");
+    describe('PHP Engine __FILE__ magic constant expression integration', function () {
+        var engine;
 
-dojo.require("bespin.test");
+        function check(scenario) {
+            engineTools.check(function () {
+                return {
+                    engine: engine
+                };
+            }, scenario);
+        }
 
-bespin.test.addTests("cmd.file", {
-    testParseArguments: function(test) {
-        var session = bespin.get("editSession");
+        beforeEach(function () {
+            engine = phpTools.createEngine();
+        });
 
-        test.isEqual(bespin.cmd.file._parseArguments("/bespin/docs/e"), {
-            project: 'bespin',
-            path: 'docs/',
-            filter: 'e',
-            projectPath: '/bespin/docs/'
-        }, 1);
+        util.each({
+            'capturing current file from initial program code': {
+                code: util.heredoc(function (/*<<<EOS
+<?php echo __FILE__;
 
-        test.isEqual(bespin.cmd.file._parseArguments("/bespin/docs/js/e"), {
-            project: 'bespin',
-            path: 'docs/js/',
-            filter: 'e',
-            projectPath: '/bespin/docs/js/'
-        }, 2);
+EOS
+*/) {}),
+                expectedResult: null,
+                expectedStderr: '',
+                expectedStdout: '(program)'
+            },
+            'capturing current file in required module': {
+                code: util.heredoc(function (/*<<<EOS
+<?php
+    require_once 'get_file.php';
 
-        test.isEqual(bespin.cmd.file._parseArguments("/bespin/docs/js/e/"), {
-            project: 'bespin',
-            path: 'docs/js/e/',
-            filter: '',
-            projectPath: '/bespin/docs/js/e/'
-        }, 3);
+EOS
+*/) {}),
+                options: {
+                    include: function (path, promise) {
+                        promise.resolve(util.heredoc(function (/*<<<EOS
+<?php
 
-        test.isEqual(bespin.cmd.file._parseArguments("/bespin/docs"), {
-            project: 'bespin',
-            path: '/',
-            filter: 'docs',
-            projectPath: '/bespin/'
-        }, 4);
+    echo __FILE__;
 
-        test.isEqual(bespin.cmd.file._parseArguments("/bespin"), {
-            project: '',
-            path: '/',
-            filter: 'bespin',
-            projectPath: '/'
-        }, 5);
+EOS
+*/) {}));
+                    }
+                },
+                expectedResult: null,
+                expectedStderr: '',
+                expectedStdout: 'get_file.php'
+            },
+            // Ensure the state is not shared between main program and required module
+            'capturing current file in main program before and after required module': {
+                code: util.heredoc(function (/*<<<EOS
+<?php
+    echo __FILE__;
+    require_once 'get_file.php';
+    echo __FILE__;
 
-        test.isEqual(bespin.cmd.file._parseArguments("fol"), {
-            project: session.project,
-            path: '/',
-            filter: 'fol',
-            projectPath: ''
-        }, 6);
-    }
+EOS
+*/) {}),
+                options: {
+                    include: function (path, promise) {
+                        promise.resolve(util.heredoc(function (/*<<<EOS
+<?php
+
+    echo __FILE__;
+
+EOS
+*/) {}));
+                    }
+                },
+                expectedResult: null,
+                expectedStderr: '',
+                expectedStdout: '(program)get_file.php(program)'
+            }
+        }, function (scenario, description) {
+            describe(description, function () {
+                check(scenario);
+            });
+        });
+    });
 });

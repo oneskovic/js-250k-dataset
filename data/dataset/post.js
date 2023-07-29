@@ -1,62 +1,134 @@
-app.controller('PostWeiboController', 
-['$http', '$scope', '$cookieStore', '$timeout', 'ServiceConfig', 'Time',
-function($http, $scope, $cookieStore, $timeout, ServiceConfig, Time) {
-	$scope.isShowPanel = false;
+(function () {
+    "use strict";
+    ngNice.ngApp.controller("post_list_ctrl", ["$scope", "data", "niceUtil", "$modal", "config", function ($scope, data, niceUtil, $modal, config) {
+        var page = 1;
+        var load_posts = function (page) {
+            $scope.loading_posts = true;
+            data.post.get_for_me(page, config.pageSize).success(function (result) {
+                $scope.posts_total = result.data.total;
+                if (page === 1) {
+                    $scope.posts = result.data.posts;
+                    $scope.js_select_post($scope.posts[0])
+                } else {
+                    $scope.posts = $scope.posts.concat(result.data.posts);
+                }
+                if (result.data.posts.length === config.pageSize) {
+                    $scope.has_more = true;
+                } else {
+                    $scope.has_more = false;
+                }
+            }).finally(function () {
+                $scope.loading_posts = false;
+            });
+        };
 
-	//控制发表微博的panel显示与隐藏
-	$scope.show = function() {
-		if ($scope.isShowPanel) {
-			$scope.isShowPanel = false;
-		} else {
-			$scope.isShowPanel = true;
-		}
-	};
-	//发表微博
-	$scope.submit = function(content, tag1, tag2, tag3) {
-		var content = content,
-			user = $cookieStore.get('user'),
-			tagArr = [tag1, tag2, tag3],
-			tags = [];
-		if (!content) {
-			//弹出提示，发表的内容不能为空
-			Tip.setTip(200, 350, null, null, 260, 80, '哥哥，无字天书是不能发表的哦~~', 1);
-			$timeout(Tip.hideTip, 2300);
-			return;
-		}
-		if (!user) {
-			//弹出提示，请先登录
-			Tip.setTip(200, 350, null, null, 260, 80, '发表微博，起码登录一下吧~~', 1);
-			$timeout(Tip.hideTip, 2300);
-			return;
-		}
-		for (var tag in tagArr) {
-			if (tagArr[tag])
-				tags.push(tagArr[tag]);
-		}
+        load_posts(page);
 
-		var data = {
-			token: user.token,
-			content: content,
-			tags: tags.join(',')
-		};
+        $scope.js_loading_more = function () {
+            page++;
+            load_posts(page);
+        };
 
-		$http.post(ServiceConfig.wei_create, data).success(function(data) {
-			if (data.status) {
-				data.time = Time.formatTime(data.time);
-				//向上广播数据
-				$scope.$emit('weiboDataUp', data);
-				$scope.isShowPanel = false;
-				Tip.setTip(200, 350, null, null, 260, 80, '您发表的内容实在是太精彩了！', 1);
-				$timeout(Tip.hideTip, 2300);
-			} else {
-				Tip.setTip(200, 350, null, null, 260, 80, '服务君，老大喊你回来干活~', 1);
-				$timeout(Tip.hideTip, 2300);
-			}
-		}).error(function() {
-			Tip.setTip(200, 350, null, null, 260, 80, '服务君该嗑药了，都出错了~', 1);
-			$timeout(Tip.hideTip, 2300);
-		});
-	};
+        $scope.js_select_post = function (post) {
+            data.post.get(post.id).success(function(result){
+                $scope.selected_post = result.data;
+            });
+        };
 
+        $scope.js_unpublish_post = function (post) {
+            post.published = 0;
+            data.post.unpublish(post.id).success(function () {
+                niceUtil.msg.success("取消发布文章成功！");
+            });
+        };
 
-}]);
+        $scope.js_publish_post = function (post) {
+            post.published = 1;
+            data.post.publish(post.id).success(function () {
+                niceUtil.msg.success("发布文章成功！");
+            });
+        };
+
+        $scope.js_delete_post = function (post) {
+
+            var modalInstance = $modal.open({
+                templateUrl: '/js/tpl/common/delete_confirm_modal.html',
+                size       : 'sm',
+                controller : ["$scope", "$modalInstance", function ($scope, $modalInstance) {
+                    $scope.ok = function () {
+                        $scope.saving = true;
+                        data.post.trash(post.id).success(function () {
+                            $scope.saving = false;
+                            $modalInstance.close();
+                        });
+                    };
+
+                    $scope.cancel = function () {
+                        $modalInstance.dismiss('cancel');
+                    };
+                }]
+            });
+            modalInstance.result.then(function () {
+                $scope.posts = _.reject($scope.posts, {id: post.id});
+                if (post.id === $scope.selected_post.id) {
+                    if ($scope.posts.length > 0) {
+                        $scope.selected_post = $scope.posts[0];
+                    } else {
+                        $scope.selected_post = null;
+                    }
+                }
+                niceUtil.msg.success("删除文章成功！");
+            }, function () {
+                //$log.info('Modal dismissed at: ' + new Date());
+            });
+        }
+
+    }]).controller("post_edit_ctrl", ["$scope", "data", '$rootScope', 'config', function ($scope, data, $rootScope, config) {
+        var post_id = "";
+
+        var result = /posts\/(\w+)\/edit/ig.exec(window.location.pathname);
+        if (result && result.length >= 2) {
+            post_id = result[1];
+            data.post.get(post_id).success(function (result) {
+                $scope.post = result.data;
+                if(!$scope.post.category){
+                    $scope.post.category = 0;
+                }
+            }).finally(function () {
+                $rootScope.global.loading_done = true;
+            });
+        } else {
+            $scope.post = {summary: "", title: "", content: "", published: 0, category: 1};
+            $rootScope.global.loading_done = true;
+        }
+
+        $scope.categories = config.categories;
+
+        $scope.js_save = function (post) {
+            if (post.id) {
+                data.post.update(post.id, post.category, post.title, post.summary, post.content, post.published)
+                    .success(function () {
+                        window.location.href = "/posts/me";
+                    });
+            } else {
+                data.post.add(post.category, post.title, post.summary, post.content, post.published)
+                    .success(function () {
+                        window.location.href = "/posts/me";
+                    });
+            }
+
+        };
+
+        $scope.js_save_as_publish = function (post) {
+            $scope.post.published = 1;
+            $scope.js_save(post);
+        };
+
+        $scope.js_save_as_draft = function (post) {
+            $scope.post.published = 0;
+            $scope.js_save(post);
+        };
+    }]);
+
+})();
+

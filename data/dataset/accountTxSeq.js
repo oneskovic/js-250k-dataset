@@ -19,10 +19,7 @@ var accountTxSeq = function (req, res, next) {
     }
   });
 
- /**
-  * prepareOptions
-  * parse request parameters to determine query options
-  */
+ 
   function prepareOptions () {
     var options = {
       account  : req.params.address,
@@ -33,11 +30,7 @@ var accountTxSeq = function (req, res, next) {
     return options;
   };
 
- /**
-  * errorResponse
-  * return an error response
-  * @param {Object} err
-  */
+ 
   function errorResponse (err) {
     if (err.code.toString()[0] === '4') {
       log.error(err.error || err);

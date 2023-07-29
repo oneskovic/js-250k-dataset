@@ -1,7 +1,3 @@
-/**
- * Created by jiamiu on 14-5-19.
- */
-
 Binding.registry('case',{
     scripts : [{
         'origin' : Config.plugin_folder + '/blade/bindings/case/binding-case.js',

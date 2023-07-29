@@ -1,9 +1,3 @@
-/*
- * grunt-concatfiles
- * Copyright (c) 2013 思霏
- * Licensed under the MIT license.
- */
-
 module.exports = function(grunt) {
     // Grunt utilities.
     var task = grunt.task;

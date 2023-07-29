@@ -1,6 +1,3 @@
-/**
- * @author mrdoob / http://mrdoob.com/
- */
 THREE.InsideSphereGeometry = function ( radius, widthSegments, heightSegments,
     phiStart, phiLength, thetaStart, thetaLength ) {
   "use strict";

@@ -1,20 +1,3 @@
-/**
- * @generated SignedSource<<c735038726af2daf584b3e7fb3950e8b>>
- *
- * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- * !! This file is a check-in of a static_upstream project!      !!
- * !!                                                            !!
- * !! You should not modify this file directly. Instead:         !!
- * !! 1) Use `fjs use-upstream` to temporarily replace this with !!
- * !!    the latest version from upstream.                       !!
- * !! 2) Make your changes, test them, etc.                      !!
- * !! 3) Use `fjs push-upstream` to copy your changes back to    !!
- * !!    static_upstream.                                        !!
- * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- *
- * @providesModule mixInEventEmitter
- */
-
 var EventEmitter = require('EventEmitter');
 var EventEmitterWithHolding = require('EventEmitterWithHolding');
 var EventHolder = require('EventHolder');

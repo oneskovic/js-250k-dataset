@@ -1,10 +1,3 @@
-/**
- * This module handles the loading of the kansorc files used to configure the
- * behaviour of the command-line tool.
- *
- * @module
- */
-
 var utils = require('./utils'),
     async = require('async'),
     _ = require('underscore')._,

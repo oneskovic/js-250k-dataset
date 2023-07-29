@@ -13,37 +13,7 @@ module.exports = function (math, config) {
       isString = util.string.isString,
       isArray = Array.isArray;
 
-  /**
-   * Create a matrix filled with zeros. The created matrix can have one or
-   * multiple dimensions.
-   *
-   * Syntax:
-   *
-   *    math.zeros(m)
-   *    math.zeros(m, format)
-   *    math.zeros(m, n)
-   *    math.zeros(m, n, format)
-   *    math.zeros([m, n])
-   *    math.zeros([m, n], format)
-   *
-   * Examples:
-   *
-   *    math.zeros(3);                  // returns [0, 0, 0]
-   *    math.zeros(3, 2);               // returns [[0, 0], [0, 0], [0, 0]]
-   *    math.zeros(3, 'dense');         // returns [0, 0, 0]
-   *
-   *    var A = [[1, 2, 3], [4, 5, 6]];
-   *    math.zeros(math.size(A));       // returns [[0, 0, 0], [0, 0, 0]]
-   *
-   * See also:
-   *
-   *    ones, eye, size, range
-   *
-   * @param {...Number | Array} size    The size of each dimension of the matrix
-   * @param {string} [format]           The Matrix storage format
-   *
-   * @return {Array | Matrix}           A matrix filled with zeros
-   */
+  
   math.zeros = function zeros (size) {
     // process arguments
     var args = collection.argsToArray(arguments);    

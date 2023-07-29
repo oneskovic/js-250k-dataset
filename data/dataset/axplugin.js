@@ -1,4 +1,3 @@
-/*jslint browser:true, confusion:true, debug:true, devel:true, nomen:true, plusplus:true, vars:true */
 /**
  * @fileOverview iOS Extension API
  * @version 1.0

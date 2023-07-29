@@ -1,9 +1,3 @@
-/*
-	Backstrapp
-	to allow for easy assembly of the best versions of each class or module we write,
-	this file is run the compiler as well, so that Backstrapp can load with a single file.
-*/
-
 define([
 	'backstrapp/core/facade',
 	'backstrapp/core/mediator',

@@ -1,4 +1,3 @@
-//define the multipass layer for api calls
 define(["core/q", "apiEndPoints"], function(Q, apiEndPoints){
   var multipassTimeout = 30*60*1e3 // 30 Minutes
 

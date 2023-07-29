@@ -1,54 +1,68 @@
+var File = require("fs");
+var Path = require("path");
 
-// For this demo, shuffle won't be initialized until
-// all the images have finished loading.
 
-// Another approach would be to initialize shuffle on document
-// ready and as imagesLoaded reports back progress, call shuffle.layout()
+// Supported images.
+var IMAGES = [ "background", "footer", "icon", "logo", "strip", "thumbnail" ];
 
-// imagesLoaded: https://github.com/desandro/imagesloaded
 
-var ImageDemo = (function( $, imagesLoaded ) {
+function applyImageMethods(constructor) {
+  var prototype = constructor.prototype;
 
-  var $shuffle = $('.shuffle--images'),
-      $imgs = $shuffle.find('img'),
-      $loader = $('#loader'),
-      sizer = document.getElementById('js-sizer'),
-      imgLoad,
+  // Accessor methods for images (logo, strip, etc).
+  //
+  // Call with an argument to set the image and return self, call with no
+  // argument to get image value.
+  //
+  //   pass.icon(function(callback) { ... };
+  //   console.log(pass.icon());
+  //
+  // The 2x suffix is used for high resolution version (file name uses @2x
+  // suffix).
+  //
+  //   pass.icon2x("icon@2x.png");
+  //   console.log(pass.icon2x());
+  IMAGES.forEach(function(key) {
+    prototype[key] = function(value) {
+      if (arguments.length === 0) {
+        return this.images[key];
+      } else {
+        this.images[key] = value;
+        return this;
+      }
+    };
 
-  init = function() {
+    var retina = key + "2x";
+    prototype[retina] = function(value) {
+      if (arguments.length === 0) {
+        return this.images[retina];
+      } else {
+        this.images[retina] = value;
+        return this;
+      }
+    };
+  });
 
-    // Create a new imagesLoaded instance
-    imgLoad = new imagesLoaded( $imgs.get() );
 
-    // Listen for when all images are done
-    // will be executed even if some images fail
-    imgLoad.on( 'always', onAllImagesFinished );
-  },
-
-  onAllImagesFinished = function( instance ) {
-
-    if ( window.console && window.console.log ) {
-      console.log( instance );
-    }
-
-    // Hide loader
-    $loader.addClass('hidden');
-
-    // Adds visibility: visible;
-    $shuffle.addClass('images-loaded');
-
-    // Initialize shuffle
-    $shuffle.shuffle({
-      sizer: sizer,
-      itemSelector: '.js-item'
+  // Load all images from the specified directory. Only supported images are
+  // loaded, nothing bad happens if directory contains other files.
+  //
+  // path - Directory containing images to load
+  prototype.loadImagesFrom = function(path) {
+    var self = this;
+    var files = File.readdirSync(path);
+    files.forEach(function(filename) {
+      var basename = Path.basename(filename, ".png");
+      if (/@2x$/.test(basename) && ~IMAGES.indexOf(basename.slice(0, -3))) {
+        // High resolution
+        self.images[basename.replace(/@2x$/, "2x")] = Path.resolve(path, filename);
+      } else if (~IMAGES.indexOf(basename)) {
+        // Normal resolution
+        self.images[basename] = Path.resolve(path, filename);
+      }
     });
+    return this;
   };
+}
 
-  return {
-    init: init
-  };
-}( jQuery, window.imagesLoaded ));
-
-$(document).ready(function() {
-  ImageDemo.init();
-});
+module.exports = applyImageMethods;

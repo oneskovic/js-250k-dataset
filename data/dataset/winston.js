@@ -1,11 +1,3 @@
-/*
- * winston.js: Top-level include defining Winston.
- *
- * (C) 2010 Charlie Robbins
- * MIT LICENCE
- *
- */
-
 var winston = exports;
 
 //

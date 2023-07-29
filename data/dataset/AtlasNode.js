@@ -4,20 +4,7 @@ var SpriteBatchNode = require('./BatchNode').SpriteBatchNode,
     TextureAtlas = require('../TextureAtlas').TextureAtlas,
     geo   = require('geometry')
 
-/**
- * @class
- * It knows how to render a TextureAtlas object. If you are going to
- * render a TextureAtlas consider subclassing cocos.nodes.AtlasNode (or a
- * subclass of cocos.nodes.AtlasNode)
- *
- * @memberOf cocos.nodes
- * @extends cocos.nodes.SpriteBatchNode
- *
- * @opt {String} file Path to Atals image
- * @opt {Integer} itemWidth Character width
- * @opt {Integer} itemHeight Character height
- * @opt {Integer} itemsToRender Quantity of items to render
- */
+
 function AtlasNode (opts) {
     AtlasNode.superclass.constructor.call(this, opts)
 
@@ -30,7 +17,7 @@ function AtlasNode (opts) {
     this._calculateMaxItems()
 }
 
-AtlasNode.inherit(SpriteBatchNode, /** @lends cocos.nodes.AtlasNode# */ {
+AtlasNode.inherit(SpriteBatchNode,  {
     /**
      * Characters per row
      * @type Integer

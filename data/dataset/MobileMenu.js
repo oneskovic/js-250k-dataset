@@ -1,19 +1,3 @@
-/*
----
-
-name: MobileMenu
-
-description: Reveals a dropdown menu, provides 'tap outside to close' functionality
-
-requires:
- - Core/Element.Delegation
- - More/Fx.Reveal
-
-provides: [MobileMenu]
-
-...
-*/
-
 var MobileMenu = new Class({
 
   Implements: [Options],

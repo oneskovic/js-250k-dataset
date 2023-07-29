@@ -92,12 +92,7 @@ for(var i=0; i<records; i++) {
 }
 log.end();
 
-/*
-log = fs.createWriteStream("fastcgi.in", {'flags': 'w'
-	, 'encoding': null
-	, 'mode': 0555
-});
-*/
+
 var fd = fs.openSync("fastcgi.in", "w", 0655);
 log = {
 	"write": function(buff) {

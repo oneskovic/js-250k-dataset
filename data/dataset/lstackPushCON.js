@@ -1,4 +1,3 @@
-// LStack method push
 (function ($) {
   var jsav = new JSAV("lstackPushCON");
   var pseudo = jsav.code({url: "../../../SourceCode/Processing/Lists/LStack.pde",

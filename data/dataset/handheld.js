@@ -1,10 +1,3 @@
-/**
- * Piwik - Open source web analytics
- *
- * @link http://piwik.org
- * @license http://www.gnu.org/licenses/gpl-3.0.html Gpl v3 or later
- */
-
 var rootWin = Ti.UI.createWindow({
     backgroundColor: "#e5e5e5",
     exitOnClose: true,

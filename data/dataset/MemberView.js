@@ -1,7 +1,3 @@
-/**
- * The Member panel (בנימין נתניהו, גדעון סער) - displays info on a specific
- * member
- */
 OKnesset.app.views.MemberView = new Ext.extend(OKnesset.Panel, {
     id: 'MemberView',
     layout: {

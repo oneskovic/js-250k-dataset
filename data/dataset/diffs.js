@@ -1,6 +1,3 @@
-// diffs api doc:
-// http://developer.factual.com/display/docs/Core+API+-+Diffs
-
 var auth = require('./auth');
 var Factual = require('../factual-api');
 var factual = new Factual(auth.key, auth.secret);

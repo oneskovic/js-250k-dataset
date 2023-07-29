@@ -2,9 +2,7 @@ CATAN.Localization = (function(CATAN) {
 
 	var module = {}
 
-	/**
-	 * Module Fields
-	 */
+	
 
 	module.languages = [];
 

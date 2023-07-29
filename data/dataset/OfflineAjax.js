@@ -1,11 +1,3 @@
-/**
- * @class Ext.OfflineAjax
- * @singleton
- *
- * Class that implements methods to fully provide support 
- * to offline mode requests to be dispatched later if the 
- * app is online again.
- */
 Ext.OfflineAjax = {
 
 

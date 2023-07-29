@@ -1,18 +1,3 @@
-/**
- * Reporter for storing data in ElasticSearch
- *
- * --reporter elasticsearch
- * --elasticsearch-host localhost
- * --elasticsearch-port 9200
- * --elasticsearch-index "myapp"
- * --elasticsearch-type "phantomas-report"
- *
- * Debugging:
- *  curl -s -XGET 'http://localhost:9200/phantomas/report/<id>/_source'
- *
- * Options:
- *  <host>:<port>:<index>:<type>
- */
 'use strict';
 
 module.exports = function(results, reporterOptions, options) {

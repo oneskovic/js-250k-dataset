@@ -1,7 +1,3 @@
-/**
- * Helper geometry for photos.
- */
-
 define(["krusovice/thirdparty/three-bundle"], function(THREE) {
 
     "use strict";

@@ -1,10 +1,3 @@
-/**
- * Utility class used for creating stacked series.
- *
- * @module charts
- * @class StackingUtil
- * @constructor
- */
 function StackingUtil(){}
 
 StackingUtil.prototype = {

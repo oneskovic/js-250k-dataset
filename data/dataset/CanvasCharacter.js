@@ -1,6 +1,3 @@
-/**
- * @module Application
- */
 define([
     'core/modules/GelatoCollection',
     'modules/models/CanvasStroke'

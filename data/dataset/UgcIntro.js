@@ -1,7 +1,3 @@
-/**
- * @author / http://jonobr1.com/
- */
-
 var UgcIntro = function( shared ) {
 
 	var domElement = document.createElement( 'div' );

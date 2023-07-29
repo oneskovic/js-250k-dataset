@@ -2,13 +2,7 @@ goog.provide('webfont.modules.Monotype');
 
 goog.require('webfont.Font');
 
-/**
-webfont.load({
-monotype: {
-projectId: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'//this is your Fonts.com Web fonts projectId
-}
-});
-*/
+
 
 /**
  * @constructor

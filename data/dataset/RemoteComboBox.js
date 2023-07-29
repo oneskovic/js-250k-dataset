@@ -1,6 +1,3 @@
-/**
- * Custom {@link Ext.form.field.ComboBox} that handles retrieval of initial values from server
- */
 Ext.define('CarTracker.ux.form.field.RemoteComboBox', {
 	extend: 'Ext.form.field.ComboBox',
 	alias: 'widget.ux.form.field.remotecombobox',

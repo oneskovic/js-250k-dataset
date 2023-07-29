@@ -4,7 +4,7 @@ var request = require('request'),
     h = require('apis-helpers'),
     app = require('../../server');
 
-/* RUV */
+
 app.get('/tv/ruv', function (req, res) {
   var url = 'http://muninn.ruv.is/files/xml/ruv/';
 
@@ -30,7 +30,7 @@ app.get('/tv/ruv', function (req, res) {
   });
 });
 
-/* RUV Ithrottir*/
+/*Ithrottir*/
 app.get('/tv/ruvithrottir', function (req, res) {
   var url = 'http://muninn.ruv.is/files/xml/ruvithrottir/';
 
@@ -49,7 +49,7 @@ app.get('/tv/ruvithrottir', function (req, res) {
 });
 
 
-/* Parse feeds from RUV */
+/* Parse feeds from*/
 var parseFeed = function (callback, data) {
   parseString(data, function (err, result, title) {
     if (err) throw new Error('Parsing of XML failed. Title '+title);

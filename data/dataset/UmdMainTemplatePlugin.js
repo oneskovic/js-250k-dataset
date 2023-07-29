@@ -1,7 +1,3 @@
-/*
-	MIT License http://www.opensource.org/licenses/mit-license.php
-	Author Tobias Koppers @sokra
-*/
 var ConcatSource = require("webpack-core/lib/ConcatSource");
 var OriginalSource = require("webpack-core/lib/OriginalSource");
 

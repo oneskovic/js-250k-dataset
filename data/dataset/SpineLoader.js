@@ -1,11 +1,3 @@
-/**
- * @author Mat Groves http://matgroves.com/ @Doormat23
- * based on pixi impact spine implementation made by Eemeli Kelokorpi (@ekelokorpi) https://github.com/ekelokorpi
- *
- * Awesome JS run time provided by EsotericSoftware
- * https://github.com/EsotericSoftware/spine-runtimes
- *
- */
 'use strict';
 
 var AssetLoader = require('./AssetLoader');

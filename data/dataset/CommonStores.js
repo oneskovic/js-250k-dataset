@@ -1,18 +1,4 @@
 /**
- *  Stores, which are needed application wide and often, are
- *  defined here.
- *
- *  For example stores needed in combobox to display user names etc.
- *
- *  Defines also utility function renderer() for stores. Function
- *  can be used directly as rendered function in comboboxes.
- *
- *  Stores are refreshed on project change (inside.rhtml).
- *
- */
-
-
-/**
  *  Store Id's.
  */
 var ALL_USERS_STORE = 1;

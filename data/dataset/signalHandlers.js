@@ -1,4 +1,3 @@
-
 (function(module) {
 
   'use strict';
@@ -50,10 +49,7 @@
     });
   };
 
-  /*
-   * Each board has a fixed number of labels. When a new board is created,
-   * create labels for it.
-   */
+  
   module.exports.attachLabelsToBoard = function(board, done) {
     LabelMetadata.find(function(err, metadata) {
       if (err) {

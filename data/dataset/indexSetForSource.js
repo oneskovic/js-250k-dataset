@@ -1,9 +1,3 @@
-// ==========================================================================
-// Project:   SproutCore - JavaScript Application Framework
-// Copyright: ©2006-2011 Apple Inc. and contributors.
-// License:   Licensed under MIT license (see license.js)
-// ==========================================================================
-
 var set, array, array2;
 module("SC.SelectionSet#indexSetForSource", {
   setup: function() {

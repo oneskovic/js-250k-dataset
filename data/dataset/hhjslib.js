@@ -1,12 +1,4 @@
 /**
- * $Id$
- * @class HHJsLib
- * @description 红橘子科技Js库基础类
- * @author xjiujiu (xjiujiu@foxmail.com)
- * @create 2012-08-13 9:30:00
- */
-
-/**
  * HHJsLib 核心库
  * 
  * 核心库包括：初始化、事件容器、字典容器、语言配置等

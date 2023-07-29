@@ -1,9 +1,3 @@
-/**
- * @fileoverview Module Configuration
- * 
- * @author Tony Parisi
- */
-
 goog.provide('Vizi.Modules');
 goog.require('Vizi.Component');
 goog.require('Vizi.Object');

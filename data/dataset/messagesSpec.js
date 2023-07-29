@@ -1,4 +1,3 @@
-/*global jasmine, describe, xdescribe, it, iit, expect, afterEach, beforeEach, angular, datespy, console */
 /**
  * Created by ferron on 9/28/13.
  */

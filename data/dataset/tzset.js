@@ -1,8 +1,3 @@
-
-/**
- * Module dependencies.
- */
-
 var assert = require('assert')
 var time = require('../')
 

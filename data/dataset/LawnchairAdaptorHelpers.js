@@ -1,9 +1,3 @@
-/**
- * LawnchairAdaptorHelpers
- * =======================
- * Useful helpers for creating Lawnchair stores. Used as a mixin.
- *
- */
 var LawnchairAdaptorHelpers = {
   // merging default properties with user defined args
   merge: function(defaultOption, userOption) {

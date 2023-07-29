@@ -1,4 +1,3 @@
-/*****************************************************************************/
 /*                                                                           */
 /* dnc 0.1.2 (c) by Frederic Cambus 2014                                     */
 /* https://github.com/fcambus/dnc                                            */
@@ -9,7 +8,7 @@
 /* dnc is released under the BSD 2-Clause license.                           */
 /* See LICENSE file for details.                                             */
 /*                                                                           */
-/*****************************************************************************/
+
 
 var dns = require('dns');
 

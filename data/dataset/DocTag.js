@@ -1,6 +1,3 @@
-/**
-	@constructor
-*/
 JSDOC.DocTag = function(src) {
 	this.title = "";
 	this.type = "";

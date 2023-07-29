@@ -1,4 +1,3 @@
-// Socket reference.
 var chatServer;
 
 // Log text to main window.

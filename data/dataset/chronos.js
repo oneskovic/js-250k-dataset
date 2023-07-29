@@ -1,7 +1,3 @@
-/**
- * Chronos client.
- */
-
 'use strict';
 
 /**

@@ -4,21 +4,7 @@ exports.type = 'full';
 
 exports.active = true;
 
-/**
- * Remove or cleanup enable-background attr which coincides with a width/height box.
- *
- * @see http://www.w3.org/TR/SVG/filters.html#EnableBackgroundProperty
- *
- * @example
- * <svg width="100" height="50" enable-background="new 0 0 100 50">
- *             ⬇
- * <svg width="100" height="50">
- *
- * @param {Object} item current iteration item
- * @return {Boolean} if false, item will be filtered out
- *
- * @author Kir Belevich
- */
+
 exports.fn = function(data) {
 
     var regEnableBackground = /^new\s0\s0\s([\-+]?\d*\.?\d+([eE][\-+]?\d+)?)\s([\-+]?\d*\.?\d+([eE][\-+]?\d+)?)$/,

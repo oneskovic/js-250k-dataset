@@ -1,7 +1,7 @@
 var themeManager = (function () {
   'use strict'; 
 
-  /* Convert the Color object to string in hexadecimal format; */
+  
   function toHex(color, delta) {
     function computeValue(value, delta) {
       var computedValue = !isNaN(delta) ? value + delta : value;

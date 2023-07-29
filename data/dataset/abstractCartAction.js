@@ -10,11 +10,7 @@ if (typeof OpenGeoportal.Views === 'undefined') {
 	throw new Error("OpenGeoportal.Views already exists and is not an object");
 }
 
-/**
- * A Backbone View of the Cart Collection
- * 
- * @constructor
- */
+
 
 OpenGeoportal.Views.CartActionView = Backbone.View.extend({
 	initialize : function() {

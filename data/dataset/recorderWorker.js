@@ -114,7 +114,7 @@ function encodeWAV(samples){
   var buffer = new ArrayBuffer(44 + samples.length * 2);
   var view = new DataView(buffer);
 
-  /* RIFF identifier */
+  
   writeString(view, 0, 'RIFF');
   /* RIFF chunk length */
   view.setUint32(4, 36 + samples.length * 2, true);

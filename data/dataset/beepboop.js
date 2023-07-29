@@ -1,6 +1,3 @@
-//
-// Basic React Web Audio example which beeps every so often
-
 /* jshint strict: false */
 /* global React : false */
 /* global ReactWebAudio : false */

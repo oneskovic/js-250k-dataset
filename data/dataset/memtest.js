@@ -1,6 +1,3 @@
-// V8 does not have an explicit way for memwatach to force garbage collection
-// within the version used for node 0.6, and 0.8.  Therefore we wont test
-// on those versions.
 if(process.version.indexOf('0.6') == -1 && process.version.indexOf('0.8') == -1)
 {
   var $ = require('../');

@@ -1,10 +1,3 @@
-/*	educhart.js
-*	Open Source education charting
-*
-*	By: JainLabs
-*	us@jainlabs.com
-*/
-
 (function(window,undefined) {
 	function log(msg) {
 		console.log(msg);

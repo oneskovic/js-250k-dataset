@@ -1,8 +1,3 @@
-/**
- * Simple implementation of AMD require/define assuming all
- * modules are named and loaded explicitly, and require is called
- * after all needed modules have been loaded.
- */
 (function (window) {
     var define = function (name, deps, value) {
         var dotJs = name.indexOf('.js');

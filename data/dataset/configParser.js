@@ -1,5 +1,3 @@
-//beta browsers not handled
-//+ not handled
 var Log = require('./logger'),
     logger = new Log(global.logLevel);
 

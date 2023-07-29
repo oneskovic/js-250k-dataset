@@ -1,7 +1,3 @@
-/**
- * @file 是否点击其他区域，关闭自己
- * @import widget/popover/popover.js
- */
 (function( gmu, $ ) {
     var Popover = gmu.Popover;
 

@@ -1,18 +1,3 @@
-/*
-Chance Example
-
-From this directory, run: node ../bin/queen chance.js
-
-This example shows an example of a distributed problem solving in queen.
-Any browser which connects will begin guessing numbers under "maxNumber",
-once any of the browsers find the "numberToFind", all workers will be killed,
-and the process will exit.
-
-The process will continue to run until one browser guesses the right number,
-if no browsers are connected, it'll idle and wait.
-
-*/
-
 module.exports = function(queen){
 	function onHttpServerReady(){
 		var numberToFind = 42,

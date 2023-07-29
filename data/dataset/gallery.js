@@ -1,6 +1,6 @@
 interact(document).on('DOMContentLoaded', function () {
 "use strict";
-/* global interact, Modernizr */
+
 
 var preTransform = Modernizr.prefixed('transform'),
     snapTarget = {};

@@ -1,9 +1,3 @@
-/*!
- * Connect - cookieSession
- * Copyright(c) 2011 Sencha Inc.
- * MIT Licensed
- */
-
 /**
  * Module dependencies.
  */

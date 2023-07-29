@@ -1,11 +1,6 @@
 goog.provide('eightball.DroppingBall');
 
-/**
- @constructor
- @param {number} number
- @param {!box2d.Vec2} ballLocation
- @param {!box2d.Vec2} pocketLocation
- */
+
 eightball.DroppingBall = function(number, ballLocation, pocketLocation) {
   /**
    * @const

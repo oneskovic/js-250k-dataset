@@ -1,5 +1,3 @@
-/* global it */
-
 'use strict'
 
 require('should')

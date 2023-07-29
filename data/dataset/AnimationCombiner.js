@@ -3,20 +3,7 @@ var Class = base.Class
 var helper = require('./helper')
 var Combiner = require('./Combiner')
 
-/*
-.transition {
-    animation-name: myfirst;
-    animation-duration: 5s;
-    animation-timing-function: linear;
-    animation-delay: 2s;
-    animation-iteration-count: infinite;
-    animation-direction: alternate;
-    animation-play-state: running;
-    animation-fill-mode: none;
-}
 
-// ==> animation: myfirst 5s linear 2s infinite alternate;
-*/
 var AnimationCombiner = new Class(Combiner, function() {
 
     this.__init__ = function(self, name, attrs) {

@@ -1,5 +1,3 @@
-/* global Backbone, Mail, models */
-
 var views = views || {};
 
 views.Folder = Backbone.Marionette.ItemView.extend({

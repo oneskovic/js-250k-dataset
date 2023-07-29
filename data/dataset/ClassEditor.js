@@ -1,12 +1,7 @@
 define(['tantaman/web/widgets/Button',
 	'tantaman/web/widgets/PopoverTextbox'],
 	function(Button, PopoverTextbox) {
-		/**
-		 * Allows to assign custom css classes to elements on slide.
-		 *
-		 * @param editorModel
-		 * @constructor
-		 */
+		
 		function ClassEditor(editorModel) {
 			this._button = new Button({
 				icon: 'icon-plus',

@@ -1,9 +1,3 @@
-/**
- * This class is used as a mixin.
- *
- * This class is to be used to provide basic methods for binding/unbinding stores to other
- * classes. In general it will not be used directly.
- */
 Ext.define('Ext.util.Bindable', {
     
     /**

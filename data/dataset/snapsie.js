@@ -1,10 +1,3 @@
-/**
- * This file wraps the Snapsie ActiveX object, exposing a single saveSnapshot()
- * method on a the object.
- *
- * See http://snapsie.sourceforge.net/
- */
-
 function Snapsie() {
     // private methods
     

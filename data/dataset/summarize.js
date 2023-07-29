@@ -1,4 +1,3 @@
-/*global describe, expect, it */
 'use strict';
 
 var summarize = require('../../summarize');

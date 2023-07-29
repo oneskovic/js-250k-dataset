@@ -1,80 +1,103 @@
-/**
- * Created by JetBrains WebStorm.
- * User: taoqili
- * Date: 11-9-29
- * Time: 下午3:50
- * To change this template use File | Settings | File Templates.
- */
-/**
- * 选择文件后的回调函数
- * @param	Array
- */
-function selectFileCallback(selectFiles){
-    // 数组里单个元素为Object，{index:在多图上传的索引号, name:文件名, size:文件大小}
-    // 其中size单位为Byte
-    console.log("选择了如下文件：");
-    var obj;
-    for(var i = 0, iLen = selectFiles.length; i < iLen; i++){
-        obj = selectFiles[i];
-        console.log(obj.index, obj.name, obj.size);
-    }
-    console.log("===================================");
-}
-/**
- * 文件大小超出时的回调函数
- * @param	Object
- */
-function exceedFileCallback(file){
-    // 参数为Object，{index:在多图上传的索引号, name:文件名, size:文件大小}
-    // 其中size单位为Byte
-    console.log("文件超出大小限制：");
-    console.log(file.index, file.name, file.size);
-    console.log("===================================");
-}
-/**
- * 删除文件后的回调函数
- * @param	Array
- */
-function deleteFileCallback(delFiles){
-    // 数组里单个元素为Object，{index:在多图上传的索引号, name:文件名, size:文件大小}
-    // 其中size单位为Byte
-    console.log("删除了如下文件：");
-    var obj;
-    for(var i = 0, iLen = delFiles.length; i < iLen; i++){
-        obj = delFiles[i];
-        console.log(obj.index, obj.name, obj.size);
-    }
-    console.log("===================================");
-}
-/**
- * 开始上传单个文件的回调函数
- * @param	Object
- */
-function startUploadCallback(file){
-    console.log("开始上传如下文件：");
-    console.log(file.name, file.size);
-    console.log("===================================");
-}
-/**
- * 单个文件上传完成的回调函数
- * @param	Object/String	服务端返回啥，参数就是啥
- */
-	function uploadCompleteCallback(data){
-		console.log("上传成功", data);
-        console.log("===================================");
-	}
- /**
-  * 单个文件上传失败的回调函数
-  * @param	Object/String	服务端返回啥，参数就是啥
-  */
-	function uploadErrorCallback(data){
-		console.log("上传失败", data);
-        console.log("===================================");
-	}
- /**
-  * 全部上传完成的回调函数
-  */
-	function allCompleteCallback(){
-		console.log("全部上传成功");
-        console.log("===================================");
-	}
+steal("can/util", "can/view",function(can){
+
+
+	var attr = can.view.attr = function (attributeName, attrHandler) {
+		if(attrHandler) {
+			if (typeof attributeName === "string") {
+				attributes[attributeName] = attrHandler;
+			} else {
+				regExpAttributes.push({
+					match: attributeName,
+					handler: attrHandler
+				});
+			}
+		} else {
+			var cb = attributes[attributeName];
+			if( !cb ) {
+				
+				for( var i = 0, len = regExpAttributes.length; i < len; i++) {
+					var attrMatcher = regExpAttributes[i];
+					if(attrMatcher.match.test(attributeName)) {
+						cb = attrMatcher.handler;
+						break;
+					}
+				}
+			}
+			return cb;
+		}
+	};
+
+	var attributes = {},
+		regExpAttributes = [],
+		automaticCustomElementCharacters = /[-\:]/;
+
+	var tag = can.view.tag = function (tagName, tagHandler) {
+		if(tagHandler) {
+			//!steal-remove-start
+			if (typeof tags[tagName.toLowerCase()] !== 'undefined') {
+				can.dev.warn("Custom tag: " + tagName.toLowerCase() + "is already defined");
+			}
+			//!steal-remove-end
+			// if we have html5shive ... re-generate
+			if (can.global.html5) {
+				can.global.html5.elements += " " + tagName;
+				can.global.html5.shivDocument();
+			}
+	
+			tags[tagName.toLowerCase()] = tagHandler;
+		} else {
+			var cb = tags[tagName.toLowerCase()];
+			if(!cb && automaticCustomElementCharacters.test(tagName)) {
+				// empty callback for things that look like special tags
+				cb = function(){};
+			}
+			return cb;
+		}
+		
+	};
+	var tags = {};
+	
+	can.view.callbacks = {
+		_tags: tags,
+		_attributes: attributes,
+		_regExpAttributes: regExpAttributes,
+		tag: tag,
+		attr: attr,
+		// handles calling back a tag callback
+		tagHandler: function(el, tagName, tagData){
+			var helperTagCallback = tagData.options.attr('tags.' + tagName),
+				tagCallback = helperTagCallback || tags[tagName];
+	
+			// If this was an element like <foo-bar> that doesn't have a component, just render its content
+			var scope = tagData.scope,
+				res;
+				
+			if(tagCallback) {
+				var reads = can.__clearReading();
+				res = tagCallback(el, tagData);
+				can.__setReading(reads);
+			} else {
+				res = scope;
+			}
+	
+			//!steal-remove-start
+			if (!tagCallback) {
+				can.dev.warn('can/view/scanner.js: No custom element found for ' + tagName);
+			}
+			//!steal-remove-end
+	
+			// If the tagCallback gave us something to render with, and there is content within that element
+			// render it!
+			if (res && tagData.subtemplate) {
+	
+				if (scope !== res) {
+					scope = scope.add(res);
+				}
+				var result = tagData.subtemplate(scope, tagData.options);
+				var frag = typeof result === "string" ? can.view.frag(result) : result;
+				can.appendChild(el, frag);
+			}
+		}
+	};
+	return can.view.callbacks;
+});

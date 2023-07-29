@@ -2,17 +2,7 @@ goog.provide('eightball.CollisionEvent');
 
 goog.require('goog.events.Event');
 
-/**
- * Object representing a collision between balls or a ball and a wall
- *
- * @extends {goog.events.Event}
- * @constructor
- * @param {number} velocity
- * @param {string} eventType
- * @param {number} ballNumber1
- * @param {number} ballNumber2
- * @param {!eightball.PoolTable} poolTable
- */
+
 eightball.CollisionEvent = function(velocity, eventType, ballNumber1, ballNumber2, poolTable) {
   goog.events.Event.call(this, eventType, poolTable);
 

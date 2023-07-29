@@ -1,9 +1,3 @@
-/**
- * @class Ext.draw.sprite.Sector
- * @extends Ext.draw.sprite.Path
- * 
- * A sprite representing a pie slice.
- */
 Ext.define('Ext.draw.sprite.Sector', {
     extend: 'Ext.draw.sprite.Path',
     alias: 'sprite.sector',

@@ -1,15 +1,3 @@
-/**
- File:
- PoisonTrait.js
- Created By:
- Mario Gonzalez
- Project    :
- RealtimeMultiplayerNodeJS
- Abstract:
-
- Basic Usage:
-
- */
 (function () {
     BubbleDots.namespace("BubbleDots.traits");
 

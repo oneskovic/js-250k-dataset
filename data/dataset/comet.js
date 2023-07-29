@@ -1,4 +1,3 @@
-// Depends on jquery
 var Comet = (function () {
 	var self = {},
 		iframes = {},

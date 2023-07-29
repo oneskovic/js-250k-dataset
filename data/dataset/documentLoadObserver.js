@@ -1,5 +1,3 @@
-/* See license.txt for terms of usage */
-
 define([
     "httpmonitor/lib/trace",
     "httpmonitor/lib/http",

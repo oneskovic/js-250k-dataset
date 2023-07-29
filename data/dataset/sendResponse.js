@@ -2,9 +2,7 @@
 
 module.exports = {
 
-    /*
-     * Set true if you want enable this middleware
-     */
+    
 
     enabled: true,
     fn: function(req, res, next) {

@@ -1,4 +1,3 @@
-
 var handlebars = require('handlebars'),
     fs = require('fs'),
     path = require('path'),

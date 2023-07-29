@@ -1,19 +1,3 @@
-/// <reference path="../../Scripts/endgate-0.2.0.d.ts" />
-/// <reference path="../../Scripts/typings/jquery/jquery.d.ts" />
-/// <reference path="../Server/ServerAdapter.ts" />
-/// <reference path="../Server/IPayloadDefinitions.ts" />
-/// <reference path="../Server/IClientInitialization.ts" />
-/// <reference path="../Space/AreaRenderer.ts" />
-/// <reference path="ShipStatMonitor.ts" />
-/// <reference path="HealthMonitor.ts" />
-/// <reference path="ExperienceMonitor.ts" />
-/// <reference path="RankingsManager.ts" />
-/// <reference path="EnvironmentMonitor.ts" />
-/// <reference path="LeaderboardManager.ts" />
-/// <reference path="DeathScreen.ts" />
-/// <reference path="NotificationManager.ts" />
-/// <reference path="UserInformationManager.ts" />
-/// <reference path="Chat.ts" />
 var ShootR;
 (function (ShootR) {
     var HUDManager = (function () {

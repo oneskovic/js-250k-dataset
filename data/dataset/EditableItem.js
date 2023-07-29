@@ -1,11 +1,5 @@
 Ext.namespace("Ext.ux.menu");
-/** 
- * @class Ext.ux.menu.EditableItem
- * @extends Ext.menu.BaseItem
- * @author Steve Skrla (<a href="http://extjs.com/forum/member.php?u=865">ambience</a>); published: Michael LeComte (<a href="http://extjs.com/forum/member.php?u=6834">mjlecomte</a>)
- * @license Licensed under the terms of the Open Source <a href="http://www.gnu.org/licenses/lgpl.html">LGPL 3.0 license</a>.  Commercial use is permitted to the extent that the code/component(s) do NOT become part of another Open Source or Commercially licensed development library or toolkit without explicit permission. 
- * @version X
- */
+
 Ext.ux.menu.EditableItem = Ext.extend(Ext.menu.BaseItem, {
 	/**
 	 * @cfg {String} itemCls

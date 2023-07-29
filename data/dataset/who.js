@@ -1,4 +1,3 @@
-/* who.js */
 /**
  * A plugin for monitoring sessions.
  */

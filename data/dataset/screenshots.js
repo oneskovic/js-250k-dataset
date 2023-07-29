@@ -1,4 +1,3 @@
-// screenshots
 $j(document).ready(function() {
   if($j("#screenshots").notOnPage()){return;}
 

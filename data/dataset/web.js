@@ -1,74 +1,80 @@
+var fs = require('fs');
 
-// testing environments
-var numOnly = function(){
-  return true;
+var Q = require('q');
+var React = require('react');
+
+var AppDispatcher = require('../client/dispatchers/app_dispatcher.js');
+var ApplicationView = require('../client/components/application_view.jsx');
+var errors = require('./errors');
+var ImageActions = require('../client/actions/image_actions.js');
+var ImageDb = require('./databases/image_db.js');
+var ImageStore = require('../client/stores/image_store.js');
+var RouteActions = require('../client/actions/route_actions.js');
+var RouteStore = require('../client/stores/route_store.js');
+
+var mimeTypes = {
+  jpg: 'image/jpeg',
+  gif: 'image/gif',
+  png: 'image/png'
 };
 
-var scrollWithAdjust = function( anchor, header_tool_bar_id ){
-  var header = document.getElementById( header_tool_bar_id ),
-      selector = anchor.getAttribute('href'),
-      hash = selector.substring( 1 ),
-      target = document.getElementById( hash ),
-      offset, y;
-  location.hash = hash;
-  offset = header.getBoundingClientRect().height || 0;
-  y = target.getBoundingClientRect().top || 0;
-  if ( y - offset !== 0 ){
-    window.scrollBy(0, y - offset);
+module.exports = function(app, db) {
+  function createDispatcher() {
+    var dispatcher = new AppDispatcher();
+    dispatcher.register(new ImageStore(ImageDb(db)));
+    dispatcher.register(new RouteStore());
+    return dispatcher;
   }
-  return false;
-};
 
-var setInternalAnchorBehavior = function( header_tool_bar_id ){
-  var anchors = document.getElementsByTagName( 'a' ),
-      hasInternalLink = function( anchor ){
-        return anchor.getAttribute( 'href' ).match( /^#[a-zA-Z0-9_\-]+$/i );
-      },
-      internalLinks = filter( hasInternalLink,  anchors );
-  each( function( anchor ){
-    anchor.onclick = function( ){
-        return scrollWithAdjust( anchor, header_tool_bar_id );
-    };
-  }, internalLinks );
+  app.get('/', function(req, res) {
+    var dispatcher = createDispatcher();
 
-  return this;
-};
-
-var initTestConstroller = function( identifiers ){
-  /**
-   * identifiers = {
-   *   counter_id: <string>
-   *   verbose_id: <string>
-   *   runner_id: <string>
-   * }
-   */
-  var count_controller = document.getElementById( identifiers.counter_id ),
-      verbose_controller = document.getElementById( identifiers.verbose_id ),
-      runner = document.getElementById( identifiers.runner_id );
-
-  if ( count_controller.parentNode.tagName === 'label' ){
-    add_event( count_controller.parentNode, 'click', function( evt ){
-      count_controller.focus();
+    var promise = dispatcher.dispatch(RouteActions.setUrlFromRequest(req.url)).then(function(state) {
+      return dispatcher.dispatch(ImageActions.loadIndex(null, 'date', state.route.params.sortdir));
     });
-  }
 
-  add_event( verbose_controller, 'click', function( evt ){
-     macchiato.setVerbose( evt.target.checked );
-     return eventEnd();
+    promise.then(function(state) {
+      var html =  React.renderComponentToString(ApplicationView({preloadData: state, dispatcher: dispatcher}));
+      res.render('index', {app: html, preloadData: state});
+      dispatcher.destroy();
+    });
   });
 
-  if ( verbose_controller.parentNode.tagName === 'label' ) {
-    add_event( verbose_controller.parentNode, 'click', function( evt ){
-      verbose_controller.click();
-      return eventEnd();
+  app.get('/image/:img', function(req, res) {
+    var dispatcher = createDispatcher();
+
+    var promise = dispatcher.dispatch(RouteActions.setUrlFromRequest(req.url)).then(function() {
+      return dispatcher.dispatch(ImageActions.loadImage(req.params.img));
     });
-  }
 
-  var macchiatoTestRun = function( evt ){
-    macchiato.taste();
-    return eventEnd();
-  };
+    promise.then(function(state) {
+      var html =  React.renderComponentToString(ApplicationView({preloadData: state, dispatcher: dispatcher}));
+      res.render('index', {app: html, preloadData: state});
+      dispatcher.destroy();
+    });
+  });
 
-  add_event( runner, 'click', macchiatoTestRun );
+  app.get(/^\/i\/(\w+)(-t)?.(jpg|jpeg|gif|png)/, function(req, res) {
+    var id = req.params[0];
+    var thumb = req.params[1];
+    Q.nfcall(db.hgetall.bind(db), 'img:' + id).then(function(reply) {
+      if (!reply) {
+        errors.notFound(res);
+      } else {
+        var fname = thumb ? id + '_thumb.jpg' : id;
+        res.header('Content-Type', mimeTypes[reply.type]);
+        res.header('ETag', thumb ? id + '-t' : id);
+
+        if (req.fresh) {
+          res.send(304);
+        } else {
+          fs.createReadStream(app.get('uploadDir') + '/' + fname).pipe(res);
+        }
+      }
+    }, function(reason) {
+      console.error('Error in web/i');
+      console.error(reason);
+      errors.genericError(res);
+    });
+  });
 };
-

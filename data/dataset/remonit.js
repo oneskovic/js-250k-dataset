@@ -1,11 +1,3 @@
-// node.js client for Remonit
-//
-// exports 4 functions
-// connect(callback(err)): connect to Remonit server
-// close(): close connection, this terminates events loop
-// get(collection, callback(err, result)): query for docs in collection
-// put(collection, doc, callback(err))
-
 'use strict'
 
 module.exports = {

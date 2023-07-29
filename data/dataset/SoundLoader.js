@@ -1,11 +1,4 @@
 /**
- * Created with JetBrains WebStorm.
- * User: mauricio
- * Date: 6/19/13
- * Time: 9:22 PM
- * To change this template use File | Settings | File Templates.
- */
-/**
  * @class SoundLoader
  * Class loads sounds asynchronously using the method `loadSound`,
  * the sound api works with an instance of AudioContext

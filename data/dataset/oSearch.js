@@ -1,4 +1,3 @@
-// DATA_TEMPLATE: empty_table
 oTest.fnStart( "oSearch" );
 
 $(document).ready( function () {

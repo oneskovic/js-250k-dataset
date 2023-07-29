@@ -1,13 +1,4 @@
 /**
- * Generate CSS Selector for an element
- *
- * Copyright (c) 2011 Ankit Ahuja
- * Dual licensed under GPL and MIT licenses.
- *
- * @requires jQuery
-**/
-
-/**
  * Generator of CSS selectors for an element
  * @constructor
  * @param {String} [level] Specificity level at which to generate CSS selector.

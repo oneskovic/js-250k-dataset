@@ -1,7 +1,3 @@
-/**
- * @module relationships
- */
-
 var RelationshipProxy = require('./RelationshipProxy'),
   util = require('./util'),
   modelEvents = require('./modelEvents'),

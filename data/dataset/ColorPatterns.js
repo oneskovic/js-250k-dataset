@@ -1,4 +1,3 @@
-//<feature charts>
 Ext.define('Kitchensink.view.ColorPatterns', {
     singleton: true,
     requires: ['Ext.draw.Color'],

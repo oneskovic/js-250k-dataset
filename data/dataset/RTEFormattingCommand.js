@@ -1,4 +1,3 @@
-//create widget namespace
 CQ.Ext.ns('AEM.Toolbox.Widgets.rte.commands');
 
 AEM.Toolbox.Widgets.rte.commands.RTEFormattingCommand = CQ.Ext.extend(CQ.form.rte.commands.Command, {

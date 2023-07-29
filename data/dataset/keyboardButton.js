@@ -1,16 +1,6 @@
 application.on('tools.create',function(){
 
-/**
- * Keyboard button enables sending
- * the browser keyboard up and down events to the application.
- * 
- * Uses:
- *   button with id appKeyboardButton.
- * 
- * TODO:
- * 	 change on('disconnected') to on('beforedisconnected') to
- * 	 correctly send the keyup events on the keys which are currently down.
- */
+
 
 function KeyboardButtonTool() {
 	this.keys = new Uint8Array(256);

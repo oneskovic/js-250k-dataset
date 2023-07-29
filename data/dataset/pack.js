@@ -1,82 +1,95 @@
-var fun   = require('../../../uki-core/function'),
-    utils = require('../../../uki-core/utils'),
-    view  = require('../../../uki-core/view'),
-    dom   = require('../../../uki-core/dom'),
+var wrench = require("wrench"),
+    utils = require("./utils"),
+    _c = require("./conf"),
+    fs = require("fs"),
+    path = require("path");
 
-    Mustache = require('../../../uki-core/mustache').Mustache,
-    Base     = require('../../../uki-core/view/base').Base;
-
-
-var Pack = view.newClass('dataList.Pack', Base, {
-
-    template: fun.newProp('template'),
-
-    formatter: fun.newProp('formatter'),
-
-    key: fun.newProp('key'),
-
-    render: function(rows, selectedInPack, globalIndex) {
-        this._dom.innerHTML = this._toHTML(rows, globalIndex);
-        this._restorePackSelection(selectedInPack || [], globalIndex);
-    },
-
-    updateRow: function(index, rows, globalIndex) {
-        var tmp = dom.createElement('div', {
-            html: this._toHTML(rows, globalIndex)
-        });
-        var item = this._rowAt(index);
-        item.parentNode.replaceChild(tmp.childNodes[0], item);
-    },
-
-    setSelected: function(index, state) {
-        if (this.dom()) {
-            var row = this._rowAt(index);
-            if (row) {
-                dom.toggleClass(row, 'uki-dataList-row_selected', state);
-            }
-        }
-    },
-
-    _toHTML: function(rows, globalIndex) {
-        var formated = utils.map(rows, function(r, i) {
-            i = i + globalIndex;
-            return {
-                value: this._formatRow(r, i),
-                row: r,
-                index: i,
-                even: i & 1
-            };
-        }, this);
-
-        return Mustache.to_html(
-            this.template(), { rows: formated }
-        );
-    },
-
-    _formatRow: function(row, index) {
-        return this.formatter()(
-            this.key() ? utils.prop(row, this.key()) : row,
-            row,
-            index);
-    },
-
-    _createDom: function(initArgs) {
-        this._dom = dom.createElement('ul', {
-            className: 'uki-dataList-pack'
-        });
-    },
-
-    _restorePackSelection: function(selectedInPack, globalIndex) {
-        for (var i = selectedInPack.length - 1; i >= 0; i--){
-            this.setSelected(selectedInPack[i] - globalIndex, true);
-        };
-    },
-
-    _rowAt: function(index) {
-        return this.dom().childNodes[index];
+function copyFolder(source, destination) {
+    //create the destination folder if it does not exist
+    if (!path.existsSync(destination)) {
+        wrench.mkdirSyncRecursive(destination, "0755");
     }
 
-});
+    wrench.copyDirSyncRecursive(source, destination);
+}
 
+function copyExtensions(extPath, extDest) {
+    if (path.existsSync(extPath)) {
+        //Iterate over extensions directory
+        fs.readdirSync(extPath).forEach(function (extension) {
+            var apiDir = path.normalize(path.resolve(extPath, extension)),
+                apiDirDeviceSO = path.normalize(path.join(apiDir, 'native', 'arm', 'so.le-v7')),
+                apiDirSimulatorSO = path.normalize(path.join(apiDir, 'native', 'x86', 'so')),
+                apiDest = path.join(extDest, extension),
+                extensionStats = fs.lstatSync(apiDir),
+                soPath,
+                soDest,
+                jsFiles,
+                soFiles;
 
-exports.Pack = Pack;
+            //In case there is a file in the ext directory
+            //check that we are dealing with a real extenion first
+            if (extensionStats.isDirectory()) {
+
+                //find all .js files or .json files
+                jsFiles = utils.listFiles(apiDir, function (file) {
+                    var extName = path.extname(file);
+                    return extName === ".js" || extName === ".json";
+                });
+
+                //Copy each .js file to its extensions folder
+                jsFiles.forEach(function (jsFile) {
+                    utils.copyFile(jsFile, apiDest, apiDir);
+                });
+
+                // Copy the .so file for this extension
+                [{ src: apiDirDeviceSO, dst: "device" }, { src: apiDirSimulatorSO, dst: "simulator"}].forEach(function (target) {
+                    if (path.existsSync(target.src)) {
+                        soDest = path.join(apiDest, target.dst);
+
+                        if (!path.exists(soDest)) {
+                            fs.mkdirSync(soDest);
+                        }
+
+                        soFiles = utils.listFiles(target.src, function (file) {
+                            return path.extname(file) === ".so";
+                        });
+
+                        soFiles.forEach(function (soFile) {
+                            utils.copyFile(soFile, soDest, soPath);
+                        });
+                    }
+                });
+            }
+        });
+    }
+}
+
+module.exports = function (src, baton) {
+    var libDest = path.join(_c.DEPLOY, 'lib'),
+        extDest = path.join(_c.DEPLOY, 'ext'),
+        clientFilesDest = path.join(_c.DEPLOY, 'clientFiles'),
+        bootstrapDest = path.join(_c.DEPLOY, 'dependencies/bootstrap'),
+        jnextDest = path.join(_c.DEPLOY, 'dependencies/jnext'),
+
+        //files
+        readmeFile = path.join(_c.ROOT, 'README.md'),
+        licenseFile = path.join(_c.ROOT, 'licenses.txt');
+
+    require('./bundler').bundle();
+
+    //Copy folders to target directory
+    copyFolder(_c.LIB, libDest);
+    copyExtensions(_c.EXT, extDest);
+    copyFolder(_c.CLIENTFILES, clientFilesDest);
+    copyFolder(_c.DEPENDENCIES_BOOTSTRAP, bootstrapDest);
+    copyFolder(_c.DEPENDENCIES_JNEXT, jnextDest);
+
+	//Copy files to target directory (DO NOT copy webplatform-framework lib/* files over)
+    utils.copyFile(readmeFile, _c.DEPLOY);
+    utils.copyFile(licenseFile, _c.DEPLOY);
+    utils.copyFile(_c.DEPENDENCIES_REQUIRE, bootstrapDest);
+
+    //Remove public folder
+    wrench.rmdirSyncRecursive(_c.DEPLOY + 'lib/public', true);
+};

@@ -1,8 +1,3 @@
-/**
- * This module contains a function to get a default viewport for an image given
- * a canvas element to display it in
- *
- */
 var cornerstone = (function (cornerstone) {
 
     "use strict";

@@ -1,8 +1,3 @@
-// tableit.js: Simple responsive tables
-// MIT license http://www.opensource.org/licenses/mit-license.php/
-// Based on method developed by Chris Coyier http://css-tricks.com/responsive-data-tables/
-// @author Joshua McGrath http://designjem.com
-
  (function( $ ){
 
   $.fn.tableit = function(options) {

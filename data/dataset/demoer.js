@@ -8,9 +8,7 @@ var prettyCode = function(code) {
 	return code;
 };
 
-/**
- * Load all dependent URLs
- */
+
 
 var getUrls = function(container, callback) {
 	var base = $("script[src*=demoer\\.js]").attr("src");

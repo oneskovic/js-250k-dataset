@@ -1,9 +1,3 @@
-/**
- * takes screenshot of the current viewport
- *
- * @param {String} filename  path of file to be saved
- */
-
 var async = require('async'),
     fs = require('fs'),
     gm = require('gm'),

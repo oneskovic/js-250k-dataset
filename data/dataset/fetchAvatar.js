@@ -1,4 +1,3 @@
-/*global app*/
 "use strict";
 var crypto = require('crypto');
 

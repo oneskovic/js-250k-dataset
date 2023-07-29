@@ -1,4 +1,3 @@
-// This allows you to change the color of the legend text
 Ext.override(Ext.chart.LegendItem, {
 
     /**

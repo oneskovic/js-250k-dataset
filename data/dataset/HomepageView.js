@@ -1,5 +1,3 @@
-// HomePageView.js
-// -------
 define(["jquery", "backbone", "handlebars",
         "views/BaseView", "views/SearchCardsView",
         "views/DsmChartView",

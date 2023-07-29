@@ -1,4 +1,3 @@
-
 var expander = require('../lib/expander'),
     through = require('through2');
 

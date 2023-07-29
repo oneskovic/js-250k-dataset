@@ -1,4 +1,3 @@
-
 // fetch the data
 // modify to remove the version in question
 // If no versions remaining, then DELETE

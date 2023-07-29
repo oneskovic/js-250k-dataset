@@ -1,4 +1,3 @@
-/*jshint strict:false, unused:false */
 describe('gulp-livereload', function() {
   var gutil = require('gulp-util'),
       sinon = require('sinon'),

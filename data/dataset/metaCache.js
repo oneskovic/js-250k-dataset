@@ -1,9 +1,3 @@
-/**
-  ETags Cache
-  
-  Cache for ETags so that we do not need to hit the file system everytime
-  we need check an ETag
-*/
 "use strict";
 
 var 

@@ -1,4 +1,3 @@
-// Load required packages
 var Beer = require('../models/beer');
 
 // Create endpoint /api/beers for POST

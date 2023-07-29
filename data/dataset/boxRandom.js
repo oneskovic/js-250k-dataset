@@ -1,9 +1,5 @@
 (function($) {
-    /**
-     * boxRandom effect
-     *
-     * @since 1.0.1
-     */
+    
     Coo.Effect.register('boxRandom', 'Coo.Effect.BoxRandom');
 
     Coo.Effect.BoxRandom = Coo.Effect._Grid.extend({

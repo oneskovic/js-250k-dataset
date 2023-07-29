@@ -1,6 +1,3 @@
-/**
- * Created by furier on 16/04/14.
- */
 'use strict';
 
 var _ = require('lodash');

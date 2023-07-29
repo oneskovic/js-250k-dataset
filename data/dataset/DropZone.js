@@ -1,4 +1,3 @@
-// kill drag drop dependency
 if(YAHOO.util.DragDrop){
 YAHOO.ext.dd.DropZone = function(el, config){
     YAHOO.ext.dd.DropZone.superclass.constructor.call(this, el, config);

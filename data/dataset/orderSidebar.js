@@ -1,7 +1,3 @@
-/*
- * orderSidebar viewmodel associated with the orderSidebar.html view
- * This view appears as a navigation panel on the left in Order and Menu views
- */
 (function(angular) {
     'use strict';
 

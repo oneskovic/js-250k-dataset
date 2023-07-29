@@ -1,38 +1,3 @@
-/**
- * ButtonInputWidget is used to submit HTML forms and is intended to be used within
- * a OO.ui.FormLayout. If you do not need the button to work with HTML forms, you probably
- * want to use OO.ui.ButtonWidget instead. Button input widgets can be rendered as either an
- * HTML `<button/>` (the default) or an HTML `<input/>` tags. See the
- * [OOjs UI documentation on MediaWiki] [1] for more information.
- *
- *     @example
- *     // A ButtonInputWidget rendered as an HTML button, the default.
- *     var button = new OO.ui.ButtonInputWidget( {
- *         label: 'Input button',
- *         icon: 'check',
- *         value: 'check'
- *     } );
- *     $( 'body' ).append( button.$element );
- *
- * [1]: https://www.mediawiki.org/wiki/OOjs_UI/Widgets/Inputs#Button_inputs
- *
- * @class
- * @extends OO.ui.InputWidget
- * @mixins OO.ui.ButtonElement
- * @mixins OO.ui.IconElement
- * @mixins OO.ui.IndicatorElement
- * @mixins OO.ui.LabelElement
- * @mixins OO.ui.TitledElement
- * @mixins OO.ui.FlaggedElement
- *
- * @constructor
- * @param {Object} [config] Configuration options
- * @cfg {string} [type='button'] The value of the HTML `'type'` attribute: 'button', 'submit' or 'reset'.
- * @cfg {boolean} [useInputTag=false] Use an `<input/>` tag instead of a `<button/>` tag, the default.
- *  Widgets configured to be an `<input/>` do not support {@link #icon icons} and {@link #indicator indicators},
- *  non-plaintext {@link #label labels}, or {@link #value values}. In general, useInputTag should only
- *  be set to `true` when there’s need to support IE6 in a form with multiple buttons.
- */
 OO.ui.ButtonInputWidget = function OoUiButtonInputWidget( config ) {
 	// Configuration initialization
 	config = $.extend( { type: 'button', useInputTag: false }, config );

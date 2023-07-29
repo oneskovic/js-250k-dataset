@@ -1,7 +1,3 @@
-/*!
- * ${copyright}
- */
-
 sap.ui.define(['sap/m/semantic/SemanticControl', 'sap/m/Button', 'sap/m/OverflowToolbarButton'], function(SemanticControl, Button, OverflowToolbarButton) {
 	"use strict";
 

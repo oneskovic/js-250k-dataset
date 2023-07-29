@@ -7,14 +7,7 @@ Sink.on('init', function (sink) {
 
 Sink.prototype.activeRecordings = null;
 
-/**
- * Starts recording the sink output.
- *
- * @method Sink
- * @name record
- *
- * @return {Recording} The recording object for the recording started.
-*/
+
 Sink.prototype.record = function () {
 	var recording = new Sink.Recording(this);
 	this.emit('record', [recording]);

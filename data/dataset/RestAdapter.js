@@ -1,7 +1,3 @@
-/**
- * Adapter that opens swarmESB to php or other environments that can't do sockets, WebSockets, etc but can do REST
- *
- */
 var sutil   = require('swarmutil');
 var journey = require('journey');
 var util    = require("util");

@@ -1,8 +1,4 @@
-    /*   Internal Pane
-    **
-    **  This outline pane contains the properties which are
-    ** internal to the user's interaction with the web, and are not normaly displayed
-    */
+    
 tabulator.panes.internalPane = {
 
     icon: tabulator.Icon.src.icon_internals,

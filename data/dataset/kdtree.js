@@ -1,10 +1,3 @@
-/*
-author:	Vladimir Seregin (Peko)
-
-usage:	var KDTREE = new datastructure.KDTree([{x: 22, y:55},...]);
-	var nearest = KDTREE.getNearestNeighbours({x: x, y: y}, NUM_NEAREST);
-*/
-
 var datastructure = (function() {
 	var AXIS_X  = 0;
 	var AXIS_Y = 1;

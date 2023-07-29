@@ -1,8 +1,6 @@
 "use strict";
 
-/**
-* @module br/knockout/KnockoutComponent
-*/
+
 
 var ko = require( 'ko' );
 var br = require( 'br/Core' );

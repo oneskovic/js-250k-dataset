@@ -1,12 +1,3 @@
-/*
- * Ample SDK - JavaScript GUI Framework
- *
- * Copyright (c) 2012 Sergey Ilinsky
- * Dual licensed under the MIT and GPL licenses.
- * See: http://www.amplesdk.com/about/licensing/
- *
- */
-
 var cXULElement_wizardpage	= function(){};
 cXULElement_wizardpage.prototype	= new cXULElement("wizardpage");
 cXULElement_wizardpage.prototype.viewType	= cXULElement.VIEW_TYPE_BOXED;

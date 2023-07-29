@@ -1,5 +1,3 @@
-/* jasmine specs for primitives/SensingPrims.js go here */
-
 describe('SensingPrims', function() {
     var sensingPrims;
     beforeEach(function() {

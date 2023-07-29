@@ -1,5 +1,3 @@
-/* bender-tags: editor,unit,autoparagraphing */
-
 ( function() {
 	'use strict';
 

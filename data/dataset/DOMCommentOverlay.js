@@ -1,9 +1,3 @@
-//
-//
-// NicoHTML5.DOMCommentOverlay
-//
-//
-
 NicoHTML5.DOMCommentOverlay = function() {
     this.initialize.apply(this, arguments);
 };

@@ -1,16 +1,3 @@
-/*!
- * Ext JS Library 3.3.0
- * Copyright(c) 2006-2010 Ext JS, Inc.
- * licensing@extjs.com
- * http://www.extjs.com/license
- */
-/**
- * @class Ext.tree.AsyncTreeNode
- * @extends Ext.tree.TreeNode
- * @cfg {TreeLoader} loader A TreeLoader to be used by this node (defaults to the loader defined on the tree)
- * @constructor
- * @param {Object/String} attributes The attributes/config for the node or just a string with the text for the node 
- */
  Ext.tree.AsyncTreeNode = function(config){
     this.loaded = config && config.loaded === true;
     this.loading = false;

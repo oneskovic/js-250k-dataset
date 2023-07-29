@@ -9,14 +9,7 @@ define(["exports", "module", "react", "./utils/domUtils", "./utils/EventListener
 
   var EventListener = _interopRequire(_utilsEventListener);
 
-  /**
-   * Checks whether a node is within
-   * a root nodes tree
-   *
-   * @param {DOMElement} node
-   * @param {DOMElement} root
-   * @returns {boolean}
-   */
+  
   function isNodeInRoot(node, root) {
     while (node) {
       if (node === root) {

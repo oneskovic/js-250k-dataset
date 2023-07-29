@@ -1,4 +1,3 @@
-// Copyright 2013 The Obvious Corporation.
 /**
  * @fileoverview Contains the class definition for NodeInstance which represents
  *     a node that is being built within a Builder and any dependencies that the

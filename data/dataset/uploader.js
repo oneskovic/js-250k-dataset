@@ -1,52 +1,54 @@
-FOO.add('uploader', function (F, NAME) {
+var http = require("http");
+var url = require("url");
+var multipart = require("multipart");
+var sys = require("sys");
+var fs = require("fs");
+var config = require('../../config/config');
+var utils = require(config.root + '/helper/utils');
+var cheerio = require('cheerio');
+var _ = require('lodash');
+var mongoose = require('mongoose');
+var Trick = mongoose.model('Trick');
+var Validator = require('validator');
+var moment = require('moment');
 
-/**
- * Provides UI for selecting multiple files and functionality for 
- * uploading multiple files to the server with support for either
- * html5 or Flash transport mechanisms, automatic queue management,
- * upload progress monitoring, and error events.
- * @module uploader
- * @main uploader
- * @since 3.5.0
- */
+exports.import = function (req, res, next) {
+  var filePath = req.files.files.path;
+  var mimeType = req.files.files.mimetype;
 
-/**
- * `Y.Uploader` serves as an alias for either <a href="UploaderFlash.html">`Y.UploaderFlash`</a>
- * or <a href="UploaderHTML5.html">`Y.UploaderHTML5`</a>, depending on the feature set available
- * in a specific browser. If neither HTML5 nor Flash transport layers are available, `Y.Uploader.TYPE` 
- * static property is set to `"none"`.
- *
- * @class Uploader
- */
+  if('text/html' == mimeType) {
+    var htmlString = fs.readFileSync(filePath).toString();
+    var $ = cheerio.load(htmlString);
+    var links = $('p');
 
- /**
- * The static property reflecting the type of uploader that `Y.Uploader`
- * aliases. The possible values are:
- * <ul>
- * <li><strong>`"html5"`</strong>: Y.Uploader is an alias for <a href="UploaderHTML5.html">Y.UploaderHTML5</a></li>
- * <li><strong>`"flash"`</strong>: Y.Uploader is an alias for <a href="UploaderFlash.html">Y.UploaderFlash</a></li>
- * <li><strong>`"none"`</strong>: Neither Flash not HTML5 are available, and Y.Uploader does
- * not reference an actual implementation.</li>
- * </ul>
- *
- * @property TYPE
- * @type {String}
- * @static
- */
+    links.find('a').each(function(i, element){
+        var newTrick = {
+            user: req.user
+          , origin_url: $(this).attr('href')
+          , title: $(this).text()
+        };
 
- var Win = Y.config.win;
+        var add_date = moment.unix(_.parseInt($(this).attr('add_date')));
+        newTrick.createdAt = new Date(add_date).toISOString();
+        newTrick.user = req.user._id;
 
- if (Win && Win.File && Win.FormData && Win.XMLHttpRequest) {
-    Y.Uploader = Y.UploaderHTML5;
- }
+        var trick = new Trick(newTrick);
 
- else if (Y.SWFDetect.isFlashVersionAtLeast(10,0,45)) {
-    Y.Uploader = Y.UploaderFlash;
- }
+        if(Validator.isURL(newTrick.origin_url) && !Validator.isNull(newTrick.title )) {
 
- else {
-    Y.namespace("Uploader");
-    Y.Uploader.TYPE = "none";
- }
+          trick.screenShoot(newTrick.origin_url);
+        }
+    });
 
-}, '@VERSION@', {"requires": ["uploader-html5", "uploader-flash"]});
+    var errPrint = {}
+    errPrint.status = 200;
+    errPrint.message = 'success';
+    return res.send(200, errPrint);
+
+  } else {
+    var errPrint = {}
+    errPrint.status = 415;
+    errPrint.message = 'Unsupported Media Type'
+    return utils.responses(res, 415, errPrint)
+  }
+}

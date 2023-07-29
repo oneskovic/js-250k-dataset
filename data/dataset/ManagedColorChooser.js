@@ -74,13 +74,7 @@ function(Backbone, Utils) {
 	};
 
 	return {
-		/**
-		 * Get the color chooser with the given identifer.
-		 * Creates it if it does not exist.
-		 * "ManagedColorChooser" allows us to re-use the same
-		 * chooser instance for multiple components.
-		 * Kind of like a flyweight pattern.
-		 */
+		
 		get: function(id, opts) {
 			var inst;
 			inst = instances[id];

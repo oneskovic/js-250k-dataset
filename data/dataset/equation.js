@@ -1,16 +1,3 @@
-// Table Operations Plugin for HTMLArea-3.0
-// Implementation by Nazarij Dubnytskyj.  Sponsored by NasCreative
-//
-// htmlArea v3.0 - Copyright (c) 2002 interactivetools.com, inc.
-// This notice MUST stay intact for use (see license.txt).
-//
-// A free WYSIWYG editor replacement for <textarea> fields.
-// For full source code and docs, visit http://www.interactivetools.com/
-//
-// Version 1.0 developed by Nazarij Dubnytskyj for NasCreative.
-//
-// $Id: eguation-operations.js,v 1.0 2004/09/07 20:40:00 Exp $
-
 // Object that will encapsulate all the equation operations
 function Equation(editor) {
 	this.editor = editor;

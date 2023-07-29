@@ -1,4 +1,3 @@
-/*global nashorn, require, Packages, module*/
 var ItemType = Packages.net.canarymod.api.inventory.ItemType;
 var Canary = Packages.net.canarymod.Canary;
 var itemFactory = Canary.factory().itemFactory;

@@ -1,4 +1,3 @@
-// Independent tests for is.inside specifically
 ;(function(root, factory) {
 	if (typeof exports === 'object') {
 		// Node.js

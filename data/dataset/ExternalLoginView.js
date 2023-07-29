@@ -2,10 +2,7 @@
 
 tutao.provide('tutao.tutanota.gui.ExternalLoginView');
 
-/**
- * @constructor
- * @implements {tutao.tutanota.ctrl.View}
- */
+
 tutao.tutanota.gui.ExternalLoginView = function() {
 	tutao.util.FunctionUtils.bindPrototypeMethodsToThis(this);
 };

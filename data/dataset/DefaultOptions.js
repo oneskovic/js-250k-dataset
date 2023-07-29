@@ -1,6 +1,3 @@
-/**
- * Flotr Defaults
- */
 Flotr.defaultOptions = {
   colors: ['#00A8F0', '#C0D800', '#CB4B4B', '#4DA74D', '#9440ED'], //=> The default colorscheme. When there are > 5 series, additional colors are generated.
   ieBackgroundColor: '#FFFFFF', // Background color for excanvas clipping

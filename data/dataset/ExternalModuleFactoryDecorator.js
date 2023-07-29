@@ -1,7 +1,3 @@
-/*
-	MIT License http://www.opensource.org/licenses/mit-license.php
-	Author Tobias Koppers @sokra
-*/
 var ExternalModule = require("./ExternalModule");
 
 function ExternalModuleFactoryDecorator(factory, type, externals) {

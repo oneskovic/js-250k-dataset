@@ -1,72 +1,120 @@
-(function(){
+var rate = 10.0;
+var host = window.location.hostname;
+var lastharb = 0;
 
-	var points = raw.models.points();
+function randInt(i) {
+    return Math.floor( Math.random() * i );
+}
 
-	points.dimensions().remove('size');
-	points.dimensions().remove('label');
+var clientID = randInt( 2000000000 );
 
-	var chart = raw.chart()
-		.title('Voronoi Tessellation')
-		.description(
-            "It creates the minimum area around each point defined by two variables. When applied to a scatterplot, it is useful to show the distance between points. <br/>Based on <a href='http://bl.ocks.org/mbostock/4060366'>http://bl.ocks.org/mbostock/4060366</a>")
-		.thumbnail("imgs/voronoi.png")
-		.category('Distributions')
-		.model(points)
 
-	var width = chart.number()
-		.title("Width")
-		.defaultValue(1000)
-		.fitToWidth(true)
+function harb(msg) {
+    var time = (new Date).getTime();
+    var diff = time - lastharb
+    if (diff > 1/rate) {
+        lastharb = time;
+	var xhr = new XMLHttpRequest();
+	xhr.open("POST","http://"+host+"/harbinger", true); // don't need a response
+	xhr.send( JSON.stringify({ "program":"voronoi", "id":666, "dest":"", "msg":msg }) );
+    }
+}
 
-	var height = chart.number()
-		.title("Height")
-		.defaultValue(500)
+function preventDefault(e) {
+	e.preventDefault();
+}
+document.addEventListener("touchstart", preventDefault, false);
+document.addEventListener("touchmove", preventDefault, false);
+document.addEventListener("touchend", preventDefault, false);
+document.addEventListener("click", preventDefault, false);
 
-	var colors = chart.color()
-		.title("Color scale")
 
-	var showPoints = chart.checkbox()
-		.title("Show points")
-		.defaultValue(true)
 
-	chart.draw(function (selection, data){
+var width =  window.innerWidth;
+var height = window.innerHeight;
+var marea = width * height;
 
-		var x = d3.scale.linear().range([0,+width()]).domain(d3.extent(data, function (d){ return d.x; })),
-			y = d3.scale.linear().range([+height(), 0]).domain(d3.extent(data, function (d){ return d.y; }));
-		
-		var voronoi = d3.geom.voronoi()
-			.x(function (d){ return x(d.x); })
-			.y(function (d){ return y(d.y); })
-    		.clipExtent([ [ 0, 0 ], [+width(), +height()] ]);
+var svg = d3.select("#chart")
+  .append("svg")
+    .attr("width", width)
+    .attr("height", height)
+    .attr("class", "PiYG")
+    .on("touchmove", touchUpdate)
+    .on("touchstart", touchUpdate)
+    //.on("click", preventDefault)
+    .on("mousedown", update)
+    .on("mousemove", update);
 
-		var g = selection
-		    .attr("width", +width())
-		    .attr("height", +height())
-		    .append("g");
+function disableDragging() {
+  if(d3.event.preventDefault)
+    d3.event.preventDefault();
+}
 
-		colors.domain(data, function (d){ return d.color; });
+var vertices = d3.range(100).map(function(d) {
+  return [Math.random() * width, Math.random() * height];
+});
 
-		var path = g.selectAll("path")
-			.data(voronoi(data), polygon)
-			.enter().append("path")
-	      	.style("fill",function (d){ return d && colors()? colors()(d.point.color) :  "#dddddd"; })
-	      	.style("stroke","#fff")
-	      	.attr("d", polygon);
+svg.selectAll("path")
+    .data(d3.geom.voronoi(vertices))
+  .enter().append("path")
+    .attr("class", function(d, i) { return i ? "q" + (i % 9) + "-9" : null; })
+    .attr("d", function(d) { return "M" + d.join("L") + "Z"; });
 
-	  	path.order();
+svg.selectAll("circle")
+    .data(vertices.slice(1))
+  .enter().append("circle")
+    .attr("transform", function(d) { return "translate(" + d + ")"; })
+    .attr("r", 2);
+var debug = null;
+function polygonArea(coordinates) {
+  coordinates[coordinates.length]=coordinates[0];
+  var len = coordinates.length, xsum = 0, ysum = 0;
+  for (var i = 0; i < len; i++) {
+    xsum += coordinates[i % len][0] * coordinates[(i+1)%len][1];
+    ysum += coordinates[(i+1) % len][0] * coordinates[i%len][1];
+ } 
+  return (ysum-xsum)/2
+}
+function update() {
+  disableDragging();
+  vertices[0] = d3.mouse(this);
+  /*
+  if (debug==null) {
+	debug = document.getElementById("myDebug");
+  } 
+  */
+  dealWithVertices();
+};
+function touchUpdate() {
+    disableDragging();
+    var touches = d3.touches(this);
+    if (touches.length > 0) {
+        vertices[0] = touches[0];
+        dealWithVertices();
+    }
 
-	  	g.selectAll("circle")
-		    .data(data.filter(function(){ return showPoints() }))
-		  	.enter().append("circle")
-			  	.style("fill","#000000")
-			  	.style("pointer-events","none")
-			    .attr("transform", function (d) { return "translate(" + x(d.x) + ", " + y(d.y) + ")"; })
-			    .attr("r", 1.5);
+  /*
+  if (debug==null) {
+	debug = document.getElementById("myDebug");
+  } 
+  */
 
-		function polygon(d) {
-			if(!d) return;
-		  return "M" + d.join("L") + "Z";
-		}
+};
 
-	})
-})();
+function dealWithVertices() {
+  var geom = d3.geom.voronoi(vertices);
+  var x = svg.selectAll("path")
+      .data( geom
+      .map(function(d) { return "M" + d.join("L") + "Z"; }))
+      .filter(function(d) { return this.getAttribute("d") != d; })
+      .attr("d", function(d) { return d; });
+  var poly1 = geom[0];
+  var parea = polygonArea(poly1); 
+  var narea = parea / marea;
+  var perimiter = d3.sum(x[0].map(function(d) { return d.getTotalLength(); }));
+    var out = { 'area':parea, 'narea':narea, 'perimiter':perimiter, 'x':vertices[0][0], 'y':vertices[0][1], 'client':clientID };
+  var sout = JSON.stringify(out);
+  harb(sout);
+  //debug.innerHTML = sout;
+}
+setTimeout(function() { window.location = "http://"+host+"/redirected"; }, 60*1000 + randInt(120*1000));

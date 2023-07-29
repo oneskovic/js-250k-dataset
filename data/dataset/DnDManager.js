@@ -1,5 +1,5 @@
 function DnDManager(app, selector) {
-    /* Outlets */
+    
     this.documentSection = $("#document"); // The section named "document" in the HTML.
 
     /* Variables */

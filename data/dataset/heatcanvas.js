@@ -1,6 +1,3 @@
-/**
-# LAYER: cluster (plugin)
-*/
 T5.Registry.register('layer', 'heatcanvas', function(view, panFrame, container, params) {
     params = T5.ex({
         step: 1,

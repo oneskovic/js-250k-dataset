@@ -1,89 +1,68 @@
-/**
- * node-archiver
- *
- * Copyright (c) 2012-2013 Chris Talkington, contributors.
- * Licensed under the MIT license.
- * https://github.com/ctalkington/node-archiver/blob/master/LICENSE-MIT
- */
+var inherits = require('util').inherits;
 
+var Archiver = require('./core');
+var headers = require('../headers/tar');
 var util = require('../util');
 
-var headers = module.exports = {};
+var ArchiverTar = module.exports = function(options) {
+  Archiver.call(this, options);
 
-headers.file = {
-  fields: [
-    {'field': 'name', 'length': 100, 'type': 'string'},
-    {'field': 'mode', 'length': 8, 'type': 'number'},
-    {'field': 'uid', 'length': 8, 'type': 'number'},
-    {'field': 'gid', 'length': 8, 'type': 'number'},
-    {'field': 'size','length': 12, 'type': 'number'},
-    {'field': 'mtime', 'length': 12, 'type': 'number'},
-    {'field': 'checksum', 'length': 8, 'type': 'string', 'default': util.repeat(' ', 8)},
-    {'field': 'type', 'length': 1, 'type': 'number'},
-    {'field': 'linkName', 'length': 100, 'type': 'string'},
-    {'field': 'ustar', 'length': 8, 'type': 'string', 'default': 'ustar '},
-    {'field': 'owner', 'length': 32, 'type': 'string'},
-    {'field': 'group', 'length': 32, 'type': 'string'},
-    {'field': 'majorNumber', 'length': 8, 'type': 'number'},
-    {'field': 'minorNumber', 'length': 8, 'type': 'number'},
-    {'field': 'filenamePrefix', 'length': 155, 'type': 'string'},
-    {'field': 'padding', 'length': 12}
-  ],
+  options = this.options = util.defaults(options, {
+    recordSize: 512,
+    recordsPerBlock: 20
+  });
 
-  toBuffer: function(data) {
-    var self = this;
+  this.recordSize = options.recordSize;
+  this.blockSize = options.recordsPerBlock * options.recordSize;
+};
 
-    var buffer = util.cleanBuffer(512);
-    var offset = 0;
+inherits(ArchiverTar, Archiver);
 
-    var val;
+ArchiverTar.prototype._flush = function(callback) {
+  var endBytes = this.blockSize - (this.archiver.pointer % this.blockSize);
 
-    self.fields.forEach(function(value) {
-      val = data[value.field] || value.default || '';
+  this._push(util.cleanBuffer(endBytes));
 
-      buffer.write(val, offset);
-      offset += value.length;
-    });
+  callback();
+};
 
-    var checksum = self.createChecksum(buffer);
+ArchiverTar.prototype._processFile = function(source, data, callback) {
+  var self = this;
 
-    for (var i = 0, length = 6; i < length; i += 1) {
-      buffer[i + 148] = checksum.charCodeAt(i);
+  var file = self.archiver.file = data;
+
+  if (file.name.length > 255) {
+    callback(new Error('Filename "' + file.name + '" is too long even with prefix support [' + file.name.length + '/255]'));
+    return;
+  }
+
+  file.offset = self.archiver.pointer;
+
+  function onend(err, sourceBuffer) {
+    if (err) {
+      callback(err);
+      return;
     }
 
-    buffer[154] = 0;
-    buffer[155] = 0x20;
+    sourceBuffer = sourceBuffer || false;
+    file.size = sourceBuffer.length || 0;
 
-    return buffer;
-  },
+    var extraBytes = self.recordSize - (file.size % self.recordSize || self.recordSize);
 
-  toObject: function(buffer) {
-    var self = this;
+    self._push(headers.encode('file', file));
 
-    var data = {};
-    var offset = 0;
-
-    self.fields.forEach(function(value) {
-      data[value.field] = buffer.toString('utf8', offset, offset + (value.length - 1)).replace(/\u0000.*/, '');
-      offset += value.length;
-    });
-
-    delete data.padding;
-
-    return data;
-  },
-
-  createChecksum: function(buffer) {
-    var checksum = 0;
-    for (var i = 0, length = buffer.length; i < length; i += 1) {
-      checksum += buffer[i];
+    if (file.size > 0) {
+      self._push(sourceBuffer);
     }
 
-    checksum = checksum.toString(8);
-    while (checksum.length < 6) {
-      checksum = '0' + checksum;
-    }
+    self._push(util.cleanBuffer(extraBytes));
 
-    return checksum;
+    callback(null, file);
+  }
+
+  if (file.sourceType === 'buffer') {
+    onend(null, source);
+  } else if (file.sourceType === 'stream') {
+    util.collectStream(source, onend);
   }
 };

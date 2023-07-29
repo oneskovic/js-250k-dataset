@@ -1,9 +1,5 @@
 (function($){
-	/**
-	 * Constructor.
-	 * @name ElementObject : 布肤元素对象.
-	 * 
-	 */
+	
 	var ElementObject = SewisePlayerSkin.ElementObject = function(){
 		this.$sewisePlayerUi = $(".sewise-player-ui");
 		//this.$container = this.$sewisePlayerUi.parent().parent();

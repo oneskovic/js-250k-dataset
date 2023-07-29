@@ -1,4 +1,3 @@
-/* globals angular, beforeEach, chai, describe, inject, it */
 'use strict';
 
 var expect = chai.expect;

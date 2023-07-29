@@ -1,6 +1,3 @@
-/**
- * Chat History
- */
 (function() {
 	var chathist;
 	chathist = (function() {

@@ -35,13 +35,7 @@ dojo.declare("lucid.apps.WebBrowser", lucid.apps._App, {
 		this.win.show();
 		if(args.url) this.go(args.url);
 		else this.go("http://www.google.com/");
-		/*this.interval = setInterval(dojo.hitch(this, function(){
-			var loc = this.Iframe.contentWindow.location;
-			this.Iframe.top = {
-				location: loc
-			};
-			if(loc != "about:blank") this.urlbox.setValue(loc);
-		}), 500);*/
+		
 		this.win.startup();
 	},
 	

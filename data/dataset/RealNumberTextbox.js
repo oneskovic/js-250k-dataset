@@ -7,27 +7,7 @@ dojo.widget.defineWidget(
 	"dojo.widget.RealNumberTextbox",
 	dojo.widget.IntegerTextbox,
 	{
-		/*
-		  summary
-			A subclass that extends IntegerTextbox.
-			Over-rides isValid/isInRange to test for real number input.
-			Has 5 new properties that can be specified as attributes in the markup.
 		
-		  places: Integer
-		  	The exact number of decimal places.  If omitted, it's unlimited and optional.
-	
-		  exponent: Boolean
-		  	Can be true or false.  If omitted the exponential part is optional.
-	
-		  eSigned: Boolean
-		  	Is the exponent signed?  Can be true or false, if omitted the sign is optional.
-	
-		  min: Number
-			Minimum signed value.  Default is -Infinity.
-	
-		  max: Number
-		  	Maximum signed value.  Default is +Infinity
-		*/
 
 		mixInProperties: function(localProperties, frag){
 			// First initialize properties in super-class.

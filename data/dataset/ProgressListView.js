@@ -1,7 +1,3 @@
-/**
- * Container showing list of active tasks that are reporting progress
- * via a girder.EventStream object.
- */
 girder.views.ProgressListView = girder.View.extend({
 
     initialize: function (settings) {

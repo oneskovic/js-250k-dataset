@@ -1,4 +1,3 @@
-
 define(['underscore', 'backbone',
 'controls/viewController/mainView',
 'icons/icons'

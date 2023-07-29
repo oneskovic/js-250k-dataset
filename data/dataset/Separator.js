@@ -1,92 +1,46 @@
-(function(){
+///import baidu.ui.createUI;
 
-var AutoComplete = kendo.ui.AutoComplete,
-    input;
+/**
+ * @constructor
+ * @param {Object}              options config参数.
+ * @param {String|HTMLElemnt}   [options.container=document.body]   实例容器.
+ * @param {String}              [options.items.name="ToolBar_item_xxx"] ui控件的唯一标识符.
+ * @param {Object}              [options.items.options]         创建ui控件所需要的config参数.
+ * */
+baidu.ui.toolbar.Separator = baidu.ui.createUI(function(options) {
+}).extend({
 
-$.fn.press = function(key) {
-    return this.trigger({ type: "keydown", keyCode: key } );
-}
+    /**
+     * uiType
+     * */
+    uiType: 'toolbar-sepatator',
 
-$.fn.selectedText = function() {
-    var that = this[0];
+    /**
+     * 模板
+     * */
+    tplMain: '<span id="#{id}" class="#{class}" style="display:block"></span>',
 
-    if (that.createTextRange) {
-        return that.createTextRange().text;
-    } else {
-        return that.value.substring(that.selectionStart, that.selectionEnd);
-    }
-}
+    /**
+     * @private
+     * 获取HTML字符串
+     * @return {String} HTMLString.
+     * */
+    getString: function() {
+        var me = this;
 
-$.fn.type = function(value) {
-    return this.val(value).each(function() {
-        if (this.createTextRange) {
-            var textRange = this.createTextRange();
-            textRange.collapse(false);
-            textRange.select();
-        }
-    });
-}
-
-module("kendo.ui.AutoComplete separator", {
-    setup: function() {
-        input = $("<input>").appendTo(QUnit.fixture);
+        return baidu.format(me.tplMain, {
+            'id' : me.getId(),
+            'class' : me.getClass()
+        });
     },
-    teardown: function() {
-        kendo.destroy(QUnit.fixture);
+
+    /**
+     * 绘制控件
+     * @private
+     * @return void.
+     * */
+    render: function(container) {
+        var me = this;
+        baidu.dom.insertHTML(me.renderMain(container), 'beforeEnd', me.getString());
     }
 });
-
-test("separator", function() {
-    var autocomplete = new AutoComplete(input, {
-        dataSource: ["baz", "bar"],
-        separator: ", "
-    });
-
-    input.focus();
-    input.val("b");
-    autocomplete.search();
-    autocomplete.select(autocomplete.ul.children().first());
-
-    equal(input.val(), "baz, ");
-});
-
-test("search uses the last word", function() {
-    var autocomplete = new AutoComplete(input, {
-        dataSource: ["foo", "bar"],
-        separator: ", "
-    });
-
-    input.focus();
-    input.type("foo, b");
-    autocomplete.search();
-    equal(autocomplete.ul.children().first().text(), "bar");
-});
-
-test("search uses the word at the caret position", function() {
-    var autocomplete = new AutoComplete(input, {
-        dataSource: ["foo", "bar"],
-        separator: ", "
-    });
-
-    input.focus();
-    input.val("foo, bar, ");
-    input[0].selectionStart = 0;
-    autocomplete.search();
-    equal(autocomplete.ul.children().first().text(), "foo");
-});
-
-test("select replaces the word at the caret position", function() {
-    var autocomplete = new AutoComplete(input, {
-        dataSource: ["foo", "bar", "baz"],
-        separator: ", "
-    });
-
-    input.focus();
-    input.val("foo, bar, ");
-    input[0].selectionStart = 0;
-    autocomplete.dataSource.read();
-    autocomplete.select(autocomplete.ul.children().eq(2));
-    equal(input.val(), "baz, bar, ");
-});
-
-}());

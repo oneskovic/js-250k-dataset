@@ -43,7 +43,7 @@ function Replayer(midiFile, timeWarp, eventProcessor, bpm) {
 			}
 		}
 		if (nextEventTrack != null) {
-			/* consume event from that track */
+			
 			var nextEvent = midiFile.tracks[nextEventTrack][nextEventIndex];
 			if (midiFile.tracks[nextEventTrack][nextEventIndex + 1]) {
 				trackStates[nextEventTrack].ticksToNextEvent += midiFile.tracks[nextEventTrack][nextEventIndex + 1].deltaTime;

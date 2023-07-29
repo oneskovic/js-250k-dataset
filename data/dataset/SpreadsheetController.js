@@ -1,6 +1,3 @@
-/**
- * Controls the Spreadsheet example view.
- */
 Ext.define('KitchenSink.view.grid.SpreadsheetController', {
     extend: 'Ext.app.ViewController',
 

@@ -2,10 +2,7 @@
 
 tutao.provide('tutao.tutanota.ctrl.AccountSettingsViewModel');
 
-/**
- * Displays the account settings. This view model is created dynamically.
- * @constructor
- */
+
 tutao.tutanota.ctrl.AccountSettingsViewModel = function() {
 
 	tutao.util.FunctionUtils.bindPrototypeMethodsToThis(this);

@@ -1,6 +1,3 @@
-/**
- * Created by najorcruzcruz on 23/04/14.
- */
 Aloha.require([
 	'jquery',
 	'../plugins/extra/emptyparagraph/lib/emptyparagraph'

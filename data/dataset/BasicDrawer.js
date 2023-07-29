@@ -1,20 +1,3 @@
-/**
-A basic drawer control that animates vertically to open and close.
-The drawer may be opened by calling setOpen(true) or just open; it 
-may be closed by calling setOpen(false) or just close. For example,
-
-	{kind: "Drawer", components: [
-		{content: "Now you see me now you don't"},
-		{kind: "Button", caption: "Close drawer", onclick: "closeDrawer"}
-	]}
-
-Then, to close the drawer:
-
-	closeDrawer: function(inSender) {
-		this.$.drawer.close();
-	}
-
-*/
 enyo.kind({
 	name: "enyo.BasicDrawer",
 	kind: enyo.Control,

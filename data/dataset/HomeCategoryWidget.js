@@ -1,11 +1,6 @@
 var ns = namespace('dr.acme.view');
 
-/**
- * Home category widget
- * 
- * Renders a category and its first 3 products
- * 
- */
+
 ns.HomeCategoryWidget =  ns.Widget.extend({
     layoutTemplate: "#featured-category-template",
     

@@ -1,6 +1,3 @@
-/**
- * Flotr Event Adapter
- */
 (function () {
 var
   F = Flotr,

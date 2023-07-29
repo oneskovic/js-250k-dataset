@@ -21,13 +21,7 @@ R.particles.effects.Spark = function() {
             return this;
         },
 
-        /**
-         * The delay between particle emissions.
-         *
-         * @param delay
-         * @param [delayVariance]
-         * @returns {*}
-         */
+        
         delay: function(delay, delayVariance) {
             this._delay = delay;
             this._delayVariance = delayVariance || 0;

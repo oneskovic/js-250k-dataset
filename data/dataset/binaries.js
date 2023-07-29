@@ -16,29 +16,7 @@ var params = function(options,callback) {
 }
 
 module.exports = {
-  /**
-   * @method elevate
-   * @member nodewindows
-   * Elevate is similar to `sudo` on Linux/Mac. It attempts to elevate the privileges of the
-   * current user to a local administrator. Using this does not require a password, but it
-   * does require that the current user have administrative privileges. Without these
-   * privileges, the command will fail with a `access denied` error.
-   *
-   * On systems with UAC enabled, this may prompt the user for permission to proceed:
-   *
-   * ![UAC Prompt](http://upload.wikimedia.org/wikipedia/en/5/51/Windows_7_UAC.png)
-   *
-   * **Syntax**:
-   *
-   * `elevate(cmd[,options,callback])`
-   *
-   * @param {String} cmd
-   * The command to execute with elevated privileges. This can be any string that would be typed at the command line.
-   * @param {Object} [options]
-   * Any options that will be passed to `require('child_process').exec(cmd,<OPTIONS>,callback)`.
-   * @param {Function} callback
-   * The callback function passed to `require('child_process').exec(cmd,options,<CALLBACK>)`.
-   */
+  
   elevate: function(cmd,options,callback) {
     var p = params(options,callback);
     exec('"'+path.join(bin,'elevate','elevate.cmd')+'" '+cmd,p.options,p.callback);

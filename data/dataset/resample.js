@@ -2,12 +2,7 @@
 
 (function(){
 
-/**
- * If method is supplied, adds a new interpolation method to Sink.interpolation, otherwise sets the default interpolation method (Sink.interpolate) to the specified property of Sink.interpolate.
- *
- * @arg {String} name The name of the interpolation method to get / set.
- * @arg {Function} !method The interpolation method.
-*/
+
 
 function interpolation(name, method) {
 	if (name && method) {

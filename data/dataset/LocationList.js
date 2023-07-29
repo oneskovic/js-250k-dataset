@@ -1,8 +1,3 @@
-/**
- * Generic component that displays a list of genomic locations, along
- * with buttons to execute actions on them.
- */
-
 define([
            'dojo/_base/declare',
            'dojo/_base/array',

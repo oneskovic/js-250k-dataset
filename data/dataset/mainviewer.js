@@ -1,4 +1,3 @@
-
 var $viewscreen = $( "#viewscreen" );
 var displayingCaptainsLog = false;
 

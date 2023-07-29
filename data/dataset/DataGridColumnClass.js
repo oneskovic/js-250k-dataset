@@ -4,10 +4,7 @@ define(['js/core/Component'], function (Component) {
 
     return Component.inherit('js.ui.DataGridColumnClass', {
         defaults: {
-            /**
-             * The sort path
-             * @type String
-             */
+            
             sortPath: null,
 
             /**

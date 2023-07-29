@@ -1,10 +1,6 @@
 var _ = require('lodash');
 
-/**
- * @dgProcessor moduleDocsProcessor
- * @description
- * Compute the various fields for modules
- */
+
 module.exports = function moduleDocsProcessor(log, aliasMap, moduleMap, createDocMessage) {
   return {
     $runAfter: ['ids-computed', 'memberDocsProcessor'],

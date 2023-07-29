@@ -1,22 +1,3 @@
-/**
- * JavaScript preprocessor that merges JavaScript files.
- * 
- * Syntax:
- * In input file, there can be statements 
- *    ///#include filename snippetname
- * To include a snippet from a file (relative to bath path).
- * 
- * Snippets in the input file can be removed using
- *    ///#remove
- *      .. block to remove ..
- *    ///#/remove
- *    
- * The included files must declare snippets like this:
- *    ///#snippet snippetname
- *     ... code to include ...
- *    ///#/snippet 
- */
-
 var _ = require('minified-headless');
 
 var log;

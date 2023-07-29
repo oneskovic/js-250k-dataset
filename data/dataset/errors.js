@@ -1,107 +1,46 @@
-// __Dependencies__
-var util = require('util');
-var mongoose = require('mongoose');
-var RestError = require('rest-error');
+Ext.define('Ext.data.Errors', {
+    extend: 'Ext.util.Collection',
 
-// __Module Definition__
-var decorator = module.exports = function (options, protect) {
-  var controller = this;
-  // A controller property used to set what error status code
-  // and response is sent when a query to a collection endpoint
-  // yields no documents.
-  protect.property('emptyCollection', 200);
-  // A controller property that sets whether errors should be
-  // handled if possible, or just set status code.
-  protect.property('handleErrors', true, function (handle) {
-    return handle ? true : false;
-  });
-  // Handle mongo validation and unprocessable entity errors.
-  protect.use(function (error, request, response, next) {
-    if (!error) return next();
-    // Validation errors.
-    if (!((error instanceof mongoose.Error.ValidationError) || (error instanceof RestError.UnprocessableEntity))) {
-      next(error);
-      return;
-    }
+    requires: 'Ext.data.Error',
 
-    response.status(422);
-    if (!controller.handleErrors()) return next(error);
-    if (Array.isArray(error.errors)) return response.json(error.errors);
-    response.json(Object.keys(error.errors).map(function (key) { return error.errors[key] }));
-  });
-  // Handle bad hint.
-  protect.use(function (error, request, response, next) {
-    if (!error) return next();
-    if (!error.message) return next();
-    // Bad Mongo query hint (2.x).
-    if (error.message === 'bad hint') {
-      next(RestError.BadRequest('The requested query hint is invalid'));
-      return;
-    }
-    // Bad Mongo query hint (3.x).
-    if (error.message.match('planner returned error: bad hint')) {
-      next(RestError.BadRequest('The requested query hint is invalid'));
-      return;
-    }
-    next(error);
-  });
-  // Handle mongo duplicate key error.
-  protect.use(function (error, request, response, next) {
-    if (!error) return next();
-    if (error.message.indexOf('E11000 duplicate key error') === -1) {
-      next(error);
-      return;
-    }
+    /**
+     * Returns true if there are no errors in the collection
+     * @return {Boolean}
+     */
+    isValid: function() {
+        return this.length === 0;
+    },
 
-    var body = {};
-    var scrape = /[$](.+)[_]\d+\s+dup key: [{] : "([^"]+)" [}]/;
-    var scraped = scrape.exec(error.message);
-    var path = scraped ? scraped[1] : '???';
-    var value = scraped ? scraped[2] : '???';
-    body[path] = {
-      message: util.format('Path `%s` (%s) must be unique.', path, value),
-      originalMessage: error.message,
-      name: 'MongoError',
-      path: path,
-      type: 'unique',
-      value: value
-    };
+    /**
+     * Returns all of the errors for the given field
+     * @param {String} fieldName The field to get errors for
+     * @return {Object[]} All errors for the given field
+     */
+    getByField: function(fieldName) {
+        var errors = [],
+            error, i;
 
-    response.status(422);
-    if (controller.handleErrors()) return response.json(body);
-    next(error);
-  });
-  // Handle not found.
-  protect.use('/:id?', function (error, request, response, next) {
-    if (!error) return next();
-    // Handle 404
-    if (!(error instanceof RestError.NotFound)) return next(error);
+        for (i = 0; i < this.length; i++) {
+            error = this.items[i];
 
-    response.status(error.status);
-    if (!controller.handleErrors()) return next(error);
-    if (request.params.id) return next(error);
-    if (error.parentController === true) return next(error);
-    response.status(controller.emptyCollection());
-    if (controller.emptyCollection() === 200) return response.json([]);
-    if (controller.emptyCollection() === 204) return response.send();
-    next(error);
-  });
-  // Set response status code for all baucis errors.
-  protect.use(function (error, request, response, next) {
-    if (!error) return next();
-    // Just set the status code for these errors.
-    if (!(error instanceof RestError)) return next(error);
-    response.status(error.status);
-    next(error);
-  });
-  // Handle mongoose version conflict error.
-  protect.use(function (error, request, response, next) {
-    if (!error) return next();
-    if (!(error instanceof mongoose.Error.VersionError)) {
-      next(error);
-      return;
+            if (error.getField() == fieldName) {
+                errors.push(error);
+            }
+        }
+
+        return errors;
+    },
+    
+    add: function() {
+        var obj = arguments.length == 1 ? arguments[0] : arguments[1];
+        
+        if (!(obj instanceof Ext.data.Error)) {
+            obj = Ext.create('Ext.data.Error', {
+                field: obj.field || obj.name,
+                message: obj.error || obj.message
+            });
+        }
+        
+        return this.callParent([obj]);
     }
-    response.status(409);
-    next(error);
-  });
-};
+});

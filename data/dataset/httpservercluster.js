@@ -1,27 +1,3 @@
-/**
- * Listen for HTTP requests using a cluster of HTTP servers.
- *
- * This phase creates a cluster of HTTP servers and listens for requests on the
- * given address and port, defaulting to 0.0.0.0:3000.
- *
- * This phase is typically one of the final phases in the boot sequence.
- * Initializers should be run and routes should be drawn prior to this phase,
- * ensuring that the application is fully prepared to handle requests.
- *
- * Examples:
- *
- *   app.phase(locomotive.boot.httpServerCluster(8080));
- *
- *   app.phase(locomotive.boot.httpServerCluster(8080, '127.0.0.1'));
- *
- *   app.phase(locomotive.boot.httpServerCluster(8080, '127.0.0.1', { size: 8 }));
- *
- * @param {Number} port
- * @param {String} address
- * @param {Object} options
- * @return {Function}
- * @api public
- */
 module.exports = function(port, address, options) {
   var os = require('os')
     , http = require('http')

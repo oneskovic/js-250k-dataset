@@ -50,7 +50,7 @@ RateShaper.prototype = {
     }
 };
 
-/* Shaper setup */
+
 var upShaperRate = new RateShaper(102400);
 var upShaper = {
     enqueue: upShaperRate.enqueue.bind(upShaperRate)

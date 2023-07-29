@@ -1,10 +1,3 @@
-/**
- * @fileoverview 
- *  wysiwyg, source, text 세모드로의 변경을 가능하게하는 dropdown 형식의 tool 'Switcher' Source,
- * Class Trex.Tool.Switcher 와 configuration을 포함    
- *     
- */
-
 TrexMessage.addMsg({
 	'@switcher.wysiwyg': '에디터',
 	'@switcher.source': 'HTML',

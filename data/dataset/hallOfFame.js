@@ -1,7 +1,3 @@
-/**
- * @name views.hallOfFame
- * @namespace Hall of fame table.
- */
 define(["dao", "globals", "ui", "core/player", "lib/jquery", "lib/knockout", "lib/underscore", "util/bbgmView", "util/helpers"], function (dao, g, ui, player, $, ko, _, bbgmView, helpers) {
     "use strict";
 

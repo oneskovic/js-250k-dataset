@@ -2,22 +2,7 @@ var getTypeObj, breadcrumbItems, generateBreadcrumbJson;
 var deploymentManagement=require('/modules/deployment/deployment.manager.js').deploymentManagementModule();
 var deploymentManager=deploymentManagement.cached();
 
-/*breadcrumbItems = [{
-		assetType : 'gadget',
-		assetTitle : "Gadgets",
-		url : "/publisher/assets/gadget/",
-		assetIcon : "icon-dashboard" //font-awesome icon class
-	}, {
-		assetType : "ebook",
-		assetTitle : "E-Books",
-		url : "/publisher/assets/ebook/",
-		assetIcon : "icon-book" //font-awesome icon class
-	}, {
-		assetType : "site",
-		assetTitle : "Sites",
-		url : "/publisher/assets/site/",
-		assetIcon : "icon-compass" //font-awesome icon class
-	}]; */
+
 
 //Populate the breadcrumb data
 breadcrumbItems=deploymentManager.getAssetData();

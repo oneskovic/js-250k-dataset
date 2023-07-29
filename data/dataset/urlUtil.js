@@ -1,4 +1,3 @@
-// simplistic hash fragment data encoder
 define(function () {
 	'use strict';
 	function parseHash(hash) {

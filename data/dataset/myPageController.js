@@ -1,12 +1,7 @@
 'use strict';
 (function () {
 
-    /**
-     * @ngdoc object
-     * @name myPage.controller:myPageController
-     * @description
-     * Controller for my awesome page
-     */
+    
     angular.module('myPage')
         .controller('myPageController', ['$scope', 'frameworksService', function ($scope, frameworksService) {
             /**

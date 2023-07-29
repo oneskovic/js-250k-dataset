@@ -1,11 +1,6 @@
-
 var GhostPlugin;
 
-/**
- * GhostPlugin is the base class for a standard plugin.
- * @class
- * @parameter {Ghost} The current Ghost app instance
- */
+
 GhostPlugin = function (ghost) {
     this.app = ghost;
 };

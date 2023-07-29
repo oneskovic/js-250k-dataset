@@ -8,12 +8,7 @@ function Admin(adminRestDao) {
     this._restDao = adminRestDao;
 }
 
-/**
- * Create a new email account.
- * @param  {String}   options.emailAddress  The desired email address
- * @param  {String}   options.password      The password to be used for the account.
- * @param  {String}   options.phone         The user's mobile phone number (required for verification and password reset).
- */
+
 Admin.prototype.createUser = function(options) {
     var self = this;
     return new Promise(function(resolve) {
@@ -34,11 +29,7 @@ Admin.prototype.createUser = function(options) {
     });
 };
 
-/**
- * Verify a user's phone number by confirming a token to the server.
- * @param  {String}   options.emailAddress  The desired email address
- * @param  {String}   options.token         The validation token.
- */
+
 Admin.prototype.validateUser = function(options) {
     var self = this;
     return new Promise(function(resolve) {
